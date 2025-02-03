@@ -110,4 +110,62 @@ function M.utf8swidth(str)
   return w
 end
 
+--- Preload the cache with the widths of all characters in the string.
+function M.preload(str)
+  local size = 50 -- max number of characters to do in 1 terminal write
+  local test = {}
+  local dup = {}
+  for pos, char in utf8.codes(str) do
+    char = utf8.char(char) -- convert back to utf8 string
+    if not (char_widths[char] or dup[char]) then
+      test[#test+1] = char
+      dup[char] = true
+    end
+  end
+
+  if #test == 0 then
+    return -- nothing to test
+  end
+
+  t.textpush({ brightness = 0 }) -- set color to "hidden"
+
+  local r, c = t.cursor_get() -- retrieve current position
+  local setpos = t.cursor_sets(r, c) -- string to restore cursor to current position
+  local getpos = t._cursor_get_writes() -- string to inject query for current position
+  local chunk = {}
+  local chars = {}
+  for i = 1, #test do -- process in chunks of max size
+    chars[#chars+1] = test[i]
+    local s = test[i] -- the character
+              .. getpos -- query for new position
+              .. setpos -- restore cursor to current position
+    chunk[#chunk+1] = s
+    if #chunk == size or i == #test then
+      -- handle the chunk
+      t.write(table.concat(chunk))
+      local positions, err = t._cursor_get(#chunk)
+      if not positions then
+        t.textpop() -- restore color (dropp hidden)
+        return nil, err
+      end
+
+      -- record sizes reported
+      for j, pos in ipairs(positions) do
+        local w = pos[2] - c
+        if w < 0 then
+          -- cursor wrapped to next line
+          local _, cols = t.termsize()
+          w = w + cols
+        end
+        char_widths[chars[j]] = w
+      end
+
+      chunk = {} -- clear for next chunk
+      chars = {}
+    end
+  end
+
+  t.textpop() -- restore color (drop hidden)
+end
+
 return M

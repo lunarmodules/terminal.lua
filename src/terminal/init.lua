@@ -400,6 +400,64 @@ local new_readansi, old_readansi do
   end
 
 
+  -- prereads all of the kyboard buffer into the cache
+  function M._cursor_get_prep()
+    while true do
+      local seq, typ, part = old_readansi(0)
+      if seq == nil and typ == "timeout" then
+        return true
+      end
+      kbend = kbend + 1
+      kbbuffer[kbend] = pack(seq, typ, part)
+      if seq == nil then
+        -- error reading keyboard
+        return nil, "error reading keyboard: "..typ
+      end
+    end
+  end
+
+  -- returns the sequence for requesting cursor position as a string
+  function M._cursor_get_writes()
+    return "\27[6n"
+  end
+  -- write the sequence for requesting cursor position, without flushing
+  function M._cursor_get_write()
+    M.write(M._cursor_get_writes())
+  end
+
+  -- flush the buffer and read the requested number of cursor positions
+  -- @tparam number count number of cursor positions to read
+  -- @treturn table cursor positions, each entry is an array with row and column
+  function M._cursor_get(count)
+    t:flush()
+
+    -- read responses
+    local result = {}
+    while true do
+      local seq, typ, part = old_readansi(0.5) -- 500ms timeout, max time for terminal to respond
+      if seq == nil and typ == "timeout" then
+        error("no response from terminal, this is unexpected")
+      end
+      if typ == "ansi" then
+        local row, col = seq:match("^\27%[(%d+);(%d+)R$")
+        if row and col then
+          result[#result+1] = { tonumber(row), tonumber(col) }
+          if #result == count then
+            break
+          end
+        end
+      end
+      kbend = kbend + 1
+      kbbuffer[kbend] = pack(seq, typ, part)
+      if seq == nil then
+        -- error reading keyboard
+        return nil, "error reading keyboard: "..typ
+      end
+    end
+
+    return result
+  end
+
   --- Requests the current cursor position from the terminal.
   -- Will read entire keyboard buffer to empty it, then request the cursor position.
   -- The output buffer will be flushed.
@@ -413,43 +471,20 @@ local new_readansi, old_readansi do
   -- @within cursor_position
   function M.cursor_get()
     -- first empty keyboard buffer
-    while true do
-      local seq, typ, part = old_readansi(0)
-      if seq == nil and typ == "timeout" then
-        break
-      end
-      kbend = kbend + 1
-      kbbuffer[kbend] = pack(seq, typ, part)
-      if seq == nil then
-        -- error reading keyboard
-        return nil, "error reading keyboard: "..typ
-      end
+    local ok, err = M._cursor_get_prep()
+    if not ok then
+      return nil, err
     end
 
-    -- request cursor position, and flush
-    M.write("\27[6n")
-    t:flush()
+    -- request cursor position
+    M._cursor_get_write()
 
-    -- read response
-    while true do
-      local seq, typ, part = old_readansi(0.5) -- 500ms timeout, max time for terminal to respond
-      if seq == nil and typ == "timeout" then
-        error("no response from terminal, this is unexpected")
-      end
-      if typ == "ansi" then
-        local row, col = seq:match("^\27%[(%d+);(%d+)R$")
-        if row and col then
-          return tonumber(row), tonumber(col)
-        end
-      end
-      kbend = kbend + 1
-      kbbuffer[kbend] = pack(seq, typ, part)
-      if seq == nil then
-        -- error reading keyboard
-        return nil, "error reading keyboard: "..typ
-      end
+    -- get position
+    local r, err = M._cursor_get(1)
+    if not r then
+      return nil, err
     end
-    -- unreachable
+    return unpack(r[1])
   end
 end
 
