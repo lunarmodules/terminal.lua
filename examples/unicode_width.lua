@@ -1,3 +1,10 @@
+-- Test getting character width by printing and reading cursor pos afterwards.
+-- Usefull for East Asian Width ambiguous characters.
+--
+-- Tests 2 mechanisms;
+-- 1. Using individual characters to write and test.
+-- 2. Using the 'preload' to test many at once (way faster)
+
 local t = require("terminal")
 local w = require("terminal.width")
 local p = require("terminal.progress")
@@ -26,7 +33,7 @@ assert(t.initwrap(function()
   pr[math.random( 0,8)] = "✔"
   local stime = sys.gettime()
   w.preload(table.concat(pr))
-  t.write(("-time: %.1f s"):format(sys.gettime() - stime).."\n")
+  t.write(("preload-time: %.1f s"):format(sys.gettime() - stime).."\n")
   test()
   test()
   return true
