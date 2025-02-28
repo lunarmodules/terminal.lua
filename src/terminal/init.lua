@@ -400,7 +400,7 @@ local new_readansi, old_readansi do
   end
 
 
-  -- prereads all of the kyboard buffer into the cache
+  -- prereads all of the keyboard buffer into the cache
   function M._cursor_get_prep()
     while true do
       local seq, typ, part = old_readansi(0)
@@ -1769,11 +1769,19 @@ end
 -- terminal initialization, shutdown and miscellanea
 --=============================================================================
 --- Initialization.
--- Initialization and termination.
+-- Initialization, termination and miscellaneous functions.
 -- @section initialization
 
+--- Returns a string sequence to make the terminal beep.
+-- @treturn string ansi sequence to write to the terminal
+function M.beeps()
+  return "\a"
+end
+
+--- Write a sequence to the terminal to make it beep.
+-- @return true
 function M.beep()
-  M.write("\a")
+  M.write(M.beep())
   return true
 end
 
@@ -1876,6 +1884,13 @@ end
 -- @tparam function main the function to wrap
 -- @param ... any parameters to pass to `initialize`
 -- @treturn any the return values of the wrapped function, or nil+err in case of an error
+-- @usage local function main()
+--   -- you main app functionality here
+-- end
+--
+-- local target_stream = io.stderr
+-- local display_backup = false
+-- assert(t.initwrap(main, display_backup, target_stream))
 function M.initwrap(main, ...)
   M.initialize(...)
 
