@@ -7,6 +7,25 @@ local M = {}
 
 
 --- table with predefined sprites for progress spinners.
+-- The sprites are tables of strings, where each string is a frame in the spinner animation.
+-- The frame at index 0 is optional and is the "done" message, the rest are the animation frames.
+--
+-- Available pre-defined spinners are:
+--
+-- * `bar_vertical` - a vertical bar that grows from the bottom to the top
+-- * `bar_horizontal` - a horizontal bar that grows from left to right
+-- * `square_rotate` - a square that rotates clockwise
+-- * `moon` - a moon that waxes and wanes
+-- * `dot_expanding` - a dot that expands and contracts
+-- * `dot_vertical` - a dot that moves up and down
+-- * `dot1_snake` - a dot that moves in a snake-like pattern
+-- * `dot2_snake` - 2 dots that move in a snake-like pattern
+-- * `dot3_snake` - 3 dots that move in a snake-like pattern
+-- * `dot4_snake` - 4 dots that move in a snake-like pattern
+-- * `block_pulsing` - a block that pulses in transparency
+-- * `bar_rotating` - a bar that rotates clockwise
+-- * `spinner` - a spinner that rotates clockwise
+-- * `dot_horizontal` - 3 dots growing from left to right
 M.sprites = setmetatable({
   bar_vertical = { [0] = " ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃", "▂", "▁", " " },
   bar_horizontal = { [0] = " ", "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█", "▉", "▊", "▋", "▌", "▍", "▎", "▏", " " },
@@ -44,11 +63,11 @@ M.sprites = setmetatable({
 -- @tparam table opts.sprites a table of strings to display, one at a time, overwriting the previous one. Index 0 is the "done" message.
 -- See `sprites` for a table of predefined sprites.
 -- @tparam[opt=0.2] number opts.stepsize the time in seconds between each step (before printing the next string from the sequence)
--- @tparam textattr textattr a table of text attributes to apply to the text (using the stack), or nil to not change the attributes.
--- @tparam[opt] textattr done_textattr a table of text attributes to apply to the "done" message, or nil to not change the attributes.
--- @tparam[opt] string done_sprite the sprite to display when the spinner is done. This overrides `sprites[0]` if provided.
--- @tparam[opt] number row the row to print the spinner (required if `col` is provided)
--- @tparam[opt] number col the column to print the spinner (required if `row` is provided)
+-- @tparam textattr opts.textattr a table of text attributes to apply to the text (using the stack), or nil to not change the attributes.
+-- @tparam[opt] textattr opts.done_textattr a table of text attributes to apply to the "done" message, or nil to not change the attributes.
+-- @tparam[opt] string opts.done_sprite the sprite to display when the spinner is done. This overrides `sprites[0]` if provided.
+-- @tparam[opt] number opts.row the row to print the spinner (required if `col` is provided)
+-- @tparam[opt] number opts.col the column to print the spinner (required if `row` is provided)
 -- @treturn function a stepper function that should be called in a loop to update the spinner. Signature: `nil = stepper(done)` where
 -- `done` is a boolean indicating that the spinner should print the "done" message.
 function M.spinner(opts)
