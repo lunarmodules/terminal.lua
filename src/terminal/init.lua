@@ -21,7 +21,7 @@ local M = {
 
 local pack, unpack do
   -- nil-safe versions of pack/unpack
-  local oldunpack = unpack or table.unpack -- luacheck: ignore
+  local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
   pack = function(...) return { n = select("#", ...), ... } end
   unpack = function(t, i, j) return oldunpack(t, i or 1, j or t.n or #t) end
 end
