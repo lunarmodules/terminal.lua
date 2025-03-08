@@ -13,7 +13,7 @@ See [LICENSE.md](LICENSE.md)
 
 ## Documentation
 
-See [online documentation](https://Tieske.github.io/terminal.lua/)
+See [online documentation](https://lunarmodules.github.io/terminal.lua/)
 
 ## Changelog & Versioning
 
