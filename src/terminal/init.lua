@@ -32,54 +32,6 @@ local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function
 local asleep   -- a (optionally) non-blocking sleep function
 
---=============================================================================
--- Sequence object
---=============================================================================
-
-do
-  local S = {}
-  S.__index = S
-
-  -- concat all entries, whilst executing the functions
-  S.__tostring = function(self)
-    local result = {}
-    for i, item in ipairs(self) do
-      if type(item) == "function" then
-        item = item()
-      end
-      result[i] = tostring(item)
-    end
-    return table.concat(result)
-  end
-
-  -- concat 2 sequences, by copying both into a new sequence
-  S.__add = function(self, other)
-    local result = {}
-    for i, item in ipairs(self) do
-      result[i] = item
-    end
-    if getmetatable(other) == S then
-      -- another sequence, copy all items
-      for i, item in ipairs(other) do
-        result[#result + 1] = item
-      end
-    else
-      result[#result + 1] = other
-    end
-    return setmetatable(result, S)
-  end
-
-  --- Create a new sequence object.
-  -- A sequence object is an array of items, where each item can be a string or a function.
-  -- When the sequence is converted to a string, the functions are executed and their return
-  -- value is used.
-  -- This allows for dynamic use of the "stack" based functions
-  -- @param ... the items to add to the sequence
-  -- @treturn table the sequence object
-  function M.sequence(...)
-    return setmetatable(pack(...), S)
-  end
-end
 
 --=============================================================================
 -- Stream support
@@ -93,6 +45,7 @@ do
   local chunksize = 512 -- chunk size to write in one go
   local bytecount_left = chunksize -- number of bytes to write before flush+sleep required
   local delay = 0.001 -- delay in seconds after each chunk write
+  local Sequence = require("terminal.sequence")
 
   --- Writes to the stream in chunks.
   -- Parameters are written to the stream, and flushed after each chunk. A small sleep is
@@ -106,24 +59,13 @@ do
   -- @return the return value of the stream's `write` function
   -- @within stream
   function M.write(...)
-    local ok, err
-    -- format arguments as a single string
-    local count = select("#", ...)
-    if count == 0 then
-      return t:write()
+    local data = tostring(Sequence(...))
+    if data == "" then
+      return t:write(data) -- ensure we return the same return values as the stream's write function
     end
-
-    local data = {...}
-    for i = 1, count do
-      local d = data[i]
-      if type(d) == "function" then
-        d = d()
-      end
-      data[i] = tostring(d)
-    end
-    data = table.concat(data)
 
     -- write to stream, in chunks. flush and sleep in between
+    local ok, err
     while #data > 0 do
       local chunk = data:sub(1, bytecount_left)
       data = data:sub(bytecount_left + 1)
@@ -137,7 +79,8 @@ do
       if bytecount_left <= 0 then
         bytecount_left = chunksize
         t:flush()
-        bsleep(delay) -- (blocking) sleep a bit to allow the terminal to process the data
+        -- sleep a bit to allow the terminal to process the data
+        bsleep(delay) -- blocking because we do not want to yield!
       end
     end
 

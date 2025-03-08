@@ -2,6 +2,7 @@
 
 local sys = require("system")
 local t = require("terminal")
+local Sequence = require("terminal.sequence")
 
 local M = {}
 
@@ -106,7 +107,7 @@ function M.spinner(opts)
       if i == 0 then
         s = opts.done_sprite or s
       end
-      local sequence = t.sequence()
+      local sequence = Sequence()
       sequence[#sequence+1] = pos_set
       sequence[#sequence+1] = (i == 0 and attr_push_done) or attr_push or nil
       sequence[#sequence+1] = s .. t.cursor_lefts(sys.utf8swidth(s))
