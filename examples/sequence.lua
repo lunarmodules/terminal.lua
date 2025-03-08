@@ -4,9 +4,10 @@
 -- execution of the sequence.
 
 local t = require("terminal")
+local Sequence = require("terminal.sequence")
 
 -- print a green checkmark, without changing any other attributes
-local greencheck = t.sequence(
+local greencheck = Sequence(
   function() return t.textpushs({ fg = "green" }) end, -- set green FG color AT TIME OF WRITING
   "✔", -- write a check mark
   t.textpops -- passing in function is enough, since no parameters needed
@@ -15,9 +16,9 @@ local greencheck = t.sequence(
 
 -- print a green checkmark at the top of the screen.
 -- doesn't use a stack for cursor pos, but terminal memory
-local top = t.sequence(
+local top = Sequence(
   t.cursor_saves, -- save cursor position, no params, so passing function is ok
-  t.cursor_sets(1,1), -- move to roqw 1, column 1
+  t.cursor_sets(1,1), -- move to row 1, column 1
   greencheck, -- print the green checkmark, injecting another sequence
   t.cursor_restores -- restore cursor position, no params, so passing function is ok
 )
@@ -26,7 +27,7 @@ local top = t.sequence(
 -- print another one at pos 2,2, but now use the cursor positioning stack
 -- this is safer, if the 'greencheck' sub-sequence would also use the
 -- terminal memory for the cursor position (overwriting ours).
-local top2 = t.sequence(
+local top2 = Sequence(
   function() return t.cursor_pushs(2,2) end,
   greencheck, -- print the green checkmark
   t.cursor_pops
