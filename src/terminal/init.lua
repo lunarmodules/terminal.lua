@@ -31,6 +31,8 @@ local sys = require "system"
 local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function
 local asleep   -- a (optionally) non-blocking sleep function
+local input = require "terminal.input"
+M.input = input
 
 
 --=============================================================================
@@ -322,123 +324,45 @@ end
 local _positionstack = {}
 
 
-do
-  local kbbuffer = {}
-  local kbstart = 0
-  local kbend = 0
-  local sys_readansi = sys.readansi
+--- returns the sequence for requesting cursor position as a string
+function M.cursor_get_querys()
+  return "\27[6n"
+end
 
-  --- Same as `sys.readansi`, but works with the buffer required by `terminal.lua`.
-  -- This function will read from the buffer first, before calling `sys.readansi`. This is
-  -- required because querying the terminal (e.g. getting cursor position) might read data
-  -- from the keyboard buffer, which would be lost if not buffered. Hence this function
-  -- must be used instead of `sys.readansi`, to ensure the previously read buffer is
-  -- consumed first.
-  -- @tparam number timeout the timeout in seconds
-  -- @tparam[opt] function fsleep the sleep function to use (default: the sleep function
-  -- set by `initialize`)
-  function M.readansi(timeout, fsleep)
-    if kbend ~= 0 then
-      -- we have buffered input
-      kbstart = kbstart + 1
-      local res = kbbuffer[kbstart]
-      kbbuffer[kbstart] = nil
-      if kbstart == kbend then
-        kbstart = 0
-        kbend = 0
-      end
-      return unpack(res)
-    end
-    return sys_readansi(timeout, fsleep or asleep)
+--- write the sequence for requesting cursor position, without flushing
+function M.cursor_get_query()
+  M.write(M.cursor_get_querys())
+end
+
+
+--- Requests the current cursor position from the terminal.
+-- Will read entire keyboard buffer to empty it, then request the cursor position.
+-- The output buffer will be flushed.
+-- In case of a keyboard error, the error will be returned here, but also by
+-- `readansi` on a later call, because readansi retains the proper order of keyboard
+-- input, whilst this function buffers input.
+-- @treturn[1] number row
+-- @treturn[1] number column
+-- @treturn[2] nil
+-- @treturn[2] string error message in case of a keyboard read error
+-- @within cursor_position
+function M.cursor_get()
+  -- first empty keyboard buffer
+  local ok, err = input.preread()
+  if not ok then
+    return nil, err
   end
 
+  -- request cursor position
+  M.cursor_get_query()
+  t:flush()
 
-  -- prereads all of the keyboard buffer into the cache
-  function M._cursor_get_prep()
-    while true do
-      local seq, typ, part = sys_readansi(0, bsleep)
-      if seq == nil and typ == "timeout" then
-        return true
-      end
-      kbend = kbend + 1
-      kbbuffer[kbend] = pack(seq, typ, part)
-      if seq == nil then
-        -- error reading keyboard
-        return nil, "error reading keyboard: "..typ
-      end
-    end
+  -- get position
+  local r, err = input.read_cursor_pos(1)
+  if not r then
+    return nil, err
   end
-
-  -- returns the sequence for requesting cursor position as a string
-  function M._cursor_get_writes()
-    return "\27[6n"
-  end
-  -- write the sequence for requesting cursor position, without flushing
-  function M._cursor_get_write()
-    M.write(M._cursor_get_writes())
-  end
-
-  -- flush the buffer and read the requested number of cursor positions
-  -- @tparam number count number of cursor positions to read
-  -- @treturn table cursor positions, each entry is an array with row and column
-  function M._cursor_get(count)
-    t:flush()
-
-    -- read responses
-    local result = {}
-    while true do
-      local seq, typ, part = sys_readansi(0.5, bsleep) -- 500ms timeout, max time for terminal to respond
-      if seq == nil and typ == "timeout" then
-        error("no response from terminal, this is unexpected")
-      end
-      if typ == "ansi" then
-        local row, col = seq:match("^\27%[(%d+);(%d+)R$")
-        if row and col then
-          result[#result+1] = { tonumber(row), tonumber(col) }
-          if #result == count then
-            break
-          end
-        end
-      end
-      kbend = kbend + 1
-      kbbuffer[kbend] = pack(seq, typ, part)
-      if seq == nil then
-        -- error reading keyboard
-        return nil, "error reading keyboard: "..typ
-      end
-    end
-
-    return result
-  end
-
-  --- Requests the current cursor position from the terminal.
-  -- Will read entire keyboard buffer to empty it, then request the cursor position.
-  -- The output buffer will be flushed.
-  -- In case of a keyboard error, the error will be returned here, but also by
-  -- `readansi` on a later call, because readansi retains the proper order of keyboard
-  -- input, whilst this function buffers input.
-  -- @treturn[1] number row
-  -- @treturn[1] number column
-  -- @treturn[2] nil
-  -- @treturn[2] string error message in case of a keyboard read error
-  -- @within cursor_position
-  function M.cursor_get()
-    -- first empty keyboard buffer
-    local ok, err = M._cursor_get_prep()
-    if not ok then
-      return nil, err
-    end
-
-    -- request cursor position
-    M._cursor_get_write()
-
-    -- get position
-    local r, err = M._cursor_get(1)
-    if not r then
-      return nil, err
-    end
-    return unpack(r[1])
-  end
+  return unpack(r[1])
 end
 
 --- Returns the ansi sequence to store to backup the current sursor position (in terminal storage, not stacked).
@@ -1781,8 +1705,11 @@ do
 
     bsleep = opts.bsleep or sys.sleep
     assert(type(bsleep) == "function", "invalid opts.bsleep function, expected a function, got " .. type(opts.bsleep))
+    input.set_bsleep(bsleep)
+
     asleep = opts.sleep or sys.sleep
     assert(type(asleep) == "function", "invalid opts.sleep function, expected a function, got " .. type(opts.sleep))
+    input.set_sleep(asleep)
 
     termbackup = sys.termbackup()
     if opts.displaybackup then

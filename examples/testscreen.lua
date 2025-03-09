@@ -56,7 +56,7 @@ t.textset{
 }
 t.write("Hello World! press any key, or wait 5 seconds...")
 t.flush()
-t.readansi(5)
+t.input.readansi(5)
 
 -- restore all settings (reverts to original screen buffer)
 t.shutdown()
