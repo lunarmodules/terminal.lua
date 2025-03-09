@@ -47,7 +47,7 @@ t.print("Hello dim white World! (again)")
 t.textpop()
 t.write("Press any key, or wait 5 seconds...")
 t.flush()
-t.readansi(5)
+t.input.readansi(5)
 
 -- restore all settings (reverts to original screen buffer)
 t.shutdown()

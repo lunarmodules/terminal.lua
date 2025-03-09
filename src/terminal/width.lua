@@ -166,7 +166,7 @@ function M.preload(str)
 
   local r, c = t.cursor_get() -- retrieve current position
   local setpos = t.cursor_sets(r, c) -- string to restore cursor to current position
-  local getpos = t._cursor_get_writes() -- string to inject query for current position
+  local getpos = t.cursor_get_querys() -- string to inject query for current position
   local chunk = {}
   local chars = {}
   for i = 1, #test do -- process in chunks of max size
@@ -178,7 +178,7 @@ function M.preload(str)
     if #chunk == size or i == #test then
       -- handle the chunk
       t.write(table.concat(chunk))
-      local positions, err = t._cursor_get(#chunk)
+      local positions, err = t.input.read_cursor_pos(#chunk)
       if not positions then
         t.textpop() -- restore color (drop hidden)
         return nil, err

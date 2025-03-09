@@ -36,6 +36,7 @@ build = {
     ["terminal.width"] = "src/terminal/width.lua",
     ["terminal.progress"] = "src/terminal/progress.lua",
     ["terminal.sequence"] = "src/terminal/sequence.lua",
+    ["terminal.input"] = "src/terminal/input.lua",
   },
 
   copy_directories = {

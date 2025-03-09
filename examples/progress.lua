@@ -56,7 +56,7 @@ local function main()
       s()
     end
     t.flush()
-    if t.readansi(0.02) then
+    if t.input.readansi(0.02) then
       break -- a key was pressed
     end
   end
