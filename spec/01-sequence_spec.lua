@@ -34,7 +34,7 @@ describe("Sequence", function()
   end)
 
 
-  it("contaisn no n fild when empty", function()
+  it("contains no n field when empty", function()
     local s = Sequence()
     assert.is_nil(s.n)
   end)
