@@ -1,4 +1,16 @@
 --- Module for getting keyboard input.
+-- Also enables querying the terminal for cursor position. When inmplementing any
+-- other queries, check out `preread` documentation, and `read_cursor_pos` for
+-- an example.
+--
+-- *Note:* This module will be available from the main `terminal` module, without
+-- explicitly requiring it.
+-- @usage
+-- local terminal = require "terminal"
+-- terminal.initialize()
+--
+-- local char, typ, sequence = terminal.input.readansi(1)
+-- @module terminal.input
 
 local sys = require "system"
 
@@ -31,8 +43,7 @@ M.sys_readansi = sys.readansi
 
 --- Set the default `sleep` function to use by `readansi`.
 -- When using the library in a non-blocking environment, the `sleep` function must be
--- set to a function that will yield control to the event loop. This function will be
--- called by `readansi` when waiting for input.
+-- set to a function that will yield control to the event loop.
 -- @tparam function fsleep the sleep function to use.
 -- @return true
 function M.set_sleep(fsleep)
@@ -58,8 +69,8 @@ end
 
 
 
---- Same as `sys.readansi`, but works with the buffer required by `terminal.lua`.
--- This function will read from the buffer first, before calling `sys.readansi`. This is
+--- Same as `sys.readansi`, but works with the internal buffer required by `terminal.lua`.
+-- This function will read from the internal buffer first, before calling `sys.readansi`. This is
 -- required because querying the terminal (e.g. getting cursor position) might read data
 -- from the keyboard buffer, which would be lost if not buffered. Hence this function
 -- must be used instead of `sys.readansi`, to ensure the previously read buffer is
@@ -101,11 +112,24 @@ end
 
 
 
---- Preread stdin buffer into internal buffer.
--- This function will read from the terminal and store the input in the internal buffer.
+--- Preread `stdin` buffer into internal buffer.
+-- This function will read from `stdin` and store the input in the internal buffer.
 -- This is required because querying the terminal (e.g. getting cursor position) might
 -- read data from the keyboard buffer, which would be lost if not buffered. Hence this
--- function must be called before querying the terminal.
+-- function should be called before querying the terminal.
+--
+-- Typical query flow;
+--
+-- 1. call `preread` to empty `stdin` buffer into internal buffer.
+-- 2. query terminal by writing the required ANSI escape sequences.
+-- 3. call `flush` to ensure the ANSI sequences are sent to the terminal.
+-- 4. call `readansi` to read the terminal response in a loop until the expected response
+-- is received. Anything received that doesn't match the expected response should be
+-- pushed into the internal buffer using `push_input`. (see `read_cursor_pos` for an
+-- example)
+--
+-- *Note:* step 4, calling `readansi` in a loop, should be done while passing a blocking
+-- sleep function to prevent yielding, and introducing potential race conditionas.
 -- @return true if successful, nil and an error message if reading failed
 function M.preread()
   while true do
@@ -124,7 +148,9 @@ end
 
 
 
---- Flush the buffer and read the requested number of cursor positions.
+--- Read the requested number of cursor positions.
+-- Ensure to request and flush this number of positions (by writing the query-cursor-position
+-- ANSI sequence) before calling.
 -- @tparam int count number of cursor positions to read
 -- @treturn table cursor positions, each entry is an array with row and column
 function M.read_cursor_pos(count)

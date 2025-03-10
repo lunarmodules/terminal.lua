@@ -33,7 +33,6 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Functions">Functions</a></li>
 <li><a href="#stream">stream</a></li>
 <li><a href="#Cursor_shapes_and_visibility">Cursor shapes and visibility </a></li>
 <li><a href="#cursor_shapes">cursor_shapes</a></li>
@@ -54,8 +53,13 @@
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><strong>terminal</strong></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -66,6 +70,7 @@
 </ul>
 <h2>Examples</h2>
 <ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
@@ -94,13 +99,6 @@
     </ul>
 
 
-<h2><a href="#Functions">Functions</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#sequence">sequence (...)</a></td>
-	<td class="summary">Create a new sequence object.</td>
-	</tr>
-</table>
 <h2><a href="#stream">stream</a></h2>
 <table class="function_list">
 	<tr>
@@ -127,8 +125,12 @@
 	<td class="summary">Returns a string sequence to make the terminal beep.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#readansi">readansi (timeout[, fsleep])</a></td>
-	<td class="summary">Same as <code>sys.readansi</code>, but works with the buffer required by <code>terminal.lua</code>.</td>
+	<td class="name" nowrap><a href="#cursor_get_query">cursor_get_query ()</a></td>
+	<td class="summary">write the sequence for requesting cursor position, without flushing</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cursor_get_querys">cursor_get_querys ()</a></td>
+	<td class="summary">returns the sequence for requesting cursor position as a string</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#ready">ready ()</a></td>
@@ -640,40 +642,6 @@
 <br/>
 
 
-    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "sequence"></a>
-    <strong>sequence (...)</strong>
-    </dt>
-    <dd>
-    Create a new sequence object.
- A sequence object is an array of items, where each item can be a string or a function.
- When the sequence is converted to a string, the functions are executed and their return
- value is used.
- This allows for dynamic use of the "stack" based functions
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">...</span>
-         the items to add to the sequence
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-        the sequence object
-    </ol>
-
-
-
-
-</dd>
-</dl>
     <h2 class="section-header "><a name="stream"></a>stream</h2>
 
     <dl class="function">
@@ -802,31 +770,27 @@
 
 </dd>
     <dt>
-    <a name = "readansi"></a>
-    <strong>readansi (timeout[, fsleep])</strong>
+    <a name = "cursor_get_query"></a>
+    <strong>cursor_get_query ()</strong>
     </dt>
     <dd>
-    Same as <code>sys.readansi</code>, but works with the buffer required by <code>terminal.lua</code>.
- This function will read from the buffer first, before calling <code>sys.readansi</code>. This is
- required because querying the terminal (e.g. getting cursor position) might read data
- from the keyboard buffer, which would be lost if not buffered. Hence this function
- must be used instead of <code>sys.readansi</code>, to ensure the previously read buffer is
- consumed first.
+    write the sequence for requesting cursor position, without flushing
 
 
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">timeout</span>
-            <span class="types"><span class="type">number</span></span>
-         the timeout in seconds
-        </li>
-        <li><span class="parameter">fsleep</span>
-            <span class="types"><span class="type">function</span></span>
-         the sleep function to use (default: the sleep function
- set by <a href="../modules/terminal.html#initialize">initialize</a>)
-         (<em>optional</em>)
-        </li>
-    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cursor_get_querys"></a>
+    <strong>cursor_get_querys ()</strong>
+    </dt>
+    <dd>
+    returns the sequence for requesting cursor position as a string
+
+
 
 
 
@@ -1278,7 +1242,7 @@
  Will read entire keyboard buffer to empty it, then request the cursor position.
  The output buffer will be flushed.
  In case of a keyboard error, the error will be returned here, but also by
- <a href="../modules/terminal.html#readansi">readansi</a> on a later call, because readansi retains the proper order of keyboard
+ <code>readansi</code> on a later call, because readansi retains the proper order of keyboard
  input, whilst this function buffers input.
 
 
@@ -4110,7 +4074,7 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
         </li>
         <li><span class="parameter">sleep</span>
             <span class="types"><span class="type">function</span></span>
-         the default sleep function to use for <a href="../modules/terminal.html#readansi">readansi</a>.
+         the default sleep function to use for <code>readansi</code>.
  In an async application (coroutines), this should be a yielding sleep function, eg. <code>copas.pause</code>.
          (<em>default</em> sys.sleep)
         </li>
@@ -4204,7 +4168,7 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-03-03 09:04:53 </i>
+<i style="float:right;">Last updated 2025-03-10 13:11:54 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

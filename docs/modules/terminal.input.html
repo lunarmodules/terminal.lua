@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><strong>terminal.input</strong></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.input</code></h1>
+<p>Module for getting keyboard input.</p>
+<p> Also enables querying the terminal for cursor position. When inmplementing any
+ other queries, check out <a href="../modules/terminal.input.html#preread">preread</a> documentation, and <a href="../modules/terminal.input.html#read_cursor_pos">read_cursor_pos</a> for
+ an example.</p>
+
+<p> <em>Note:</em> This module will be available from the main <a href="../modules/terminal.html#">terminal</a> module, without
+ explicitly requiring it.</p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local terminal = require &quot;terminal&quot;
+terminal.initialize()
+
+local char, typ, sequence = terminal.input.readansi(1)
+</pre>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#preread">preread ()</a></td>
+	<td class="summary">Preread <code>stdin</code> buffer into internal buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#push_input">push_input (seq, typ, part)</a></td>
+	<td class="summary">Pushes input into the buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#read_cursor_pos">read_cursor_pos (count)</a></td>
+	<td class="summary">Read the requested number of cursor positions.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#readansi">readansi (timeout[, fsleep])</a></td>
+	<td class="summary">Same as <code>sys.readansi</code>, but works with the internal buffer required by <code>terminal.lua</code>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_bsleep">set_bsleep (fsleep)</a></td>
+	<td class="summary">Set the blocking <code>sleep</code> function used when no yielding is allowed.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_sleep">set_sleep (fsleep)</a></td>
+	<td class="summary">Set the default <code>sleep</code> function to use by <a href="../modules/terminal.input.html#readansi">readansi</a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#sys_readansi">sys_readansi ()</a></td>
+	<td class="summary">The original readansi function from LuaSystem.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "preread"></a>
+    <strong>preread ()</strong>
+    </dt>
+    <dd>
+    Preread <code>stdin</code> buffer into internal buffer.
+ This function will read from <code>stdin</code> and store the input in the internal buffer.
+ This is required because querying the terminal (e.g. getting cursor position) might
+ read data from the keyboard buffer, which would be lost if not buffered. Hence this
+ function should be called before querying the terminal.</p>
+
+<p> Typical query flow;</p>
+
+<ol>
+    <li>call <a href="../modules/terminal.input.html#preread">preread</a> to empty <code>stdin</code> buffer into internal buffer.</li>
+    <li>query terminal by writing the required ANSI escape sequences.</li>
+    <li>call <code>flush</code> to ensure the ANSI sequences are sent to the terminal.</li>
+    <li>call <a href="../modules/terminal.input.html#readansi">readansi</a> to read the terminal response in a loop until the expected response
+    is received. Anything received that doesn't match the expected response should be
+    pushed into the internal buffer using <a href="../modules/terminal.input.html#push_input">push_input</a>. (see <a href="../modules/terminal.input.html#read_cursor_pos">read_cursor_pos</a> for an
+    example)</li>
+</ol>
+
+<p> <em>Note:</em> step 4, calling <a href="../modules/terminal.input.html#readansi">readansi</a> in a loop, should be done while passing a blocking
+ sleep function to prevent yielding, and introducing potential race conditionas.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true if successful, nil and an error message if reading failed
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "push_input"></a>
+    <strong>push_input (seq, typ, part)</strong>
+    </dt>
+    <dd>
+    Pushes input into the buffer.
+ The input will be appended to the current buffer contents.
+ The input parameters are the same as those returned by <a href="../modules/terminal.input.html#readansi">readansi</a>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">seq</span>
+         the sequence of input
+        </li>
+        <li><span class="parameter">typ</span>
+         the type of input
+        </li>
+        <li><span class="parameter">part</span>
+         the partial of the input
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "read_cursor_pos"></a>
+    <strong>read_cursor_pos (count)</strong>
+    </dt>
+    <dd>
+    Read the requested number of cursor positions.
+ Ensure to request and flush this number of positions (by writing the query-cursor-position
+ ANSI sequence) before calling.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">count</span>
+            <span class="types"><span class="type">int</span></span>
+         number of cursor positions to read
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        cursor positions, each entry is an array with row and column
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "readansi"></a>
+    <strong>readansi (timeout[, fsleep])</strong>
+    </dt>
+    <dd>
+    Same as <code>sys.readansi</code>, but works with the internal buffer required by <code>terminal.lua</code>.
+ This function will read from the internal buffer first, before calling <code>sys.readansi</code>. This is
+ required because querying the terminal (e.g. getting cursor position) might read data
+ from the keyboard buffer, which would be lost if not buffered. Hence this function
+ must be used instead of <code>sys.readansi</code>, to ensure the previously read buffer is
+ consumed first.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">timeout</span>
+            <span class="types"><span class="type">number</span></span>
+         the timeout in seconds
+        </li>
+        <li><span class="parameter">fsleep</span>
+            <span class="types"><span class="type">function</span></span>
+         the sleep function to use (default: the sleep function
+ set by <code>initialize</code>)
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_bsleep"></a>
+    <strong>set_bsleep (fsleep)</strong>
+    </dt>
+    <dd>
+    Set the blocking <code>sleep</code> function used when no yielding is allowed.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fsleep</span>
+            <span class="types"><span class="type">function</span></span>
+         the sleep function to use.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_sleep"></a>
+    <strong>set_sleep (fsleep)</strong>
+    </dt>
+    <dd>
+    Set the default <code>sleep</code> function to use by <a href="../modules/terminal.input.html#readansi">readansi</a>.
+ When using the library in a non-blocking environment, the <code>sleep</code> function must be
+ set to a function that will yield control to the event loop.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fsleep</span>
+            <span class="types"><span class="type">function</span></span>
+         the sleep function to use.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "sys_readansi"></a>
+    <strong>sys_readansi ()</strong>
+    </dt>
+    <dd>
+    The original readansi function from LuaSystem.
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2025-03-10 13:11:54 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
