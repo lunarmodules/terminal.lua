@@ -19,6 +19,7 @@ local M = {
 }
 
 
+
 local pack, unpack do
   -- nil-safe versions of pack/unpack
   local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
@@ -28,16 +29,21 @@ end
 
 
 local sys = require "system"
+-- load submodules
+local input = require "terminal.input"
+local output = require "terminal.output"
+local clear = require "terminal.clear"
+local scroll = require "terminal.scroll"
+
+M.input = input
+M.output = output
+M.clear = clear
+M.scroll = scroll
+
 local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function
 local asleep   -- a (optionally) non-blocking sleep function
 
-
--- load submodules
-local input = require "terminal.input"
-M.input = input
-local output = require "terminal.output"
-M.output = output
 
 
 --=============================================================================
@@ -603,285 +609,6 @@ function M.cursor_row_up(rows)
   t:write(M.cursor_row_ups(rows))
   return true
 end
-
-
---=============================================================================
--- clearing
---=============================================================================
---- Clearing.
--- Clearing (parts of) the screen.
--- @section clearing
-
---- Creates an ansi sequence to clear the screen without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clears()
-  return "\27[2J"
-end
-
---- Clears the screen and writes it to the terminal.
--- @return true
--- @within clearing
-function M.clear()
-  output.write(M.clears())
-  return true
-end
-
---- Creates an ansi sequence to clear the screen from the cursor position to the left and top without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clear_tops()
-  return "\27[1J"
-end
-
---- Clears the screen from the cursor position to the left and top and writes it to the terminal.
--- @return true
--- @within clearing
-function M.clear_top()
-  output.write(M.clear_tops())
-  return true
-end
-
---- Creates an ansi sequence to clear the screen from the cursor position to the right and bottom without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clear_bottoms()
-  return "\27[0J"
-end
-
---- Clears the screen from the cursor position to the right and bottom and writes it to the terminal.
--- @return true
--- @within clearing
-function M.clear_bottom()
-  output.write(M.clear_bottoms())
-  return true
-end
-
---- Creates an ansi sequence to clear the line without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clear_lines()
-  return "\27[2K"
-end
-
---- Clears the line and writes it to the terminal.
--- @return true
--- @within clearing
-function M.clear_line()
-  output.write(M.clear_lines())
-  return true
-end
-
---- Creates an ansi sequence to clear the line from the cursor position to the left without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clear_starts()
-  return "\27[1K"
-end
-
---- Clears the line from the cursor position to the left and writes it to the terminal.
--- @return true
--- @within clearing
-function M.clear_start()
-  output.write(M.clear_starts())
-  return true
-end
-
---- Creates an ansi sequence to clear the line from the cursor position to the right without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clear_ends()
-  return "\27[0K"
-end
-
---- Clears the line from the cursor position to the right and writes it to the terminal.
--- @return true
--- @within clearing
-function M.clear_end()
-  output.write(M.clear_ends())
-  return true
-end
-
---- Creates an ansi sequence to clear a box from the cursor position (top-left) without writing it to the terminal.
--- Cursor will return to the original position.
--- @tparam number height the height of the box in rows
--- @tparam number width the width of the box in columns
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clear_boxs(height, width)
-  local line = (" "):rep(width) .. M.cursor_lefts(width)
-  local line_next = line .. M.cursor_downs()
-  return line_next:rep(height - 1) .. line .. M.cursor_ups(height - 1)
-end
-
---- Clears a box from the cursor position (top-left) and writes it to the terminal.
--- Cursor will return to the original position.
--- @tparam number height the height of the box in rows
--- @tparam number width the width of the box in columns
--- @treturn string ansi sequence to write to the terminal
--- @within clearing
-function M.clear_box(height, width)
-  output.write(M.clear_boxs(height, width))
-  return true
-end
-
---=============================================================================
--- scrolling
---=============================================================================
---- Scrolling.
--- Managing the scroll-region, without stack operations.
--- @section scrolling
-
-local _scroll_reset = "\27[r"
-local _scrollstack = {
-  _scroll_reset,
-}
-
---- Creates an ansi sequence to set the scroll region without writing it to the terminal.
--- If no arguments are given, it resets the scroll region to the whole screen.
--- @tparam number top top row of the scroll region
--- @tparam number bottom bottom row of the scroll region
--- @treturn string ansi sequence to write to the terminal
--- @within scrolling
-function M.scroll_regions(top, bottom)
-  if not top and not bottom then
-    return _scroll_reset
-  end
-  return "\27["..tostring(top)..";"..tostring(bottom).."r"
-end
-
---- Sets the scroll region and writes it to the terminal.
--- If no arguments are given, it resets the scroll region to the whole screen.
--- @tparam number top top row of the scroll region
--- @tparam number bottom bottom row of the scroll region
--- @return true
--- @within scrolling
-function M.scroll_region(top, bottom)
-  output.write(M.scroll_regions(top, bottom))
-  return true
-end
-
---- Creates an ansi sequence to scroll the screen up without writing it to the terminal.
--- @tparam[opt=1] number n number of lines to scroll up
--- @treturn string ansi sequence to write to the terminal
--- @within scrolling
-function M.scroll_ups(n)
-  n = n or 1
-  return "\27["..tostring(n).."S"
-end
-
---- Scrolls the screen up and writes it to the terminal.
--- @tparam[opt=1] number n number of lines to scroll up
--- @return true
--- @within scrolling
-function M.scroll_up(n)
-  output.write(M.scroll_ups(n))
-  return true
-end
-
---- Creates an ansi sequence to scroll the screen down without writing it to the terminal.
--- @tparam[opt=1] number n number of lines to scroll down
--- @treturn string ansi sequence to write to the terminal
--- @within scrolling
-function M.scroll_downs(n)
-  n = n or 1
-  return "\27["..tostring(n).."T"
-end
-
---- Scrolls the screen down and writes it to the terminal.
--- @tparam[opt=1] number n number of lines to scroll down
--- @return true
--- @within scrolling
-function M.scroll_down(n)
-  output.write(M.scroll_downs(n))
-  return true
-end
-
---- Creates an ansi sequence to scroll the screen vertically without writing it to the terminal.
--- @tparam[opt=0] number n number of lines to scroll (negative for up, positive for down)
--- @treturn string ansi sequence to write to the terminal
--- @within scrolling
-function M.scroll_s(n)
-  if n == 0 or n == nil then
-    return ""
-  end
-  return "\27[" .. (n < 0 and (tostring(-n) .. "S") or (tostring(n) .. "T"))
-end
-
---- Scrolls the screen vertically and writes it to the terminal.
--- @tparam[opt=0] number n number of lines to scroll (negative for up, positive for down)
--- @return true
--- @within scrolling
-function M.scroll_(n)
-  output.write(M.scroll_s(n))
-  return true
-end
-
-
-
---=============================================================================
---- Scrolling region.
--- Managing the scroll-region, stack based
--- @section scrolling_region
-
---- Applies the scroll region at the top of the stack (returns it, does not write it to the terminal).
--- @treturn string ansi sequence to write to the terminal
--- @within scrolling_region
-function M.scroll_applys()
-  return _scrollstack[#_scrollstack]
-end
-
---- Applies the scroll region at the top of the stack, and writes it to the terminal.
--- @return true
--- @within scrolling_region
-function M.scroll_apply()
-  output.write(_scrollstack[#_scrollstack])
-  return true
-end
-
---- Pushes a new scroll region onto the stack (and returns it), without writing it to the terminal.
--- If no arguments are given, it resets the scroll region to the whole screen.
--- @tparam number top top row of the scroll region
--- @tparam number bottom bottom row of the scroll region
--- @treturn string ansi sequence to write to the terminal
--- @within scrolling_region
-function M.scroll_pushs(top, bottom)
-  _scrollstack[#_scrollstack + 1] = M.scroll_regions(top, bottom)
-  return M.scroll_applys()
-end
-
---- Pushes a new scroll region onto the stack, and writes it to the terminal.
--- If no arguments are given, it resets the scroll region to the whole screen.
--- @tparam number top top row of the scroll region
--- @tparam number bottom bottom row of the scroll region
--- @return true
--- @within scrolling_region
-function M.scroll_push(top, bottom)
-  output.write(M.scroll_pushs(top, bottom))
-  return true
-end
-
---- Pops `n` scroll region(s) off the stack (and returns the last), without writing it to the terminal.
--- @tparam[opt=1] number n number of scroll regions to pop
--- @treturn string ansi sequence to write to the terminal
--- @within scrolling_region
-function M.scroll_pops(n)
-  local new_top = math.max(#_scrollstack - (n or 1), 1)
-  for i = new_top + 1, #_scrollstack do
-    _scrollstack[i] = nil
-  end
-  return M.scroll_applys()
-end
-
---- Pops `n` scroll region(s) off the stack, and writes the last to the terminal.
--- @tparam[opt=1] number n number of scroll regions to pop
--- @return true
--- @within scrolling_region
-function M.scroll_pop(n)
-  output.write(M.scroll_pops(n))
-  return true
-end
-
 
 --=============================================================================
 -- text: colors & attributes
@@ -1510,7 +1237,7 @@ M.box_fmt = setmetatable({
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @treturn string ansi sequence to write to the terminal
 -- @within lines
-function M.boxs(height, width, format, clear, title, lastcolumn)
+function M.boxs(height, width, format, clear_flag, title, lastcolumn)
   format = format or M.box_fmt.single
   local v_w = sys.utf8swidth(format.v or "")
   local tl_w = sys.utf8swidth(format.tl or "")
@@ -1543,10 +1270,10 @@ function M.boxs(height, width, format, clear, title, lastcolumn)
     -- return to top left
     M.cursor_moves(-height + 1, -width + lastcolumn),
   }
-  if clear then
+  if clear_flag then
     local l = #r
     r[l+1] = M.cursor_moves(1, v_w)
-    r[l+2] = M.clear_boxs(height - 2, width - 2 * v_w)
+    r[l+2] = clear.clear_boxs(height - 2, width - 2 * v_w)
     r[l+3] = M.cursor_moves(-1, -v_w)
   end
   return table.concat(r)
@@ -1561,8 +1288,8 @@ end
 -- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
 -- @return true
 -- @within lines
-function M.box(height, width, format, clear, title, lastcolumn)
-  output.write(M.boxs(height, width, format, clear, title, lastcolumn))
+function M.box(height, width, format, clear_flag, title, lastcolumn)
+  output.write(M.boxs(height, width, format, clear_flag, title, lastcolumn))
   return true
 end
 
@@ -1672,7 +1399,7 @@ do
       M.shape_pops(math.huge),
       M.visible_pops(math.huge),
       M.textpops(math.huge),
-      M.scroll_pops(math.huge),
+      scroll.scroll_pops(math.huge),
       M.cursor_sets(r,c) -- restore cursor pos
     )
     t:flush()
