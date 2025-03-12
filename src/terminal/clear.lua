@@ -7,10 +7,9 @@ local output = require "terminal.output"
 local M = {}
 
 -- Lazy loading terminal to avoid circular dependency
-local terminal
+--local terminal
 local function get_terminal()
-    terminal = terminal or require("terminal")
-    return terminal
+    return require("terminal")
 end
 
 --- Creates an ANSI sequence to clear the entire screen without writing it to the terminal.

@@ -30,15 +30,34 @@ end
 
 local sys = require "system"
 -- load submodules
-local input = require "terminal.input"
-local output = require "terminal.output"
-local clear = require "terminal.clear"
-local scroll = require "terminal.scroll"
+-- local input = require "terminal.input"
+-- local output = require "terminal.output"
+-- local clear = require "terminal.clear"
+-- local scroll = require "terminal.scroll"
 
-M.input = input
-M.output = output
-M.clear = clear
-M.scroll = scroll
+-- M.input = input
+-- M.output = output
+-- M.clear = clear
+-- M.scroll = scroll
+
+-- Lazy loading submodules to avoid circular dependencies
+setmetatable(M, {
+  __index = function(self, key)
+    if key == "input" then
+      self.input = require("terminal.input")
+      return self.input
+    elseif key == "output" then
+      self.output = require("terminal.output")
+      return self.output
+    elseif key == "clear" then
+      self.clear = require("terminal.clear")
+      return self.clear
+    elseif key == "scroll" then
+      self.scroll = require("terminal.scroll")
+      return self.scroll
+    end
+  end
+})
 
 local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function
