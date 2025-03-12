@@ -38,12 +38,12 @@ help:
 
 
 install: luarocks
-	luarocks make
+	luarocks make --local
 
 
 uninstall: luarocks
 	if (luarocks list --porcelain ${ROCK_NAME} | grep "^${ROCK_NAME}${TAB}" | grep -q "installed") ; then \
-	  luarocks remove ${ROCK_NAME} --force; \
+	  luarocks remove ${ROCK_NAME} --local --force; \
 	fi;
 
 
@@ -85,13 +85,13 @@ docs: doc
 
 .PHONY: deps
 deps: luarocks
-	luarocks install $(ROCKSPEC) --deps-only
+	luarocks install $(ROCKSPEC) --deps-only --local
 
 
 .PHONY: dev
 dev: luarocks deps
 	@for rock in $(DEV_ROCKS) ; do \
-	  (luarocks list --porcelain $$rock | grep -q "installed") || (luarocks install $$rock || exit 1); \
+	  (luarocks list --porcelain $$rock | grep -q "installed") || (luarocks install --local $$rock || exit 1); \
 	done;
 
 

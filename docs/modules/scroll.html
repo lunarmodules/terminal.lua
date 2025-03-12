@@ -1,0 +1,557 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/clear.html">clear</a></li>
+  <li><strong>scroll</strong></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>scroll</code></h1>
+<p>Scroll Module.</p>
+<p> Provides functions to manage scroll regions and perform scrolling operations in the terminal.</p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local scroll = require(&quot;terminal.scroll&quot;)
+scroll.scroll_up(2)
+</pre>
+    </ul>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>License</strong>: MIT</li>
+        <li><strong>Author</strong>: Your Name</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#scroll">scroll ([n=0])</a></td>
+	<td class="summary">Scrolls vertically (up/down) and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_apply">scroll_apply ()</a></td>
+	<td class="summary">Applies the scroll region at the top of the stack and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_applys">scroll_applys ()</a></td>
+	<td class="summary">Returns the ANSI sequence of the current scroll region (without writing).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_down">scroll_down ([n=1])</a></td>
+	<td class="summary">Scrolls the screen down and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_downs">scroll_downs ([n=1])</a></td>
+	<td class="summary">Creates an ANSI sequence to scroll down without writing to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_pop">scroll_pop ([n=1])</a></td>
+	<td class="summary">Pops <code>n</code> scroll regions off the stack and writes the result to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_pops">scroll_pops ([n=1])</a></td>
+	<td class="summary">Pops <code>n</code> scroll regions off the stack (without writing).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_push">scroll_push ([top[, bottom]])</a></td>
+	<td class="summary">Pushes a new scroll region onto the stack and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_pushs">scroll_pushs ([top[, bottom]])</a></td>
+	<td class="summary">Pushes a new scroll region onto the stack without writing it.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_region">scroll_region ([top[, bottom]])</a></td>
+	<td class="summary">Sets the scroll region and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_regions">scroll_regions ([top[, bottom]])</a></td>
+	<td class="summary">Creates an ANSI sequence to set the scroll region without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_s">scroll_s ([n=0])</a></td>
+	<td class="summary">Creates an ANSI sequence to scroll vertically without writing to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_up">scroll_up ([n=1])</a></td>
+	<td class="summary">Scrolls the screen up and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll_ups">scroll_ups ([n=1])</a></td>
+	<td class="summary">Creates an ANSI sequence to scroll up without writing to the terminal.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "scroll"></a>
+    <strong>scroll ([n=0])</strong>
+    </dt>
+    <dd>
+    Scrolls vertically (up/down) and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of lines to scroll (negative for up, positive for down).
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_apply"></a>
+    <strong>scroll_apply ()</strong>
+    </dt>
+    <dd>
+    Applies the scroll region at the top of the stack and writes it to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_applys"></a>
+    <strong>scroll_applys ()</strong>
+    </dt>
+    <dd>
+    Returns the ANSI sequence of the current scroll region (without writing).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        ANSI sequence of the current scroll region.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_down"></a>
+    <strong>scroll_down ([n=1])</strong>
+    </dt>
+    <dd>
+    Scrolls the screen down and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of lines to scroll down.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_downs"></a>
+    <strong>scroll_downs ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to scroll down without writing to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of lines to scroll down.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        ANSI sequence to scroll down.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_pop"></a>
+    <strong>scroll_pop ([n=1])</strong>
+    </dt>
+    <dd>
+    Pops <code>n</code> scroll regions off the stack and writes the result to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of scroll regions to pop.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_pops"></a>
+    <strong>scroll_pops ([n=1])</strong>
+    </dt>
+    <dd>
+    Pops <code>n</code> scroll regions off the stack (without writing).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of scroll regions to pop.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        ANSI sequence of the new top of the stack.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_push"></a>
+    <strong>scroll_push ([top[, bottom]])</strong>
+    </dt>
+    <dd>
+    Pushes a new scroll region onto the stack and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">top</span>
+            <span class="types"><span class="type">number</span></span>
+         Top row of the scroll region.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bottom</span>
+            <span class="types"><span class="type">number</span></span>
+         Bottom row of the scroll region.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_pushs"></a>
+    <strong>scroll_pushs ([top[, bottom]])</strong>
+    </dt>
+    <dd>
+    Pushes a new scroll region onto the stack without writing it.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">top</span>
+            <span class="types"><span class="type">number</span></span>
+         Top row of the scroll region.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bottom</span>
+            <span class="types"><span class="type">number</span></span>
+         Bottom row of the scroll region.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        ANSI sequence of the new scroll region.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_region"></a>
+    <strong>scroll_region ([top[, bottom]])</strong>
+    </dt>
+    <dd>
+    Sets the scroll region and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">top</span>
+            <span class="types"><span class="type">number</span></span>
+         Top row of the scroll region.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bottom</span>
+            <span class="types"><span class="type">number</span></span>
+         Bottom row of the scroll region.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_regions"></a>
+    <strong>scroll_regions ([top[, bottom]])</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to set the scroll region without writing.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">top</span>
+            <span class="types"><span class="type">number</span></span>
+         Top row of the scroll region.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bottom</span>
+            <span class="types"><span class="type">number</span></span>
+         Bottom row of the scroll region.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        ANSI sequence to set the scroll region.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_s"></a>
+    <strong>scroll_s ([n=0])</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to scroll vertically without writing to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of lines to scroll (negative for up, positive for down).
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        ANSI sequence for vertical scroll.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_up"></a>
+    <strong>scroll_up ([n=1])</strong>
+    </dt>
+    <dd>
+    Scrolls the screen up and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of lines to scroll up.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll_ups"></a>
+    <strong>scroll_ups ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to scroll up without writing to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of lines to scroll up.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        ANSI sequence to scroll up.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2025-03-12 12:41:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

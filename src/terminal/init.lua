@@ -1232,7 +1232,7 @@ M.box_fmt = setmetatable({
 -- @tparam[opt=""] string format.br the bottom right corner character
 -- @tparam[opt=""] string format.pre the title-prefix character(s)
 -- @tparam[opt=""] string format.post the left-postfix character(s)
--- @tparam[opt=false] bool clear whether to clear the box contents
+-- @tparam[opt=false] bool clear_flag whether to clear the box contents
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @treturn string ansi sequence to write to the terminal
@@ -1283,7 +1283,7 @@ end
 -- @tparam number height the height of the box in rows
 -- @tparam number width the width of the box in columns
 -- @tparam table format the format for the box, see `boxs` for details.
--- @tparam bool clear whether to clear the box contents
+-- @tparam bool clear_flag whether to clear the box contents
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
 -- @return true

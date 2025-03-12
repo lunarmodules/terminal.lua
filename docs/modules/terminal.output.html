@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/clear.html">clear</a></li>
+  <li><a href="../modules/scroll.html">scroll</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><strong>terminal.output</strong></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.output</code></h1>
+<p>Module for writing output.</p>
+<p> <em>Note:</em> This module will be available from the main <a href="../modules/terminal.html#">terminal</a> module, without
+ explicitly requiring it.</p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local terminal = require &quot;terminal&quot;
+terminal.initialize()
+
+terminal.output.write(&quot;hello world&quot;)
+</pre>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#flush">flush ()</a></td>
+	<td class="summary">Flushes the stream.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#print">print (...)</a></td>
+	<td class="summary">Prints to the stream in chunks.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_bsleep">set_bsleep (fsleep)</a></td>
+	<td class="summary">Set the <code>sleep</code> function to use when writing to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_stream">set_stream (filehandle)</a></td>
+	<td class="summary">Set the stream to operate on.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#write">write (...)</a></td>
+	<td class="summary">Writes to the stream in chunks.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "flush"></a>
+    <strong>flush ()</strong>
+    </dt>
+    <dd>
+    Flushes the stream.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the return value of the stream's <a href="../modules/terminal.output.html#flush">flush</a> function
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "print"></a>
+    <strong>print (...)</strong>
+    </dt>
+    <dd>
+    Prints to the stream in chunks.
+ A <a href="../modules/terminal.output.html#print">print</a> compatible function that safely writes output to the stream.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         the values to write
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_bsleep"></a>
+    <strong>set_bsleep (fsleep)</strong>
+    </dt>
+    <dd>
+    Set the <code>sleep</code> function to use when writing to the terminal.
+ This should be a blocking sleep function, used to throttle the output.
+ A yielding/non-blocking sleep function could potentially cause race-conditions.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fsleep</span>
+            <span class="types"><span class="type">function</span></span>
+         the sleep function to use.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_stream"></a>
+    <strong>set_stream (filehandle)</strong>
+    </dt>
+    <dd>
+    Set the stream to operate on.
+ This can be used to redirect output to a different stream.
+ The default value at start is <a href="https://www.lua.org/manual/5.1/manual.html#pdf-io.stderr">io.stderr</a>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">filehandle</span>
+            <span class="types"><span class="type">file</span></span>
+         the stream to operate on (<a href="https://www.lua.org/manual/5.1/manual.html#pdf-io.stderr">io.stderr</a> or <a href="https://www.lua.org/manual/5.1/manual.html#pdf-io.stdout">io.stdout</a>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "write"></a>
+    <strong>write (...)</strong>
+    </dt>
+    <dd>
+
+<p>Writes to the stream in chunks.
+ Parameters are written to the stream, and flushed after each chunk. A small sleep is
+ added after each chunk to allow the terminal to process the data.
+ This is done to prevent the terminal buffer from overrunning and dropping data.</p>
+
+<p> Differences from the standard Lua write function:</p>
+
+<ul>
+    <li>parameters will be tostring-ed before writing</li>
+</ul>
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         the values to write
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the return value of the stream's <a href="../modules/terminal.output.html#write">write</a> function
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2025-03-12 12:41:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

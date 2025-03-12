@@ -1,0 +1,462 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>clear</strong></li>
+  <li><a href="../modules/scroll.html">scroll</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>clear</code></h1>
+<p>Clear Module
+ Provides functions to clear various parts of the terminal screen.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#clear">clear ()</a></td>
+	<td class="summary">Clears the entire screen by writing the ANSI sequence to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_bottom">clear_bottom ()</a></td>
+	<td class="summary">Clears the screen from the cursor position to the bottom-right and writes to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_bottoms">clear_bottoms ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear the screen from cursor to bottom-right without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_box">clear_box (height, width)</a></td>
+	<td class="summary">Clears a box from the cursor position and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_boxs">clear_boxs (height, width)</a></td>
+	<td class="summary">Creates an ANSI sequence to clear a box from the cursor position without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_end">clear_end ()</a></td>
+	<td class="summary">Clears from cursor to end of the line and writes to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_ends">clear_ends ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear from cursor to end of the line without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_line">clear_line ()</a></td>
+	<td class="summary">Clears the current line and writes to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_lines">clear_lines ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear the current line without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_start">clear_start ()</a></td>
+	<td class="summary">Clears from cursor to start of the line and writes to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_starts">clear_starts ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear from cursor to start of the line without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_top">clear_top ()</a></td>
+	<td class="summary">Clears the screen from the cursor position to the top-left and writes to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear_tops">clear_tops ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear the screen from cursor to top-left without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clears">clears ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear the entire screen without writing it to the terminal.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "clear"></a>
+    <strong>clear ()</strong>
+    </dt>
+    <dd>
+    Clears the entire screen by writing the ANSI sequence to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_bottom"></a>
+    <strong>clear_bottom ()</strong>
+    </dt>
+    <dd>
+    Clears the screen from the cursor position to the bottom-right and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_bottoms"></a>
+    <strong>clear_bottoms ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear the screen from cursor to bottom-right without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The ANSI sequence for clearing to the bottom.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_box"></a>
+    <strong>clear_box (height, width)</strong>
+    </dt>
+    <dd>
+    Clears a box from the cursor position and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         The height of the box to clear.
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The width of the box to clear.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_boxs"></a>
+    <strong>clear_boxs (height, width)</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear a box from the cursor position without writing.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         The height of the box to clear.
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The width of the box to clear.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The ANSI sequence for clearing the box.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_end"></a>
+    <strong>clear_end ()</strong>
+    </dt>
+    <dd>
+    Clears from cursor to end of the line and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_ends"></a>
+    <strong>clear_ends ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear from cursor to end of the line without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The ANSI sequence for clearing to the end of the line.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_line"></a>
+    <strong>clear_line ()</strong>
+    </dt>
+    <dd>
+    Clears the current line and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_lines"></a>
+    <strong>clear_lines ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear the current line without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The ANSI sequence for clearing the entire line.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_start"></a>
+    <strong>clear_start ()</strong>
+    </dt>
+    <dd>
+    Clears from cursor to start of the line and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_starts"></a>
+    <strong>clear_starts ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear from cursor to start of the line without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The ANSI sequence for clearing to the start of the line.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_top"></a>
+    <strong>clear_top ()</strong>
+    </dt>
+    <dd>
+    Clears the screen from the cursor position to the top-left and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear_tops"></a>
+    <strong>clear_tops ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear the screen from cursor to top-left without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The ANSI sequence for clearing to the top.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clears"></a>
+    <strong>clears ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear the entire screen without writing it to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The ANSI sequence for clearing the entire screen.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2025-03-12 12:41:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
