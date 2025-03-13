@@ -39,17 +39,17 @@ describe("Scroll Module Tests", function()
 
 
   it("should return empty string for zero vertical scroll", function()
-    assert.are.equal("", scroll.scroll_s(0))
+    assert.are.equal("", scroll.scrolls(0))
   end)
 
 
   it("should return correct sequence for positive vertical scroll (down)", function()
-    assert.are.equal("\27[3T", scroll.scroll_s(3))
+    assert.are.equal("\27[3T", scroll.scrolls(3))
   end)
 
 
   it("should return correct sequence for negative vertical scroll (up)", function()
-    assert.are.equal("\27[2S", scroll.scroll_s(-2))
+    assert.are.equal("\27[2S", scroll.scrolls(-2))
   end)
 
 
