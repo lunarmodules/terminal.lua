@@ -4,21 +4,24 @@
 -- it works modern terminals on Windows, Unix, and Mac systems.
 --
 -- It provides a simple and consistent interface to the terminal, allowing for cursor positioning,
--- cursor shape and visibility, text formatting, clearing the screen, scrolling, and more.
+-- cursor shape and visibility, text formatting, and more.
 --
 -- For generic instruction please read the [introduction](topics/01-introduction.md.html).
 --
 -- @copyright Copyright (c) 2024-2024 Thijs Schreijer
 -- @author Thijs Schreijer
 -- @license MIT, see `LICENSE.md`.
+local output = nil
+local input = nil
+local clear = nil
+local scroll = nil
+
 local M = {
   _VERSION = "0.0.1",
   _COPYRIGHT = "Copyright (c) 2024-2024 Thijs Schreijer",
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
   cursor = {},
 }
-
-
 
 local pack, unpack do
   -- nil-safe versions of pack/unpack
@@ -29,16 +32,6 @@ end
 
 
 local sys = require "system"
--- load submodules
--- local input = require "terminal.input"
--- local output = require "terminal.output"
--- local clear = require "terminal.clear"
--- local scroll = require "terminal.scroll"
-
--- M.input = input
--- M.output = output
--- M.clear = clear
--- M.scroll = scroll
 
 -- Lazy loading submodules to avoid circular dependencies
 setmetatable(M, {

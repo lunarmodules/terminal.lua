@@ -1,16 +1,11 @@
---- Clear Module
+--- Clear Module.
 -- Provides functions to clear various parts of the terminal screen.
 -- @module clear
 
+local terminal = require "terminal"
 local output = require "terminal.output"
 
 local M = {}
-
--- Lazy loading terminal to avoid circular dependency
---local terminal
-local function get_terminal()
-    return require("terminal")
-end
 
 --- Creates an ANSI sequence to clear the entire screen without writing it to the terminal.
 -- @treturn string The ANSI sequence for clearing the entire screen.
@@ -95,10 +90,9 @@ end
 -- @tparam number width The width of the box to clear.
 -- @treturn string The ANSI sequence for clearing the box.
 function M.clear_boxs(height, width)
-  local term = get_terminal()
-  local line = (" "):rep(width) .. term.cursor_lefts(width)
-  local line_next = line .. term.cursor_downs()
-  return line_next:rep(height - 1) .. line .. term.cursor_ups(height - 1)
+  local line = (" "):rep(width) .. terminal.cursor_lefts(width)
+  local line_next = line .. terminal.cursor_downs()
+  return line_next:rep(height - 1) .. line .. terminal.cursor_ups(height - 1)
 end
 
 --- Clears a box from the cursor position and writes it to the terminal.
