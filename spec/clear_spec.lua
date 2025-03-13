@@ -1,7 +1,12 @@
-local clear = require "terminal.clear"
-
-
 describe("Clear Module Tests", function()
+
+  local clear
+
+  setup(function()
+    clear = require "terminal.clear"
+  end)
+
+
 
   it("should return correct ANSI sequence for clearing entire screen", function()
     assert.are.equal("\27[2J", clear.clears())
