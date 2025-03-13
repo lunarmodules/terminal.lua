@@ -76,7 +76,7 @@ end
 --- Creates an ANSI sequence to scroll vertically without writing to the terminal.
 -- @tparam[opt=0] number n Number of lines to scroll (negative for up, positive for down).
 -- @treturn string ANSI sequence for vertical scroll.
-function M.scroll_s(n)
+function M.scrolls(n)
   if n == 0 or n == nil then
     return ""
   end
