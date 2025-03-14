@@ -56,7 +56,6 @@ end
 -- Initialize the buffer (Adjust size as needed)
 local input_buffer = create_ring_buffer(1024)
 
-
 -- Mutex implementation for thread safety
 local mutex = {
   locked = false,
@@ -78,6 +77,41 @@ function mutex.unlock()
       coroutine.resume(next_waiter)
   end
 end
+
+-- Thread-safe query function
+function terminal.query(cmd)
+  mutex.lock()
+  -- Send command
+  io.write(cmd)
+  io.flush()
+
+  -- Block until response is received
+  terminal.blocking_sleep()
+
+  -- Read response
+  local response = terminal.readansi()
+  mutex.unlock()
+  return response
+end
+
+
+-- Function to flush buffered data to STDIN
+function terminal.flush_buffer()
+  while not input_buffer.is_empty() do
+      local data = input_buffer.pop()
+      io.write(data)
+  end
+end
+
+-- Custom read function that works with the buffer
+function terminal.read_custom()
+  if not input_buffer.is_empty() then
+      return input_buffer.pop()
+  end
+  return io.read()
+end
+
+
 
 
 
