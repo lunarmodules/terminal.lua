@@ -18,6 +18,43 @@ local M = {
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
+
+
+-- State stack for managing terminal state
+local state_stack = {}
+
+
+-- Push the current terminal state onto the stack
+function M.push_state()
+  local current_state = {
+      cursor_position = M.cursor_get(), -- Get current cursor position
+      foreground_color = M.color_fgs(), -- Get current foreground color
+      background_color = M.color_bgs(), -- Get current background color
+      -- Add other state variables as needed
+  }
+  table.insert(state_stack, current_state)
+end
+
+ 
+
+-- Pop the previous terminal state from the stack and restore it
+function M.pop_state()
+  local previous_state = table.remove(state_stack)
+  if previous_state then
+      M.cursor_set(previous_state.cursor_position.row, previous_state.cursor_position.col)
+      M.color_fg(previous_state.foreground_color)
+      M.color_bg(previous_state.background_color)
+      -- Restore other state variables as needed
+  end
+end
+
+
+M.push_state = push_state
+M.pop_state = pop_state
+
+
+
+
 local pack, unpack do
   -- nil-safe versions of pack/unpack
   local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
