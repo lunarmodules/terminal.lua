@@ -57,6 +57,27 @@ end
 local input_buffer = create_ring_buffer(1024)
 
 
+-- Mutex implementation for thread safety
+local mutex = {
+  locked = false,
+  waiters = {}
+}
+
+function mutex.lock()
+  while mutex.locked do
+      table.insert(mutex.waiters, coroutine.running())
+      coroutine.yield()
+  end
+  mutex.locked = true
+end
+
+function mutex.unlock()
+  mutex.locked = false
+  local next_waiter = table.remove(mutex.waiters, 1)
+  if next_waiter then
+      coroutine.resume(next_waiter)
+  end
+end
 
 
 
