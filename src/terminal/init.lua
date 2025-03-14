@@ -96,7 +96,21 @@ function terminal.query(cmd)
 end
 
 
+-- Function to flush buffered data to STDIN
+function terminal.flush_buffer()
+  while not input_buffer.is_empty() do
+      local data = input_buffer.pop()
+      io.write(data)
+  end
+end
 
+-- Custom read function that works with the buffer
+function terminal.read_custom()
+  if not input_buffer.is_empty() then
+      return input_buffer.pop()
+  end
+  return io.read()
+end
 
 
 
