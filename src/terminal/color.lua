@@ -59,9 +59,7 @@ local default_colors = {
   ansi = fg_color_reset .. bg_color_reset .. attribute_reset,
 }
 
-local _colorstack = {
-  default_colors,
-}
+
 
 -- Takes a color name/scheme by user and returns the ansi sequence for it.
 -- This function takes three color types:

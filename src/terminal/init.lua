@@ -37,6 +37,7 @@ M.input = require("terminal.input")
 M.output = require("terminal.output")
 M.clear = require("terminal.clear")
 M.scroll = require("terminal.scroll")
+M.color = require("terminal.color")
 -- create locals
 local output = M.output
 local input = M.input
