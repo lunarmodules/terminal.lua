@@ -11,6 +11,61 @@
 -- @copyright Copyright (c) 2024-2024 Thijs Schreijer
 -- @author Thijs Schreijer
 -- @license MIT, see `LICENSE.md`.
+
+
+
+-- Ring buffer implementation
+local function create_ring_buffer(size)
+  local buffer = {}
+  local head = 1
+  local tail = 1
+  local count = 0
+
+  return {
+      push = function(item)
+          if count == size then
+              error("Buffer is full")
+          end
+          buffer[tail] = item
+          tail = (tail % size) + 1
+          count = count + 1
+      end,
+      pop = function()
+          if count == 0 then
+              return nil
+          end
+          local item = buffer[head]
+          buffer[head] = nil
+          head = (head % size) + 1
+          count = count - 1
+          return item
+      end,
+      peek = function()
+          if count == 0 then
+              return nil
+          end
+          return buffer[head]
+      end,
+      is_empty = function()
+          return count == 0
+      end
+  }
+end
+
+-- Initialize the buffer
+local input_buffer = create_ring_buffer(1024)  -- Adjust size as needed
+
+
+
+
+
+
+
+
+
+
+
+
 local output = nil
 local input = nil
 local clear = nil
@@ -22,42 +77,6 @@ local M = {
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
   cursor = {},
 }
-
-
-
--- State stack for managing terminal state
-local state_stack = {}
-
-
--- Push the current terminal state onto the stack
-function M.push_state()
-  local current_state = {
-      cursor_position = M.cursor_get(), -- Get current cursor position
-      foreground_color = M.color_fgs(), -- Get current foreground color
-      background_color = M.color_bgs(), -- Get current background color
-      -- Add other state variables as needed
-  }
-  table.insert(state_stack, current_state)
-end
-
- 
-
--- Pop the previous terminal state from the stack and restore it
-function M.pop_state()
-  local previous_state = table.remove(state_stack)
-  if previous_state then
-      M.cursor_set(previous_state.cursor_position.row, previous_state.cursor_position.col)
-      M.color_fg(previous_state.foreground_color)
-      M.color_bg(previous_state.background_color)
-      -- Restore other state variables as needed
-  end
-end
-
-
-M.push_state = push_state
-M.pop_state = pop_state
-
-
 
 
 local pack, unpack do
