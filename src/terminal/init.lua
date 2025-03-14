@@ -57,7 +57,43 @@ local input_buffer = create_ring_buffer(1024)  -- Adjust size as needed
 
 
 
+-- Mutex implementation for thread safety
+local mutex = {
+  locked = false,
+  waiters = {}
+}
 
+function mutex.lock()
+  while mutex.locked do
+      table.insert(mutex.waiters, coroutine.running())
+      coroutine.yield()
+  end
+  mutex.locked = true
+end
+
+function mutex.unlock()
+  mutex.locked = false
+  local next_waiter = table.remove(mutex.waiters, 1)
+  if next_waiter then
+      coroutine.resume(next_waiter)
+  end
+end
+
+-- Thread-safe query function
+function terminal.query(cmd)
+  mutex.lock()
+  -- Send command
+  io.write(cmd)
+  io.flush()
+
+  -- Block until response is received
+  terminal.blocking_sleep()
+
+  -- Read response
+  local response = terminal.readansi()
+  mutex.unlock()
+  return response
+end
 
 
 
