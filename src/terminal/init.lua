@@ -11,16 +11,11 @@
 -- @copyright Copyright (c) 2024-2024 Thijs Schreijer
 -- @author Thijs Schreijer
 -- @license MIT, see `LICENSE.md`.
-local output = nil
-local input = nil
-local clear = nil
-local scroll = nil
 
 local M = {
   _VERSION = "0.0.1",
   _COPYRIGHT = "Copyright (c) 2024-2024 Thijs Schreijer",
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
-  cursor = {},
 }
 
 local pack, unpack do
@@ -33,24 +28,19 @@ end
 
 local sys = require "system"
 
--- Lazy loading submodules to avoid circular dependencies
-setmetatable(M, {
-  __index = function(self, key)
-    if key == "input" then
-      self.input = require("terminal.input")
-      return self.input
-    elseif key == "output" then
-      self.output = require("terminal.output")
-      return self.output
-    elseif key == "clear" then
-      self.clear = require("terminal.clear")
-      return self.clear
-    elseif key == "scroll" then
-      self.scroll = require("terminal.scroll")
-      return self.scroll
-    end
-  end
-})
+-- Push the module table already in `package.loaded` to avoid circular dependencies
+package.loaded["terminal"] = M
+-- load the submodules
+M.input = require("terminal.input")
+M.output = require("terminal.output")
+M.clear = require("terminal.clear")
+M.scroll = require("terminal.scroll")
+-- create locals
+local output = M.output
+local input = M.input
+local clear = M.clear
+local scroll = M.scroll
+
 
 local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function

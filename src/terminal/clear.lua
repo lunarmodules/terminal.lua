@@ -2,10 +2,13 @@
 -- Provides functions to clear various parts of the terminal screen.
 -- @module clear
 
+local M = {}
+-- Push the module table already in `package.loaded` to avoid circular dependencies
+package.loaded["terminal.clear"] = M
+
 local terminal = require "terminal"
 local output = require "terminal.output"
 
-local M = {}
 
 --- Creates an ANSI sequence to clear the entire screen without writing it to the terminal.
 -- @treturn string The ANSI sequence for clearing the entire screen.
