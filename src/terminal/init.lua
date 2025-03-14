@@ -12,6 +12,54 @@
 -- @author Thijs Schreijer
 -- @license MIT, see `LICENSE.md`.
 
+
+
+
+-- Ring buffer implementation
+local function create_ring_buffer(size)
+  local buffer = {}
+  local head = 1
+  local tail = 1
+  local count = 0
+
+  return {
+      push = function(item)
+          if count == size then
+              error("Buffer is full")
+          end
+          buffer[tail] = item
+          tail = (tail % size) + 1
+          count = count + 1
+      end,
+      pop = function()
+          if count == 0 then
+              return nil
+          end
+          local item = buffer[head]
+          buffer[head] = nil
+          head = (head % size) + 1
+          count = count - 1
+          return item
+      end,
+      peek = function()
+          if count == 0 then
+              return nil
+          end
+          return buffer[head]
+      end,
+      is_empty = function()
+          return count == 0
+      end
+  }
+end
+
+-- Initialize the buffer (Adjust size as needed)
+local input_buffer = create_ring_buffer(1024)
+
+
+
+
+
 local M = {
   _VERSION = "0.0.1",
   _COPYRIGHT = "Copyright (c) 2024-2024 Thijs Schreijer",
