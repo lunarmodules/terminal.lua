@@ -112,7 +112,20 @@ function terminal.read_custom()
 end
 
 
+-- Initialize with blocking and yielding sleep functions
+function terminal.initialize(blocking_sleep, yielding_sleep)
+  terminal.blocking_sleep = blocking_sleep
+  terminal.yielding_sleep = yielding_sleep
+end
 
+-- Dynamic sleep function
+function terminal.sleep(is_blocking)
+  if is_blocking then
+      terminal.blocking_sleep()
+  else
+      terminal.yielding_sleep()
+  end
+end
 
 
 local M = {
