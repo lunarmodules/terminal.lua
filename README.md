@@ -15,6 +15,10 @@ See [LICENSE.md](LICENSE.md)
 
 See [online documentation](https://lunarmodules.github.io/terminal.lua/)
 
+## Developing & Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
 ## Changelog & Versioning
 
 See [CHANGELOG.md](CHANGELOG.md)
