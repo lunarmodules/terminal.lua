@@ -39,8 +39,10 @@ build = {
     ["terminal.input"] = "src/terminal/input.lua",
     ["terminal.output"] = "src/terminal/output.lua",
     ["terminal.clear"] = "src/terminal/clear.lua",
-    ["terminal.scroll"] = "src/terminal/scroll.lua",
     ["terminal.utils"] = "src/terminal/utils.lua",
+    ["terminal.scroll"] = "src/terminal/scroll/init.lua",
+    ["terminal.scroll.stack"] = "src/terminal/scroll/stack.lua"
+
   },
 
   copy_directories = {

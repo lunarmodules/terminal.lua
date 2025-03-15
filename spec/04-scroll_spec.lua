@@ -6,8 +6,6 @@ describe("Scroll Module Tests", function()
     scroll = require "terminal.scroll"
   end)
 
-
-
   it("should return default scroll region reset sequence", function()
     assert.are.equal("\27[r", scroll.scroll_regions())
   end)
