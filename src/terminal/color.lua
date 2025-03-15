@@ -1,6 +1,5 @@
---=============================================================================
--- text: colors & attributes
---=============================================================================
+-- Module for setting text colors and attiributes
+
 -- Text colors and attributes.
 -- Managing the text color and attributes.
 -- @section textcolor
@@ -109,7 +108,6 @@ M.colorcode = colorcode
 -- @tparam[opt] number g in case of RGB, the green value
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.color_fgs(r, g, b)
   return colorcode(r, g, b, true)
 end
@@ -119,7 +117,6 @@ end
 -- @tparam[opt] number g in case of RGB, the green value
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @return true
--- @within textcolor
 function M.color_fg(r, g, b)
   output.write(M.color_fgs(r, g, b))
   return true
@@ -136,7 +133,6 @@ end
 -- @tparam[opt] number g in case of RGB, the green value
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.color_bgs(r, g, b)
   return colorcode(r, g, b, false)
 end
@@ -146,7 +142,6 @@ end
 -- @tparam[opt] number g in case of RGB, the green value
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @return true
--- @within textcolor
 function M.color_bg(r, g, b)
   output.write(M.color_bgs(r, g, b))
   return true
@@ -154,14 +149,12 @@ end
 
 --- Creates an ansi sequence to set the underline attribute without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.underline_ons()
   return underline_on
 end
 
 --- Sets the underline attribute and writes it to the terminal.
 -- @return true
--- @within textcolor
 function M.underline_on()
   output.write(M.underline_ons())
   return true
@@ -169,14 +162,12 @@ end
 
 --- Creates an ansi sequence to unset the underline attribute without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.underline_offs()
   return underline_off
 end
 
 --- Unsets the underline attribute and writes it to the terminal.
 -- @return true
--- @within textcolor
 function M.underline_off()
   output.write(M.underline_offs())
   return true
@@ -184,14 +175,12 @@ end
 
 --- Creates an ansi sequence to set the blink attribute without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.blink_ons()
   return blink_on
 end
 
 --- Sets the blink attribute and writes it to the terminal.
 -- @return true
--- @within textcolor
 function M.blink_on()
   output.write(M.blink_ons())
   return true
@@ -199,14 +188,12 @@ end
 
 --- Creates an ansi sequence to unset the blink attribute without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.blink_offs()
   return blink_off
 end
 
 --- Unsets the blink attribute and writes it to the terminal.
 -- @return true
--- @within textcolor
 function M.blink_off()
   output.write(M.blink_offs())
   return true
@@ -214,14 +201,12 @@ end
 
 --- Creates an ansi sequence to set the reverse attribute without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.reverse_ons()
   return reverse_on
 end
 
 --- Sets the reverse attribute and writes it to the terminal.
 -- @return true
--- @within textcolor
 function M.reverse_on()
   output.write(M.reverse_ons())
   return true
@@ -229,14 +214,12 @@ end
 
 --- Creates an ansi sequence to unset the reverse attribute without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.reverse_offs()
   return reverse_off
 end
 
 --- Unsets the reverse attribute and writes it to the terminal.
 -- @return true
--- @within textcolor
 function M.reverse_off()
   output.write(M.reverse_offs())
   return true
@@ -300,7 +283,6 @@ local _brightness_sequence_after_reset = {
 --
 -- @tparam string|integer brightness the brightness to set
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
 function M.brightnesss(brightness)
   return _brightness_sequence[_brightness[brightness]]
 end
@@ -308,7 +290,6 @@ end
 --- Sets the brightness and writes it to the terminal.
 -- @tparam string|integer brightness the brightness to set
 -- @return true
--- @within textcolor
 function M.brightness(brightness)
   output.write(M.brightnesss(brightness))
   return true

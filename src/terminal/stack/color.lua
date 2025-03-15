@@ -1,3 +1,5 @@
+-- Stack module for setting the text color and attributes
+
 local M = {}
 package.loaded["terminal.color.stack"]
 local output = "terminal.output"
@@ -51,7 +53,6 @@ local function newtext(attr)
   -- @tparam[opt] boolean attr.blink whether to set blink
   -- @tparam[opt] boolean attr.reverse whether to set reverse
   -- @treturn string ansi sequence to write to the terminal
-  -- @within textcolor_stack
   function M.textsets(attr)
     local new = newtext(attr)
     return new.ansi
@@ -61,7 +62,6 @@ local function newtext(attr)
   -- Every element omitted in the `attr` table will be taken from the current top of the stack.
   -- @tparam table attr the attributes to set, see `textsets` for details.
   -- @return true
-  -- @within textcolor_stack
   function M.textset(attr)
     output.write(newtext(attr).ansi)
     return true
@@ -71,7 +71,6 @@ local function newtext(attr)
   -- Every element omitted in the `attr` table will be taken from the current top of the stack.
   -- @tparam table attr the attributes to set, see `textsets` for details.
   -- @treturn string ansi sequence to write to the terminal
-  -- @within textcolor_stack
   function M.textpushs(attr)
     local new = newtext(attr)
     _colorstack[#_colorstack + 1] = new
@@ -82,7 +81,6 @@ local function newtext(attr)
   -- Every element omitted in the `attr` table will be taken from the current top of the stack.
   -- @tparam table attr the attributes to set, see `textsets` for details.
   -- @return true
-  -- @within textcolor_stack
   function M.textpush(attr)
     output.write(M.textpushs(attr))
     return true
@@ -91,7 +89,6 @@ local function newtext(attr)
   --- Pops n attributes off the stack (and returns the last one), without writing it to the terminal.
   -- @tparam[opt=1] number n number of attributes to pop
   -- @treturn string ansi sequence to write to the terminal
-  -- @within textcolor_stack
   function M.textpops(n)
     n = n or 1
     local newtop = math.max(#_colorstack - n, 1)
@@ -104,7 +101,6 @@ local function newtext(attr)
   --- Pops n attributes off the stack, and writes the last one to the terminal.
   -- @tparam[opt=1] number n number of attributes to pop
   -- @return true
-  -- @within textcolor_stack
   function M.textpop(n)
     output.write(M.textpops(n))
     return true
@@ -112,14 +108,12 @@ local function newtext(attr)
   
   --- Re-applies the current attributes (returns it, does not write it to the terminal).
   -- @treturn string ansi sequence to write to the terminal
-  -- @within textcolor_stack
   function M.textapplys()
     return _colorstack[#_colorstack].ansi
   end
   
   --- Re-applies the current attributes, and writes it to the terminal.
   -- @return true
-  -- @within textcolor_stack
   function M.textapply()
     output.write(_colorstack[#_colorstack].ansi)
     return true
