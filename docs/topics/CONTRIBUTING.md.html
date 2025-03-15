@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Getting_started">Getting started </a></li>
+<li><a href="#Commiting_code">Commiting code </a></li>
+<li><a href="#Testing">Testing </a></li>
+<li><a href="#Documentation">Documentation </a></li>
+<li><a href="#Code_style">Code style </a></li>
+</ul>
+
+
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><strong>CONTRIBUTING</strong></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+
+<h1>CONTRIBUTING</h1>
+
+<p><a name="Getting_started"></a></p>
+<h2>Getting started</h2>
+
+<p>The <code>Makefile</code> contains all the major operations. The default make target will display some help information about available targets.</p>
+
+<p>The <code>Makefile</code> assumes that no sudo-isms are required to do its work. If there are permission issues then try to move LuaRocks to the local tree.</p>
+
+<p>LuaRocks has 2 trees; <code>system</code> tree (typically requires sudo) and <code>user</code> tree (user local) where it installs modules. To ensure using the <code>user</code> tree only, set it as the default:</p>
+
+
+<pre>
+luarocks config local_by_default <span class="keyword">true</span>
+</pre>
+
+<p>Optionally erase everything from the <code>system</code> tree (<code>sudo</code> might be required):</p>
+
+
+<pre>
+sudo luarocks purge <span class="comment">--tree=system</span>
+</pre>
+
+<p>This ensures that anything in the system tree doesn't take precedence over the <code>user</code> tree contents and causes unexpected results.</p>
+
+
+<p><a name="Commiting_code"></a></p>
+<h2>Commiting code</h2>
+
+<h3>Commit atomicity</h3>
+
+<p>When submitting patches, it is important that you organize your commits in logical units of work. You are free to propose a patch with one or many commits, as long as their atomicity is respected. This means that no unrelated changes should be included in a commit.</p>
+
+<p>For example: you are writing a patch to fix a bug, but in your endeavour, you spot another bug. Do not fix both bugs in the same commit! Finish your work on the initial bug, propose your patch, and come back to the second bug later on. This is also valid for unrelated style fixes, refactors, etc...</p>
+
+<p>You should use your best judgment when facing such decisions. A good approach for this is to put yourself in the shoes of the person who will review your patch: will they understand your changes and reasoning just by reading your commit history? Will they find unrelated changes in a particular commit? They shouldn't!</p>
+
+<p>Writing meaningful commit messages that follow our commit message format will also help you respect this mantra (see the below section).</p>
+
+
+<h3>Commit messages</h3>
+
+<p>To maintain a healthy Git history, we ask of you that you write your commit messages as follows:</p>
+
+<ul>
+    <li>The tense of your message must be present</li>
+    <li>Your message must be prefixed by a type, and a scope</li>
+    <li>The header of your message should not be longer than 50 characters</li>
+    <li>A blank line should be included between the header and the body</li>
+    <li>The body of your message should not contain lines longer than 72 characters</li>
+</ul>
+
+<p>We strive to adapt the <a href="https://www.conventionalcommits.org/en/v1.0.0/">conventional-commits</a> format.</p>
+
+<p>Here is a template of what your commit message should look like:</p>
+
+
+<pre>
+&lt;<span class="global">type</span>&gt;(&lt;scope&gt;): &lt;subject&gt;
+&lt;BLANK LINE&gt;
+&lt;body&gt;
+&lt;BLANK LINE&gt;
+&lt;footer&gt;
+</pre>
+
+<h4>Commit scopes</h4>
+
+<p>The scope is the part of the codebase that is affected by your change. Choosing it is at your discretion, check the commit history for common ones.</p>
+
+
+<h4>Commit types</h4>
+
+<p>The type of your commit indicates what type of change this commit is about. The accepted types are:</p>
+
+<ul>
+    <li><code>feat</code>: A new feature</li>
+    <li><code>fix</code>: A bug fix</li>
+    <li><code>hotfix</code>: An urgent bug fix during a release process</li>
+    <li><code>tests</code>: A change that is purely related to the test suite only (fixing a test, adding a test, improving its reliability, etc...)</li>
+    <li><code>docs</code>: Changes to the markdown files, or doc-comments in the code (see <a href="#documentation">Documentation</a>).</li>
+    <li><code>style</code>: Changes that do not affect the meaning of the code (white-space trimming, formatting, etc...)</li>
+    <li><code>perf</code>: A code change that significantly improves performance</li>
+    <li><code>refactor</code>: A code change that neither fixes a bug nor adds a feature</li>
+    <li><code>chore</code>: Maintenance changes related to code cleaning that isn't considered part of a refactor, build process updates, dependency bumps, or auxiliary tools and libraries updates (LuaRocks, GitHub Actions, etc...).</li>
+</ul>
+
+
+<p><a name="Testing"></a></p>
+<h2>Testing</h2>
+
+<p>Testing is done using the busted test framework, LuaCheck for linting, and LuaCov for coverage.</p>
+
+<p>Use <code>make test</code> and <code>make lint</code> to run the tests. Coverage information will be in the file <code>luacov.report.out</code>.</p>
+
+<p>Be sensible, write tests, increase coverage.</p>
+
+
+<p><a name="Documentation"></a></p>
+<h2>Documentation</h2>
+
+<p>The documentation is generated from the repository. This is done using <a href="https://github.com/lunarmodules/LDoc">ldoc</a>.
+The sources can be found in the ldoc configuration file; <code>config.ld</code>.</p>
+
+<p>Please note that the generated documentation is only updated upon releasing. During development update comments, examples, etc. But do not commit any changes to the rendered documentation.</p>
+
+<p>Use the <code>Makefile</code> to generate the documentation (<code>make docs</code>), and to clean it (`make clean) in case you tested the generated docs but need to revert before comitting.</p>
+
+
+
+<p><a name="Code_style"></a></p>
+<h2>Code style</h2>
+
+<p>todo</p>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

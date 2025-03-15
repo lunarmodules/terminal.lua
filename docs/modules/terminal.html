@@ -33,16 +33,12 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#stream">stream</a></li>
 <li><a href="#Cursor_shapes_and_visibility">Cursor shapes and visibility </a></li>
 <li><a href="#cursor_shapes">cursor_shapes</a></li>
 <li><a href="#cursor_shape_stack">cursor_shape_stack</a></li>
 <li><a href="#cursor_position">cursor_position</a></li>
 <li><a href="#cursor_position_stack">cursor_position_stack</a></li>
 <li><a href="#cursor_moving">cursor_moving</a></li>
-<li><a href="#clearing">clearing</a></li>
-<li><a href="#scrolling">scrolling</a></li>
-<li><a href="#scrolling_region">scrolling_region</a></li>
 <li><a href="#textcolor">textcolor</a></li>
 <li><a href="#textcolor_stack">textcolor_stack</a></li>
 <li><a href="#lines">lines</a></li>
@@ -53,8 +49,11 @@
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><strong>terminal</strong></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
   <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
@@ -66,11 +65,11 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
 </ul>
 <h2>Examples</h2>
 <ul class="nowrap">
-  <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
@@ -88,7 +87,7 @@
  it works modern terminals on Windows, Unix, and Mac systems.</p>
 
 <p> It provides a simple and consistent interface to the terminal, allowing for cursor positioning,
- cursor shape and visibility, text formatting, clearing the screen, scrolling, and more.</p>
+ cursor shape and visibility, text formatting, and more.</p>
 
 <p> For generic instruction please read the <a href="topics/01-introduction.md.html">introduction</a>.</p>
     <h3>Info:</h3>
@@ -99,21 +98,6 @@
     </ul>
 
 
-<h2><a href="#stream">stream</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#flush">flush ()</a></td>
-	<td class="summary">Flushes the stream.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#print">print (...)</a></td>
-	<td class="summary">Prints to the stream in chunks.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#write">write (...)</a></td>
-	<td class="summary">Writes to the stream in chunks.</td>
-	</tr>
-</table>
 <h2><a href="#Cursor_shapes_and_visibility">Cursor shapes and visibility </a></h2>
 <table class="function_list">
 	<tr>
@@ -348,127 +332,6 @@
 	<td class="summary">Creates an ansi sequence to move the cursor vertically without writing it to the terminal.</td>
 	</tr>
 </table>
-<h2><a href="#clearing">clearing</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#clear">clear ()</a></td>
-	<td class="summary">Clears the screen and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_bottom">clear_bottom ()</a></td>
-	<td class="summary">Clears the screen from the cursor position to the right and bottom and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_bottoms">clear_bottoms ()</a></td>
-	<td class="summary">Creates an ansi sequence to clear the screen from the cursor position to the right and bottom without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_box">clear_box (height, width)</a></td>
-	<td class="summary">Clears a box from the cursor position (top-left) and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_boxs">clear_boxs (height, width)</a></td>
-	<td class="summary">Creates an ansi sequence to clear a box from the cursor position (top-left) without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_end">clear_end ()</a></td>
-	<td class="summary">Clears the line from the cursor position to the right and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_ends">clear_ends ()</a></td>
-	<td class="summary">Creates an ansi sequence to clear the line from the cursor position to the right without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_line">clear_line ()</a></td>
-	<td class="summary">Clears the line and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_lines">clear_lines ()</a></td>
-	<td class="summary">Creates an ansi sequence to clear the line without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_start">clear_start ()</a></td>
-	<td class="summary">Clears the line from the cursor position to the left and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_starts">clear_starts ()</a></td>
-	<td class="summary">Creates an ansi sequence to clear the line from the cursor position to the left without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_top">clear_top ()</a></td>
-	<td class="summary">Clears the screen from the cursor position to the left and top and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_tops">clear_tops ()</a></td>
-	<td class="summary">Creates an ansi sequence to clear the screen from the cursor position to the left and top without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clears">clears ()</a></td>
-	<td class="summary">Creates an ansi sequence to clear the screen without writing it to the terminal.</td>
-	</tr>
-</table>
-<h2><a href="#scrolling">scrolling</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#scroll_">scroll_ ([n=0])</a></td>
-	<td class="summary">Scrolls the screen vertically and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_down">scroll_down ([n=1])</a></td>
-	<td class="summary">Scrolls the screen down and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_downs">scroll_downs ([n=1])</a></td>
-	<td class="summary">Creates an ansi sequence to scroll the screen down without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_region">scroll_region (top, bottom)</a></td>
-	<td class="summary">Sets the scroll region and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_regions">scroll_regions (top, bottom)</a></td>
-	<td class="summary">Creates an ansi sequence to set the scroll region without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_s">scroll_s ([n=0])</a></td>
-	<td class="summary">Creates an ansi sequence to scroll the screen vertically without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_up">scroll_up ([n=1])</a></td>
-	<td class="summary">Scrolls the screen up and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_ups">scroll_ups ([n=1])</a></td>
-	<td class="summary">Creates an ansi sequence to scroll the screen up without writing it to the terminal.</td>
-	</tr>
-</table>
-<h2><a href="#scrolling_region">scrolling_region</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#scroll_apply">scroll_apply ()</a></td>
-	<td class="summary">Applies the scroll region at the top of the stack, and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_applys">scroll_applys ()</a></td>
-	<td class="summary">Applies the scroll region at the top of the stack (returns it, does not write it to the terminal).</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_pop">scroll_pop ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> scroll region(s) off the stack, and writes the last to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_pops">scroll_pops ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> scroll region(s) off the stack (and returns the last), without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_push">scroll_push (top, bottom)</a></td>
-	<td class="summary">Pushes a new scroll region onto the stack, and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#scroll_pushs">scroll_pushs (top, bottom)</a></td>
-	<td class="summary">Pushes a new scroll region onto the stack (and returns it), without writing it to the terminal.</td>
-	</tr>
-</table>
 <h2><a href="#textcolor">textcolor</a></h2>
 <table class="function_list">
 	<tr>
@@ -582,7 +445,7 @@
 <h2><a href="#lines">lines</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#box">box (height, width, format, clear[, title=""[, lastcolumn]])</a></td>
+	<td class="name" nowrap><a href="#box">box (height, width, format, clear_flag[, title=""[, lastcolumn]])</a></td>
 	<td class="summary">Draws a box and writes it to the terminal.</td>
 	</tr>
 	<tr>
@@ -594,7 +457,7 @@
 	<td class="summary">Copy a box format.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#boxs">boxs (height, width[, format[, clear=" "[, title=""[, lastcolumn=""]]]])</a></td>
+	<td class="name" nowrap><a href="#boxs">boxs (height, width[, format[, clear_flag=" "[, title=""[, lastcolumn=""]]]])</a></td>
 	<td class="summary">Creates a sequence to draw a box, without writing it to the terminal.</td>
 	</tr>
 	<tr>
@@ -642,87 +505,6 @@
 <br/>
 
 
-    <h2 class="section-header "><a name="stream"></a>stream</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "flush"></a>
-    <strong>flush ()</strong>
-    </dt>
-    <dd>
-    Flushes the stream.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        the return value of the stream's <a href="../modules/terminal.html#flush">flush</a> function
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "print"></a>
-    <strong>print (...)</strong>
-    </dt>
-    <dd>
-    Prints to the stream in chunks.
- Same as <a href="../modules/terminal.html#write">write</a>, but adds a newline at the end.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">...</span>
-         the values to write
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        the return value of the stream's <a href="../modules/terminal.html#write">write</a> function
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "write"></a>
-    <strong>write (...)</strong>
-    </dt>
-    <dd>
-    Writes to the stream in chunks.
- Parameters are written to the stream, and flushed after each chunk. A small sleep is
- added after each chunk to allow the terminal to process the data.
- This is done to prevent the terminal buffer from overrunning and dropping data.</p>
-
-<p> Important differences:
- - functions will be called and their first return value will be used.
- - parameters will be written without tabs separating them.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">...</span>
-         the values to write
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        the return value of the stream's <a href="../modules/terminal.html#write">write</a> function
-    </ol>
-
-
-
-
-</dd>
-</dl>
     <h2 class="section-header has-description"><a name="Cursor_shapes_and_visibility"></a>Cursor shapes and visibility </h2>
 
           <div class="section-description">
@@ -2165,701 +1947,6 @@
 
 </dd>
 </dl>
-    <h2 class="section-header "><a name="clearing"></a>clearing</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "clear"></a>
-    <strong>clear ()</strong>
-    </dt>
-    <dd>
-    Clears the screen and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_bottom"></a>
-    <strong>clear_bottom ()</strong>
-    </dt>
-    <dd>
-    Clears the screen from the cursor position to the right and bottom and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_bottoms"></a>
-    <strong>clear_bottoms ()</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to clear the screen from the cursor position to the right and bottom without writing it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_box"></a>
-    <strong>clear_box (height, width)</strong>
-    </dt>
-    <dd>
-    Clears a box from the cursor position (top-left) and writes it to the terminal.
- Cursor will return to the original position.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">height</span>
-            <span class="types"><span class="type">number</span></span>
-         the height of the box in rows
-        </li>
-        <li><span class="parameter">width</span>
-            <span class="types"><span class="type">number</span></span>
-         the width of the box in columns
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_boxs"></a>
-    <strong>clear_boxs (height, width)</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to clear a box from the cursor position (top-left) without writing it to the terminal.
- Cursor will return to the original position.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">height</span>
-            <span class="types"><span class="type">number</span></span>
-         the height of the box in rows
-        </li>
-        <li><span class="parameter">width</span>
-            <span class="types"><span class="type">number</span></span>
-         the width of the box in columns
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_end"></a>
-    <strong>clear_end ()</strong>
-    </dt>
-    <dd>
-    Clears the line from the cursor position to the right and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_ends"></a>
-    <strong>clear_ends ()</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to clear the line from the cursor position to the right without writing it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_line"></a>
-    <strong>clear_line ()</strong>
-    </dt>
-    <dd>
-    Clears the line and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_lines"></a>
-    <strong>clear_lines ()</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to clear the line without writing it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_start"></a>
-    <strong>clear_start ()</strong>
-    </dt>
-    <dd>
-    Clears the line from the cursor position to the left and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_starts"></a>
-    <strong>clear_starts ()</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to clear the line from the cursor position to the left without writing it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_top"></a>
-    <strong>clear_top ()</strong>
-    </dt>
-    <dd>
-    Clears the screen from the cursor position to the left and top and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_tops"></a>
-    <strong>clear_tops ()</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to clear the screen from the cursor position to the left and top without writing it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clears"></a>
-    <strong>clears ()</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to clear the screen without writing it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-</dl>
-    <h2 class="section-header "><a name="scrolling"></a>scrolling</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "scroll_"></a>
-    <strong>scroll_ ([n=0])</strong>
-    </dt>
-    <dd>
-    Scrolls the screen vertically and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of lines to scroll (negative for up, positive for down)
-         (<em>default</em> 0)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_down"></a>
-    <strong>scroll_down ([n=1])</strong>
-    </dt>
-    <dd>
-    Scrolls the screen down and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of lines to scroll down
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_downs"></a>
-    <strong>scroll_downs ([n=1])</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to scroll the screen down without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of lines to scroll down
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_region"></a>
-    <strong>scroll_region (top, bottom)</strong>
-    </dt>
-    <dd>
-    Sets the scroll region and writes it to the terminal.
- If no arguments are given, it resets the scroll region to the whole screen.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         top row of the scroll region
-        </li>
-        <li><span class="parameter">bottom</span>
-            <span class="types"><span class="type">number</span></span>
-         bottom row of the scroll region
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_regions"></a>
-    <strong>scroll_regions (top, bottom)</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to set the scroll region without writing it to the terminal.
- If no arguments are given, it resets the scroll region to the whole screen.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         top row of the scroll region
-        </li>
-        <li><span class="parameter">bottom</span>
-            <span class="types"><span class="type">number</span></span>
-         bottom row of the scroll region
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_s"></a>
-    <strong>scroll_s ([n=0])</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to scroll the screen vertically without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of lines to scroll (negative for up, positive for down)
-         (<em>default</em> 0)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_up"></a>
-    <strong>scroll_up ([n=1])</strong>
-    </dt>
-    <dd>
-    Scrolls the screen up and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of lines to scroll up
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_ups"></a>
-    <strong>scroll_ups ([n=1])</strong>
-    </dt>
-    <dd>
-    Creates an ansi sequence to scroll the screen up without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of lines to scroll up
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-</dl>
-    <h2 class="section-header "><a name="scrolling_region"></a>scrolling_region</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "scroll_apply"></a>
-    <strong>scroll_apply ()</strong>
-    </dt>
-    <dd>
-    Applies the scroll region at the top of the stack, and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_applys"></a>
-    <strong>scroll_applys ()</strong>
-    </dt>
-    <dd>
-    Applies the scroll region at the top of the stack (returns it, does not write it to the terminal).
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_pop"></a>
-    <strong>scroll_pop ([n=1])</strong>
-    </dt>
-    <dd>
-    Pops <code>n</code> scroll region(s) off the stack, and writes the last to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of scroll regions to pop
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_pops"></a>
-    <strong>scroll_pops ([n=1])</strong>
-    </dt>
-    <dd>
-    Pops <code>n</code> scroll region(s) off the stack (and returns the last), without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of scroll regions to pop
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_push"></a>
-    <strong>scroll_push (top, bottom)</strong>
-    </dt>
-    <dd>
-    Pushes a new scroll region onto the stack, and writes it to the terminal.
- If no arguments are given, it resets the scroll region to the whole screen.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         top row of the scroll region
-        </li>
-        <li><span class="parameter">bottom</span>
-            <span class="types"><span class="type">number</span></span>
-         bottom row of the scroll region
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "scroll_pushs"></a>
-    <strong>scroll_pushs (top, bottom)</strong>
-    </dt>
-    <dd>
-    Pushes a new scroll region onto the stack (and returns it), without writing it to the terminal.
- If no arguments are given, it resets the scroll region to the whole screen.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         top row of the scroll region
-        </li>
-        <li><span class="parameter">bottom</span>
-            <span class="types"><span class="type">number</span></span>
-         bottom row of the scroll region
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-</dl>
     <h2 class="section-header "><a name="textcolor"></a>textcolor</h2>
 
     <dl class="function">
@@ -3600,7 +2687,7 @@
     <dl class="function">
     <dt>
     <a name = "box"></a>
-    <strong>box (height, width, format, clear[, title=""[, lastcolumn]])</strong>
+    <strong>box (height, width, format, clear_flag[, title=""[, lastcolumn]])</strong>
     </dt>
     <dd>
     Draws a box and writes it to the terminal.
@@ -3620,7 +2707,7 @@
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          the format for the box, see <a href="../modules/terminal.html#boxs">boxs</a> for details.
         </li>
-        <li><span class="parameter">clear</span>
+        <li><span class="parameter">clear_flag</span>
             <span class="types"><span class="type">bool</span></span>
          whether to clear the box contents
         </li>
@@ -3708,7 +2795,7 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
 </dd>
     <dt>
     <a name = "boxs"></a>
-    <strong>boxs (height, width[, format[, clear=" "[, title=""[, lastcolumn=""]]]])</strong>
+    <strong>boxs (height, width[, format[, clear_flag=" "[, title=""[, lastcolumn=""]]]])</strong>
     </dt>
     <dd>
     Creates a sequence to draw a box, without writing it to the terminal.
@@ -3769,7 +2856,7 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
          (<em>default</em> "")
         </li>
         </li></ul>
-        <li><span class="parameter">clear</span>
+        <li><span class="parameter">clear_flag</span>
             <span class="types"><span class="type">bool</span></span>
          whether to clear the box contents
          (<em>default</em> false)
@@ -4068,7 +3155,7 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
             <span class="types"><span class="type">function</span></span>
          the blocking sleep function to use.
  This should never be set to a yielding sleep function! This function
- will be used by the <a href="../modules/terminal.html#write">terminal.write</a> and <a href="../modules/terminal.html#print">terminal.print</a> to prevent buffer-overflows and
+ will be used by the <code>terminal.write</code> and <code>terminal.print</code> to prevent buffer-overflows and
  truncation when writing to the terminal. And by <a href="../modules/terminal.html#cursor_get">cursor_get</a> when reading the cursor position.
          (<em>default</em> sys.sleep)
         </li>
@@ -4168,7 +3255,6 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-03-10 13:11:54 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
