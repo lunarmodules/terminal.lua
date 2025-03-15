@@ -1,6 +1,6 @@
 -- This example demonstrates the use of the text-attribute stack, and how to
 -- use it to manage text attributes in a more structured way.
-package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
+
 local t = require("terminal")
 
 
