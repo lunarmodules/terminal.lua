@@ -1,5 +1,10 @@
 -- Module for setting text colors and attiributes
+-- contains other functionality such as enabling/disabling text attributes like underline, blinking
+-- and reversing. Also contains funcitionality for setting brightness levels.
+-- @usage
+-- local color = require("terminal.color")
 
+-- @module terminal.color
 -- Text colors and attributes.
 -- Managing the text color and attributes.
 -- @section textcolor

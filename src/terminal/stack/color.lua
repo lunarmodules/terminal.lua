@@ -1,4 +1,9 @@
--- Stack module for setting the text color and attributes
+-- Module for setting a stack of text colors and attributes
+-- Allows you to push and pop, color and text attributes.
+-- @usage
+-- local colorstack = require("terminal.color.stack")
+
+-- @module terminal.color.stack
 
 local M = {}
 package.loaded["terminal.color.stack"]
