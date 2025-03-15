@@ -83,7 +83,7 @@ end
 
 --- Clears from cursor to end of the line and writes to the terminal.
 -- @treturn true Always returns true after clearing.
-function M.end_()
+function M.end()
   output.write(M.	end_seq())
   return true
 end
