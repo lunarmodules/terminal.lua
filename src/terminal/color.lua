@@ -34,7 +34,7 @@ M.fg_base_colors = setmetatable({
   end,
 })
 
-local bg_base_colors = setmetatable({
+M.bg_base_colors = setmetatable({
   black = "\27[40m",
   red = "\27[41m",
   green = "\27[42m",
@@ -97,6 +97,7 @@ local function colorcode(r, g, b, fg)
   return fg and "\27[38;2;" .. r .. ";" .. g .. ";" .. b .. "m" or "\27[48;2;" .. r .. ";" .. g .. ";" .. b .. "m"
 end
 
+M.colorcode = colorcode
 --- Creates an ansi sequence to set the foreground color without writing it to the terminal.
 -- This function takes three color types:
 --
