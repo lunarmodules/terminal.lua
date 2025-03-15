@@ -11,7 +11,7 @@ t.initialize{
 }
 
 -- clear the screen, and move cursor to top-left
-t.clear()
+t.clear.screen()
 t.cursor_push(1,1)
 
 -- push text attribues on the stack
