@@ -1,6 +1,6 @@
 -- This example demonstrates the use of the text-attribute stack, and how to
 -- use it to manage text attributes in a more structured way.
-
+package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 local t = require("terminal")
 
 
@@ -11,7 +11,7 @@ t.initialize{
 }
 
 -- clear the screen, and move cursor to top-left
-t.clear()
+t.clear.screen()
 t.cursor_push(1,1)
 
 -- push text attribues on the stack
