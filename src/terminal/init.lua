@@ -119,7 +119,7 @@ end
 --=============================================================================
 --- Cursor shape stack.
 -- Managing the shape and visibility of the cursor based on a stack. Since the
--- current shape cannot be requested, using a stacks allows the user to revert to
+-- current shape cannot be requested, using stacks allows the user to revert to
 -- a previous state since the stacks keeps track of that.
 -- It does however require the user to use balanced operations; `push`/`pop`.
 -- @section cursor_shape_stack
