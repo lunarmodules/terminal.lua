@@ -1,6 +1,6 @@
---- Scroll Module.
--- Provides functions to manage scroll regions and perform scrolling operations in the terminal.
--- @module scroll
+--- Module to manage scroll-regions and scrolling.
+-- Provides functions to manage scroll-regions and perform scrolling operations in the terminal.
+-- @module terminal.scroll
 local output = require "terminal.output"
 
 local M = {}

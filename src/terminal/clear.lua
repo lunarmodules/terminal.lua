@@ -1,6 +1,6 @@
---- Clear Module.
+--- Module for clearing (parts of) the screen.
 -- Provides functions to clear various parts of the terminal screen.
--- @module clear
+-- @module terminal.clear
 
 local M = {}
 -- Push the module table already in `package.loaded` to avoid circular dependencies
