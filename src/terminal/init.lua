@@ -26,6 +26,18 @@ local function resolve_index(index, max_value)
   return index
 end
 
+--- Returns the height of the terminal screen.
+-- @treturn number the height in rows
+function M.get_height()
+  return sys.get_terminal_size().height
+end
+
+--- Returns the width of the terminal screen.
+-- @treturn number the width in columns
+function M.get_width()
+  return sys.get_terminal_size().width
+end
+
 local pack, unpack do
   -- nil-safe versions of pack/unpack
   local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
