@@ -4,7 +4,9 @@
 local M = {}
 M.output = require("terminal.output")
 
---- The stack module for handling scroll regions.
+-- Push the module table already in `package.loaded` to avoid circular dependencies,
+-- since the stack module requires this module.
+package.loaded["terminal.scroll"] = M
 M.stack = require("terminal.scroll.stack")
 
 --- Function to return the default scroll reset sequence
