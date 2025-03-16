@@ -27,6 +27,7 @@ end
 
 
 local sys = require "system"
+local utils = require "terminal.utils"
 
 -- Push the module table already in `package.loaded` to avoid circular dependencies
 package.loaded["terminal"] = M
@@ -83,17 +84,13 @@ end
 
 local shape_reset = "\27[0 q"
 
-local shapes = setmetatable({
+local shapes = utils.make_lookup("cursor shape", {
   block_blink     = "\27[1 q",
   block           = "\27[2 q",
   underline_blink = "\27[3 q",
   underline       = "\27[4 q",
   bar_blink       = "\27[5 q",
   bar             = "\27[6 q",
-}, {
-  __index = function(t, k)
-    error("invalid shape: "..tostring(k), 2)
-  end
 })
 
 
@@ -629,7 +626,7 @@ local blink_off = "\27[25m"
 local reverse_on = "\27[7m"
 local reverse_off = "\27[27m"
 
-local fg_base_colors = setmetatable({
+local fg_base_colors = utils.make_lookup("foreground color string", {
   black = "\27[30m",
   red = "\27[31m",
   green = "\27[32m",
@@ -638,13 +635,9 @@ local fg_base_colors = setmetatable({
   magenta = "\27[35m",
   cyan = "\27[36m",
   white = "\27[37m",
-}, {
-  __index = function(_, key)
-    error("invalid string-based color: " .. tostring(key))
-  end,
 })
 
-local bg_base_colors = setmetatable({
+local bg_base_colors = utils.make_lookup("background color string",{
   black = "\27[40m",
   red = "\27[41m",
   green = "\27[42m",
@@ -653,10 +646,6 @@ local bg_base_colors = setmetatable({
   magenta = "\27[45m",
   cyan = "\27[46m",
   white = "\27[47m",
-}, {
-  __index = function(_, key)
-    error("invalid string-based color: " .. tostring(key))
-  end,
 })
 
 local default_colors = {
@@ -855,7 +844,7 @@ end
 
 
 -- lookup brightness levels
-local _brightness = setmetatable({
+local _brightness = utils.make_lookup("brightness level", {
   off = 0,
   low = 1,
   normal = 2,
@@ -869,10 +858,6 @@ local _brightness = setmetatable({
   dim = 1,
   bright = 3,
   bold = 3,
-}, {
-  __index = function(_, key)
-    error("invalid brightness level: " .. tostring(key))
-  end,
 })
 
 -- ansi sequences to apply for each brightness level (always works, does not need a reset)
@@ -1172,7 +1157,7 @@ end
 -- @field double Double line box format
 -- @field copy Function to copy a box format, see `box_fmt.copy` for details
 -- @within lines
-M.box_fmt = setmetatable({
+M.box_fmt = utils.make_lookup("box-format", {
   single = {
     h = "─",
     v = "│",
@@ -1213,10 +1198,6 @@ M.box_fmt = setmetatable({
       pre = default.pre,
       post = default.post,
     }
-  end,
-}, {
-  __index = function(_, k)
-    error("invalid box format: " .. tostring(k))
   end,
 })
 

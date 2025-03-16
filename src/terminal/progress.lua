@@ -3,6 +3,7 @@
 local sys = require("system")
 local t = require("terminal")
 local Sequence = require("terminal.sequence")
+local utils = require("terminal.utils")
 
 local M = {}
 
@@ -27,7 +28,7 @@ local M = {}
 -- * `bar_rotating` - a bar that rotates clockwise
 -- * `spinner` - a spinner that rotates clockwise
 -- * `dot_horizontal` - 3 dots growing from left to right
-M.sprites = setmetatable({
+M.sprites = utils.make_lookup("spinner-sprite", {
   bar_vertical = { [0] = " ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃", "▂", "▁", " " },
   bar_horizontal = { [0] = " ", "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█", "▉", "▊", "▋", "▌", "▍", "▎", "▏", " " },
   square_rotate = { [0] = " ", "▖", "▘", "▝", "▗" },
@@ -42,14 +43,6 @@ M.sprites = setmetatable({
   bar_rotating = { [0] = " ", "┤", "┘", "┴", "└", "├", "┌", "┬", "┐" },
   spinner = { [0] = " ", "|", "/", "-", "\\" },
   dot_horizontal = { [0] = "   ", "   ", ".  ", ".. ", "..." },
-}, {
-  __index = function(self, key)
-    local lst = {}
-    for name in pairs(self) do
-      lst[#lst+1] = name
-    end
-    error("Unknown spinner sprite: '" .. key .. "'. Available sprites: " .. table.concat(lst, ", "), 2)
-  end
 })
 
 
