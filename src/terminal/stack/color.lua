@@ -1,4 +1,4 @@
--- Module for setting a stack of text colors and attributes
+--- Module for setting a stack of text colors and attributes
 -- Also allows functionality to push, pop color and text attributes.
 -- @usage
 -- local colorstack = require("terminal.color.stack")
@@ -6,42 +6,37 @@
 -- @module terminal.color.stack
 
 local M = {}
-package.loaded["terminal.color.stack"]
+package.loaded["terminal.color.stack"] = M
 local output = require("terminal.output")
+local color = require("terminal.color")
 
 local _colorstack = {
-    default_colors,
+    color.default_colors,
   }
 
-  --=============================================================================
--- text_stack: colors & attributes
---=============================================================================
--- Text colors and attributes stack.
--- Stack for managing the text color and attributes.
--- @section textcolor_stack
-
+M._colorstack = _colorstack
 
 local function newtext(attr)
-    local last = _colorstack[#_colorstack]
+    local last = M._colorstack[#_colorstack]
     local fg_color = attr.fg or attr.fg_r
     local bg_color = attr.bg or attr.bg_r
     local new = {
-      fg         = fg_color        == nil and last.fg         or colorcode(fg_color, attr.fg_g, attr.fg_b, true),
-      bg         = bg_color        == nil and last.bg         or colorcode(bg_color, attr.bg_g, attr.bg_b, false),
-      brightness = attr.brightness == nil and last.brightness or _brightness[attr.brightness],
+      fg         = fg_color        == nil and last.fg         or color.colorcode(fg_color, attr.fg_g, attr.fg_b, true),
+      bg         = bg_color        == nil and last.bg         or color.colorcode(bg_color, attr.bg_g, attr.bg_b, false),
+      brightness = attr.brightness == nil and last.brightness or color._brightness[attr.brightness],
       underline  = attr.underline  == nil and last.underline  or (not not attr.underline),
       blink      = attr.blink      == nil and last.blink      or (not not attr.blink),
       reverse    = attr.reverse    == nil and last.reverse    or (not not attr.reverse),
     }
-    new.ansi = attribute_reset .. new.fg .. new.bg ..
-      _brightness_sequence_after_reset[new.brightness] ..
-      (new.underline and underline_on or "") ..
-      (new.blink and blink_on or "") ..
-      (new.reverse and reverse_on or "")
+    new.ansi = color.attribute_reset .. new.fg .. new.bg ..
+      color._brightness_sequence_after_reset[new.brightness] ..
+      (new.underline and color.underline_on or "") ..
+      (new.blink and color.blink_on or "") ..
+      (new.reverse and color.reverse_on or "")
     -- print("newtext:", (new.ansi:gsub("\27", "\\27")))
     return new
   end
-  
+
   --- Creates an ansi sequence to set the text attributes without writing it to the terminal.
   -- Only set what you change. Every element omitted in the `attr` table will be taken from the current top of the stack.
   -- @tparam table attr the attributes to set, with keys:
@@ -62,7 +57,7 @@ local function newtext(attr)
     local new = newtext(attr)
     return new.ansi
   end
-  
+
   --- Sets the text attributes and writes it to the terminal.
   -- Every element omitted in the `attr` table will be taken from the current top of the stack.
   -- @tparam table attr the attributes to set, see `textsets` for details.
@@ -71,17 +66,17 @@ local function newtext(attr)
     output.write(newtext(attr).ansi)
     return true
   end
-  
+
   --- Pushes the current attributes onto the stack, and returns an ansi sequence to set the new attributes without writing it to the terminal.
   -- Every element omitted in the `attr` table will be taken from the current top of the stack.
   -- @tparam table attr the attributes to set, see `textsets` for details.
   -- @treturn string ansi sequence to write to the terminal
   function M.textpushs(attr)
     local new = newtext(attr)
-    _colorstack[#_colorstack + 1] = new
+    M._colorstack[#_colorstack + 1] = new
     return new.ansi
   end
-  
+
   --- Pushes the current attributes onto the stack, and writes an ansi sequence to set the new attributes to the terminal.
   -- Every element omitted in the `attr` table will be taken from the current top of the stack.
   -- @tparam table attr the attributes to set, see `textsets` for details.
@@ -90,7 +85,7 @@ local function newtext(attr)
     output.write(M.textpushs(attr))
     return true
   end
-  
+
   --- Pops n attributes off the stack (and returns the last one), without writing it to the terminal.
   -- @tparam[opt=1] number n number of attributes to pop
   -- @treturn string ansi sequence to write to the terminal
@@ -102,7 +97,7 @@ local function newtext(attr)
     end
     return _colorstack[#_colorstack].ansi
   end
-  
+
   --- Pops n attributes off the stack, and writes the last one to the terminal.
   -- @tparam[opt=1] number n number of attributes to pop
   -- @return true
@@ -110,18 +105,18 @@ local function newtext(attr)
     output.write(M.textpops(n))
     return true
   end
-  
+
   --- Re-applies the current attributes (returns it, does not write it to the terminal).
   -- @treturn string ansi sequence to write to the terminal
   function M.textapplys()
     return _colorstack[#_colorstack].ansi
   end
-  
+
   --- Re-applies the current attributes, and writes it to the terminal.
   -- @return true
   function M.textapply()
     output.write(_colorstack[#_colorstack].ansi)
     return true
   end
-  
+
   return M

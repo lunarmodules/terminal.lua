@@ -8,7 +8,6 @@ local M = {}
 package.loaded["terminal.color"] = M
 local output = require("terminal.output")
 
-
 local fg_color_reset = "\27[39m"
 local bg_color_reset = "\27[49m"
 local attribute_reset = "\27[0m"
@@ -59,7 +58,7 @@ local default_colors = {
   ansi = fg_color_reset .. bg_color_reset .. attribute_reset,
 }
 
-
+M.default_colors = default_colors
 
 -- Takes a color name/scheme by user and returns the ansi sequence for it.
 -- This function takes three color types:
@@ -74,7 +73,7 @@ local default_colors = {
 -- @treturn string ansi sequence to write to the terminal
 local function colorcode(r, g, b, fg)
   if type(r) == "string" then
-    return fg and fg_base_colors[r] or bg_base_colors[r]
+    return fg and M.fg_base_colors[r] or M.bg_base_colors[r]
   end
 
   if type(r) ~= "number" or g < 0 or g > 255 then
@@ -248,6 +247,7 @@ local _brightness = setmetatable({
   end,
 })
 
+M.brightness = _brightness
 -- ansi sequences to apply for each brightness level (always works, does not need a reset)
 -- (a reset would also have an effect on underline, blink, and reverse)
 local _brightness_sequence = {
@@ -261,6 +261,8 @@ local _brightness_sequence = {
   [3] = "\027[22m\027[28m\027[1m",
 }
 
+M._brightness_sequence = _brightness_sequence
+
 -- same thing, but simplified, if done AFTER an attribute reset
 local _brightness_sequence_after_reset = {
   -- 0 = invisible
@@ -273,7 +275,7 @@ local _brightness_sequence_after_reset = {
   [3] = "\027[1m",
 }
 
-
+M._brightness_sequence_after_reset = _brightness_sequence_after_reset
 --- Creates an ansi sequence to set the brightness without writing it to the terminal.
 -- `brightness` can be one of the following:
 --
