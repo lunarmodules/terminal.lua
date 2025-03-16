@@ -64,27 +64,27 @@ end
 
 --- Creates an ANSI sequence to clear from cursor to start of the line without writing.
 -- @treturn string The ANSI sequence for clearing to the start of the line.
-function M.start_seq()
+function M.bol_seq()
   return "\27[1K"
 end
 
 --- Clears from cursor to start of the line and writes to the terminal.
 -- @treturn true Always returns true after clearing.
-function M.start()
-  output.write(M.start_seq())
+function M.bol()
+  output.write(M.bol_seq())
   return true
 end
 
 --- Creates an ANSI sequence to clear from cursor to end of the line without writing.
 -- @treturn string The ANSI sequence for clearing to the end of the line.
-function M.	end_seq()
+function M.	eol_seq()
   return "\27[0K"
 end
 
 --- Clears from cursor to end of the line and writes to the terminal.
 -- @treturn true Always returns true after clearing.
-function M.end_()
-  output.write(M.	end_seq())
+function M.eol()
+  output.write(M.	eol_seq())
   return true
 end
 

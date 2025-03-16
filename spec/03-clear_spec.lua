@@ -19,12 +19,12 @@ describe("Clear Module Tests", function()
 
 
   it("should return correct ANSI sequence for clearing line start", function()
-    assert.are.equal("\27[1K", clear.start_seq())
+    assert.are.equal("\27[1K", clear.bol_seq())
   end)
 
 
   it("should return correct ANSI sequence for clearing line end", function()
-    assert.are.equal("\27[0K", clear.end_seq())
+    assert.are.equal("\27[0K", clear.eol_seq())
   end)
 
 
