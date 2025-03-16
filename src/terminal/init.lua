@@ -1256,7 +1256,7 @@ function M.boxs(height, width, format, clear_flag, title, lastcolumn)
   if clear_flag then
     local l = #r
     r[l+1] = M.cursor_moves(1, v_w)
-    r[l+2] = clear.clear_boxs(height - 2, width - 2 * v_w)
+    r[l+2] = clear.box_seq(height - 2, width - 2 * v_w)
     r[l+3] = M.cursor_moves(-1, -v_w)
   end
   return table.concat(r)

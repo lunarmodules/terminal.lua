@@ -36,7 +36,7 @@ t.initialize{
 }
 
 -- clear the screen, and draw the test screen
-t.clear()
+t.clear.screen()
 testscreen()
 
 -- draw a box, with 2 cols/rows margin around the screen
