@@ -4,16 +4,20 @@
 local M = {}
 M.output = require("terminal.output")
 
--- Register in package.loaded with correct name
-package.loaded["terminal.scroll"] = M
+--- The stack module for handling scroll regions.
+M.stack = require("terminal.scroll.stack")
 
-local _scroll_reset = "\27[r"
+--- Function to return the default scroll reset sequence
+-- @treturn string The ANSI sequence for resetting the scroll region.
+function M.scroll_reset()
+  return "\27[r"
+end
 
 --- Creates an ANSI sequence to reset the scroll region to default.
 -- @treturn string The ANSI sequence for resetting the scroll region.
 function M.scroll_regions(top, bottom)
   if not top and not bottom then
-    return _scroll_reset
+    return M.scroll_reset()
   end
   return "\27[" .. tostring(top) .. ";" .. tostring(bottom) .. "r"
 end
@@ -77,8 +81,5 @@ function M.scroll(n)
   M.output.write(M.scrolls(n))
   return true
 end
-
---- The stack module for handling scroll regions.
-M.stack = require("terminal.scroll.stack")
 
 return M

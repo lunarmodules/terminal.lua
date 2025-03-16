@@ -3,12 +3,12 @@
 -- @module scroll.stack
 local M = {}
 M.output = require("terminal.output")
+M.scroll = require("terminal.scroll")
 
 package.loaded["terminal.scroll.stack"] = M
 
-local _scroll_reset = "\27[r"
 local _scrollstack = {
-  _scroll_reset,
+  M.scroll.scroll_reset(), -- Use the function from scroll module
 }
 
 --- Retrieves the current scroll region sequence from the top of the stack.
@@ -29,7 +29,7 @@ end
 -- @tparam number bottom The bottom line number of the scroll region.
 -- @treturn string The ANSI sequence representing the pushed scroll region.
 function M.pushs(top, bottom)
-  _scrollstack[#_scrollstack + 1] = "\27[" .. tostring(top or 1) .. ";" .. tostring(bottom or 1) .. "r"
+  _scrollstack[#_scrollstack + 1] = M.scroll.scroll_regions(top, bottom)
   return M.applys()
 end
 
@@ -46,9 +46,11 @@ end
 -- @tparam number n The number of scroll regions to pop. Defaults to 1.
 -- @treturn string The ANSI sequence representing the new top of the stack.
 function M.pops(n)
-  local new_top = math.max(#_scrollstack - (n or 1), 1)
-  for i = new_top + 1, #_scrollstack do
-    _scrollstack[i] = nil
+  n = n or 1
+  for _ = 1, n do
+    if #_scrollstack > 1 then
+      table.remove(_scrollstack) -- Only remove if not at base level
+    end
   end
   return M.applys()
 end
