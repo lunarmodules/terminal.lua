@@ -7,7 +7,7 @@
 
 local M = {}
 package.loaded["terminal.color.stack"]
-local output = "terminal.output"
+local output = require("terminal.output")
 
 local _colorstack = {
     default_colors,

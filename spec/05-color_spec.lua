@@ -1,5 +1,4 @@
 describe("Color Module Tests", function()
-  
   local fg_color
   local bg_color
 
