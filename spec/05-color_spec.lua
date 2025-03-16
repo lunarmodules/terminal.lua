@@ -1,4 +1,7 @@
 describe("Color Module Tests", function()
+  
+  local fg_color
+  local bg_color
 
   setup(function()
     fg_color = require "terminal.color".fg_base_colors
