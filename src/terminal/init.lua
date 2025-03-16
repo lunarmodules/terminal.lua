@@ -355,6 +355,9 @@ end
 -- @treturn string ansi sequence to write to the terminal
 -- @within cursor_position
 function M.cursor_sets(row, column)
+  -- Resolve negative indices
+  row = resolve_index(row, M.get_height())
+  column = resolve_index(column, M.get_width())
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
 end
 
