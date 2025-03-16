@@ -2,10 +2,11 @@
 -- Provides utilities to handle scroll-regions and scrolling in terminals.
 -- @module terminal.scroll
 local M = {}
-local output = require("terminal.output")
+package.loaded["terminal.scroll"] = M -- Register the module early to avoid circular dependencies
 
--- Register the module early to avoid circular dependencies
-package.loaded["terminal.scroll"] = M
+local sys = require "system"
+local output = require("terminal.output")
+local resolve_index = require("terminal").resolve_index
 
 --- Function to return the default scroll reset sequence
 -- @treturn string The ANSI sequence for resetting the scroll region.
@@ -20,21 +21,28 @@ function M.reset()
   return true
 end
 
---- Creates an ANSI sequence to reset the scroll region to default.
--- @treturn string The ANSI sequence for resetting the scroll region.
-function M.regions(top, bottom)
-  if not top and not bottom then
-    return M.resets()
-  end
-  return "\27[" .. tostring(top) .. ";" .. tostring(bottom) .. "r"
+--- Creates an ANSI sequence to set the scroll region without writing to the terminal.
+-- Negative indices are supported, counting from the bottom of the screen.
+-- For example, `-1` refers to the last row, `-2` refers to the second-to-last row, etc.
+-- @tparam number start_row The first row of the scroll region (can be negative).
+-- @tparam number end_row The last row of the scroll region (can be negative).
+-- @treturn string The ANSI sequence for setting the scroll region.
+function M.regions(start_row, end_row)
+  -- Resolve negative indices
+  local rows, _ = sys.termsize()
+  start_row = resolve_index(start_row, rows)
+  end_row = resolve_index(end_row, rows)
+  return "\27[" .. tostring(start_row) .. ";" .. tostring(end_row) .. "r"
 end
 
 -- Sets the scroll region and writes the ANSI sequence to the terminal.
--- @tparam number top The top margin of the scroll region.
--- @tparam number bottom The bottom margin of the scroll region.
+-- Negative indices are supported, counting from the bottom of the screen.
+-- For example, `-1` refers to the last row, `-2` refers to the second-to-last row, etc.
+-- @tparam number start_row The first row of the scroll region (can be negative).
+-- @tparam number end_row The last row of the scroll region (can be negative).
 -- @treturn true Always returns true after setting the scroll region.
-function M.region(top, bottom)
-  output.write(M.regions(top, bottom))
+function M.region(start_row, end_row)
+  output.write(M.regions(start_row, end_row))
   return true
 end
 
