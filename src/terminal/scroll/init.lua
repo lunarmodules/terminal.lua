@@ -9,15 +9,22 @@ package.loaded["terminal.scroll"] = M
 
 --- Function to return the default scroll reset sequence
 -- @treturn string The ANSI sequence for resetting the scroll region.
-function M.scroll_reset()
+function M.scroll_resets()
   return "\27[r"
+end
+
+--- Applies the default scroll reset sequence by writing it to the terminal.
+-- @treturn true Always returns true after applying.
+function M.scroll_reset()
+  output.write(M.scroll_resets())
+  return true
 end
 
 --- Creates an ANSI sequence to reset the scroll region to default.
 -- @treturn string The ANSI sequence for resetting the scroll region.
 function M.scroll_regions(top, bottom)
   if not top and not bottom then
-    return M.scroll_reset()
+    return M.scroll_resets()
   end
   return "\27[" .. tostring(top) .. ";" .. tostring(bottom) .. "r"
 end

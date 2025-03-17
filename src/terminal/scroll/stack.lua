@@ -1,4 +1,4 @@
--- Terminal Scroll Stack Module.
+--- Terminal Scroll Stack Module.
 -- Manages a stack of scroll regions for terminal control.
 -- @module scroll.stack
 local M = {}
