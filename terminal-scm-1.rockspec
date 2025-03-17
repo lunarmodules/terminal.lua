@@ -40,21 +40,13 @@ build = {
     ["terminal.input"] = "src/terminal/input.lua",
     ["terminal.output"] = "src/terminal/output.lua",
     ["terminal.clear"] = "src/terminal/clear.lua",
-<<<<<<< HEAD
     ["terminal.utils"] = "src/terminal/utils.lua",
     ["terminal.scroll.init"] = "src/terminal/scroll/init.lua",
     ["terminal.scroll.stack"] = "src/terminal/scroll/stack.lua",
-=======
     ["terminal.scroll"] = "src/terminal/scroll.lua",
     ["terminal.utils"] = "src/terminal/utils.lua",
     ["terminal.color"] = "src/terminal/color.lua",
-<<<<<<< HEAD
-    ["terminal.color.stack"] = "src/terminal/stack/color.lua"
->>>>>>> d7127cd (moved color-stack related functionalityy to a separate stack module)
->>>>>>> 7ab3283 (moved color-stack related functionalityy to a separate stack module)
-=======
     ["terminal.color.stack"] = "src/terminal/stack/color.lua",
->>>>>>> 4b65c5b (changes in .rockspec)
   },
 
   copy_directories = {
