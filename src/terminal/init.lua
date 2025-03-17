@@ -26,16 +26,18 @@ local function resolve_index(index, max_value)
   return index
 end
 
---- Returns the height of the terminal screen.
--- @treturn number the height in rows
-function M.get_height()
-  return sys.get_terminal_size().height
+--- Returns the height and width of the terminal screen.
+-- @treturn number, number the height in rows and the width in columns
+function M.get_dimensions()
+  local size = sys.get_terminal_size()
+  return size.height, size.width
 end
 
---- Returns the width of the terminal screen.
--- @treturn number the width in columns
-function M.get_width()
-  return sys.get_terminal_size().width
+function M.cursor_set(row, column)
+  local height, width = M.get_dimensions()
+  row = utils.resolve_index(row, height)
+  column = utils.resolve_index(column, width)
+  -- Rest of the cursor_set logic
 end
 
 local pack, unpack do
