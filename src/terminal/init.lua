@@ -1384,7 +1384,7 @@ do
       M.shape_pops(math.huge),
       M.visible_pops(math.huge),
       M.textpops(math.huge),
-      scroll.scroll_pops(math.huge),
+      scroll.stack.pops(math.huge),
       M.cursor_sets(r,c) -- restore cursor pos
     )
     t:flush()

@@ -52,11 +52,9 @@ end
 -- @treturn string The ANSI sequence representing the new top of the stack.
 -- @within Sequences
 function M.pops(n)
-  n = n or 1
-  for _ = 1, n do
-    if #_scrollstack > 1 then
-      table.remove(_scrollstack) -- Only remove if not at base level
-    end
+  local new_top = math.max(#_scrollstack - (n or 1), 1)
+  for i = new_top + 1, #_scrollstack do
+    _scrollstack[i] = nil
   end
   return M.applys()
 end
