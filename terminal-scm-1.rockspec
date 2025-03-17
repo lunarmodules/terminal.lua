@@ -44,7 +44,6 @@ build = {
     ["terminal.scroll.init"] = "src/terminal/scroll/init.lua",
     ["terminal.scroll.stack"] = "src/terminal/scroll/stack.lua",
     ["terminal.scroll"] = "src/terminal/scroll.lua",
-    ["terminal.utils"] = "src/terminal/utils.lua",
     ["terminal.color"] = "src/terminal/color.lua",
     ["terminal.color.stack"] = "src/terminal/stack/color.lua",
   },
