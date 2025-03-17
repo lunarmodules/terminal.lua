@@ -1,13 +1,11 @@
---- Terminal Scroll Module.
+--- Terminal Scroll Module
 -- Provides utilities for handling scroll regions in terminals.
 -- @module scroll
 local M = {}
-M.output = require("terminal.output")
+local output = require("terminal.output")
 
--- Push the module table already in `package.loaded` to avoid circular dependencies,
--- since the stack module requires this module.
+-- Register the module early to avoid circular dependencies
 package.loaded["terminal.scroll"] = M
-M.stack = require("terminal.scroll.stack")
 
 --- Function to return the default scroll reset sequence
 -- @treturn string The ANSI sequence for resetting the scroll region.
@@ -29,7 +27,7 @@ end
 -- @tparam number bottom The bottom margin of the scroll region.
 -- @treturn true Always returns true after setting the scroll region.
 function M.scroll_region(top, bottom)
-  M.output.write(M.scroll_regions(top, bottom))
+  output.write(M.scroll_regions(top, bottom))
   return true
 end
 
@@ -45,7 +43,7 @@ end
 -- @tparam[opt=1] number n The number of lines to scroll up.
 -- @treturn true Always returns true after scrolling.
 function M.scroll_up(n)
-  M.output.write(M.scroll_ups(n))
+  output.write(M.scroll_ups(n))
   return true
 end
 
@@ -61,7 +59,7 @@ end
 -- @tparam[opt=1] number n The number of lines to scroll down.
 -- @treturn true Always returns true after scrolling.
 function M.scroll_down(n)
-  M.output.write(M.scroll_downs(n))
+  output.write(M.scroll_downs(n))
   return true
 end
 
@@ -80,8 +78,11 @@ end
 -- @tparam number n The number of lines to scroll (positive for down, negative for up).
 -- @treturn true Always returns true after scrolling.
 function M.scroll(n)
-  M.output.write(M.scrolls(n))
+  output.write(M.scrolls(n))
   return true
 end
+
+-- Load stack module **after registering everything** to avoid circular dependency
+require("terminal.scroll.stack")
 
 return M
