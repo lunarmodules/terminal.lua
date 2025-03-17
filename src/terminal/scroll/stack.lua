@@ -2,17 +2,17 @@
 -- Manages a stack of scroll regions for terminal control.
 -- @module terminal.scroll.stack
 local M = {}
+package.loaded["terminal.scroll.stack"] = M -- Register this module in package.loaded
+
 local output = require("terminal.output")
+local scroll = require("terminal.scroll")
 
--- Use `package.loaded` to avoid requiring `scroll` directly, preventing circular dependency
-local scroll = package.loaded["terminal.scroll"]
 
--- Register this module in package.loaded
-package.loaded["terminal.scroll.stack"] = M
 
 local _scrollstack = {
   scroll.scroll_resets(), -- Use the function from scroll module
 }
+
 
 --- Retrieves the current scroll region sequence from the top of the stack.
 -- @treturn string The ANSI sequence representing the current scroll region.
