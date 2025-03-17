@@ -18,7 +18,6 @@ local M = {
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
-
 --- Returns the height and width of the terminal screen.
 -- @treturn number, number the height in rows and the width in columns
 function M.get_dimensions()
@@ -26,11 +25,22 @@ function M.get_dimensions()
   return size.height, size.width
 end
 
+--- Sets the cursor position and writes it to the terminal, without pushing onto the stack.
+-- @tparam number row
+-- @tparam number column
+-- @return true
+-- @within cursor_position
 function M.cursor_set(row, column)
+  -- Retrieve terminal dimensions
   local height, width = M.get_dimensions()
+
+  -- Resolve negative indices using utils.resolve_index
   row = utils.resolve_index(row, height)
   column = utils.resolve_index(column, width)
+
   -- Rest of the cursor_set logic
+  output.write("\27[" .. tostring(row) .. ";" .. tostring(column) .. "H")
+  return true
 end
 
 local pack, unpack do
@@ -39,7 +49,6 @@ local pack, unpack do
   pack = function(...) return { n = select("#", ...), ... } end
   unpack = function(t, i, j) return oldunpack(t, i or 1, j or t.n or #t) end
 end
-
 
 local sys = require "system"
 local utils = require "terminal.utils"
@@ -57,16 +66,9 @@ local input = M.input
 local clear = M.clear
 local scroll = M.scroll
 
-
 local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function
 local asleep   -- a (optionally) non-blocking sleep function
-
-
-
-
-
-
 
 --=============================================================================
 -- cursor shapes
@@ -77,10 +79,8 @@ local asleep   -- a (optionally) non-blocking sleep function
 -- required ansi sequences, without any stack operations.
 -- @section cursor_shapes
 
-
 local cursor_hide = "\27[?25l"
 local cursor_show = "\27[?25h"
-
 
 --- Returns the ansi sequence to show/hide the cursor without writing it to the terminal.
 -- @tparam boolean visible true to show, false to hide
@@ -99,8 +99,6 @@ function M.visible(visible)
   return true
 end
 
-
-
 local shape_reset = "\27[0 q"
 
 local shapes = utils.make_lookup("cursor shape", {
@@ -111,7 +109,6 @@ local shapes = utils.make_lookup("cursor shape", {
   bar_blink       = "\27[5 q",
   bar             = "\27[6 q",
 })
-
 
 --- Returns the ansi sequence for a cursor shape without writing it to the terminal.
 -- @tparam string shape the shape to get, one of the keys `"block"`,
@@ -198,13 +195,9 @@ function M.visible_pop(n)
   return true
 end
 
-
-
-
 local _shapestack = {
   shape_reset
 }
-
 
 --- Re-applies the shape at the top of the stack (returns it, does not write it to the terminal).
 -- @treturn string ansi sequence to write to the terminal
@@ -262,7 +255,6 @@ function M.shape_pop(n)
   return true
 end
 
-
 --=============================================================================
 -- cursor position
 --=============================================================================
@@ -271,7 +263,6 @@ end
 -- @section cursor_position
 
 local _positionstack = {}
-
 
 --- returns the sequence for requesting cursor position as a string
 function M.cursor_get_querys()
@@ -282,7 +273,6 @@ end
 function M.cursor_get_query()
   output.write(M.cursor_get_querys())
 end
-
 
 --- Requests the current cursor position from the terminal.
 -- Will read entire keyboard buffer to empty it, then request the cursor position.
@@ -351,8 +341,8 @@ end
 -- @within cursor_position
 function M.cursor_sets(row, column)
   -- Resolve negative indices
-  row = resolve_index(row, M.get_height())
-  column = resolve_index(column, M.get_width())
+  row = utils.resolve_index(row, M.get_height())
+  column = utils.resolve_index(column, M.get_width())
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
 end
 
@@ -366,12 +356,10 @@ function M.cursor_set(row, column)
   return true
 end
 
-
 --=============================================================================
 --- Cursor positioning stack based.
 -- Managing the cursor in absolute positions, stack based.
 -- @section cursor_position_stack
-
 
 --- Pushes the current cursor position onto the stack, and returns an ansi sequence to move to the new position without writing it to the terminal.
 -- Calls cursor.get() under the hood.
@@ -864,7 +852,6 @@ function M.reverse_off()
   return true
 end
 
-
 -- lookup brightness levels
 local _brightness = utils.make_lookup("brightness level", {
   off = 0,
@@ -907,7 +894,6 @@ local _brightness_sequence_after_reset = {
   [3] = "\027[1m",
 }
 
-
 --- Creates an ansi sequence to set the brightness without writing it to the terminal.
 -- `brightness` can be one of the following:
 --
@@ -932,14 +918,12 @@ function M.brightness(brightness)
   return true
 end
 
-
 --=============================================================================
 -- text_stack: colors & attributes
 --=============================================================================
 -- Text colors and attributes stack.
 -- Stack for managing the text color and attributes.
 -- @section textcolor_stack
-
 
 local function newtext(attr)
   local last = _colorstack[#_colorstack]
@@ -1051,8 +1035,6 @@ function M.textapply()
   output.write(_colorstack[#_colorstack].ansi)
   return true
 end
-
-
 
 --=============================================================================
 -- line drawing
@@ -1298,7 +1280,6 @@ function M.box(height, width, format, clear_flag, title, lastcolumn)
   return true
 end
 
-
 --=============================================================================
 -- terminal initialization, shutdown and miscellanea
 --=============================================================================
@@ -1318,7 +1299,6 @@ function M.beep()
   output.write(M.beep())
   return true
 end
-
 
 do
   local termbackup
@@ -1427,8 +1407,6 @@ do
   end
 end
 
-
-
 --- Wrap a function in `initialize` and `shutdown` calls.
 -- When an error occurs, and the application exits, the terminal might not be properly shut down.
 -- This function wraps a function in calls to `initialize` and `shutdown`, ensuring the terminal is properly shut down.
@@ -1464,7 +1442,5 @@ function M.initwrap(opts, main, ...)
   end
   return unpack(results)
 end
-
-
 
 return M
