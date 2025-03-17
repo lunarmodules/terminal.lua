@@ -18,13 +18,6 @@ local M = {
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
--- Helper function to resolve negative indices
-local function resolve_index(index, max_value)
-  if index < 0 then
-    return max_value + index + 1
-  end
-  return index
-end
 
 --- Returns the height and width of the terminal screen.
 -- @treturn number, number the height in rows and the width in columns

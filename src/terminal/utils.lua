@@ -1,11 +1,20 @@
 --- Support functions.
 -- @module terminal.utils
 
-
-
 local M = {}
 
-
+--- Resolves negative indices to positive values based on a maximum value.
+-- This function is useful for handling negative indices in arrays or tables,
+-- similar to Lua's convention for negative indices.
+-- @param index The index to resolve (can be negative).
+-- @param max_value The maximum value (e.g., terminal height or width).
+-- @return The resolved positive index.
+function M.resolve_index(index, max_value)
+  if index < 0 then
+    return max_value + index + 1
+  end
+  return index
+end
 
 -- Converts table-keys to a string for error messages.
 -- Takes a constants table, and returns a string containing the keys such that the
@@ -35,8 +44,6 @@ local function constants_to_string(constants)
   return table.concat(keys_num, ", ")
 end
 
-
-
 --- Returns an error message for an invalid lookup constant.
 -- This function is used to generate error messages for invalid arguments.
 -- @tparam number|string value The value that wasn't found.
@@ -55,8 +62,6 @@ function M.invalid_constant(value, constants, prefix)
   return prefix .. value .. ". Expected one of: " .. list
 end
 
-
-
 --- Throws an error message for an invalid lookup constant.
 -- This function is used to generate error messages for invalid arguments.
 -- @tparam number|string value The value that wasn't found.
@@ -69,8 +74,6 @@ function M.throw_invalid_constant(value, constants, prefix, err_lvl)
   error(M.invalid_constant(value, constants, prefix), err_lvl)
   -- unreachable
 end
-
-
 
 --- Converts a lookup table to a constant table with error reporting.
 -- The constant table modified in-place, a metatable with an __index metamethod
@@ -91,7 +94,5 @@ function M.make_lookup(value_type, t)
 
   return t
 end
-
-
 
 return M
