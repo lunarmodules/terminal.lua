@@ -340,9 +340,10 @@ end
 -- @treturn string ansi sequence to write to the terminal
 -- @within cursor_position
 function M.cursor_sets(row, column)
-  -- Resolve negative indices
-  row = utils.resolve_index(row, M.get_height())
-  column = utils.resolve_index(column, M.get_width())
+ -- Retrieve terminal dimensions once
+local size = sys.get_terminal_size()
+row = utils.resolve_index(row, size.height)
+column = utils.resolve_index(column, size.width)
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
 end
 
@@ -352,7 +353,13 @@ end
 -- @return true
 -- @within cursor_position
 function M.cursor_set(row, column)
-  output.write(M.cursor_sets(row, column))
+  -- Retrieve terminal dimensions once
+  local size = sys.get_terminal_size()
+  row = utils.resolve_index(row, size.height)
+  column = utils.resolve_index(column, size.width)
+
+  -- Write the cursor position to the terminal
+  output.write("\27[" .. tostring(row) .. ";" .. tostring(column) .. "H")
   return true
 end
 
