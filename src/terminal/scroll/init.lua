@@ -89,7 +89,8 @@ function M.scroll(n)
   return true
 end
 
--- Load stack module **after registering everything** to avoid circular dependency
-require("terminal.scroll.stack")
+-- Load stack module **after registering everything** since it will call into
+-- this module.
+M.stack = require("terminal.scroll.stack")
 
 return M

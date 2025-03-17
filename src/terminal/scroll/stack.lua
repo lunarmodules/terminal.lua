@@ -11,7 +11,7 @@ local scroll = package.loaded["terminal.scroll"]
 package.loaded["terminal.scroll.stack"] = M
 
 local _scrollstack = {
-  scroll.scroll_reset(), -- Use the function from scroll module
+  scroll.scroll_resets(), -- Use the function from scroll module
 }
 
 --- Retrieves the current scroll region sequence from the top of the stack.
