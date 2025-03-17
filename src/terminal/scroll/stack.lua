@@ -1,6 +1,6 @@
---- Terminal Scroll Stack Module.
+--- Terminal scroll stack module.
 -- Manages a stack of scroll regions for terminal control.
--- @module scroll.stack
+-- @module terminal.scroll.stack
 local M = {}
 local output = require("terminal.output")
 
@@ -16,6 +16,7 @@ local _scrollstack = {
 
 --- Retrieves the current scroll region sequence from the top of the stack.
 -- @treturn string The ANSI sequence representing the current scroll region.
+-- @within Sequences
 function M.applys()
   return _scrollstack[#_scrollstack]
 end
@@ -31,6 +32,7 @@ end
 -- @tparam number top The top line number of the scroll region.
 -- @tparam number bottom The bottom line number of the scroll region.
 -- @treturn string The ANSI sequence representing the pushed scroll region.
+-- @within Sequences
 function M.pushs(top, bottom)
   _scrollstack[#_scrollstack + 1] = scroll.scroll_regions(top, bottom)
   return M.applys()
@@ -48,6 +50,7 @@ end
 --- Pops the specified number of scroll regions from the stack without applying it.
 -- @tparam number n The number of scroll regions to pop. Defaults to 1.
 -- @treturn string The ANSI sequence representing the new top of the stack.
+-- @within Sequences
 function M.pops(n)
   n = n or 1
   for _ = 1, n do

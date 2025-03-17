@@ -1,7 +1,8 @@
 --- Terminal library for Lua.
 --
--- This terminal library builds upon the cross-platform terminal capabilities of LuaSystem. As such
--- it works modern terminals on Windows, Unix, and Mac systems.
+-- This terminal library builds upon the cross-platform terminal capabilities of
+-- [LuaSystem](https://github.com/lunarmodules/luasystem). As such
+-- it works in modern terminals on Windows, Unix, and Mac systems.
 --
 -- It provides a simple and consistent interface to the terminal, allowing for cursor positioning,
 -- cursor shape and visibility, text formatting, and more.
@@ -1306,6 +1307,7 @@ do
 
   --- Returns whether the terminal has been initialized and is ready for use.
   -- @treturn boolean true if the terminal has been initialized
+  -- @within initialization
   function M.ready()
     return termbackup ~= nil
   end
