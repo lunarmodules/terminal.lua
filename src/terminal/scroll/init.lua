@@ -9,22 +9,15 @@ package.loaded["terminal.scroll"] = M
 
 --- Function to return the default scroll reset sequence
 -- @treturn string The ANSI sequence for resetting the scroll region.
-function M.scroll_resets()
+function M.reset()
   return "\27[r"
-end
-
---- Applies the default scroll reset sequence by writing it to the terminal.
--- @treturn true Always returns true after applying.
-function M.scroll_reset()
-  output.write(M.scroll_resets())
-  return true
 end
 
 --- Creates an ANSI sequence to reset the scroll region to default.
 -- @treturn string The ANSI sequence for resetting the scroll region.
-function M.scroll_regions(top, bottom)
+function M.regions(top, bottom)
   if not top and not bottom then
-    return M.scroll_resets()
+    return M.reset()
   end
   return "\27[" .. tostring(top) .. ";" .. tostring(bottom) .. "r"
 end
@@ -33,15 +26,15 @@ end
 -- @tparam number top The top margin of the scroll region.
 -- @tparam number bottom The bottom margin of the scroll region.
 -- @treturn true Always returns true after setting the scroll region.
-function M.scroll_region(top, bottom)
-  output.write(M.scroll_regions(top, bottom))
+function M.region(top, bottom)
+  output.write(M.regions(top, bottom))
   return true
 end
 
 -- Creates an ANSI sequence to scroll up by a specified number of lines.
 -- @tparam[opt=1] number n The number of lines to scroll up.
 -- @treturn string The ANSI sequence for scrolling up.
-function M.scroll_ups(n)
+function M.ups(n)
   n = n or 1
   return "\27[" .. tostring(n) .. "S"
 end
@@ -49,15 +42,15 @@ end
 --- Scrolls up by a specified number of lines and writes the sequence to the terminal.
 -- @tparam[opt=1] number n The number of lines to scroll up.
 -- @treturn true Always returns true after scrolling.
-function M.scroll_up(n)
-  output.write(M.scroll_ups(n))
+function M.up(n)
+  output.write(M.ups(n))
   return true
 end
 
 --- Creates an ANSI sequence to scroll down by a specified number of lines.
 -- @tparam[opt=1] number n The number of lines to scroll down.
 -- @treturn string The ANSI sequence for scrolling down.
-function M.scroll_downs(n)
+function M.downs(n)
   n = n or 1
   return "\27[" .. tostring(n) .. "T"
 end
@@ -65,8 +58,8 @@ end
 --- Scrolls down by a specified number of lines and writes the sequence to the terminal.
 -- @tparam[opt=1] number n The number of lines to scroll down.
 -- @treturn true Always returns true after scrolling.
-function M.scroll_down(n)
-  output.write(M.scroll_downs(n))
+function M.down(n)
+  output.write(M.downs(n))
   return true
 end
 
@@ -74,7 +67,7 @@ end
 -- Positive values scroll down, negative values scroll up.
 -- @tparam number n The number of lines to scroll (positive for down, negative for up).
 -- @treturn string The ANSI sequence for vertical scrolling.
-function M.scrolls(n)
+function M.move(n)
   if n == 0 or n == nil then
     return ""
   end
@@ -85,7 +78,7 @@ end
 -- @tparam number n The number of lines to scroll (positive for down, negative for up).
 -- @treturn true Always returns true after scrolling.
 function M.scroll(n)
-  output.write(M.scrolls(n))
+  output.write(M.move(n))
   return true
 end
 
