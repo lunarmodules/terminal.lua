@@ -1,6 +1,6 @@
---- Terminal Scroll Module
--- Provides utilities for handling scroll regions in terminals.
--- @module scroll
+--- Terminal scroll module.
+-- Provides utilities to handle scroll-regions and scrolling in terminals.
+-- @module terminal.scroll
 local M = {}
 local output = require("terminal.output")
 
@@ -89,7 +89,8 @@ function M.scroll(n)
   return true
 end
 
--- Load stack module **after registering everything** to avoid circular dependency
-require("terminal.scroll.stack")
+-- Load stack module **after registering everything** since it will call into
+-- this module.
+M.stack = require("terminal.scroll.stack")
 
 return M

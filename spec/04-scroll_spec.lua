@@ -50,9 +50,4 @@ describe("Scroll Module Tests", function()
     assert.are.equal("\27[2S", scroll.scrolls(-2))
   end)
 
-
-  pending("scroll stack tests", function()
-    -- placeholder to do later
-  end)
-
 end)

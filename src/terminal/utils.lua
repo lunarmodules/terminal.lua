@@ -41,7 +41,7 @@ end
 -- This function is used to generate error messages for invalid arguments.
 -- @tparam number|string value The value that wasn't found.
 -- @tparam table constants The valid values for the constant.
--- @tparam[opt="Invalid value: "] prefix the prefix for the message.
+-- @tparam[opt="Invalid value: "] string prefix the prefix for the message.
 -- @treturn string The error message.
 function M.invalid_constant(value, constants, prefix)
   local prefix = prefix or "Invalid value: "
@@ -61,8 +61,8 @@ end
 -- This function is used to generate error messages for invalid arguments.
 -- @tparam number|string value The value that wasn't found.
 -- @tparam table constants The valid values for the constant.
--- @tparam[opt="Invalid value: "] prefix the prefix for the message.
--- @tparam[opt=1] err_lvl the error level when throwing the error.
+-- @tparam[opt="Invalid value: "] string prefix the prefix for the message.
+-- @tparam[opt=1] number err_lvl the error level when throwing the error.
 -- @return nothing, throws an error.
 function M.throw_invalid_constant(value, constants, prefix, err_lvl)
   err_lvl = (err_lvl or 1) + 1 -- +1 to add this function itself
@@ -72,14 +72,23 @@ end
 
 
 
---- Converts a lookup table to a constant table with error reporting.
--- The constant table modified in-place, a metatable with an __index metamethod
+--- Converts a lookup table to a constant table with user friendly error reporting.
+-- The constant table is modified in-place, a metatable with an __index metamethod
 -- is added to the table. This metamethod throws an error when an invalid key is
 -- accessed.
 -- @tparam[opt="value"] string value_type The type of value looked up, use a singular,
 -- eg. "cursor shape", or "foreground color".
 -- @tparam table t The lookup table.
 -- @treturn table The same constant table t, with a metatable added.
+-- @usage
+-- local cursor_shape = M.make_lookup("cursor shape", {
+--   block = 0,
+--   underline = 1,
+--   bar = 2,
+-- })
+--
+-- local value = cursor_shape["bad-shape"] -- throws an error;
+-- -- Invalid cursor shape: "bad-shape". Expected one of: "block", "underline", "bar"
 function M.make_lookup(value_type, t)
   local value_type = value_type or "value"
 
