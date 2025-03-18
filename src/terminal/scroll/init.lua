@@ -1,6 +1,7 @@
 --- Terminal Scroll Module
 -- Provides utilities for handling scroll regions in terminals.
--- @module scroll
+-- @module terminal.scroll
+
 local M = {}
 local output = require("terminal.output")
 
@@ -33,56 +34,4 @@ end
 
 -- Creates an ANSI sequence to scroll up by a specified number of lines.
 -- @tparam[opt=1] number n The number of lines to scroll up.
--- @treturn string The ANSI sequence for scrolling up.
-function M.ups(n)
-  n = n or 1
-  return "\27[" .. tostring(n) .. "S"
-end
-
---- Scrolls up by a specified number of lines and writes the sequence to the terminal.
--- @tparam[opt=1] number n The number of lines to scroll up.
--- @treturn true Always returns true after scrolling.
-function M.up(n)
-  output.write(M.ups(n))
-  return true
-end
-
---- Creates an ANSI sequence to scroll down by a specified number of lines.
--- @tparam[opt=1] number n The number of lines to scroll down.
--- @treturn string The ANSI sequence for scrolling down.
-function M.downs(n)
-  n = n or 1
-  return "\27[" .. tostring(n) .. "T"
-end
-
---- Scrolls down by a specified number of lines and writes the sequence to the terminal.
--- @tparam[opt=1] number n The number of lines to scroll down.
--- @treturn true Always returns true after scrolling.
-function M.down(n)
-  output.write(M.downs(n))
-  return true
-end
-
---- Creates an ANSI sequence to scroll vertically by a specified number of lines.
--- Positive values scroll down, negative values scroll up.
--- @tparam number n The number of lines to scroll (positive for down, negative for up).
--- @treturn string The ANSI sequence for vertical scrolling.
-function M.move(n)
-  if n == 0 or n == nil then
-    return ""
-  end
-  return "\27[" .. (n < 0 and (tostring(-n) .. "S") or (tostring(n) .. "T"))
-end
-
---- Scrolls vertically by a specified number of lines and writes the sequence to the terminal.
--- @tparam number n The number of lines to scroll (positive for down, negative for up).
--- @treturn true Always returns true after scrolling.
-function M.scroll(n)
-  output.write(M.move(n))
-  return true
-end
-
--- Load stack module **after registering everything** to avoid circular dependency
-require("terminal.scroll.stack")
-
-return M
+-- @treturn string The ANSI sequence for scroll

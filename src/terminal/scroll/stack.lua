@@ -1,11 +1,12 @@
 -- Terminal Scroll Stack Module.
 -- Manages a stack of scroll regions for terminal control.
--- @module scroll.stack
+-- @module terminal.scroll.stack
+
 local M = {}
+package.loaded["terminal.scroll.stack"] = M -- Register this module in package.loaded
+
 local output = require("terminal.output")
 local scroll = require("terminal.scroll")
-
-package.loaded["terminal.scroll.stack"] = M
 
 local _scrollstack = {
   scroll.reset(), -- Use the function from scroll module
@@ -46,11 +47,9 @@ end
 -- @tparam number n The number of scroll regions to pop. Defaults to 1.
 -- @treturn string The ANSI sequence representing the new top of the stack.
 function M.pops(n)
-  n = n or 1
-  for _ = 1, n do
-    if #_scrollstack > 1 then
-      table.remove(_scrollstack) -- Only remove if not at base level
-    end
+  local new_top = math.max(#_scrollstack - (n or 1), 1)
+  for i = new_top + 1, #_scrollstack do
+    _scrollstack[i] = nil
   end
   return M.applys()
 end
