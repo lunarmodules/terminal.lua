@@ -29,6 +29,9 @@ function M.scroll_regions(top, bottom)
   if not top and not bottom then
     return _scroll_reset
   end
+  -- Resolve indices within the function since it's the primary entry point
+  top = top and resolve_index(top, get_height())
+  bottom = bottom and resolve_index(bottom, get_height())
   return "\27[" .. tostring(top) .. ";" .. tostring(bottom) .. "r"
 end
 
@@ -40,18 +43,9 @@ end
 -- @return true
 -- @within scroll_region
 function M.scroll_region(start_row, end_row)
-  -- Input validation
-  assert(type(start_row) == "number", "start_row must be a number")
-  assert(type(end_row) == "number", "end_row must be a number")
-
-  -- Resolve negative indices
-  start_row = resolve_index(start_row, get_height())
-  end_row = resolve_index(end_row, get_height())
-
-  -- Ensure start_row is less than or equal to end_row
-  assert(start_row <= end_row, "start_row must be less than or equal to end_row")
-
-  output.write("\27[" .. tostring(start_row) .. ";" .. tostring(end_row) .. "r")
+  -- Removed input validation to maintain consistency with the rest of the codebase
+  -- Resolve negative indices and write the sequence
+  output.write(M.scroll_regions(start_row, end_row))
   return true
 end
 
@@ -132,10 +126,6 @@ end
 -- @tparam[opt] number bottom Bottom row of the scroll region (can be negative).
 -- @treturn string ANSI sequence of the new scroll region.
 function M.scroll_pushs(top, bottom)
-  if top and bottom then
-    top = resolve_index(top, get_height())
-    bottom = resolve_index(bottom, get_height())
-  end
   _scrollstack[#_scrollstack + 1] = M.scroll_regions(top, bottom)
   return M.scroll_applys()
 end
