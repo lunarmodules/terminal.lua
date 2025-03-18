@@ -18,37 +18,7 @@ local M = {
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
---- Returns the height and width of the terminal screen.
--- @treturn number, number the height in rows and the width in columns
-function M.get_dimensions()
-  local size = sys.get_terminal_size()
-  return size.height, size.width
-end
-
---- Sets the cursor position and writes it to the terminal, without pushing onto the stack.
--- @tparam number row
--- @tparam number column
--- @return true
--- @within cursor_position
-function M.cursor_set(row, column)
-  -- Retrieve terminal dimensions
-  local height, width = M.get_dimensions()
-
-  -- Resolve negative indices using utils.resolve_index
-  row = utils.resolve_index(row, height)
-  column = utils.resolve_index(column, width)
-
-  -- Rest of the cursor_set logic
-  output.write("\27[" .. tostring(row) .. ";" .. tostring(column) .. "H")
-  return true
-end
-
-local pack, unpack do
-  -- nil-safe versions of pack/unpack
-  local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
-  pack = function(...) return { n = select("#", ...), ... } end
-  unpack = function(t, i, j) return oldunpack(t, i or 1, j or t.n or #t) end
-end
+local pack, unpack = table.pack, table.unpack -- Use standard table.pack/unpack
 
 local sys = require "system"
 local utils = require "terminal.utils"
@@ -304,7 +274,7 @@ function M.cursor_get()
   return unpack(r[1])
 end
 
---- Returns the ansi sequence to store to backup the current sursor position (in terminal storage, not stacked).
+--- Returns the ansi sequence to store to backup the current cursor position (in terminal storage, not stacked).
 -- @treturn string ansi sequence to write to the terminal
 -- @within cursor_position
 function M.cursor_saves()
@@ -334,16 +304,16 @@ function M.cursor_restore()
   return true
 end
 
---- Creates ansi sequence to set the cursor position without writing to the terminal or pushing onto the stack.
+--- Creates ansi sequence to set the cursor position without writing it to the terminal or pushing onto the stack.
 -- @tparam number row
 -- @tparam number column
 -- @treturn string ansi sequence to write to the terminal
 -- @within cursor_position
 function M.cursor_sets(row, column)
- -- Retrieve terminal dimensions once
-local size = sys.get_terminal_size()
-row = utils.resolve_index(row, size.height)
-column = utils.resolve_index(column, size.width)
+  -- Retrieve terminal dimensions once
+  local size = sys.get_terminal_size()
+  row = utils.resolve_index(row, size.height)
+  column = utils.resolve_index(column, size.width)
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
 end
 
@@ -353,7 +323,8 @@ end
 -- @return true
 -- @within cursor_position
 function M.cursor_set(row, column)
-return true
+  output.write(M.cursor_sets(row, column))
+  return true
 end
 
 --=============================================================================
@@ -564,7 +535,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_tocolumn(column)
-  t:write(M.cursor_tocolumns(column))
+  output.write(M.cursor_tocolumns(column))
   return true
 end
 
@@ -581,7 +552,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_torow(row)
-  t:write(M.cursor_torows(row))
+  output.write(M.cursor_torows(row))
   return true
 end
 
@@ -598,7 +569,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_row_down(rows)
-  t:write(M.cursor_row_downs(rows))
+  output.write(M.cursor_row_downs(rows))
   return true
 end
 
@@ -615,7 +586,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_row_up(rows)
-  t:write(M.cursor_row_ups(rows))
+  output.write(M.cursor_row_ups(rows))
   return true
 end
 
@@ -688,7 +659,7 @@ local function colorcode(r, g, b, fg)
     return fg and fg_base_colors[r] or bg_base_colors[r]
   end
 
-  if type(r) ~= "number" or g < 0 or g > 255 then
+  if type(r) ~= "number" or r < 0 or r > 255 then
     return "expected arg #1 to be a string or an integer 0-255, got " .. tostring(r) .. " (" .. type(r) .. ")"
   end
   if g == nil then
@@ -701,7 +672,7 @@ local function colorcode(r, g, b, fg)
   g = tostring(math.floor(g))
 
   if type(b) ~= "number" or b < 0 or b > 255 then
-    return "expected arg #3 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")"
+    return "expected arg #3 to be a number 0-255, got " .. tostring(b) .. " (" .. type(b) .. ")"
   end
   b = tostring(math.floor(b))
 
@@ -942,7 +913,6 @@ local function newtext(attr)
     (new.underline and underline_on or "") ..
     (new.blink and blink_on or "") ..
     (new.reverse and reverse_on or "")
-  -- print("newtext:", (new.ansi:gsub("\27", "\\27")))
   return new
 end
 
@@ -956,7 +926,7 @@ end
 -- @tparam[opt] string|integer attr.bg the background color to set. Base color (string), or extended color (number). Takes precedence of `bg_r`, `bg_g`, `bg_b`.
 -- @tparam[opt] integer attr.bg_r the red value of the background color to set.
 -- @tparam[opt] integer attr.bg_g the green value of the background color to set.
--- @tparam[opt] integer attr.bg_b the blue value of the background color to set.
+-- @tparam[opt] integer attr.bg_b the blue value of the foreground color to set.
 -- @tparam[opt] string|number attr.brightness the brightness level to set
 -- @tparam[opt] boolean attr.underline whether to set underline
 -- @tparam[opt] boolean attr.blink whether to set blink
@@ -1081,13 +1051,12 @@ function M.line_verticals(n, char, lastcolumn)
   char = char or "│"
   lastcolumn = lastcolumn and 1 or 0
   local w = sys.utf8cwidth(char)
-  -- TODO: why do we need 'lastcolumn*2' here???
   return (char .. M.cursor_lefts(w-lastcolumn*2) .. M.cursor_downs(1)):rep(n-1) .. char
 end
 
 --- Draws a vertical line and writes it to the terminal.
 -- Line is drawn top to bottom. Cursor is left to the right of the last character (so not below it).
--- @tparam number n number of rows/lines to draw
+-- @tparam number Succession of rows/lines to draw
 -- @tparam[opt="│"] string char the character to draw
 -- @return true
 -- @within lines
@@ -1107,10 +1076,6 @@ end
 -- @treturn string ansi sequence to write to the terminal
 -- @within lines
 function M.line_titles(width, title, char, pre, post)
-
-  -- TODO: strip any ansi sequences from the title before determining length
-  -- such that titles can have multiple colors etc. what if we truncate????
-
   if title == nil or title == "" then
     return M.line_horizontals(width, char)
   end
@@ -1123,7 +1088,7 @@ function M.line_titles(width, title, char, pre, post)
   if w_for_title > title_w then
     -- enough space for title
     local p1 = M.line_horizontals(math.floor((w_for_title - title_w) / 2), char) .. pre .. title .. post
-    return  p1 .. M.line_horizontals(width - sys.utf8swidth(p1), char)
+    return p1 .. M.line_horizontals(width - sys.utf8swidth(p1), char)
   elseif w_for_title < 4 then
     -- too little space for title, omit it alltogether
     return M.line_horizontals(width, char)
@@ -1296,7 +1261,7 @@ end
 --- Write a sequence to the terminal to make it beep.
 -- @return true
 function M.beep()
-  output.write(M.beep())
+  output.write(M.beeps())
   return true
 end
 
@@ -1341,12 +1306,12 @@ do
     t = filehandle
 
     bsleep = opts.bsleep or sys.sleep
-    assert(type(bsleep) == "function", "invalid opts.bsleep function, expected a function, got " .. type(opts.bsleep))
+    assert(type(bsleep) == "function", "invalid opts.bsleep function, expected a function, got " .. type(bsleep))
     input.set_bsleep(bsleep)
     output.set_bsleep(bsleep)
 
     asleep = opts.sleep or sys.sleep
-    assert(type(asleep) == "function", "invalid opts.sleep function, expected a function, got " .. type(opts.sleep))
+    assert(type(asleep) == "function", "invalid opts.sleep function, expected a function, got " .. type(asleep))
     input.set_sleep(asleep)
 
     termbackup = sys.termbackup()
