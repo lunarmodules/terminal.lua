@@ -21,7 +21,7 @@ describe("Scroll stack", function()
 
 
   it("has a reset as the first item on the stack", function()
-    assert.are.same({ scroll.scroll_resets() }, stack.__scrollstack)
+    assert.are.same({ scroll.resets() }, stack.__scrollstack)
   end)
 
 
@@ -29,9 +29,9 @@ describe("Scroll stack", function()
   describe("pushs()", function()
 
     it("pushes a new scroll region onto the stack", function()
-      local expected = scroll.scroll_regions(5, 10)
+      local expected = scroll.regions(5, 10)
       local seq = stack.pushs(5, 10)
-      assert.are.same({ scroll.scroll_resets(), expected }, stack.__scrollstack)
+      assert.are.same({ scroll.resets(), expected }, stack.__scrollstack)
       assert.are.equal(expected, seq)
     end)
 
@@ -42,7 +42,7 @@ describe("Scroll stack", function()
   describe("pops()", function()
 
     it("doesn't pop beyond the last item", function()
-      local expected = scroll.scroll_resets()
+      local expected = scroll.resets()
       local seq = stack.pops(100)
       assert.are.same({ expected }, stack.__scrollstack)
       assert.are.equal(expected, seq)
@@ -50,7 +50,7 @@ describe("Scroll stack", function()
 
 
     it("can pop 'math.huge' items", function()
-      local expected = scroll.scroll_resets()
+      local expected = scroll.resets()
       local seq = stack.pops(math.huge)
       assert.are.same({ expected }, stack.__scrollstack)
       assert.are.equal(expected, seq)
@@ -64,7 +64,7 @@ describe("Scroll stack", function()
 
       assert.are.equal(seq2, stack.pops(1))
       assert.are.equal(seq1, stack.pops(1))
-      assert.are.equal(scroll.scroll_resets(), stack.pops(1))
+      assert.are.equal(scroll.resets(), stack.pops(1))
     end)
 
 
@@ -102,7 +102,7 @@ describe("Scroll stack", function()
   describe("applys()", function()
 
     it("returns the current scroll region sequence", function()
-      assert.are.equal(scroll.scroll_resets(), stack.applys())
+      assert.are.equal(scroll.resets(), stack.applys())
       local seq = stack.pushs(5, 10)
       assert.are.equal(seq, stack.applys())
     end)

@@ -10,7 +10,7 @@ local scroll = require("terminal.scroll")
 
 
 local _scrollstack = {
-  scroll.scroll_resets(), -- Use the function from scroll module
+  scroll.resets(), -- Use the function from scroll module
 }
 
 
@@ -39,7 +39,7 @@ end
 -- @treturn string The ANSI sequence representing the pushed scroll region.
 -- @within Sequences
 function M.pushs(top, bottom)
-  _scrollstack[#_scrollstack + 1] = scroll.scroll_regions(top, bottom)
+  _scrollstack[#_scrollstack + 1] = scroll.regions(top, bottom)
   return M.applys()
 end
 

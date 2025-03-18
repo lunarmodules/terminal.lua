@@ -9,32 +9,32 @@ describe("Scroll Module Tests", function()
 
 
   it("should return default scroll region reset sequence", function()
-    assert.are.equal("\27[r", scroll.scroll_regions())
+    assert.are.equal("\27[r", scroll.regions())
   end)
 
 
   it("should return correct scroll region set sequence", function()
-    assert.are.equal("\27[5;10r", scroll.scroll_regions(5, 10))
+    assert.are.equal("\27[5;10r", scroll.regions(5, 10))
   end)
 
 
   it("should return correct sequence for scrolling up by default 1 line", function()
-    assert.are.equal("\27[1S", scroll.scroll_ups())
+    assert.are.equal("\27[1S", scroll.ups())
   end)
 
 
   it("should return correct sequence for scrolling up by 5 lines", function()
-    assert.are.equal("\27[5S", scroll.scroll_ups(5))
+    assert.are.equal("\27[5S", scroll.ups(5))
   end)
 
 
   it("should return correct sequence for scrolling down by default 1 line", function()
-    assert.are.equal("\27[1T", scroll.scroll_downs())
+    assert.are.equal("\27[1T", scroll.downs())
   end)
 
 
   it("should return correct sequence for scrolling down by 3 lines", function()
-    assert.are.equal("\27[3T", scroll.scroll_downs(3))
+    assert.are.equal("\27[3T", scroll.downs(3))
   end)
 
 
