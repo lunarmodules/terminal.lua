@@ -353,14 +353,7 @@ end
 -- @return true
 -- @within cursor_position
 function M.cursor_set(row, column)
-  -- Retrieve terminal dimensions once
-  local size = sys.get_terminal_size()
-  row = utils.resolve_index(row, size.height)
-  column = utils.resolve_index(column, size.width)
-
-  -- Write the cursor position to the terminal
-  output.write("\27[" .. tostring(row) .. ";" .. tostring(column) .. "H")
-  return true
+return true
 end
 
 --=============================================================================
