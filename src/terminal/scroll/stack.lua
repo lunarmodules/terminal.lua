@@ -1,10 +1,13 @@
--- Terminal Scroll Stack Module.
+--- Terminal Scroll Stack Module.
 -- Manages a stack of scroll regions for terminal control.
 -- @module scroll.stack
 local M = {}
 local output = require("terminal.output")
-local scroll = require("terminal.scroll")
 
+-- Use `package.loaded` to avoid requiring `scroll` directly, preventing circular dependency
+local scroll = package.loaded["terminal.scroll"]
+
+-- Register this module in package.loaded
 package.loaded["terminal.scroll.stack"] = M
 
 local _scrollstack = {
