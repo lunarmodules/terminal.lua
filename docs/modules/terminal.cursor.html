@@ -31,26 +31,13 @@
   <li><a href="../index.html">Index</a></li>
 </ul>
 
-<h2>Contents</h2>
-<ul>
-<li><a href="#Versioning">Versioning </a></li>
-<li><a href="#Version_history">Version history </a></li>
-</ul>
 
 
-<h2>Topics</h2>
-<ul class="">
-  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
-  <li><strong>CHANGELOG</strong></li>
-  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
-  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
-</ul>
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
-  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><strong>terminal.cursor</strong></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
@@ -66,6 +53,14 @@
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
 </ul>
 <h2>Examples</h2>
 <ul class="nowrap">
@@ -83,57 +78,16 @@
 
 <div id="content">
 
+<h1>Module <code>terminal.cursor</code></h1>
+<p>Terminal cursor management module.</p>
+<p> Provides utilities to the cursor in terminals.</p>
 
-<h1>CHANGELOG</h1>
 
-<p><a name="Versioning"></a></p>
-<h2>Versioning</h2>
 
-<p>This library is versioned based on Semantic Versioning (<a href="https://semver.org/">SemVer</a>).</p>
+<br/>
+<br/>
 
-<h4>Version scoping</h4>
 
-<p>The scope of what is covered by the version number excludes:</p>
-
-<ul>
-    <li>error messages; the text of the messages can change, unless specifically documented.</li>
-</ul>
-
-<h4>Releasing new versions</h4>
-
-<ul>
-    <li>create a release branch</li>
-    <li>update the changelog below</li>
-    <li>update version and copyright-years in <code>./LICENSE.md</code> and <code>./src/terminal/init.lua</code> (in doc-comments
-    header, and in module constants)</li>
-    <li>create a new rockspec and update the version inside the new rockspec:<br/>
-    <code>cp terminal-scm-1.rockspec ./rockspecs/terminal-X.Y.Z-1.rockspec</code></li>
-    <li>test: run <code>make test</code> and <code>make lint</code></li>
-    <li>clean and render the docs: run <code>make clean</code> and <code>make docs</code></li>
-    <li>commit the changes as <code>release X.Y.Z</code></li>
-    <li>push the commit, and create a release PR</li>
-    <li>after merging tag the release commit with <code>X.Y.Z</code></li>
-    <li>upload to LuaRocks:<br/>
-    <code>luarocks upload ./rockspecs/terminal-X.Y.Z-1.rockspec --api-key=ABCDEFGH</code></li>
-    <li>test the newly created rock:<br/>
-    <code>luarocks install terminal</code></li>
-</ul>
-
-<p><a name="Version_history"></a></p>
-<h2>Version history</h2>
-
-<h3>Version X.Y.Z, unreleased</h3>
-
-<ul>
-    <li>a fix</li>
-    <li>a change</li>
-</ul>
-
-<h3>Version 0.1.0, released 01-Jan-2022</h3>
-
-<ul>
-    <li>initial release</li>
-</ul>
 
 
 </div> <!-- id="content" -->

@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><strong>terminal.utils</strong></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.utils</code></h1>
+<p>Support functions.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#invalid_constant">invalid_constant (value, constants[, prefix="Invalid value: "])</a></td>
+	<td class="summary">Returns an error message for an invalid lookup constant.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#make_lookup">make_lookup ([value_type="value"], t)</a></td>
+	<td class="summary">Converts a lookup table to a constant table with user friendly error reporting.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#resolve_index">resolve_index (index, max_value)</a></td>
+	<td class="summary">Resolve negative indices.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#throw_invalid_constant">throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</a></td>
+	<td class="summary">Throws an error message for an invalid lookup constant.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "invalid_constant"></a>
+    <strong>invalid_constant (value, constants[, prefix="Invalid value: "])</strong>
+    </dt>
+    <dd>
+    Returns an error message for an invalid lookup constant.
+ This function is used to generate error messages for invalid arguments.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span> or <a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The value that wasn't found.
+        </li>
+        <li><span class="parameter">constants</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The valid values for the constant.
+        </li>
+        <li><span class="parameter">prefix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the prefix for the message.
+         (<em>default</em> "Invalid value: ")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The error message.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "make_lookup"></a>
+    <strong>make_lookup ([value_type="value"], t)</strong>
+    </dt>
+    <dd>
+    Converts a lookup table to a constant table with user friendly error reporting.
+ The constant table is modified in-place, a metatable with an __index metamethod
+ is added to the table. This metamethod throws an error when an invalid key is
+ accessed.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The type of value looked up, use a singular,
+ eg. "cursor shape", or "foreground color".
+         (<em>default</em> "value")
+        </li>
+        <li><span class="parameter">t</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The lookup table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        The same constant table t, with a metatable added.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> cursor_shape = M.<span class="function-name">make_lookup</span>(<span class="string">"cursor shape"</span>, {
+  block = <span class="number">0</span>,
+  underline = <span class="number">1</span>,
+  bar = <span class="number">2</span>,
+})
+
+<span class="keyword">local</span> value = cursor_shape[<span class="string">"bad-shape"</span>] <span class="comment">-- throws an error;
+</span><span class="comment">-- Invalid cursor shape: "bad-shape". Expected one of: "block", "underline", "bar"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "resolve_index"></a>
+    <strong>resolve_index (index, max_value)</strong>
+    </dt>
+    <dd>
+    Resolve negative indices.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">index</span>
+            <span class="types"><span class="type">number</span></span>
+         The index to resolve.
+        </li>
+        <li><span class="parameter">max_value</span>
+            <span class="types"><span class="type">number</span></span>
+         The maximum value for the index.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "throw_invalid_constant"></a>
+    <strong>throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</strong>
+    </dt>
+    <dd>
+    Throws an error message for an invalid lookup constant.
+ This function is used to generate error messages for invalid arguments.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span> or <a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The value that wasn't found.
+        </li>
+        <li><span class="parameter">constants</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The valid values for the constant.
+        </li>
+        <li><span class="parameter">prefix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the prefix for the message.
+         (<em>default</em> "Invalid value: ")
+        </li>
+        <li><span class="parameter">err_lvl</span>
+            <span class="types"><span class="type">number</span></span>
+         the error level when throwing the error.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing, throws an error.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

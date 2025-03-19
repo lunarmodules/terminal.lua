@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><strong>copas.lua</strong></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>copas.lua</h2>
+<pre>
+<span class="keyword">local</span> sys = <span class="global">require</span>(<span class="string">"system"</span>)
+<span class="comment">-- local UI = require("ui")
+</span><span class="keyword">local</span> copas = <span class="global">require</span>(<span class="string">"copas"</span>)
+
+
+<span class="comment">-- define the UI library in line here
+</span><span class="keyword">local</span> UI = {}
+
+<span class="keyword">function</span> UI.<span class="function-name">progressBar</span>(current, total)
+  <span class="keyword">local</span> widthOfBar = <span class="number">50</span>
+  <span class="keyword">local</span> progress = <span class="global">math</span>.<span class="function-name">floor</span>((current / total) * widthOfBar)
+  <span class="keyword">local</span> remaining = widthOfBar - progress
+  <span class="keyword">local</span> bar = <span class="string">"["</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"="</span>, progress) .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">" "</span>, remaining) .. <span class="string">"]"</span>
+  <span class="global">io</span>.<span class="function-name">write</span>(<span class="string">"\r"</span> .. bar .. <span class="global">math</span>.<span class="function-name">floor</span>((current / total) * <span class="number">100</span>) .. <span class="string">"%"</span>) <span class="comment">-- carriage return for progress bar to stay on the same line
+</span>  <span class="global">io</span>.<span class="function-name">flush</span>()
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> UI.<span class="function-name">prompt</span>(message)
+  <span class="global">print</span>(message .. <span class="string">" (y/n):"</span>)
+  <span class="comment">--local response = io.read() -- io.read is blocking, use readansi instead
+</span>  <span class="keyword">local</span> response = sys.<span class="function-name">readansi</span>(<span class="global">math</span>.huge, copas.pause)  <span class="comment">-- use readansi, and pass a NON-blocking sleep function for use with Copas
+</span>  <span class="keyword">if</span> response == <span class="string">"y"</span> <span class="keyword">then</span> <span class="comment">-- readansi only return 1 character
+</span>      <span class="keyword">return</span> <span class="keyword">true</span>
+  <span class="keyword">elseif</span> response == <span class="string">"n"</span> <span class="keyword">then</span> <span class="comment">-- check for the other result as well
+</span>      <span class="keyword">return</span> <span class="keyword">false</span>
+  <span class="keyword">else</span>  <span class="comment">-- report an error and retry the prompt
+</span>      <span class="global">print</span>(<span class="string">"Invalid input"</span>)
+      <span class="keyword">return</span> UI.<span class="function-name">prompt</span>(message)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">-- end of UI library definition
+</span>
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">displayMenu</span>()
+    <span class="global">print</span>(<span class="string">"============="</span>)
+    <span class="global">print</span>(<span class="string">"1. Check Time"</span>)
+    <span class="global">print</span>(<span class="string">"2. Get Mono Time"</span>)
+    <span class="global">print</span>(<span class="string">"3. Give Feedback"</span>)
+    <span class="global">print</span>(<span class="string">"4. Progress Bar Demo"</span>)
+    <span class="global">print</span>(<span class="string">"6. Exit"</span>)
+    <span class="global">print</span>(<span class="string">"============="</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">getTime</span>()
+    <span class="keyword">local</span> time = <span class="global">math</span>.<span class="function-name">floor</span>(sys.<span class="function-name">gettime</span>())  <span class="comment">-- wrapped in math.floor to make it an integer
+</span>    <span class="keyword">local</span> date = <span class="global">os</span>.<span class="function-name">date</span>(<span class="string">"Current Time: %Y-%m-%d %H:%M:%S"</span>, time)
+    <span class="global">print</span>(date)
+<span class="keyword">end</span>
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">monoTime</span>()
+    <span class="keyword">local</span> response = sys.<span class="function-name">monotime</span>()
+    <span class="global">print</span>(response)
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">uiPrompt</span>()
+    <span class="keyword">local</span> response = UI.<span class="function-name">prompt</span>(<span class="string">"Do you like lua?"</span>)
+    <span class="keyword">if</span> response == <span class="keyword">true</span> <span class="keyword">then</span>
+        <span class="global">print</span>(<span class="string">"Thats great!"</span>)
+    <span class="keyword">else</span>
+        <span class="global">print</span>(<span class="string">"So sad to hear :("</span>)
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">-- instead of just running this loop, wrap it in a Copas task.
+</span><span class="comment">-- when calling <code>copas.loop()</code> below, execution will start. Copas will
+</span><span class="comment">-- keep running until all tasks have exited.
+</span>copas.<span class="function-name">addthread</span>(<span class="keyword">function</span> ()  <span class="comment">-- added
+</span><span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    <span class="function-name">displayMenu</span>()
+    <span class="global">io</span>.<span class="function-name">write</span>(<span class="string">"Select an Option: "</span>)
+    <span class="comment">--local choice = tonumber(io.read())  -- io.read is blocking, nothing will ever run until the user presses enter. so we shouldn't use it.
+</span>    <span class="keyword">local</span> char = sys.<span class="function-name">readansi</span>(<span class="global">math</span>.huge, copas.pause)  <span class="comment">-- use readansi, and pass a NON-blocking sleep function for use with Copas
+</span>    <span class="comment">-- if no input is available, it will call copas.pause to wait a bit, and then try again, until a key was actually pressed,
+</span>    <span class="comment">-- or a timeout occurs (but since we pass "math.huge" here, it will wait forever).
+</span>    <span class="comment">-- copas.pause (when called by readansi) will not just sleep (and block the current thread), but will yield to the Copas scheduler, the scheduler will
+</span>    <span class="comment">-- then check if there are any other tasks that need to run, and if so, it will run them. Only when the sleep period
+</span>    <span class="comment">-- has passed, will the current task be resumed by the scheduler. The effects:
+</span>    <span class="comment">-- 1. from the perspective of the code here, it looks like the code blocks, it will not return until a key is pressed
+</span>    <span class="comment">-- 2. from the perspective of readansi, it will try in a loop, and sleep (copas pause) short periods in between.
+</span>    <span class="comment">-- 3. from the perspective of the Copas scheduler, it will not block, it will keep running other tasks, everytime readansi
+</span>    <span class="comment">--    calls copas.pause, and then resume the readansi task when the sleep period has passed.
+</span>    <span class="keyword">local</span> choice = <span class="global">tonumber</span>(char) <span class="comment">-- convert the string to an actual number
+</span>
+    <span class="keyword">if</span> choice == <span class="number">1</span> <span class="keyword">then</span>
+        <span class="function-name">getTime</span>()
+    <span class="keyword">elseif</span> choice == <span class="number">2</span> <span class="keyword">then</span>
+        <span class="function-name">monoTime</span>()
+    <span class="keyword">elseif</span> choice == <span class="number">3</span> <span class="keyword">then</span>
+        <span class="function-name">uiPrompt</span>()
+    <span class="keyword">elseif</span> choice == <span class="number">4</span> <span class="keyword">then</span>
+        copas.<span class="function-name">addthread</span>(<span class="keyword">function</span> ()
+            <span class="keyword">local</span> total = <span class="number">100</span>
+            <span class="keyword">for</span> i=<span class="number">1</span>, total <span class="keyword">do</span>
+                UI.<span class="function-name">progressBar</span>(i, total)
+                copas.<span class="function-name">pause</span>(<span class="number">0.1</span>)
+            <span class="keyword">end</span>
+            <span class="global">print</span>()
+        <span class="keyword">end</span>)
+    <span class="keyword">elseif</span> choice == <span class="number">6</span> <span class="keyword">then</span>
+        <span class="keyword">break</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>)  <span class="comment">-- added: end of <code>copas.addthread</code>
+</span>
+
+<span class="comment">-- before starting the loop, we must configure the terminal
+</span>
+<span class="comment">-- setup Windows console to handle ANSI processing
+</span>sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdout, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdout) + sys.COF_VIRTUAL_TERMINAL_PROCESSING)
+sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdin, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdin) + sys.CIF_VIRTUAL_TERMINAL_INPUT)
+
+<span class="comment">-- setup Posix to disable canonical mode and echo
+</span><span class="keyword">local</span> of_attr = sys.<span class="function-name">tcgetattr</span>(<span class="global">io</span>.stdin)
+sys.<span class="function-name">setnonblock</span>(<span class="global">io</span>.stdin, <span class="keyword">true</span>)
+sys.<span class="function-name">tcsetattr</span>(<span class="global">io</span>.stdin, sys.TCSANOW, {
+  lflag = of_attr.lflag - sys.L_ICANON - sys.L_ECHO, <span class="comment">-- disable canonical mode and echo
+</span>})
+
+copas.<span class="function-name">loop</span>() <span class="comment">-- this will exit once all tasks defined are finished
+</span>
+<span class="comment">-- after exiting restore terminal configuration
+</span>
+<span class="comment">-- windows
+</span>sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdout, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdout) - sys.COF_VIRTUAL_TERMINAL_PROCESSING)
+sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdin, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdin) - sys.CIF_VIRTUAL_TERMINAL_INPUT)
+
+<span class="comment">-- posix
+</span><span class="keyword">local</span> of_attr = sys.<span class="function-name">tcgetattr</span>(<span class="global">io</span>.stdin)
+sys.<span class="function-name">setnonblock</span>(<span class="global">io</span>.stdin, <span class="keyword">false</span>)
+sys.<span class="function-name">tcsetattr</span>(<span class="global">io</span>.stdin, sys.TCSANOW, {
+  lflag = of_attr.lflag + sys.L_ICANON + sys.L_ECHO,
+})</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><strong>headers.lua</strong></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>headers.lua</h2>
+<pre>
+<span class="keyword">local</span> sys = <span class="global">require</span>(<span class="string">"system"</span>)
+<span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
+
+<span class="comment">-- Keys
+</span><span class="keyword">local</span> key_names = {
+  [<span class="string">"\27[A"</span>] = <span class="string">"up"</span>,
+  [<span class="string">"\27[B"</span>] = <span class="string">"down"</span>,
+  [<span class="string">"\27[C"</span>] = <span class="string">"right"</span>,
+  [<span class="string">"\27[D"</span>] = <span class="string">"left"</span>,
+  [<span class="string">"\127"</span>] = <span class="string">"backspace"</span>,
+  [<span class="string">"\8"</span>] = <span class="string">"backspace"</span>,
+  [<span class="string">"\27[3~"</span>] = <span class="string">"delete"</span>,
+  [<span class="string">"\27[H"</span>] = <span class="string">"home"</span>,
+  [<span class="string">"\27[F"</span>] = <span class="string">"end"</span>,
+  [<span class="string">"\27"</span>] = <span class="string">"escape"</span>,
+  [<span class="string">"\9"</span>] = <span class="string">"tab"</span>,
+  [<span class="string">"\27[Z"</span>] = <span class="string">"shift-tab"</span>,
+  [<span class="string">"\r"</span>] = <span class="string">"enter"</span>,
+  [<span class="string">"\n"</span>] = <span class="string">"enter"</span>,
+  [<span class="string">"f10"</span>] = <span class="string">"f10"</span>,
+  [<span class="string">"\6"</span>] = <span class="string">"ctrl-f"</span>,
+  [<span class="string">"\2"</span>] = <span class="string">"ctrl-b"</span>,
+}
+
+<span class="comment">-- Colors
+</span><span class="keyword">local</span> colors = {
+  <span class="string">"black"</span>, <span class="string">"red"</span>, <span class="string">"green"</span>, <span class="string">"yellow"</span>, <span class="string">"blue"</span>, <span class="string">"magenta"</span>, <span class="string">"cyan"</span>, <span class="string">"white"</span>
+}
+
+<span class="comment">-- Terminal UI class
+</span><span class="keyword">local</span> TerminalUI = {}
+
+<span class="comment">-- Constructor
+</span><span class="keyword">function</span> TerminalUI:<span class="function-name">new</span>(options)
+  options = options <span class="keyword">or</span> {}
+  <span class="keyword">local</span> instance = {
+    appName = options.appName <span class="keyword">or</span> <span class="string">"Terminal Application"</span>,
+    linesWritten = <span class="number">0</span>,
+    cursorY = <span class="number">2</span>,
+    cursorX = <span class="number">2</span>,
+    headerStyle = options.headerStyle <span class="keyword">or</span> {fg = <span class="string">"white"</span>, bg = <span class="string">"blue"</span>, brightness = <span class="string">"bright"</span>},
+    footerStyle = options.footerStyle <span class="keyword">or</span> {fg = <span class="string">"white"</span>, bg = <span class="string">"blue"</span>, brightness = <span class="string">"bright"</span>},
+    contentStyle = options.contentStyle <span class="keyword">or</span> {fg = <span class="string">"green"</span>, bg = <span class="string">"black"</span>, brightness = <span class="string">"normal"</span>},
+    currentFgColorIndex = <span class="number">3</span>,
+    currentBgColorIndex = <span class="number">1</span>,
+  }
+  <span class="global">setmetatable</span>(instance, {__index = self})
+  <span class="keyword">return</span> instance
+<span class="keyword">end</span>
+<span class="comment">-- cycle color
+</span><span class="keyword">function</span> TerminalUI:<span class="function-name">cycleColor</span>(isBackground)
+  <span class="keyword">if</span> isBackground <span class="keyword">then</span>
+    self.currentBgColorIndex = (self.currentBgColorIndex % #colors) + <span class="number">1</span>
+    self.contentStyle.bg = colors[self.currentBgColorIndex]
+  <span class="keyword">else</span>
+    self.currentFgColorIndex = (self.currentFgColorIndex % #colors) + <span class="number">1</span>
+    self.contentStyle.fg = colors[self.currentFgColorIndex]
+  <span class="keyword">end</span>
+
+  t.<span class="function-name">textset</span>(self.contentStyle)
+  self:<span class="function-name">refreshDisplay</span>()
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">getCurrentColorInfo</span>()
+  <span class="keyword">return</span> <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"FG: %s, BG: %s"</span>,
+    colors[self.currentFgColorIndex],
+    colors[self.currentBgColorIndex])
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">readKey</span>()
+  <span class="keyword">local</span> key = t.input.<span class="function-name">readansi</span>(<span class="number">1</span>)
+  <span class="keyword">return</span> key, key_names[key] <span class="keyword">or</span> key
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">withStyle</span>(style, callback)
+  t.<span class="function-name">textpush</span>(style)
+  <span class="function-name">callback</span>()
+  t.<span class="function-name">textpop</span>()
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">drawBar</span>(row, style, contentFn)
+  <span class="keyword">local</span> _, cols = sys.<span class="function-name">termsize</span>()
+
+  self:<span class="function-name">withStyle</span>(style, <span class="keyword">function</span>()
+    t.<span class="function-name">cursor_set</span>(row, <span class="number">1</span>)
+    t.output.<span class="function-name">write</span>(<span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">" "</span>, cols))
+
+    <span class="keyword">if</span> contentFn <span class="keyword">then</span>
+      <span class="function-name">contentFn</span>(row, cols)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">updateCursor</span>(y, x)
+  self.cursorY = y
+  self.cursorX = x
+  t.<span class="function-name">cursor_set</span>(y, x)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">drawHeader</span>()
+  <span class="keyword">local</span> currentTime = <span class="global">os</span>.<span class="function-name">date</span>(<span class="string">"%H:%M:%S"</span>)
+  <span class="keyword">local</span> cursorText = <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"Pos: %d,%d"</span>, self.cursorY, self.cursorX)
+
+  self:<span class="function-name">drawBar</span>(<span class="number">1</span>, self.headerStyle, <span class="keyword">function</span>(_, cols)
+    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, <span class="number">2</span>)
+    t.output.<span class="function-name">write</span>(self.appName)
+
+    <span class="keyword">local</span> clockPos = <span class="global">math</span>.<span class="function-name">floor</span>(cols / <span class="number">4</span>)
+    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, clockPos)
+    t.output.<span class="function-name">write</span>(currentTime)
+
+    <span class="keyword">local</span> cursorPos = <span class="global">math</span>.<span class="function-name">floor</span>(cols / <span class="number">2</span>) + <span class="number">5</span>
+    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, cursorPos)
+    t.output.<span class="function-name">write</span>(cursorText)
+
+    <span class="keyword">local</span> colorText = <span class="string">"Color: "</span> .. self:<span class="function-name">getCurrentColorInfo</span>()
+    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, cols - #colorText - <span class="number">1</span>)
+    t.output.<span class="function-name">write</span>(colorText)
+  <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">drawFooter</span>()
+  <span class="keyword">local</span> rows, _ = sys.<span class="function-name">termsize</span>()
+  <span class="keyword">local</span> lineText = <span class="string">"Lines: "</span> .. self.linesWritten
+  <span class="keyword">local</span> helpText = <span class="string">"Ctrl+F: Change FG | Ctrl+B: Change BG | ESC: Exit"</span>
+
+  self:<span class="function-name">drawBar</span>(rows, self.footerStyle, <span class="keyword">function</span>(_, cols)
+
+    t.<span class="function-name">cursor_set</span>(rows, <span class="number">2</span>)
+    t.output.<span class="function-name">write</span>(lineText)
+
+    t.<span class="function-name">cursor_set</span>(rows, cols - #helpText - <span class="number">1</span>)
+    t.output.<span class="function-name">write</span>(helpText)
+  <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">refreshDisplay</span>()
+  <span class="keyword">local</span> savedY, savedX = self.cursorY, self.cursorX
+
+  self:<span class="function-name">drawHeader</span>()
+  self:<span class="function-name">drawFooter</span>()
+
+  self:<span class="function-name">updateCursor</span>(savedY, savedX)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">initializeContent</span>()
+  <span class="keyword">local</span> rows, cols = sys.<span class="function-name">termsize</span>()
+
+  t.<span class="function-name">textset</span>(self.contentStyle)
+
+  <span class="keyword">for</span> i = <span class="number">2</span>, rows - <span class="number">1</span> <span class="keyword">do</span>
+    t.<span class="function-name">cursor_set</span>(i, <span class="number">1</span>)
+    t.output.<span class="function-name">write</span>(<span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">" "</span>, cols))
+  <span class="keyword">end</span>
+
+  self:<span class="function-name">updateCursor</span>(<span class="number">2</span>, <span class="number">2</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">handleInput</span>()
+  <span class="keyword">local</span> rows, cols = sys.<span class="function-name">termsize</span>()
+
+  self:<span class="function-name">refreshDisplay</span>()
+
+  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    t.<span class="function-name">cursor_set</span>(self.cursorY, self.cursorX)
+
+    <span class="keyword">local</span> rawKey, keyName = self:<span class="function-name">readKey</span>()
+
+    <span class="keyword">if</span> rawKey <span class="keyword">then</span>
+      <span class="keyword">if</span> keyName == <span class="string">"escape"</span> <span class="keyword">or</span> keyName == <span class="string">"f10"</span> <span class="keyword">then</span>
+        <span class="keyword">break</span>
+      <span class="keyword">elseif</span> keyName == <span class="string">"ctrl-f"</span> <span class="keyword">then</span>
+        self:<span class="function-name">cycleColor</span>(<span class="keyword">false</span>)
+      <span class="keyword">elseif</span> keyName == <span class="string">"ctrl-b"</span> <span class="keyword">then</span>
+        self:<span class="function-name">cycleColor</span>(<span class="keyword">true</span>)
+      <span class="keyword">elseif</span> keyName == <span class="string">"enter"</span> <span class="keyword">then</span>
+        self.linesWritten = self.linesWritten + <span class="number">1</span>
+
+        <span class="keyword">if</span> self.cursorY &lt; rows - <span class="number">1</span> <span class="keyword">then</span>
+          self:<span class="function-name">updateCursor</span>(self.cursorY + <span class="number">1</span>, <span class="number">2</span>)
+        <span class="keyword">else</span>
+          self:<span class="function-name">updateCursor</span>(self.cursorY, <span class="number">2</span>)
+          t.output.<span class="function-name">write</span>(<span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">" "</span>, cols))
+        <span class="keyword">end</span>
+        self:<span class="function-name">refreshDisplay</span>()
+      <span class="keyword">elseif</span> keyName == <span class="string">"backspace"</span> <span class="keyword">then</span>
+        <span class="keyword">if</span> self.cursorX &gt; <span class="number">2</span> <span class="keyword">then</span>
+          self:<span class="function-name">updateCursor</span>(self.cursorY, self.cursorX - <span class="number">1</span>)
+          t.output.<span class="function-name">write</span>(<span class="string">" "</span>)
+          self:<span class="function-name">updateCursor</span>(self.cursorY, self.cursorX)
+        <span class="keyword">elseif</span> self.cursorY &gt; <span class="number">2</span> <span class="keyword">then</span>
+          self:<span class="function-name">updateCursor</span>(self.cursorY - <span class="number">1</span>, cols - <span class="number">2</span>)
+        <span class="keyword">end</span>
+      <span class="keyword">elseif</span> keyName == <span class="string">"up"</span> <span class="keyword">and</span> self.cursorY &gt; <span class="number">2</span> <span class="keyword">then</span>
+        self:<span class="function-name">updateCursor</span>(self.cursorY - <span class="number">1</span>, self.cursorX)
+      <span class="keyword">elseif</span> keyName == <span class="string">"down"</span> <span class="keyword">and</span> self.cursorY &lt; rows - <span class="number">1</span> <span class="keyword">then</span>
+        self:<span class="function-name">updateCursor</span>(self.cursorY + <span class="number">1</span>, self.cursorX)
+      <span class="keyword">elseif</span> keyName == <span class="string">"right"</span> <span class="keyword">and</span> self.cursorX &lt; cols <span class="keyword">then</span>
+        self:<span class="function-name">updateCursor</span>(self.cursorY, self.cursorX + <span class="number">1</span>)
+      <span class="keyword">elseif</span> keyName == <span class="string">"left"</span> <span class="keyword">and</span> self.cursorX &gt; <span class="number">2</span> <span class="keyword">then</span>
+        self:<span class="function-name">updateCursor</span>(self.cursorY, self.cursorX - <span class="number">1</span>)
+      <span class="keyword">elseif</span> keyName == <span class="string">"home"</span> <span class="keyword">then</span>
+        self:<span class="function-name">updateCursor</span>(self.cursorY, <span class="number">2</span>)
+      <span class="keyword">elseif</span> keyName == <span class="string">"end"</span> <span class="keyword">then</span>
+        self:<span class="function-name">updateCursor</span>(self.cursorY, cols - <span class="number">1</span>)
+      <span class="keyword">elseif</span> #rawKey == <span class="number">1</span> <span class="keyword">then</span>
+        t.output.<span class="function-name">write</span>(rawKey)
+        self:<span class="function-name">updateCursor</span>(self.cursorY, self.cursorX + <span class="number">1</span>)
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    t.output.<span class="function-name">flush</span>()
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TerminalUI:<span class="function-name">run</span>()
+  t.<span class="function-name">initialize</span>{
+    displaybackup = <span class="keyword">true</span>,
+    filehandle = <span class="global">io</span>.stdout,
+  }
+  t.clear.<span class="function-name">screen</span>()
+
+  self:<span class="function-name">initializeContent</span>()
+  self:<span class="function-name">handleInput</span>()
+
+  t.<span class="function-name">shutdown</span>()
+  <span class="global">print</span>(<span class="string">"Thank you for using MyTerminal! You wrote "</span> .. self.linesWritten .. <span class="string">" lines."</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> myTerminal = TerminalUI:<span class="function-name">new</span>({
+  appName = <span class="string">"The best terminal ever"</span>,
+  headerStyle = {fg = <span class="string">"white"</span>, bg = <span class="string">"blue"</span>, brightness = <span class="string">"bright"</span>},
+  footerStyle = {fg = <span class="string">"white"</span>, bg = <span class="string">"blue"</span>, brightness = <span class="string">"bright"</span>},
+  contentStyle = {fg = <span class="string">"green"</span>, bg = <span class="string">"black"</span>, brightness = <span class="string">"normal"</span>}
+})
+
+myTerminal:<span class="function-name">run</span>()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

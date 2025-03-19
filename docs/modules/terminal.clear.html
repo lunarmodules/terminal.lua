@@ -34,6 +34,7 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
+<li><a href="#Sequences">Sequences</a></li>
 </ul>
 
 
@@ -41,10 +42,17 @@
 <ul class="nowrap">
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><strong>terminal.clear</strong></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
   <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
@@ -61,7 +69,10 @@
 </ul>
 <h2>Examples</h2>
 <ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -80,60 +91,63 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#clear">clear ()</a></td>
-	<td class="summary">Clears the entire screen by writing the ANSI sequence to the terminal.</td>
+	<td class="name" nowrap><a href="#bol">bol ()</a></td>
+	<td class="summary">Clears from cursor to begin of the line (BOL) and writes to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#clear_bottom">clear_bottom ()</a></td>
+	<td class="name" nowrap><a href="#bottom">bottom ()</a></td>
 	<td class="summary">Clears the screen from the cursor position to the bottom-right and writes to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#clear_bottoms">clear_bottoms ()</a></td>
-	<td class="summary">Creates an ANSI sequence to clear the screen from cursor to bottom-right without writing.</td>
+	<td class="name" nowrap><a href="#box">box (height, width)</a></td>
+	<td class="summary">Clears a box and writes it to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#clear_box">clear_box (height, width)</a></td>
-	<td class="summary">Clears a box from the cursor position and writes it to the terminal.</td>
+	<td class="name" nowrap><a href="#eol">eol ()</a></td>
+	<td class="summary">Clears from cursor to end of the line (EOL) and writes to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#clear_boxs">clear_boxs (height, width)</a></td>
-	<td class="summary">Creates an ANSI sequence to clear a box from the cursor position without writing.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_end">clear_end ()</a></td>
-	<td class="summary">Clears from cursor to end of the line and writes to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_ends">clear_ends ()</a></td>
-	<td class="summary">Creates an ANSI sequence to clear from cursor to end of the line without writing.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_line">clear_line ()</a></td>
+	<td class="name" nowrap><a href="#line">line ()</a></td>
 	<td class="summary">Clears the current line and writes to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#clear_lines">clear_lines ()</a></td>
+	<td class="name" nowrap><a href="#screen">screen ()</a></td>
+	<td class="summary">Clears the entire screen by writing the ANSI sequence to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#top">top ()</a></td>
+	<td class="summary">Clears the screen from the cursor position to the top-left and writes to the terminal.</td>
+	</tr>
+</table>
+<h2><a href="#Sequences">Sequences</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#bol_seq">bol_seq ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear from cursor to begin of the line (BOL) without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#bottom_seq">bottom_seq ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear the screen from cursor to bottom-right without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#box_seq">box_seq (height, width)</a></td>
+	<td class="summary">Creates an ANSI sequence to clear a box without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#eol_seq">eol_seq ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear from cursor to end of the line (EOL) without writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#line_seq">line_seq ()</a></td>
 	<td class="summary">Creates an ANSI sequence to clear the current line without writing.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#clear_start">clear_start ()</a></td>
-	<td class="summary">Clears from cursor to start of the line and writes to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_starts">clear_starts ()</a></td>
-	<td class="summary">Creates an ANSI sequence to clear from cursor to start of the line without writing.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_top">clear_top ()</a></td>
-	<td class="summary">Clears the screen from the cursor position to the top-left and writes to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clear_tops">clear_tops ()</a></td>
-	<td class="summary">Creates an ANSI sequence to clear the screen from cursor to top-left without writing.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#clears">clears ()</a></td>
+	<td class="name" nowrap><a href="#screen_seq">screen_seq ()</a></td>
 	<td class="summary">Creates an ANSI sequence to clear the entire screen without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#top_seq">top_seq ()</a></td>
+	<td class="summary">Creates an ANSI sequence to clear the screen from cursor to top-left without writing.</td>
 	</tr>
 </table>
 
@@ -145,11 +159,11 @@
 
     <dl class="function">
     <dt>
-    <a name = "clear"></a>
-    <strong>clear ()</strong>
+    <a name = "bol"></a>
+    <strong>bol ()</strong>
     </dt>
     <dd>
-    Clears the entire screen by writing the ANSI sequence to the terminal.
+    Clears from cursor to begin of the line (BOL) and writes to the terminal.
 
 
 
@@ -165,8 +179,8 @@
 
 </dd>
     <dt>
-    <a name = "clear_bottom"></a>
-    <strong>clear_bottom ()</strong>
+    <a name = "bottom"></a>
+    <strong>bottom ()</strong>
     </dt>
     <dd>
     Clears the screen from the cursor position to the bottom-right and writes to the terminal.
@@ -185,31 +199,13 @@
 
 </dd>
     <dt>
-    <a name = "clear_bottoms"></a>
-    <strong>clear_bottoms ()</strong>
+    <a name = "box"></a>
+    <strong>box (height, width)</strong>
     </dt>
     <dd>
-    Creates an ANSI sequence to clear the screen from cursor to bottom-right without writing.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence for clearing to the bottom.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_box"></a>
-    <strong>clear_box (height, width)</strong>
-    </dt>
-    <dd>
-    Clears a box from the cursor position and writes it to the terminal.
+    Clears a box and writes it to the terminal.
+ The sequence starts at the current cursor position, and returns the cursor there.
+ If either height or width is less than 1, the function writes an empty string.
 
 
     <h3>Parameters:</h3>
@@ -236,11 +232,137 @@
 
 </dd>
     <dt>
-    <a name = "clear_boxs"></a>
-    <strong>clear_boxs (height, width)</strong>
+    <a name = "eol"></a>
+    <strong>eol ()</strong>
     </dt>
     <dd>
-    Creates an ANSI sequence to clear a box from the cursor position without writing.
+    Clears from cursor to end of the line (EOL) and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "line"></a>
+    <strong>line ()</strong>
+    </dt>
+    <dd>
+    Clears the current line and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "screen"></a>
+    <strong>screen ()</strong>
+    </dt>
+    <dd>
+    Clears the entire screen by writing the ANSI sequence to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "top"></a>
+    <strong>top ()</strong>
+    </dt>
+    <dd>
+    Clears the screen from the cursor position to the top-left and writes to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        Always returns true after clearing.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "bol_seq"></a>
+    <strong>bol_seq ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear from cursor to begin of the line (BOL) without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The ANSI sequence for clearing to the start of the line.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "bottom_seq"></a>
+    <strong>bottom_seq ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear the screen from cursor to bottom-right without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The ANSI sequence for clearing to the bottom.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "box_seq"></a>
+    <strong>box_seq (height, width)</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear a box without writing.
+ The sequence starts at the current cursor position, and returns the cursor there.
+ If either height or width is less than 1, the function returns an empty string.
 
 
     <h3>Parameters:</h3>
@@ -267,31 +389,11 @@
 
 </dd>
     <dt>
-    <a name = "clear_end"></a>
-    <strong>clear_end ()</strong>
+    <a name = "eol_seq"></a>
+    <strong>eol_seq ()</strong>
     </dt>
     <dd>
-    Clears from cursor to end of the line and writes to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after clearing.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_ends"></a>
-    <strong>clear_ends ()</strong>
-    </dt>
-    <dd>
-    Creates an ANSI sequence to clear from cursor to end of the line without writing.
+    Creates an ANSI sequence to clear from cursor to end of the line (EOL) without writing.
 
 
 
@@ -307,28 +409,8 @@
 
 </dd>
     <dt>
-    <a name = "clear_line"></a>
-    <strong>clear_line ()</strong>
-    </dt>
-    <dd>
-    Clears the current line and writes to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after clearing.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_lines"></a>
-    <strong>clear_lines ()</strong>
+    <a name = "line_seq"></a>
+    <strong>line_seq ()</strong>
     </dt>
     <dd>
     Creates an ANSI sequence to clear the current line without writing.
@@ -347,88 +429,8 @@
 
 </dd>
     <dt>
-    <a name = "clear_start"></a>
-    <strong>clear_start ()</strong>
-    </dt>
-    <dd>
-    Clears from cursor to start of the line and writes to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after clearing.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_starts"></a>
-    <strong>clear_starts ()</strong>
-    </dt>
-    <dd>
-    Creates an ANSI sequence to clear from cursor to start of the line without writing.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence for clearing to the start of the line.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_top"></a>
-    <strong>clear_top ()</strong>
-    </dt>
-    <dd>
-    Clears the screen from the cursor position to the top-left and writes to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after clearing.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clear_tops"></a>
-    <strong>clear_tops ()</strong>
-    </dt>
-    <dd>
-    Creates an ANSI sequence to clear the screen from cursor to top-left without writing.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence for clearing to the top.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "clears"></a>
-    <strong>clears ()</strong>
+    <a name = "screen_seq"></a>
+    <strong>screen_seq ()</strong>
     </dt>
     <dd>
     Creates an ANSI sequence to clear the entire screen without writing it to the terminal.
@@ -440,6 +442,26 @@
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
         The ANSI sequence for clearing the entire screen.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "top_seq"></a>
+    <strong>top_seq ()</strong>
+    </dt>
+    <dd>
+    Creates an ANSI sequence to clear the screen from cursor to top-left without writing.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The ANSI sequence for clearing to the top.
     </ol>
 
 

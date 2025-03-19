@@ -33,9 +33,7 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Cursor_shapes_and_visibility">Cursor shapes and visibility </a></li>
-<li><a href="#cursor_shapes">cursor_shapes</a></li>
-<li><a href="#cursor_shape_stack">cursor_shape_stack</a></li>
+<li><a href="#Cursor_positioning">Cursor positioning </a></li>
 <li><a href="#cursor_position">cursor_position</a></li>
 <li><a href="#cursor_position_stack">cursor_position_stack</a></li>
 <li><a href="#cursor_moving">cursor_moving</a></li>
@@ -50,10 +48,17 @@
 <ul class="nowrap">
   <li><strong>terminal</strong></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
   <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
@@ -70,7 +75,10 @@
 </ul>
 <h2>Examples</h2>
 <ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -83,8 +91,9 @@
 
 <h1>Module <code>terminal</code></h1>
 <p>Terminal library for Lua.</p>
-<p> This terminal library builds upon the cross-platform terminal capabilities of LuaSystem. As such
- it works modern terminals on Windows, Unix, and Mac systems.</p>
+<p> This terminal library builds upon the cross-platform terminal capabilities of
+ <a href="https://github.com/lunarmodules/luasystem">LuaSystem</a>. As such
+ it works in modern terminals on Windows, Unix, and Mac systems.</p>
 
 <p> It provides a simple and consistent interface to the terminal, allowing for cursor positioning,
  cursor shape and visibility, text formatting, and more.</p>
@@ -98,7 +107,7 @@
     </ul>
 
 
-<h2><a href="#Cursor_shapes_and_visibility">Cursor shapes and visibility </a></h2>
+<h2><a href="#Cursor_positioning">Cursor positioning </a></h2>
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#beep">beep ()</a></td>
@@ -115,80 +124,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#cursor_get_querys">cursor_get_querys ()</a></td>
 	<td class="summary">returns the sequence for requesting cursor position as a string</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ready">ready ()</a></td>
-	<td class="summary">Returns whether the terminal has been initialized and is ready for use.</td>
-	</tr>
-</table>
-<h2><a href="#cursor_shapes">cursor_shapes</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#shape">shape (shape)</a></td>
-	<td class="summary">Sets the cursor shape and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#shapes">shapes (shape)</a></td>
-	<td class="summary">Returns the ansi sequence for a cursor shape without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visible">visible (visible)</a></td>
-	<td class="summary">Shows or hides the cursor and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visibles">visibles (visible)</a></td>
-	<td class="summary">Returns the ansi sequence to show/hide the cursor without writing it to the terminal.</td>
-	</tr>
-</table>
-<h2><a href="#cursor_shape_stack">cursor_shape_stack</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#shape_apply">shape_apply ()</a></td>
-	<td class="summary">Re-applies the shape at the top of the stack, and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#shape_applys">shape_applys ()</a></td>
-	<td class="summary">Re-applies the shape at the top of the stack (returns it, does not write it to the terminal).</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#shape_pop">shape_pop ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> cursor shape(s) off the stack, and writes the last one to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#shape_pops">shape_pops ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> cursor shape(s) off the stack (and returns the last one), without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#shape_push">shape_push (shape)</a></td>
-	<td class="summary">Pushes a cursor shape onto the stack, and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#shape_pushs">shape_pushs (shape)</a></td>
-	<td class="summary">Pushes a cursor shape onto the stack (and returns it), without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visible_apply">visible_apply ()</a></td>
-	<td class="summary">Returns the ansi sequence to show/hide the cursor at the top of the stack, and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visible_applys">visible_applys ()</a></td>
-	<td class="summary">Returns the ansi sequence to show/hide the cursor at the top of the stack without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visible_pop">visible_pop ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> cursor visibility(ies) off the stack, and writes the last one to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visible_pops">visible_pops ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> cursor visibility(ies) off the stack (and returns the last one), without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visible_push">visible_push (visible)</a></td>
-	<td class="summary">Pushes a cursor visibility onto the stack, and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#visible_pushs">visible_pushs (visible)</a></td>
-	<td class="summary">Pushes a cursor visibility onto the stack (and returns it), without writing it to the terminal.</td>
 	</tr>
 </table>
 <h2><a href="#cursor_position">cursor_position</a></h2>
@@ -211,7 +146,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#cursor_saves">cursor_saves ()</a></td>
-	<td class="summary">Returns the ansi sequence to store to backup the current sursor position (in terminal storage, not stacked).</td>
+	<td class="summary">Returns the ansi sequence to store to backup the current cursor position (in terminal storage, not stacked).</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#cursor_set">cursor_set (row, column)</a></td>
@@ -219,7 +154,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#cursor_sets">cursor_sets (row, column)</a></td>
-	<td class="summary">Creates ansi sequence to set the cursor position without writing to the terminal or pushing onto the stack.</td>
+	<td class="summary">Creates ansi sequence to set the cursor position without writing it to the terminal or pushing onto the stack.</td>
 	</tr>
 </table>
 <h2><a href="#cursor_position_stack">cursor_position_stack</a></h2>
@@ -496,6 +431,10 @@
 	<td class="summary">Wrap a function in <a href="../modules/terminal.html#initialize">initialize</a> and <a href="../modules/terminal.html#shutdown">shutdown</a> calls.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#ready">ready ()</a></td>
+	<td class="summary">Returns whether the terminal has been initialized and is ready for use.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#shutdown">shutdown ()</a></td>
 	<td class="summary">Shuts down the terminal, restoring the terminal settings.</td>
 	</tr>
@@ -505,11 +444,10 @@
 <br/>
 
 
-    <h2 class="section-header has-description"><a name="Cursor_shapes_and_visibility"></a>Cursor shapes and visibility </h2>
+    <h2 class="section-header has-description"><a name="Cursor_positioning"></a>Cursor positioning </h2>
 
           <div class="section-description">
-           Managing the shape and visibility of the cursor. These functions just generate
- required ansi sequences, without any stack operations.
+           Managing the cursor in absolute positions, without stack operations.
           </div>
     <dl class="function">
     <dt>
@@ -574,438 +512,6 @@
 
 
 
-
-
-
-
-</dd>
-    <dt>
-    <a name = "ready"></a>
-    <strong>ready ()</strong>
-    </dt>
-    <dd>
-    Returns whether the terminal has been initialized and is ready for use.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">boolean</span></span>
-        true if the terminal has been initialized
-    </ol>
-
-
-
-
-</dd>
-</dl>
-    <h2 class="section-header "><a name="cursor_shapes"></a>cursor_shapes</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "shape"></a>
-    <strong>shape (shape)</strong>
-    </dt>
-    <dd>
-    Sets the cursor shape and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">shape</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the shape to set, one of the keys <code>&quot;block&quot;</code>,
- <code>&quot;block_blink&quot;</code>, <code>&quot;underline&quot;</code>, <code>&quot;underline_blink&quot;</code>, <code>&quot;bar&quot;</code>, <code>&quot;bar_blink&quot;</code>
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "shapes"></a>
-    <strong>shapes (shape)</strong>
-    </dt>
-    <dd>
-    Returns the ansi sequence for a cursor shape without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">shape</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the shape to get, one of the keys <code>&quot;block&quot;</code>,
- <code>&quot;block_blink&quot;</code>, <code>&quot;underline&quot;</code>, <code>&quot;underline_blink&quot;</code>, <code>&quot;bar&quot;</code>, <code>&quot;bar_blink&quot;</code>
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visible"></a>
-    <strong>visible (visible)</strong>
-    </dt>
-    <dd>
-    Shows or hides the cursor and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">visible</span>
-            <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visibles"></a>
-    <strong>visibles (visible)</strong>
-    </dt>
-    <dd>
-    Returns the ansi sequence to show/hide the cursor without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">visible</span>
-            <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-</dl>
-    <h2 class="section-header "><a name="cursor_shape_stack"></a>cursor_shape_stack</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "shape_apply"></a>
-    <strong>shape_apply ()</strong>
-    </dt>
-    <dd>
-    Re-applies the shape at the top of the stack, and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "shape_applys"></a>
-    <strong>shape_applys ()</strong>
-    </dt>
-    <dd>
-    Re-applies the shape at the top of the stack (returns it, does not write it to the terminal).
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "shape_pop"></a>
-    <strong>shape_pop ([n=1])</strong>
-    </dt>
-    <dd>
-    Pops <code>n</code> cursor shape(s) off the stack, and writes the last one to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of shapes to pop
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "shape_pops"></a>
-    <strong>shape_pops ([n=1])</strong>
-    </dt>
-    <dd>
-    Pops <code>n</code> cursor shape(s) off the stack (and returns the last one), without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of shapes to pop
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "shape_push"></a>
-    <strong>shape_push (shape)</strong>
-    </dt>
-    <dd>
-    Pushes a cursor shape onto the stack, and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">shape</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the shape to push, one of the keys <code>&quot;block&quot;</code>,
- <code>&quot;block_blink&quot;</code>, <code>&quot;underline&quot;</code>, <code>&quot;underline_blink&quot;</code>, <code>&quot;bar&quot;</code>, <code>&quot;bar_blink&quot;</code>
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "shape_pushs"></a>
-    <strong>shape_pushs (shape)</strong>
-    </dt>
-    <dd>
-    Pushes a cursor shape onto the stack (and returns it), without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">shape</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the shape to push, one of the keys <code>&quot;block&quot;</code>,
- <code>&quot;block_blink&quot;</code>, <code>&quot;underline&quot;</code>, <code>&quot;underline_blink&quot;</code>, <code>&quot;bar&quot;</code>, <code>&quot;bar_blink&quot;</code>
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visible_apply"></a>
-    <strong>visible_apply ()</strong>
-    </dt>
-    <dd>
-    Returns the ansi sequence to show/hide the cursor at the top of the stack, and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visible_applys"></a>
-    <strong>visible_applys ()</strong>
-    </dt>
-    <dd>
-    Returns the ansi sequence to show/hide the cursor at the top of the stack without writing it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visible_pop"></a>
-    <strong>visible_pop ([n=1])</strong>
-    </dt>
-    <dd>
-    Pops <code>n</code> cursor visibility(ies) off the stack, and writes the last one to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of visibilities to pop
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visible_pops"></a>
-    <strong>visible_pops ([n=1])</strong>
-    </dt>
-    <dd>
-    Pops <code>n</code> cursor visibility(ies) off the stack (and returns the last one), without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of visibilities to pop
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visible_push"></a>
-    <strong>visible_push (visible)</strong>
-    </dt>
-    <dd>
-    Pushes a cursor visibility onto the stack, and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">visible</span>
-            <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "visible_pushs"></a>
-    <strong>visible_pushs (visible)</strong>
-    </dt>
-    <dd>
-    Pushes a cursor visibility onto the stack (and returns it), without writing it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">visible</span>
-            <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
 
 
 
@@ -1117,7 +623,7 @@
     <strong>cursor_saves ()</strong>
     </dt>
     <dd>
-    Returns the ansi sequence to store to backup the current sursor position (in terminal storage, not stacked).
+    Returns the ansi sequence to store to backup the current cursor position (in terminal storage, not stacked).
 
 
 
@@ -1171,7 +677,7 @@
     <strong>cursor_sets (row, column)</strong>
     </dt>
     <dd>
-    Creates ansi sequence to set the cursor position without writing to the terminal or pushing onto the stack.
+    Creates ansi sequence to set the cursor position without writing it to the terminal or pushing onto the stack.
 
 
     <h3>Parameters:</h3>
@@ -3227,6 +2733,26 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
 }
 <span class="global">assert</span>(t.<span class="function-name">initwrap</span>(opts, main, <span class="string">"one"</span>, <span class="string">"two"</span>)) <span class="comment">-- assert to rethrow any error after termimal restore</span></pre>
     </ul>
+
+</dd>
+    <dt>
+    <a name = "ready"></a>
+    <strong>ready ()</strong>
+    </dt>
+    <dd>
+    Returns whether the terminal has been initialized and is ready for use.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+        true if the terminal has been initialized
+    </ol>
+
+
+
 
 </dd>
     <dt>
