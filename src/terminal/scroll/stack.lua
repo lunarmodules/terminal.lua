@@ -39,7 +39,7 @@ end
 -- @treturn string The ANSI sequence representing the pushed scroll region.
 -- @within Sequences
 function M.pushs(top, bottom)
-  _scrollstack[#_scrollstack + 1] = scroll.set_regions(top, bottom)
+  _scrollstack[#_scrollstack + 1] = scroll.sets(top, bottom)
   return M.applys()
 end
 

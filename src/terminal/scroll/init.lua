@@ -27,7 +27,7 @@ end
 -- @tparam number start_row The first row of the scroll region (can be negative).
 -- @tparam number end_row The last row of the scroll region (can be negative).
 -- @treturn string The ANSI sequence for setting the scroll region.
-function M.set_regions(start_row, end_row)
+function M.sets(start_row, end_row)
   -- Resolve negative indices
   local rows, _ = sys.termsize()
   start_row = utils.resolve_index(start_row, rows)
@@ -41,8 +41,8 @@ end
 -- @tparam number start_row The first row of the scroll region (can be negative).
 -- @tparam number end_row The last row of the scroll region (can be negative).
 -- @treturn true Always returns true after setting the scroll region.
-function M.set_region(start_row, end_row)
-  output.write(M.set_regions(start_row, end_row))
+function M.set(start_row, end_row)
+  output.write(M.sets(start_row, end_row))
   return true
 end
 
@@ -82,7 +82,7 @@ end
 -- Positive values scroll down, negative values scroll up.
 -- @tparam number n The number of lines to scroll (positive for down, negative for up).
 -- @treturn string The ANSI sequence for vertical scrolling.
-function M.scrolls_vertical(n)
+function M.verticals(n)
   if n == 0 or n == nil then
     return ""
   end
@@ -92,8 +92,8 @@ end
 --- Scrolls vertically by a specified number of lines and writes the sequence to the terminal.
 -- @tparam number n The number of lines to scroll (positive for down, negative for up).
 -- @treturn true Always returns true after scrolling.
-function M.scroll_vertical(n)
-  output.write(M.scrolls_vertical(n))
+function M.vertical(n)
+  output.write(M.verticals(n))
   return true
 end
 

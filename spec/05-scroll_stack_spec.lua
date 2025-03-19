@@ -29,7 +29,7 @@ describe("Scroll stack", function()
   describe("pushs()", function()
 
     it("pushes a new scroll region onto the stack", function()
-      local expected = scroll.set_regions(5, 10)
+      local expected = scroll.sets(5, 10)
       local seq = stack.pushs(5, 10)
       assert.are.same({ scroll.resets(), expected }, stack.__scrollstack)
       assert.are.equal(expected, seq)
