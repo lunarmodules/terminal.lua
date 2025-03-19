@@ -301,7 +301,7 @@ function M.cursor_get()
   return unpack(r[1])
 end
 
---- Returns the ansi sequence to store to backup the current sursor position (in terminal storage, not stacked).
+--- Returns the ansi sequence to store to backup the current cursor position (in terminal storage, not stacked).
 -- @treturn string ansi sequence to write to the terminal
 -- @within cursor_position
 function M.cursor_saves()
@@ -331,7 +331,7 @@ function M.cursor_restore()
   return true
 end
 
---- Creates ansi sequence to set the cursor position without writing to the terminal or pushing onto the stack.
+--- Creates ansi sequence to set the cursor position without writing it to the terminal or pushing onto the stack.
 -- @tparam number row
 -- @tparam number column
 -- @treturn string ansi sequence to write to the terminal
