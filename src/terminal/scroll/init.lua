@@ -6,7 +6,7 @@ package.loaded["terminal.scroll"] = M -- Register the module early to avoid circ
 
 local sys = require "system"
 local output = require("terminal.output")
-local resolve_index = require("terminal").resolve_index
+local utils = require("terminal.utils")
 
 --- Function to return the default scroll reset sequence
 -- @treturn string The ANSI sequence for resetting the scroll region.
@@ -30,8 +30,8 @@ end
 function M.regions(start_row, end_row)
   -- Resolve negative indices
   local rows, _ = sys.termsize()
-  start_row = resolve_index(start_row, rows)
-  end_row = resolve_index(end_row, rows)
+  start_row = utils.resolve_index(start_row, rows)
+  end_row = utils.resolve_index(end_row, rows)
   return "\27[" .. tostring(start_row) .. ";" .. tostring(end_row) .. "r"
 end
 

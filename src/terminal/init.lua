@@ -19,13 +19,6 @@ local M = {
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
--- Helper function to resolve negative indices
-local function resolve_index(index, max_value)
-  if index < 0 then
-    return max_value + index + 1
-  end
-  return index
-end
 
 local pack, unpack do
   -- nil-safe versions of pack/unpack
@@ -346,8 +339,8 @@ end
 function M.cursor_sets(row, column)
   -- Resolve negative indices
   local rows, cols = sys.termsize()
-  row = resolve_index(row, rows)
-  column = resolve_index(column, cols)
+  row = utils.resolve_index(row, rows)
+  column = utils.resolve_index(column, cols)
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
 end
 

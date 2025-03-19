@@ -103,4 +103,16 @@ end
 
 
 
+--- Resolve negative indices.
+-- @tparam number index The index to resolve.
+-- @tparam number max_value The maximum value for the index.
+function M.resolve_index(index, max_value)
+  if index < 0 then
+    return max_value + index + 1
+  end
+  return index
+end
+
+
+
 return M
