@@ -1,4 +1,4 @@
---- Module for setting text colors and attributes
+--- Module for setting text colors and attributes.
 -- contains other functionality such as enabling/disabling text attributes like underline, blinking
 -- and reversing. Also contains functionality for setting brightness levels.
 -- @module terminal.color
