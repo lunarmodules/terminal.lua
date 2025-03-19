@@ -45,7 +45,6 @@ local clear = M.clear
 local scroll = M.scroll
 
 
-local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function
 local asleep   -- a (optionally) non-blocking sleep function
 
@@ -291,7 +290,7 @@ function M.cursor_get()
 
   -- request cursor position
   M.cursor_get_query()
-  t:flush()
+  output.flush()
 
   -- get position
   local r, err = input.read_cursor_pos(1)
@@ -564,7 +563,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_tocolumn(column)
-  t:write(M.cursor_tocolumns(column))
+  output.write(M.cursor_tocolumns(column))
   return true
 end
 
@@ -581,7 +580,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_torow(row)
-  t:write(M.cursor_torows(row))
+  output.write(M.cursor_torows(row))
   return true
 end
 
@@ -598,7 +597,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_row_down(rows)
-  t:write(M.cursor_row_downs(rows))
+  output.write(M.cursor_row_downs(rows))
   return true
 end
 
@@ -615,7 +614,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_row_up(rows)
-  t:write(M.cursor_row_ups(rows))
+  output.write(M.cursor_row_ups(rows))
   return true
 end
 
@@ -1347,7 +1346,7 @@ do
 
     local filehandle = opts.filehandle or io.stderr
     assert(io.type(filehandle) == 'file', "invalid opts.filehandle")
-    t = filehandle
+    output.set_stream(filehandle)
 
     bsleep = opts.bsleep or sys.sleep
     assert(type(bsleep) == "function", "invalid opts.bsleep function, expected a function, got " .. type(opts.bsleep))
@@ -1396,18 +1395,17 @@ do
       scroll.stack.pops(math.huge),
       M.cursor_sets(r,c) -- restore cursor pos
     )
-    t:flush()
+    output.flush()
 
     if termbackup.displaybackup then
       output.write(restorescreen)
-      t:flush()
+      output.flush()
     end
     output.write(reset)
-    t:flush()
+    output.flush()
 
     sys.termrestore(termbackup)
 
-    t = nil
     asleep = nil
     bsleep = nil
     termbackup = nil
