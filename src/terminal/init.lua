@@ -19,6 +19,7 @@ local M = {
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
+
 local pack, unpack do
   -- nil-safe versions of pack/unpack
   local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
@@ -45,9 +46,12 @@ local clear = M.clear
 local scroll = M.scroll
 
 
-local t -- the terminal/stream to operate on, default io.stderr
 local bsleep  -- a blocking sleep function
 local asleep   -- a (optionally) non-blocking sleep function
+
+
+
+
 
 
 
@@ -287,7 +291,7 @@ function M.cursor_get()
 
   -- request cursor position
   M.cursor_get_query()
-  t:flush()
+  output.flush()
 
   -- get position
   local r, err = input.read_cursor_pos(1)
@@ -297,7 +301,7 @@ function M.cursor_get()
   return unpack(r[1])
 end
 
---- Returns the ansi sequence to store to backup the current sursor position (in terminal storage, not stacked).
+--- Returns the ansi sequence to store to backup the current cursor position (in terminal storage, not stacked).
 -- @treturn string ansi sequence to write to the terminal
 -- @within cursor_position
 function M.cursor_saves()
@@ -327,12 +331,16 @@ function M.cursor_restore()
   return true
 end
 
---- Creates ansi sequence to set the cursor position without writing to the terminal or pushing onto the stack.
+--- Creates ansi sequence to set the cursor position without writing it to the terminal or pushing onto the stack.
 -- @tparam number row
 -- @tparam number column
 -- @treturn string ansi sequence to write to the terminal
 -- @within cursor_position
 function M.cursor_sets(row, column)
+  -- Resolve negative indices
+  local rows, cols = sys.termsize()
+  row = utils.resolve_index(row, rows)
+  column = utils.resolve_index(column, cols)
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
 end
 
@@ -556,7 +564,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_tocolumn(column)
-  t:write(M.cursor_tocolumns(column))
+  output.write(M.cursor_tocolumns(column))
   return true
 end
 
@@ -573,7 +581,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_torow(row)
-  t:write(M.cursor_torows(row))
+  output.write(M.cursor_torows(row))
   return true
 end
 
@@ -590,7 +598,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_row_down(rows)
-  t:write(M.cursor_row_downs(rows))
+  output.write(M.cursor_row_downs(rows))
   return true
 end
 
@@ -607,7 +615,7 @@ end
 -- @return true
 -- @within cursor_moving
 function M.cursor_row_up(rows)
-  t:write(M.cursor_row_ups(rows))
+  output.write(M.cursor_row_ups(rows))
   return true
 end
 
@@ -670,34 +678,37 @@ local _colorstack = {
 -- 1. base colors: black, red, green, yellow, blue, magenta, cyan, white. Use as `color("red")`.
 -- 2. extended colors: a number between 0 and 255. Use as `color(123)`.
 -- 3. RGB colors: three numbers between 0 and 255. Use as `color(123, 123, 123)`.
--- @tparam integer r in case of RGB, the red value, a number for extended colors, a string color for base-colors
--- @tparam[opt] number g in case of RGB, the green value
--- @tparam[opt] number b in case of RGB, the blue value
+-- @tparam integer|string r the red value (in case of RGB), a number for extended colors, or a string color for base-colors
+-- @tparam[opt] number g the green value (in case of RGB), nil otherwise
+-- @tparam[opt] number b the blue value (in case of RGB), nil otherwise
 -- @tparam[opt] boolean fg true for foreground, false for background
 -- @treturn string ansi sequence to write to the terminal
 local function colorcode(r, g, b, fg)
   if type(r) == "string" then
+    -- a string based color
     return fg and fg_base_colors[r] or bg_base_colors[r]
   end
 
-  if type(r) ~= "number" or g < 0 or g > 255 then
-    return "expected arg #1 to be a string or an integer 0-255, got " .. tostring(r) .. " (" .. type(r) .. ")"
+  if type(r) ~= "number" or r < 0 or r > 255 then
+    return error("expected arg #1 to be a string or an integer 0-255, got " .. tostring(r) .. " (" .. type(r) .. ")", 2)
   end
+  r = tostring(math.floor(r))
   if g == nil then
-    return fg and "\27[38;5;" .. tostring(math.floor(r)) .. "m" or "\27[48;5;" .. tostring(math.floor(r)) .. "m"
+    -- no g set, then r is the extended color
+    return fg and ("\27[38;5;" .. r .. "m") or ("\27[48;5;" .. r .. "m")
   end
 
   if type(g) ~= "number" or g < 0 or g > 255 then
-    return "expected arg #2 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")"
+    return error("expected arg #2 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")", 2)
   end
   g = tostring(math.floor(g))
 
   if type(b) ~= "number" or b < 0 or b > 255 then
-    return "expected arg #3 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")"
+    return error("expected arg #3 to be a number 0-255, got " .. tostring(b) .. " (" .. type(b) .. ")", 2)
   end
   b = tostring(math.floor(b))
 
-  return fg and "\27[38;2;" .. r .. ";" .. g .. ";" .. b .. "m" or "\27[48;2;" .. r .. ";" .. g .. ";" .. b .. "m"
+  return fg and ("\27[38;2;" .. r .. ";" .. g .. ";" .. b .. "m") or ("\27[48;2;" .. r .. ";" .. g .. ";" .. b .. "m")
 end
 
 --- Creates an ansi sequence to set the foreground color without writing it to the terminal.
@@ -1121,7 +1132,7 @@ function M.line_titles(width, title, char, pre, post)
   if w_for_title > title_w then
     -- enough space for title
     local p1 = M.line_horizontals(math.floor((w_for_title - title_w) / 2), char) .. pre .. title .. post
-    return  p1 .. M.line_horizontals(width - sys.utf8swidth(p1), char)
+    return p1 .. M.line_horizontals(width - sys.utf8swidth(p1), char)
   elseif w_for_title < 4 then
     -- too little space for title, omit it alltogether
     return M.line_horizontals(width, char)
@@ -1295,7 +1306,7 @@ end
 --- Write a sequence to the terminal to make it beep.
 -- @return true
 function M.beep()
-  output.write(M.beep())
+  output.write(M.beeps())
   return true
 end
 
@@ -1339,7 +1350,7 @@ do
 
     local filehandle = opts.filehandle or io.stderr
     assert(io.type(filehandle) == 'file', "invalid opts.filehandle")
-    t = filehandle
+    output.set_stream(filehandle)
 
     bsleep = opts.bsleep or sys.sleep
     assert(type(bsleep) == "function", "invalid opts.bsleep function, expected a function, got " .. type(opts.bsleep))
@@ -1388,18 +1399,17 @@ do
       scroll.stack.pops(math.huge),
       M.cursor_sets(r,c) -- restore cursor pos
     )
-    t:flush()
+    output.flush()
 
     if termbackup.displaybackup then
       output.write(restorescreen)
-      t:flush()
+      output.flush()
     end
     output.write(reset)
-    t:flush()
+    output.flush()
 
     sys.termrestore(termbackup)
 
-    t = nil
     asleep = nil
     bsleep = nil
     termbackup = nil
