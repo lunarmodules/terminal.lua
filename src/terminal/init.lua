@@ -677,34 +677,37 @@ local _colorstack = {
 -- 1. base colors: black, red, green, yellow, blue, magenta, cyan, white. Use as `color("red")`.
 -- 2. extended colors: a number between 0 and 255. Use as `color(123)`.
 -- 3. RGB colors: three numbers between 0 and 255. Use as `color(123, 123, 123)`.
--- @tparam integer r in case of RGB, the red value, a number for extended colors, a string color for base-colors
--- @tparam[opt] number g in case of RGB, the green value
--- @tparam[opt] number b in case of RGB, the blue value
+-- @tparam integer|string r the red value (in case of RGB), a number for extended colors, or a string color for base-colors
+-- @tparam[opt] number g the green value (in case of RGB), nil otherwise
+-- @tparam[opt] number b the blue value (in case of RGB), nil otherwise
 -- @tparam[opt] boolean fg true for foreground, false for background
 -- @treturn string ansi sequence to write to the terminal
 local function colorcode(r, g, b, fg)
   if type(r) == "string" then
+    -- a string based color
     return fg and fg_base_colors[r] or bg_base_colors[r]
   end
 
-  if type(r) ~= "number" or g < 0 or g > 255 then
-    return "expected arg #1 to be a string or an integer 0-255, got " .. tostring(r) .. " (" .. type(r) .. ")"
+  if type(r) ~= "number" or r < 0 or r > 255 then
+    return error("expected arg #1 to be a string or an integer 0-255, got " .. tostring(r) .. " (" .. type(r) .. ")", 2)
   end
+  r = tostring(math.floor(r))
   if g == nil then
-    return fg and "\27[38;5;" .. tostring(math.floor(r)) .. "m" or "\27[48;5;" .. tostring(math.floor(r)) .. "m"
+    -- no g set, then r is the extended color
+    return fg and ("\27[38;5;" .. r .. "m") or ("\27[48;5;" .. r .. "m")
   end
 
   if type(g) ~= "number" or g < 0 or g > 255 then
-    return "expected arg #2 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")"
+    return error("expected arg #2 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")", 2)
   end
   g = tostring(math.floor(g))
 
   if type(b) ~= "number" or b < 0 or b > 255 then
-    return "expected arg #3 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")"
+    return error("expected arg #3 to be a number 0-255, got " .. tostring(b) .. " (" .. type(b) .. ")", 2)
   end
   b = tostring(math.floor(b))
 
-  return fg and "\27[38;2;" .. r .. ";" .. g .. ";" .. b .. "m" or "\27[48;2;" .. r .. ";" .. g .. ";" .. b .. "m"
+  return fg and ("\27[38;2;" .. r .. ";" .. g .. ";" .. b .. "m") or ("\27[48;2;" .. r .. ";" .. g .. ";" .. b .. "m")
 end
 
 --- Creates an ansi sequence to set the foreground color without writing it to the terminal.
