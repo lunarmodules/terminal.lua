@@ -9,7 +9,7 @@ describe("Scroll Module Tests", function()
 
 
   it("should return default scroll region reset sequence", function()
-    assert.are.equal("\27[r", scroll.regions())
+    assert.are.equal("\27[r", scroll.resets())
   end)
 
 
