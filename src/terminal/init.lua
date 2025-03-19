@@ -1128,7 +1128,7 @@ function M.line_titles(width, title, char, pre, post)
   if w_for_title > title_w then
     -- enough space for title
     local p1 = M.line_horizontals(math.floor((w_for_title - title_w) / 2), char) .. pre .. title .. post
-    return  p1 .. M.line_horizontals(width - sys.utf8swidth(p1), char)
+    return p1 .. M.line_horizontals(width - sys.utf8swidth(p1), char)
   elseif w_for_title < 4 then
     -- too little space for title, omit it alltogether
     return M.line_horizontals(width, char)
@@ -1302,7 +1302,7 @@ end
 --- Write a sequence to the terminal to make it beep.
 -- @return true
 function M.beep()
-  output.write(M.beep())
+  output.write(M.beeps())
   return true
 end
 
