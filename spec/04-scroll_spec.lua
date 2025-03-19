@@ -14,7 +14,7 @@ describe("Scroll Module Tests", function()
 
 
   it("should return correct scroll region set sequence", function()
-    assert.are.equal("\27[5;10r", scroll.regions(5, 10))
+    assert.are.equal("\27[5;10r", scroll.set_regions(5, 10))
   end)
 
 
@@ -39,17 +39,17 @@ describe("Scroll Module Tests", function()
 
 
   it("should return empty string for zero vertical scroll", function()
-    assert.are.equal("", scroll.scrolls(0))
+    assert.are.equal("", scroll.scrolls_vertical(0))
   end)
 
 
   it("should return correct sequence for positive vertical scroll (down)", function()
-    assert.are.equal("\27[3T", scroll.scrolls(3))
+    assert.are.equal("\27[3T", scroll.scrolls_vertical(3))
   end)
 
 
   it("should return correct sequence for negative vertical scroll (up)", function()
-    assert.are.equal("\27[2S", scroll.scrolls(-2))
+    assert.are.equal("\27[2S", scroll.scrolls_vertical(-2))
   end)
 
 end)
