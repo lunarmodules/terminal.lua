@@ -52,378 +52,6 @@ local asleep   -- a (optionally) non-blocking sleep function
 
 
 
-
-
-
---=============================================================================
--- cursor position
---=============================================================================
---- Cursor positioning.
--- Managing the cursor in absolute positions, without stack operations.
--- @section cursor_position
-
-local _positionstack = {}
-
-
---- returns the sequence for requesting cursor position as a string
-function M.cursor_get_querys()
-  return "\27[6n"
-end
-
---- write the sequence for requesting cursor position, without flushing
-function M.cursor_get_query()
-  output.write(M.cursor_get_querys())
-end
-
-
---- Requests the current cursor position from the terminal.
--- Will read entire keyboard buffer to empty it, then request the cursor position.
--- The output buffer will be flushed.
--- In case of a keyboard error, the error will be returned here, but also by
--- `readansi` on a later call, because readansi retains the proper order of keyboard
--- input, whilst this function buffers input.
--- @treturn[1] number row
--- @treturn[1] number column
--- @treturn[2] nil
--- @treturn[2] string error message in case of a keyboard read error
--- @within cursor_position
-function M.cursor_get()
-  -- first empty keyboard buffer
-  local ok, err = input.preread()
-  if not ok then
-    return nil, err
-  end
-
-  -- request cursor position
-  M.cursor_get_query()
-  output.flush()
-
-  -- get position
-  local r, err = input.read_cursor_pos(1)
-  if not r then
-    return nil, err
-  end
-  return unpack(r[1])
-end
-
---- Returns the ansi sequence to store to backup the current cursor position (in terminal storage, not stacked).
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_position
-function M.cursor_saves()
-  return "\27[s"
-end
-
---- Writes the ansi sequence to store the current cursor position (in terminal storage, not stacked) to the terminal.
--- @return true
--- @within cursor_position
-function M.cursor_save()
-  output.write(M.cursor_saves())
-  return true
-end
-
---- Returns the ansi sequence to restore the cursor position (from the terminal storage, not stacked).
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_position
-function M.cursor_restores()
-  return "\27[u"
-end
-
---- Writes the ansi sequence to restore the cursor position (from the terminal storage, not stacked) to the terminal.
--- @return true
--- @within cursor_position
-function M.cursor_restore()
-  output.write(M.cursor_restores())
-  return true
-end
-
---- Creates ansi sequence to set the cursor position without writing it to the terminal or pushing onto the stack.
--- @tparam number row
--- @tparam number column
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_position
-function M.cursor_sets(row, column)
-  -- Resolve negative indices
-  local rows, cols = sys.termsize()
-  row = utils.resolve_index(row, rows)
-  column = utils.resolve_index(column, cols)
-  return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
-end
-
---- Sets the cursor position and writes it to the terminal, without pushing onto the stack.
--- @tparam number row
--- @tparam number column
--- @return true
--- @within cursor_position
-function M.cursor_set(row, column)
-  output.write(M.cursor_sets(row, column))
-  return true
-end
-
-
---=============================================================================
---- Cursor positioning stack based.
--- Managing the cursor in absolute positions, stack based.
--- @section cursor_position_stack
-
-
---- Pushes the current cursor position onto the stack, and returns an ansi sequence to move to the new position without writing it to the terminal.
--- Calls cursor.get() under the hood.
--- @tparam number row
--- @tparam number column
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_position_stack
-function M.cursor_pushs(row, column)
-  local r, c = M.cursor_get()
-  -- ignore the error, since we need to keep the stack in sync for pop/push operations
-  _positionstack[#_positionstack + 1] = { r, c }
-  return M.cursor_sets(row, column)
-end
-
---- Pushes the current cursor position onto the stack, and writes an ansi sequence to move to the new position to the terminal.
--- Calls cursor.get() under the hood.
--- @tparam number row
--- @tparam number column
--- @return true
--- @within cursor_position_stack
-function M.cursor_push(row, column)
-  output.write(M.cursor_pushs(row, column))
-  return true
-end
-
---- Pops the last n cursor positions off the stack, and returns an ansi sequence to move to the last one without writing it to the terminal.
--- @tparam[opt=1] number n number of positions to pop
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_position_stack
-function M.cursor_pops(n)
-  n = n or 1
-  local entry
-  while n > 0 do
-    entry = table.remove(_positionstack)
-    n = n - 1
-  end
-  if not entry then
-    return ""
-  end
-  return M.cursor_sets(entry[1], entry[2])
-end
-
---- Pops the last n cursor position off the stack, and writes an ansi sequence to move to the last one to the terminal.
--- @tparam[opt=1] number n number of positions to pop
--- @return true
--- @within cursor_position_stack
-function M.cursor_pop(n)
-  output.write(M.cursor_pops(n))
-  return true
-end
-
---=============================================================================
--- cursor movements
---=============================================================================
---- Cursor movements.
--- Moving the cursor around, without stack interactions.
--- @section cursor_moving
-
---- Creates an ansi sequence to move the cursor up without writing it to the terminal.
--- @tparam[opt=1] number n number of lines to move up
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_ups(n)
-  n = n or 1
-  return "\27["..tostring(n).."A"
-end
-
---- Moves the cursor up and writes it to the terminal.
--- @tparam[opt=1] number n number of lines to move up
--- @return true
--- @within cursor_moving
-function M.cursor_up(n)
-  output.write(M.cursor_ups(n))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor down without writing it to the terminal.
--- @tparam[opt=1] number n number of lines to move down
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_downs(n)
-  n = n or 1
-  return "\27["..tostring(n).."B"
-end
-
---- Moves the cursor down and writes it to the terminal.
--- @tparam[opt=1] number n number of lines to move down
--- @return true
--- @within cursor_moving
-function M.cursor_down(n)
-  output.write(M.cursor_downs(n))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor vertically without writing it to the terminal.
--- @tparam[opt=1] number n number of lines to move (negative for up, positive for down)
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_verticals(n)
-  n = n or 1
-  if n == 0 then
-    return ""
-  end
-  return "\27[" .. (n < 0 and (tostring(-n) .. "A") or (tostring(n) .. "B"))
-end
-
---- Moves the cursor vertically and writes it to the terminal.
--- @tparam[opt=1] number n number of lines to move (negative for up, positive for down)
--- @return true
--- @within cursor_moving
-function M.cursor_vertical(n)
-  output.write(M.cursor_verticals(n))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor left without writing it to the terminal.
--- @tparam[opt=1] number n number of columns to move left
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_lefts(n)
-  n = n or 1
-  return "\27["..tostring(n).."D"
-end
-
---- Moves the cursor left and writes it to the terminal.
--- @tparam[opt=1] number n number of columns to move left
--- @return true
--- @within cursor_moving
-function M.cursor_left(n)
-  output.write(M.cursor_lefts(n))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor right without writing it to the terminal.
--- @tparam[opt=1] number n number of columns to move right
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_rights(n)
-  n = n or 1
-  return "\27["..tostring(n).."C"
-end
-
---- Moves the cursor right and writes it to the terminal.
--- @tparam[opt=1] number n number of columns to move right
--- @return true
--- @within cursor_moving
-function M.cursor_right(n)
-  output.write(M.cursor_rights(n))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor horizontally without writing it to the terminal.
--- @tparam[opt=1] number n number of columns to move (negative for left, positive for right)
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_horizontals(n)
-  n = n or 1
-  if n == 0 then
-    return ""
-  end
-  return "\27[" .. (n < 0 and (tostring(-n) .. "D") or (tostring(n) .. "C"))
-end
-
---- Moves the cursor horizontally and writes it to the terminal.
--- @tparam[opt=1] number n number of columns to move (negative for left, positive for right)
--- @return true
--- @within cursor_moving
-function M.cursor_horizontal(n)
-  output.write(M.cursor_horizontals(n))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor horizontal and vertical without writing it to the terminal.
--- @tparam[opt=0] number rows number of rows to move (negative for up, positive for down)
--- @tparam[opt=0] number columns number of columns to move (negative for left, positive for right)
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_moves(rows, columns)
-  return M.cursor_verticals(rows or 0) .. M.cursor_horizontals(columns or 0)
-end
-
---- Moves the cursor horizontal and vertical and writes it to the terminal.
--- @tparam[opt=0] number rows number of rows to move (negative for up, positive for down)
--- @tparam[opt=0] number columns number of columns to move (negative for left, positive for right)
--- @return true
--- @within cursor_moving
-function M.cursor_move(rows, columns)
-  output.write(M.cursor_moves(rows, columns))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor to a column on the current row without writing it to the terminal.
--- @tparam number column the column to move to
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_tocolumns(column)
-  return "\27["..tostring(column).."G"
-end
-
---- Moves the cursor to a column on the current row and writes it to the terminal.
--- @tparam number column the column to move to
--- @return true
--- @within cursor_moving
-function M.cursor_tocolumn(column)
-  output.write(M.cursor_tocolumns(column))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor to a row on the current column without writing it to the terminal.
--- @tparam number row the row to move to
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_torows(row)
-  return "\27["..tostring(row).."d"
-end
-
---- Moves the cursor to a row on the current column and writes it to the terminal.
--- @tparam number row the row to move to
--- @return true
--- @within cursor_moving
-function M.cursor_torow(row)
-  output.write(M.cursor_torows(row))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor to the start of the next row without writing it to the terminal.
--- @tparam[opt=1] number rows the number of rows to move down
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_row_downs(rows)
-  return "\27["..tostring(rows or 1).."E"
-end
-
---- Moves the cursor to the start of the next row and writes it to the terminal.
--- @tparam[opt=1] number rows the number of rows to move down
--- @return true
--- @within cursor_moving
-function M.cursor_row_down(rows)
-  output.write(M.cursor_row_downs(rows))
-  return true
-end
-
---- Creates an ansi sequence to move the cursor to the start of the previous row without writing it to the terminal.
--- @tparam[opt=1] number rows the number of rows to move up
--- @treturn string ansi sequence to write to the terminal
--- @within cursor_moving
-function M.cursor_row_ups(rows)
-  return "\27["..tostring(rows or 1).."F"
-end
-
---- Moves the cursor to the start of the previous row and writes it to the terminal.
--- @tparam[opt=1] number rows the number of rows to move up
--- @return true
--- @within cursor_moving
-function M.cursor_row_up(rows)
-  output.write(M.cursor_row_ups(rows))
-  return true
-end
-
 --=============================================================================
 -- text: colors & attributes
 --=============================================================================
@@ -896,7 +524,7 @@ function M.line_verticals(n, char, lastcolumn)
   lastcolumn = lastcolumn and 1 or 0
   local w = sys.utf8cwidth(char)
   -- TODO: why do we need 'lastcolumn*2' here???
-  return (char .. M.cursor_lefts(w-lastcolumn*2) .. M.cursor_downs(1)):rep(n-1) .. char
+  return (char .. cursor.position.lefts(w-lastcolumn*2) .. cursor.position.downs(1)):rep(n-1) .. char
 end
 
 --- Draws a vertical line and writes it to the terminal.
@@ -1058,24 +686,24 @@ function M.boxs(height, width, format, clear_flag, title, lastcolumn)
     M.line_titles(width - tl_w - tr_w, title, format.h or " ", format.pre or "", format.post or ""),
     format.tr or "",
     -- position to draw right, and draw it
-    M.cursor_moves(1, -v_w + lastcolumn),
+    cursor.position.moves(1, -v_w + lastcolumn),
     v_line_r,
     -- position back to top left, and draw left
-    M.cursor_moves(-height + 3, -width + lastcolumn),
+    cursor.position.moves(-height + 3, -width + lastcolumn),
     v_line_l,
     -- draw bottom
-    M.cursor_moves(1, -1),
+    cursor.position.moves(1, -1),
     format.bl or "",
     M.line_horizontals(width - bl_w - br_w, format.h or " "),
     format.br or "",
     -- return to top left
-    M.cursor_moves(-height + 1, -width + lastcolumn),
+    cursor.position.moves(-height + 1, -width + lastcolumn),
   }
   if clear_flag then
     local l = #r
-    r[l+1] = M.cursor_moves(1, v_w)
+    r[l+1] = cursor.position.moves(1, v_w)
     r[l+2] = clear.box_seq(height - 2, width - 2 * v_w)
-    r[l+3] = M.cursor_moves(-1, -v_w)
+    r[l+3] = cursor.position.moves(-1, -v_w)
   end
   return table.concat(r)
 end
@@ -1142,7 +770,7 @@ do
   -- @tparam[opt=sys.sleep] function opts.bsleep the blocking sleep function to use.
   -- This should never be set to a yielding sleep function! This function
   -- will be used by the `terminal.write` and `terminal.print` to prevent buffer-overflows and
-  -- truncation when writing to the terminal. And by `cursor_get` when reading the cursor position.
+  -- truncation when writing to the terminal. And by `cursor.position.get` when reading the cursor position.
   -- @tparam[opt=sys.sleep] function opts.sleep the default sleep function to use for `readansi`.
   -- In an async application (coroutines), this should be a yielding sleep function, eg. `copas.pause`.
   -- @return true
@@ -1196,13 +824,13 @@ do
     assert(M.ready(), "terminal not initialized")
 
     -- restore all stacks
-    local r,c = M.cursor_get() -- Mac: scroll-region reset changes cursor pos to 1,1, so store it
+    local r,c = cursor.position.get() -- Mac: scroll-region reset changes cursor pos to 1,1, so store it
     output.write(
       cursor.shape.stack.pops(math.huge),
       cursor.visible.stack.pops(math.huge),
       M.textpops(math.huge),
       scroll.stack.pops(math.huge),
-      M.cursor_sets(r,c) -- restore cursor pos
+      cursor.position.sets(r,c) -- restore cursor pos
     )
     output.flush()
 

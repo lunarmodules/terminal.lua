@@ -18,7 +18,7 @@ local function testscreen()
 
   -- print all rows to fill the screen
   for i = 1, r do
-    t.cursor_set(i, 1)
+    t.cursor.position.set(i, 1)
     t.output.write(row)
   end
 
@@ -42,11 +42,11 @@ testscreen()
 -- draw a box, with 2 cols/rows margin around the screen
 local edge = 2
 local r,c = sys.termsize()
-t.cursor_set(edge+1, edge+1)
+t.cursor.position.set(edge+1, edge+1)
 t.box(r - 2*edge, c - 2*edge, t.box_fmt.double, true, "test screen")
 
 -- move cursor inside the box
-t.cursor_move(1, 1)
+t.cursor.position.move(1, 1)
 
 -- set text attributes (not using the stack this time)
 t.textset{

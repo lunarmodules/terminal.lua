@@ -23,9 +23,9 @@ local sys = require "system"
 -- Test the width of a character by writing it to the terminal and measure cursor displacement.
 -- No colors or cursor positioning/moving back is involved.
 local function test_width_by_writing(char)
-  local _, start_column = t.cursor_get()
+  local _, start_column = t.cursor.position.get()
   t.output.write(char)
-  local _, end_column = t.cursor_get()
+  local _, end_column = t.cursor.position.get()
   if end_column < start_column then
     -- cursor wrapped to next line
     local _, cols = t.termsize()
@@ -92,7 +92,7 @@ function M.get_cwidth(char)
   t.textpush({ brightness = 0 })
   local w = test_width_by_writing(char)
   t.textpop()
-  t.cursor_left(w)
+  t.cursor.position.left(w)
   return w
 end
 
@@ -164,9 +164,9 @@ function M.preload(str)
 
   t.textpush({ brightness = 0 }) -- set color to "hidden"
 
-  local r, c = t.cursor_get() -- retrieve current position
-  local setpos = t.cursor_sets(r, c) -- string to restore cursor to current position
-  local getpos = t.cursor_get_querys() -- string to inject query for current position
+  local r, c = t.cursor.position.get() -- retrieve current position
+  local setpos = t.cursor.position.sets(r, c) -- string to restore cursor to current position
+  local getpos = t.cursor.position.querys() -- string to inject query for current position
   local chunk = {}
   local chars = {}
   for i = 1, #test do -- process in chunks of max size

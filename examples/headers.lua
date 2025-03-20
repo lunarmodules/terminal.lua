@@ -82,7 +82,7 @@ function TerminalUI:drawBar(row, style, contentFn)
   local _, cols = sys.termsize()
 
   self:withStyle(style, function()
-    t.cursor_set(row, 1)
+    t.cursor.position.set(row, 1)
     t.output.write(string.rep(" ", cols))
 
     if contentFn then
@@ -94,7 +94,7 @@ end
 function TerminalUI:updateCursor(y, x)
   self.cursorY = y
   self.cursorX = x
-  t.cursor_set(y, x)
+  t.cursor.position.set(y, x)
 end
 
 function TerminalUI:drawHeader()
@@ -102,19 +102,19 @@ function TerminalUI:drawHeader()
   local cursorText = string.format("Pos: %d,%d", self.cursorY, self.cursorX)
 
   self:drawBar(1, self.headerStyle, function(_, cols)
-    t.cursor_set(1, 2)
+    t.cursor.position.set(1, 2)
     t.output.write(self.appName)
 
     local clockPos = math.floor(cols / 4)
-    t.cursor_set(1, clockPos)
+    t.cursor.position.set(1, clockPos)
     t.output.write(currentTime)
 
     local cursorPos = math.floor(cols / 2) + 5
-    t.cursor_set(1, cursorPos)
+    t.cursor.position.set(1, cursorPos)
     t.output.write(cursorText)
 
     local colorText = "Color: " .. self:getCurrentColorInfo()
-    t.cursor_set(1, cols - #colorText - 1)
+    t.cursor.position.set(1, cols - #colorText - 1)
     t.output.write(colorText)
   end)
 end
@@ -126,10 +126,10 @@ function TerminalUI:drawFooter()
 
   self:drawBar(rows, self.footerStyle, function(_, cols)
 
-    t.cursor_set(rows, 2)
+    t.cursor.position.set(rows, 2)
     t.output.write(lineText)
 
-    t.cursor_set(rows, cols - #helpText - 1)
+    t.cursor.position.set(rows, cols - #helpText - 1)
     t.output.write(helpText)
   end)
 end
@@ -149,7 +149,7 @@ function TerminalUI:initializeContent()
   t.textset(self.contentStyle)
 
   for i = 2, rows - 1 do
-    t.cursor_set(i, 1)
+    t.cursor.position.set(i, 1)
     t.output.write(string.rep(" ", cols))
   end
 
@@ -162,7 +162,7 @@ function TerminalUI:handleInput()
   self:refreshDisplay()
 
   while true do
-    t.cursor_set(self.cursorY, self.cursorX)
+    t.cursor.position.set(self.cursorY, self.cursorX)
 
     local rawKey, keyName = self:readKey()
 

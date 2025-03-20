@@ -18,7 +18,7 @@ local function main()
   print("                                                       <-- ticker type")
 
   -- create all spinners with fixed positions (positions are optional)
-  local r, _ = t.cursor_get()
+  local r, _ = t.cursor.position.get()
   for i, name in ipairs(lst) do
     local done_sprite, done_textattr
     if i <= #lst/2 then

@@ -80,8 +80,8 @@ function M.spinner(opts)
   local steps do
     local pos_set, pos_restore
     if row then
-      pos_set = t.cursor_saves() .. t.cursor_sets(row, col)
-      pos_restore = t.cursor_restores()
+      pos_set = t.cursor.position.backups() .. t.cursor.position.sets(row, col)
+      pos_restore = t.cursor.position.restores()
     end
 
     local attr_push, attr_pop -- both will remain nil, if no text attr set
@@ -103,7 +103,7 @@ function M.spinner(opts)
       local sequence = Sequence()
       sequence[#sequence+1] = pos_set
       sequence[#sequence+1] = (i == 0 and attr_push_done) or attr_push or nil
-      sequence[#sequence+1] = s .. t.cursor_lefts(sys.utf8swidth(s))
+      sequence[#sequence+1] = s .. t.cursor.position.lefts(sys.utf8swidth(s))
       sequence[#sequence+1] = attr_pop
       sequence[#sequence+1] = pos_restore
       steps[i] = sequence
