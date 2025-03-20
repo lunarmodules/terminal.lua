@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><strong>async.lua</strong></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>async.lua</h2>
+<pre>
+<span class="keyword">local</span> sys = <span class="global">require</span>(<span class="string">"system"</span>)
+
+<span class="keyword">local</span> startTime = sys.<span class="function-name">gettime</span>()
+<span class="keyword">local</span> timeoutDuration = <span class="number">3</span> <span class="comment">-- seconds
+</span>
+<span class="comment">-- set io.stdin to non-blocking mode
+</span><span class="comment">-- setup Windows console to handle ANSI processing
+</span>sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdout, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdout) + sys.COF_VIRTUAL_TERMINAL_PROCESSING)
+sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdin, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdin) + sys.CIF_VIRTUAL_TERMINAL_INPUT)
+
+<span class="comment">-- setup Posix to disable canonical mode and echo
+</span><span class="keyword">local</span> of_attr = sys.<span class="function-name">tcgetattr</span>(<span class="global">io</span>.stdin)
+sys.<span class="function-name">setnonblock</span>(<span class="global">io</span>.stdin, <span class="keyword">true</span>)
+sys.<span class="function-name">tcsetattr</span>(<span class="global">io</span>.stdin, sys.TCSANOW, {
+  lflag = of_attr.lflag - sys.L_ICANON - sys.L_ECHO, <span class="comment">-- disable canonical mode and echo
+</span>})
+
+
+
+<span class="global">print</span>(<span class="string">"Press any key (timeout: 3 seconds)..."</span>)
+<span class="keyword">local</span> key, typ
+<span class="keyword">while</span> sys.<span class="function-name">gettime</span>() - startTime &lt; timeoutDuration <span class="keyword">do</span>
+  key, typ = sys.<span class="function-name">readansi</span>(<span class="number">0.3</span>)
+  <span class="keyword">if</span> key <span class="keyword">then</span>
+    <span class="global">print</span>(<span class="string">"You pressed:"</span>, key, <span class="string">"(type:"</span>, typ, <span class="string">")"</span>)
+    <span class="keyword">break</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> <span class="keyword">not</span> key <span class="keyword">then</span>
+  <span class="global">print</span>(<span class="string">"No key pressed within timeout."</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">-- restore old setting
+</span><span class="comment">-- windows
+</span>sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdout, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdout) - sys.COF_VIRTUAL_TERMINAL_PROCESSING)
+sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdin, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdin) - sys.CIF_VIRTUAL_TERMINAL_INPUT)
+
+<span class="comment">-- posix
+</span><span class="keyword">local</span> of_attr = sys.<span class="function-name">tcgetattr</span>(<span class="global">io</span>.stdin)
+sys.<span class="function-name">setnonblock</span>(<span class="global">io</span>.stdin, <span class="keyword">false</span>)
+sys.<span class="function-name">tcsetattr</span>(<span class="global">io</span>.stdin, sys.TCSANOW, {
+  lflag = of_attr.lflag + sys.L_ICANON + sys.L_ECHO,
+})</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

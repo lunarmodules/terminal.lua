@@ -45,6 +45,11 @@ build = {
     ["terminal.scroll.stack"] = "src/terminal/scroll/stack.lua",
     ["terminal.color"] = "src/terminal/color/init.lua",
     ["terminal.color.stack"] = "src/terminal/color/stack.lua",
+    ["terminal.cursor.init"] = "src/terminal/cursor/init.lua",
+    ["terminal.cursor.visible.init"] = "src/terminal/cursor/visible/init.lua",
+    ["terminal.cursor.visible.stack"] = "src/terminal/cursor/visible/stack.lua",
+    ["terminal.cursor.shape.init"] = "src/terminal/cursor/shape/init.lua",
+    ["terminal.cursor.shape.stack"] = "src/terminal/cursor/shape/stack.lua",
   },
 
   copy_directories = {

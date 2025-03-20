@@ -47,7 +47,7 @@ local function main()
 
 
   t.output.write("Press any key to stop the spinners...")
-  t.visible(false)
+  t.cursor.visible.set(false)
 
 
   -- loop until key-pressed
@@ -65,7 +65,7 @@ local function main()
   for _, s in ipairs(spinners) do
     s(true)
   end
-  t.visible(true)
+  t.cursor.visible.set(true)
   t.output.print() -- move to new line (we're still on the 'press any key' line)
 
   return true
