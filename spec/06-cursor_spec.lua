@@ -186,4 +186,204 @@ describe("Cursor", function()
 
   end)
 
+
+
+  describe("position.querys()", function()
+
+    it("returns ANSI sequence for querying the cursor position", function()
+      assert.are.equal("\27[6n", cursor.position.querys())
+    end)
+
+  end)
+
+
+
+  describe("position.get()", function()
+
+    pending("returns the cursor position", function()
+      -- TODO: implement
+    end)
+
+  end)
+
+
+
+  describe("position.sets()", function()
+
+    it("returns ANSI sequence for setting the cursor position", function()
+      assert.are.equal("\27[5;10H", cursor.position.sets(5, 10))
+    end)
+
+  end)
+
+
+
+  describe("position.backups()", function()
+
+    it("returns ANSI sequence for backing up the cursor position", function()
+      assert.are.equal("\27[s", cursor.position.backups())
+    end)
+
+  end)
+
+
+
+  describe("position.restores()", function()
+
+    it("returns ANSI sequence for restoring the cursor position", function()
+      assert.are.equal("\27[u", cursor.position.restores())
+    end)
+
+  end)
+
+
+
+  describe("position.ups()", function()
+
+    it("returns ANSI sequence for moving the cursor up", function()
+      assert.are.equal("\27[5A", cursor.position.ups(5))
+    end)
+
+
+    it("defaults to 1 row", function()
+      assert.are.equal("\27[1A", cursor.position.ups())
+    end)
+
+  end)
+
+
+
+  describe("position.downs()", function()
+
+    it("returns ANSI sequence for moving the cursor down", function()
+      assert.are.equal("\27[5B", cursor.position.downs(5))
+    end)
+
+
+    it("defaults to 1 row", function()
+      assert.are.equal("\27[1B", cursor.position.downs())
+    end)
+
+  end)
+
+
+
+  describe("position.verticals()", function()
+
+    it("returns empty string for zero vertical movement", function()
+      assert.are.equal("", cursor.position.verticals(0))
+    end)
+
+
+    it("returns correct sequence for positive vertical movement (down)", function()
+      assert.are.equal("\27[3B", cursor.position.verticals(3))
+    end)
+
+
+    it("returns correct sequence for negative vertical movement (up)", function()
+      assert.are.equal("\27[2A", cursor.position.verticals(-2))
+    end)
+
+  end)
+
+
+
+  describe("position.lefts()", function()
+
+    it("returns ANSI sequence for moving the cursor left", function()
+      assert.are.equal("\27[5D", cursor.position.lefts(5))
+    end)
+
+
+    it("defaults to 1 column", function()
+      assert.are.equal("\27[1D", cursor.position.lefts())
+    end)
+
+  end)
+
+
+
+  describe("position.rights()", function()
+
+    it("returns ANSI sequence for moving the cursor right", function()
+      assert.are.equal("\27[5C", cursor.position.rights(5))
+    end)
+
+
+    it("defaults to 1 column", function()
+      assert.are.equal("\27[1C", cursor.position.rights())
+    end)
+
+  end)
+
+
+
+  describe("position.horizontals()", function()
+
+    it("returns empty string for zero horizontal movement", function()
+      assert.are.equal("", cursor.position.horizontals(0))
+    end)
+
+
+    it("returns correct sequence for positive horizontal movement (right)", function()
+      assert.are.equal("\27[3C", cursor.position.horizontals(3))
+    end)
+
+
+    it("returns correct sequence for negative horizontal movement (left)", function()
+      assert.are.equal("\27[2D", cursor.position.horizontals(-2))
+    end)
+
+  end)
+
+
+
+  describe("position.moves()", function()
+
+    it("returns correct sequence for moving the cursor horizontally and vertically", function()
+      assert.are.equal("\27[3B\27[2C", cursor.position.moves(3, 2))
+    end)
+
+
+    it("defaults to 0 rows and 0 columns", function()
+      assert.are.equal("", cursor.position.moves())
+    end)
+
+
+    it("returns correct sequence for moving the cursor horizontally and vertically", function()
+      assert.are.equal("\27[3A\27[2D", cursor.position.moves(-3, -2))
+    end)
+
+  end)
+
+
+
+  describe("position.columns()", function()
+
+    it("returns correct sequence for moving the cursor to a column on the current row", function()
+      assert.are.equal("\27[10G", cursor.position.columns(10))
+    end)
+
+
+    pending("negative indices", function()
+      -- TODO: implement
+    end)
+
+  end)
+
+
+
+  describe("position.rows()", function()
+
+    it("returns correct sequence for moving the cursor to a row on the current column", function()
+      assert.are.equal("\27[5d", cursor.position.rows(5))
+    end)
+
+
+    pending("negative indices", function()
+      -- TODO: implement
+    end)
+
+  end)
+
 end)
