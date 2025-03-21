@@ -41,14 +41,14 @@ M.scroll = require("terminal.scroll")
 M.cursor = require("terminal.cursor")
 -- create locals
 local output = M.output
-local input = M.input
 local clear = M.clear
 local scroll = M.scroll
 local cursor = M.cursor
 
 
-local bsleep  -- a blocking sleep function
-local asleep   -- a (optionally) non-blocking sleep function
+-- Set defaults for sleep functions
+M._bsleep = sys.sleep  -- a blocking sleep function
+M._sleep = sys.sleep   -- a (optionally) non-blocking sleep function
 
 
 
@@ -785,14 +785,11 @@ do
     assert(io.type(filehandle) == 'file', "invalid opts.filehandle")
     output.set_stream(filehandle)
 
-    bsleep = opts.bsleep or sys.sleep
-    assert(type(bsleep) == "function", "invalid opts.bsleep function, expected a function, got " .. type(opts.bsleep))
-    input.set_bsleep(bsleep)
-    output.set_bsleep(bsleep)
+    M._bsleep = opts.bsleep or sys.sleep
+    assert(type(M._bsleep) == "function", "invalid opts.bsleep function, expected a function, got " .. type(opts.bsleep))
 
-    asleep = opts.sleep or sys.sleep
-    assert(type(asleep) == "function", "invalid opts.sleep function, expected a function, got " .. type(opts.sleep))
-    input.set_sleep(asleep)
+    M._asleep = opts.sleep or sys.sleep
+    assert(type(M._asleep) == "function", "invalid opts.sleep function, expected a function, got " .. type(opts.sleep))
 
     termbackup = sys.termbackup()
     if opts.displaybackup then
@@ -843,8 +840,8 @@ do
 
     sys.termrestore(termbackup)
 
-    asleep = nil
-    bsleep = nil
+    M._asleep = sys.sleep
+    M._bsleep = sys.sleep
     termbackup = nil
 
     return true

@@ -9,14 +9,12 @@
 -- terminal.output.write("hello world")
 -- @module terminal.output
 
-local sys = require "system"
-
 local M = {}
 
+local terminal = require("terminal")
 
 
 local t = io.stderr -- the terminal/stream to operate on
-local bsleep = sys.sleep -- sleep function that blocks
 
 local chunksize = 512 -- chunk size to write in one go
 local bytecount_left = chunksize -- number of bytes to write before flush+sleep required
@@ -29,21 +27,6 @@ local pack do
   local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
   pack = function(...) return { n = select("#", ...), ... } end
   --unpack = function(t, i, j) return oldunpack(t, i or 1, j or t.n or #t) end
-end
-
-
-
---- Set the `sleep` function to use when writing to the terminal.
--- This should be a blocking sleep function, used to throttle the output.
--- A yielding/non-blocking sleep function could potentially cause race-conditions.
--- @tparam function fsleep the sleep function to use.
--- @return true
-function M.set_bsleep(fsleep)
-  if type(fsleep) ~= "function" then
-    error("sleep function must be a function", 2)
-  end
-  bsleep = fsleep
-  return true
 end
 
 
@@ -98,7 +81,7 @@ function M.write(...)
       bytecount_left = chunksize
       t:flush()
       -- sleep a bit to allow the terminal to process the data
-      bsleep(delay) -- blocking because we do not want to yield!
+      terminal._bsleep(delay) -- blocking because we do not want to risk yielding here
     end
   end
 

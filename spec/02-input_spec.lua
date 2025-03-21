@@ -52,50 +52,16 @@ describe("input:", function()
 
 
 
-  describe("set_sleep()", function()
-
-    after_each(function()
-      t.input.set_sleep(sys.sleep) -- restore the old function
-    end)
-
-
-    it("sets the default sleep function", function()
-      local called = false
-      local newsleep = function() called = true end
-
-      t.input.set_sleep(newsleep)
-      t.input.readansi(0.01)
-      assert.is_true(called)
-    end)
-
-
-    it("throws an error if the argument is not a function", function()
-      assert.has_error(function()
-        t.input.set_sleep("not a function")
-      end)
-    end)
-
-  end)
-
-
-
-  describe("setbsleep()", function()
-
-    pending("todo", function()
-      -- TODO: implement
-    end)
-
-  end)
-
-
-
   describe("readansi()", function()
 
     it("uses the sleep function set", function()
       local called = false
-      local newsleep = function() called = true end
+      local old_sleep = t._sleep
+      t._sleep = function() called = true end
+      finally(function()
+        t._sleep = old_sleep
+      end)
 
-      t.input.set_sleep(newsleep)
       t.input.readansi(0.01)
       assert.is_true(called)
     end)

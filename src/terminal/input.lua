@@ -16,16 +16,14 @@ local sys = require "system"
 
 local M = {}
 package.loaded["terminal.input"] = M -- Register the module early to avoid circular dependencies
+local terminal = require("terminal")
 local output = require("terminal.output")
-
 
 
 
 local kbbuffer = {}  -- buffer for keyboard input, what was pre-read
 local kbstart = 0 -- index of the first element in the buffer
 local kbend = 0 -- index of the last element in the buffer
-local asleep = sys.sleep -- default sleep function
-local bsleep = sys.sleep -- sleep function that blocks
 
 
 
@@ -44,34 +42,6 @@ M.sys_readansi = sys.readansi
 
 
 
---- Set the default `sleep` function to use by `readansi`.
--- When using the library in a non-blocking environment, the `sleep` function must be
--- set to a function that will yield control to the event loop.
--- @tparam function fsleep the sleep function to use.
--- @return true
-function M.set_sleep(fsleep)
-  if type(fsleep) ~= "function" then
-    error("sleep function must be a function", 2)
-  end
-  asleep = fsleep
-  return true
-end
-
-
-
---- Set the blocking `sleep` function used when no yielding is allowed.
--- @tparam function fsleep the sleep function to use.
--- @return true
-function M.set_bsleep(fsleep)
-  if type(fsleep) ~= "function" then
-    error("sleep function must be a function", 2)
-  end
-  bsleep = fsleep
-  return true
-end
-
-
-
 --- Same as `sys.readansi`, but works with the internal buffer required by `terminal.lua`.
 -- This function will read from the internal buffer first, before calling `sys.readansi`. This is
 -- required because querying the terminal (e.g. getting cursor position) might read data
@@ -84,7 +54,7 @@ end
 function M.readansi(timeout, fsleep)
   if kbend == 0 then
     -- buffer is empty, so read from the terminal
-    return M.sys_readansi(timeout, fsleep or asleep)
+    return M.sys_readansi(timeout, fsleep or terminal._sleep)
   end
 
   -- return buffered input
@@ -136,7 +106,7 @@ end
 -- @return true if successful, nil and an error message if reading failed
 function M.preread()
   while true do
-    local seq, typ, part = M.sys_readansi(0, bsleep)
+    local seq, typ, part = M.sys_readansi(0, terminal._bsleep)
     if seq == nil and typ == "timeout" then
       return true
     end
@@ -160,7 +130,7 @@ function M.read_query_answer(answer_pattern, count)
   -- read responses
   local result = {}
   while true do
-    local seq, typ, part = M.sys_readansi(0.5, bsleep) -- 500ms timeout, max time for terminal to respond
+    local seq, typ, part = M.sys_readansi(0.5, terminal._bsleep) -- 500ms timeout, max time for terminal to respond
     if seq == nil and typ == "timeout" then
       error("no response from terminal, this is unexpected")
     end
