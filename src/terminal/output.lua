@@ -10,7 +10,7 @@
 -- @module terminal.output
 
 local M = {}
-
+package.loaded["terminal.output"] = M -- Register the module early to avoid circular dependencies
 local terminal = require("terminal")
 
 
