@@ -1,0 +1,957 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Sequences">Sequences</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><strong>terminal.cursor.position</strong></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.cursor.position</code></h1>
+<p>Terminal cursor position module.</p>
+<p> Provides utilities for cursor positioning in terminals.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#backup">backup ()</a></td>
+	<td class="summary">Writes the ansi sequence to backup the current cursor position (in terminal storage, not stacked) to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#column">column (column)</a></td>
+	<td class="summary">Moves the cursor to a column on the current row and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#down">down ([n=1])</a></td>
+	<td class="summary">Moves the cursor down and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#get">get ()</a></td>
+	<td class="summary">Requests the current cursor position from the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#horizontal">horizontal ([n=1])</a></td>
+	<td class="summary">Moves the cursor horizontally and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#left">left ([n=1])</a></td>
+	<td class="summary">Moves the cursor left and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#move">move ([rows=0[, columns=0]])</a></td>
+	<td class="summary">Moves the cursor horizontal and vertical and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#query">query ()</a></td>
+	<td class="summary">write the sequence for requesting cursor position, without flushing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#restore">restore ()</a></td>
+	<td class="summary">Writes the ansi sequence to restore the cursor position (from the terminal storage, not stacked) to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#right">right ([n=1])</a></td>
+	<td class="summary">Moves the cursor right and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#row">row (row)</a></td>
+	<td class="summary">Moves the cursor to a row on the current column and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set">set (row, column)</a></td>
+	<td class="summary">Sets the cursor position and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#up">up ([n=1])</a></td>
+	<td class="summary">Moves the cursor up and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#vertical">vertical ([n=1])</a></td>
+	<td class="summary">Moves the cursor vertically and writes it to the terminal.</td>
+	</tr>
+</table>
+<h2><a href="#Sequences">Sequences</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#backups">backups ()</a></td>
+	<td class="summary">Returns the ansi sequence to backup the current cursor position (in terminal storage, not stacked).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#columns">columns (column)</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor to a column on the current row without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#downs">downs ([n=1])</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor down without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#horizontals">horizontals ([n=1])</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor horizontally without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#lefts">lefts ([n=1])</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor left without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#moves">moves ([rows=0[, columns=0]])</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor horizontal and vertical without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#querys">querys ()</a></td>
+	<td class="summary">returns the sequence for requesting cursor position as a string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#restores">restores ()</a></td>
+	<td class="summary">Returns the ansi sequence to restore the cursor position (from the terminal storage, not stacked).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rights">rights ([n=1])</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor right without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rows">rows (row)</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor to a row on the current column without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#sets">sets (row, column)</a></td>
+	<td class="summary">Creates ansi sequence to set the cursor position without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ups">ups ([n=1])</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor up without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#verticals">verticals ([n=1])</a></td>
+	<td class="summary">Creates an ansi sequence to move the cursor vertically without writing it to the terminal.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "backup"></a>
+    <strong>backup ()</strong>
+    </dt>
+    <dd>
+    Writes the ansi sequence to backup the current cursor position (in terminal storage, not stacked) to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "column"></a>
+    <strong>column (column)</strong>
+    </dt>
+    <dd>
+    Moves the cursor to a column on the current row and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">column</span>
+            <span class="types"><span class="type">number</span></span>
+         the column to move to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "down"></a>
+    <strong>down ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor down and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move down
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "get"></a>
+    <strong>get ()</strong>
+    </dt>
+    <dd>
+    Requests the current cursor position from the terminal.
+ Will read entire keyboard buffer to empty it, then request the cursor position.
+ The output buffer will be flushed.
+ In case of a keyboard error, the error will be returned here, but also by
+ <code>readansi</code> on a later call, because readansi retains the proper order of keyboard
+ input, whilst this function buffers input.</p>
+
+<p> <strong>This function is relatively slow!</strong> It will block until the terminal responds.
+ A least 1 sleep step will be executed, which is 20+ milliseconds usually (depends
+ on the platform). So keeping track of the cursor is more efficient than calling
+ this many times.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        row</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        column</li>
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+
+
+</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        error message in case of a keyboard read error</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "horizontal"></a>
+    <strong>horizontal ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor horizontally and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move (negative for left, positive for right)
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "left"></a>
+    <strong>left ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor left and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move left
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "move"></a>
+    <strong>move ([rows=0[, columns=0]])</strong>
+    </dt>
+    <dd>
+    Moves the cursor horizontal and vertical and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move (negative for up, positive for down)
+         (<em>default</em> 0)
+        </li>
+        <li><span class="parameter">columns</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move (negative for left, positive for right)
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "query"></a>
+    <strong>query ()</strong>
+    </dt>
+    <dd>
+    write the sequence for requesting cursor position, without flushing.
+ If you need to get the current position, use <a href="../modules/terminal.cursor.position.html#get">get</a> instead.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "restore"></a>
+    <strong>restore ()</strong>
+    </dt>
+    <dd>
+    Writes the ansi sequence to restore the cursor position (from the terminal storage, not stacked) to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "right"></a>
+    <strong>right ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor right and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move right
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "row"></a>
+    <strong>row (row)</strong>
+    </dt>
+    <dd>
+    Moves the cursor to a row on the current column and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">row</span>
+            <span class="types"><span class="type">number</span></span>
+         the row to move to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set"></a>
+    <strong>set (row, column)</strong>
+    </dt>
+    <dd>
+    Sets the cursor position and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">row</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+        <li><span class="parameter">column</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "up"></a>
+    <strong>up ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor up and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move up
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "vertical"></a>
+    <strong>vertical ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor vertically and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move (negative for up, positive for down)
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "backups"></a>
+    <strong>backups ()</strong>
+    </dt>
+    <dd>
+    Returns the ansi sequence to backup the current cursor position (in terminal storage, not stacked).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "columns"></a>
+    <strong>columns (column)</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor to a column on the current row without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">column</span>
+            <span class="types"><span class="type">number</span></span>
+         the column to move to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "downs"></a>
+    <strong>downs ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor down without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move down
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "horizontals"></a>
+    <strong>horizontals ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor horizontally without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move (negative for left, positive for right)
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "lefts"></a>
+    <strong>lefts ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor left without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move left
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "moves"></a>
+    <strong>moves ([rows=0[, columns=0]])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor horizontal and vertical without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move (negative for up, positive for down)
+         (<em>default</em> 0)
+        </li>
+        <li><span class="parameter">columns</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move (negative for left, positive for right)
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "querys"></a>
+    <strong>querys ()</strong>
+    </dt>
+    <dd>
+    returns the sequence for requesting cursor position as a string.
+ If you need to get the current position, use <a href="../modules/terminal.cursor.position.html#get">get</a> instead.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the sequence for requesting cursor position
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "restores"></a>
+    <strong>restores ()</strong>
+    </dt>
+    <dd>
+    Returns the ansi sequence to restore the cursor position (from the terminal storage, not stacked).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rights"></a>
+    <strong>rights ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor right without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to move right
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rows"></a>
+    <strong>rows (row)</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor to a row on the current column without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">row</span>
+            <span class="types"><span class="type">number</span></span>
+         the row to move to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "sets"></a>
+    <strong>sets (row, column)</strong>
+    </dt>
+    <dd>
+    Creates ansi sequence to set the cursor position without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">row</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+        <li><span class="parameter">column</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ups"></a>
+    <strong>ups ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor up without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move up
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "verticals"></a>
+    <strong>verticals ([n=1])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to move the cursor vertically without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to move (negative for up, positive for down)
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

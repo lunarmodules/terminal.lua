@@ -49,6 +49,8 @@
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
@@ -100,7 +102,7 @@
 
   <span class="comment">-- print all rows to fill the screen
 </span>  <span class="keyword">for</span> i = <span class="number">1</span>, r <span class="keyword">do</span>
-    t.<span class="function-name">cursor_set</span>(i, <span class="number">1</span>)
+    t.cursor.position.<span class="function-name">set</span>(i, <span class="number">1</span>)
     t.output.<span class="function-name">write</span>(row)
   <span class="keyword">end</span>
 
@@ -124,11 +126,11 @@
 <span class="comment">-- draw a box, with 2 cols/rows margin around the screen
 </span><span class="keyword">local</span> edge = <span class="number">2</span>
 <span class="keyword">local</span> r,c = sys.<span class="function-name">termsize</span>()
-t.<span class="function-name">cursor_set</span>(edge+<span class="number">1</span>, edge+<span class="number">1</span>)
+t.cursor.position.<span class="function-name">set</span>(edge+<span class="number">1</span>, edge+<span class="number">1</span>)
 t.<span class="function-name">box</span>(r - <span class="number">2</span>*edge, c - <span class="number">2</span>*edge, t.box_fmt.double, <span class="keyword">true</span>, <span class="string">"test screen"</span>)
 
 <span class="comment">-- move cursor inside the box
-</span>t.<span class="function-name">cursor_move</span>(<span class="number">1</span>, <span class="number">1</span>)
+</span>t.cursor.position.<span class="function-name">move</span>(<span class="number">1</span>, <span class="number">1</span>)
 
 <span class="comment">-- set text attributes (not using the stack this time)
 </span>t.<span class="function-name">textset</span>{

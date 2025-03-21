@@ -49,6 +49,8 @@
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
@@ -164,7 +166,7 @@
   <span class="keyword">local</span> _, cols = sys.<span class="function-name">termsize</span>()
 
   self:<span class="function-name">withStyle</span>(style, <span class="keyword">function</span>()
-    t.<span class="function-name">cursor_set</span>(row, <span class="number">1</span>)
+    t.cursor.position.<span class="function-name">set</span>(row, <span class="number">1</span>)
     t.output.<span class="function-name">write</span>(<span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">" "</span>, cols))
 
     <span class="keyword">if</span> contentFn <span class="keyword">then</span>
@@ -176,7 +178,7 @@
 <span class="keyword">function</span> TerminalUI:<span class="function-name">updateCursor</span>(y, x)
   self.cursorY = y
   self.cursorX = x
-  t.<span class="function-name">cursor_set</span>(y, x)
+  t.cursor.position.<span class="function-name">set</span>(y, x)
 <span class="keyword">end</span>
 
 <span class="keyword">function</span> TerminalUI:<span class="function-name">drawHeader</span>()
@@ -184,19 +186,19 @@
   <span class="keyword">local</span> cursorText = <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"Pos: %d,%d"</span>, self.cursorY, self.cursorX)
 
   self:<span class="function-name">drawBar</span>(<span class="number">1</span>, self.headerStyle, <span class="keyword">function</span>(_, cols)
-    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, <span class="number">2</span>)
+    t.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">2</span>)
     t.output.<span class="function-name">write</span>(self.appName)
 
     <span class="keyword">local</span> clockPos = <span class="global">math</span>.<span class="function-name">floor</span>(cols / <span class="number">4</span>)
-    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, clockPos)
+    t.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, clockPos)
     t.output.<span class="function-name">write</span>(currentTime)
 
     <span class="keyword">local</span> cursorPos = <span class="global">math</span>.<span class="function-name">floor</span>(cols / <span class="number">2</span>) + <span class="number">5</span>
-    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, cursorPos)
+    t.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, cursorPos)
     t.output.<span class="function-name">write</span>(cursorText)
 
     <span class="keyword">local</span> colorText = <span class="string">"Color: "</span> .. self:<span class="function-name">getCurrentColorInfo</span>()
-    t.<span class="function-name">cursor_set</span>(<span class="number">1</span>, cols - #colorText - <span class="number">1</span>)
+    t.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, cols - #colorText - <span class="number">1</span>)
     t.output.<span class="function-name">write</span>(colorText)
   <span class="keyword">end</span>)
 <span class="keyword">end</span>
@@ -208,10 +210,10 @@
 
   self:<span class="function-name">drawBar</span>(rows, self.footerStyle, <span class="keyword">function</span>(_, cols)
 
-    t.<span class="function-name">cursor_set</span>(rows, <span class="number">2</span>)
+    t.cursor.position.<span class="function-name">set</span>(rows, <span class="number">2</span>)
     t.output.<span class="function-name">write</span>(lineText)
 
-    t.<span class="function-name">cursor_set</span>(rows, cols - #helpText - <span class="number">1</span>)
+    t.cursor.position.<span class="function-name">set</span>(rows, cols - #helpText - <span class="number">1</span>)
     t.output.<span class="function-name">write</span>(helpText)
   <span class="keyword">end</span>)
 <span class="keyword">end</span>
@@ -231,7 +233,7 @@
   t.<span class="function-name">textset</span>(self.contentStyle)
 
   <span class="keyword">for</span> i = <span class="number">2</span>, rows - <span class="number">1</span> <span class="keyword">do</span>
-    t.<span class="function-name">cursor_set</span>(i, <span class="number">1</span>)
+    t.cursor.position.<span class="function-name">set</span>(i, <span class="number">1</span>)
     t.output.<span class="function-name">write</span>(<span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">" "</span>, cols))
   <span class="keyword">end</span>
 
@@ -244,7 +246,7 @@
   self:<span class="function-name">refreshDisplay</span>()
 
   <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
-    t.<span class="function-name">cursor_set</span>(self.cursorY, self.cursorX)
+    t.cursor.position.<span class="function-name">set</span>(self.cursorY, self.cursorX)
 
     <span class="keyword">local</span> rawKey, keyName = self:<span class="function-name">readKey</span>()
 

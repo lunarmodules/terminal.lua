@@ -49,6 +49,8 @@
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
@@ -100,7 +102,7 @@
   <span class="global">print</span>(<span class="string">"                                                       &lt;-- ticker type"</span>)
 
   <span class="comment">-- create all spinners with fixed positions (positions are optional)
-</span>  <span class="keyword">local</span> r, _ = t.<span class="function-name">cursor_get</span>()
+</span>  <span class="keyword">local</span> r, _ = t.cursor.position.<span class="function-name">get</span>()
   <span class="keyword">for</span> i, name <span class="keyword">in</span> <span class="global">ipairs</span>(lst) <span class="keyword">do</span>
     <span class="keyword">local</span> done_sprite, done_textattr
     <span class="keyword">if</span> i &lt;= #lst/<span class="number">2</span> <span class="keyword">then</span>

@@ -49,6 +49,8 @@
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
@@ -99,10 +101,10 @@
 <span class="comment">-- print a green checkmark at the top of the screen.
 </span><span class="comment">-- doesn't use a stack for cursor pos, but terminal memory
 </span><span class="keyword">local</span> top = <span class="function-name">Sequence</span>(
-  t.cursor_saves, <span class="comment">-- save cursor position, no params, so passing function is ok
-</span>  t.<span class="function-name">cursor_sets</span>(<span class="number">1</span>,<span class="number">1</span>), <span class="comment">-- move to row 1, column 1
+  t.cursor.position.backups, <span class="comment">-- save cursor position, no params, so passing function is ok
+</span>  t.cursor.position.<span class="function-name">sets</span>(<span class="number">1</span>,<span class="number">1</span>), <span class="comment">-- move to row 1, column 1
 </span>  greencheck, <span class="comment">-- print the green checkmark, injecting another sequence
-</span>  t.cursor_restores <span class="comment">-- restore cursor position, no params, so passing function is ok
+</span>  t.cursor.position.restores <span class="comment">-- restore cursor position, no params, so passing function is ok
 </span>)
 
 
@@ -110,9 +112,9 @@
 </span><span class="comment">-- this is safer, if the 'greencheck' sub-sequence would also use the
 </span><span class="comment">-- terminal memory for the cursor position (overwriting ours).
 </span><span class="keyword">local</span> top2 = <span class="function-name">Sequence</span>(
-  <span class="keyword">function</span>() <span class="keyword">return</span> t.<span class="function-name">cursor_pushs</span>(<span class="number">2</span>,<span class="number">2</span>) <span class="keyword">end</span>,
+  <span class="keyword">function</span>() <span class="keyword">return</span> t.cursor.position.stack.<span class="function-name">pushs</span>(<span class="number">2</span>,<span class="number">2</span>) <span class="keyword">end</span>,
   greencheck, <span class="comment">-- print the green checkmark
-</span>  t.cursor_pops
+</span>  t.cursor.position.stack.pops
 )
 
 
