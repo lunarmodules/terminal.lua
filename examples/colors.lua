@@ -45,11 +45,7 @@ local function main()
   t.output.flush()
   t.input.readansi(5)
 
-  -- restore all settings (reverts to original screen buffer)
-  t.shutdown()
-
-  -- this is printed on the original screen buffer
-  print("done!")
+  return true
 end
 
 
@@ -59,4 +55,6 @@ local opts = {
   displaybackup = true,
   filehandle = io.stdout,
 }
-t.initwrap(opts, main)
+assert(t.initwrap(opts, main))
+
+print("done!")  -- this is printed on the original screen buffer

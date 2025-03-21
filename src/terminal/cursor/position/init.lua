@@ -13,15 +13,6 @@ local sys = require("system")
 
 
 
-local unpack do
-  -- nil-safe versions of pack/unpack
-  local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
-  --pack = function(...) return { n = select("#", ...), ... } end
-  unpack = function(t, i, j) return oldunpack(t, i or 1, j or t.n or #t) end
-end
-
-
-
 --- returns the sequence for requesting cursor position as a string.
 -- If you need to get the current position, use `get` instead.
 -- @treturn string the sequence for requesting cursor position
@@ -43,9 +34,6 @@ end
 --- Requests the current cursor position from the terminal.
 -- Will read entire keyboard buffer to empty it, then request the cursor position.
 -- The output buffer will be flushed.
--- In case of a keyboard error, the error will be returned here, but also by
--- `readansi` on a later call, because readansi retains the proper order of keyboard
--- input, whilst this function buffers input.
 --
 -- **This function is relatively slow!** It will block until the terminal responds.
 -- A least 1 sleep step will be executed, which is 20+ milliseconds usually (depends
@@ -56,22 +44,11 @@ end
 -- @treturn[2] nil
 -- @treturn[2] string error message in case of a keyboard read error
 function M.get()
-  -- first empty keyboard buffer
-  local ok, err = input.preread()
-  if not ok then
-    return nil, err
-  end
-
-  -- request cursor position
-  M.query()
-  output.flush()
-
-  -- get position
-  local r, err = input.read_cursor_pos(1)
+  local r, err = input.query(M.querys(), "^\27%[(%d+);(%d+)R$")
   if not r then
     return nil, err
   end
-  return unpack(r[1])
+  return tonumber(r[1]), tonumber(r[2])
 end
 
 

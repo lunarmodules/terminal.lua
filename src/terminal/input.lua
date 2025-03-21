@@ -15,6 +15,9 @@
 local sys = require "system"
 
 local M = {}
+package.loaded["terminal.input"] = M -- Register the module early to avoid circular dependencies
+local output = require("terminal.output")
+
 
 
 
@@ -148,13 +151,12 @@ end
 
 
 
---- Read the requested number of cursor positions.
--- Ensure to request and flush this number of positions (by writing the query-cursor-position
--- ANSI sequence) before calling.
--- @tparam int count number of cursor positions to read
--- @treturn table cursor positions, each entry is an array with row and column
-function M.read_cursor_pos(count)
-  assert(type(count) == "number", "count must be an integer greater than 0")
+--- Reads the answer to a query from the terminal.
+-- @tparam string answer_pattern a pattern that matches the expected ANSI response sequence, and captures the data needed.
+-- @tparam[opt=1] number count the number of responses to read (in case multiple queries were sent)
+-- @treturn table an array with `count` entries. Each entry is another array with the captures from the answer pattern.
+function M.read_query_answer(answer_pattern, count)
+  count = count or 1
   -- read responses
   local result = {}
   while true do
@@ -163,9 +165,10 @@ function M.read_cursor_pos(count)
       error("no response from terminal, this is unexpected")
     end
     if typ == "ansi" then
-      local row, col = seq:match("^\27%[(%d+);(%d+)R$")
-      if row and col then
-        result[#result+1] = { tonumber(row), tonumber(col) }
+      local captures = { seq:match(answer_pattern) }
+      if captures[1] then
+        -- at least 1 element was captured by the pattern
+        result[#result+1] = captures
         if #result >= count then
           break
         end
@@ -184,6 +187,25 @@ function M.read_cursor_pos(count)
   end
 
   return result
+end
+
+
+
+--- Query the terminal.
+-- @tparam string query the ANSI sequence to be written to query the terminal
+-- @tparam string answer_pattern a pattern that matches the expected ANSI response sequence, and captures the data needed.
+-- @treturn table an array with the captures from the answer pattern.
+function M.query(query, answer_pattern)
+  M.preread()
+  output.write(query)
+  output.flush()
+
+  local result, err = M.read_query_answer(answer_pattern, 1)
+  if not result then
+    return nil, err
+  end
+
+  return result[1]
 end
 
 

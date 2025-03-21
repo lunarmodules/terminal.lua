@@ -178,7 +178,7 @@ function M.preload(str)
     if #chunk == size or i == #test then
       -- handle the chunk
       t.output.write(table.concat(chunk))
-      local positions, err = t.input.read_cursor_pos(#chunk)
+      local positions, err = t.input.read_query_answer("^\27%[(%d+);(%d+)R$", #chunk)
       if not positions then
         t.textpop() -- restore color (drop hidden)
         return nil, err

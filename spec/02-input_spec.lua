@@ -16,8 +16,6 @@ describe("input:", function()
       keyboard_buffer = keyboard_buffer:sub(2)
       return string.byte(char)
     end
-
-    t = require("terminal")
   end)
 
 
@@ -28,7 +26,19 @@ describe("input:", function()
 
   before_each(function()
     keyboard_buffer = ""
+    t = require("terminal")
   end)
+
+
+  after_each(function()
+    -- forcefully unload module
+    for mod in pairs(package.loaded) do
+      if mod:match("^terminal") then
+        package.loaded[mod] = nil
+      end
+    end
+  end)
+
 
 
 
@@ -125,24 +135,28 @@ describe("input:", function()
 
 
 
-  describe("read_cursor_pos()", function()
+  describe("read_query_answer()", function()
 
-    it("accepts only numbers as input", function()
-      assert.has_error(function()
-        t.input.read_cursor_pos("a")
-      end)
-    end)
+    -- returns an ANSWER sequence to the cursor-position query
+    local add_cpos = function(row, col)
+      keyboard_buffer = keyboard_buffer .. ("\027[%d;%dR"):format(row, col)
+    end
+
+    local cursor_answer_pattern = "^\27%[(%d+);(%d+)R$"
 
 
     it("returns the cursor positions read", function()
-      keyboard_buffer = "\027[12;34R\027[56;78R"
-      assert.are.same({{12, 34},{56, 78}}, t.input.read_cursor_pos(2))
+      add_cpos(12, 34)
+      add_cpos(56, 78)
+      assert.are.same({{"12", "34"},{"56", "78"}}, t.input.read_query_answer(cursor_answer_pattern, 2))
     end)
 
 
     it("leaves other 'char' input in the buffers", function()
-      keyboard_buffer = "abc\027[12;34R123"
-      assert.are.same({{12, 34}}, t.input.read_cursor_pos(1))
+      keyboard_buffer = "abc"
+      add_cpos(12, 34)
+      keyboard_buffer = keyboard_buffer .. "123"
+      assert.are.same({{"12", "34"}}, t.input.read_query_answer(cursor_answer_pattern, 1))
       assert.are.equal("123", keyboard_buffer)
       assert.are.equal("a", t.input.readansi(0))
       assert.are.equal("b", t.input.readansi(0))
@@ -155,7 +169,7 @@ describe("input:", function()
 
     it("leaves other 'ansi' input in the buffers", function()
       keyboard_buffer = "\27[8;10;80t\027[12;34R\027[56;78R\027[90;12R"
-      assert.are.same({{12, 34},{56, 78}}, t.input.read_cursor_pos(2))
+      assert.are.same({{"12", "34"},{"56", "78"}}, t.input.read_query_answer(cursor_answer_pattern, 2))
       assert.are.equal("\027[90;12R", keyboard_buffer)
       local binstring = require("luassert.formatters.binarystring")
       assert:add_formatter(binstring)
@@ -166,5 +180,29 @@ describe("input:", function()
     end)
 
   end)
+
+
+
+  describe("query()", function()
+
+    it("makes the right calls in the right order", function()
+      local res = {}
+      t.input.preread = function(...) table.insert(res, { "preread", ... } ) end
+      t.output.write = function(...) table.insert(res, { "write", ... } ) end
+      t.output.flush = function(...) table.insert(res, { "flush", ... } ) end
+      t.input.read_query_answer = function(...) table.insert(res, { "read_query_answer", ... } ) end
+
+      t.input.query("query", "answer_pattern")
+
+      assert.are.same({
+        { "preread" },
+        { "write", "query" },
+        { "flush" },
+        { "read_query_answer", "answer_pattern", 1 },
+      }, res)
+    end)
+
+  end)
+
 
 end)
