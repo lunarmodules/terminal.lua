@@ -39,9 +39,11 @@ M.output = require("terminal.output")
 M.clear = require("terminal.clear")
 M.scroll = require("terminal.scroll")
 M.cursor = require("terminal.cursor")
+M.draw = require("terminal.draw")
+M.progress = require("terminal.progress")
+M.width = require("terminal.width")
 -- create locals
 local output = M.output
-local clear = M.clear
 local scroll = M.scroll
 local cursor = M.cursor
 
@@ -479,262 +481,21 @@ end
 
 
 --=============================================================================
--- line drawing
---=============================================================================
---- Drawing lines.
--- Drawing horizontal and vertical lines.
--- @section lines
-
---- Creates a sequence to draw a horizontal line without writing it to the terminal.
--- Line is drawn left to right.
--- Returned sequence might be shorter than requested if the character is a multi-byte character
--- and the number of columns is not a multiple of the character width.
--- @tparam number n number of columns to draw
--- @tparam[opt="─"] string char the character to draw
--- @treturn string ansi sequence to write to the terminal
--- @within lines
-function M.line_horizontals(n, char)
-  char = char or "─"
-  local w = sys.utf8cwidth(char)
-  return char:rep(math.floor(n / w))
-end
-
---- Draws a horizontal line and writes it to the terminal.
--- Line is drawn left to right.
--- Returned sequence might be shorter than requested if the character is a multi-byte character
--- and the number of columns is not a multiple of the character width.
--- @tparam number n number of columns to draw
--- @tparam[opt="─"] string char the character to draw
--- @return true
--- @within lines
-function M.line_horizontal(n, char)
-  output.write(M.line_horizontals(n, char))
-  return true
-end
-
---- Creates a sequence to draw a vertical line without writing it to the terminal.
--- Line is drawn top to bottom. Cursor is left to the right of the last character (so not below it).
--- @tparam number n number of rows/lines to draw
--- @tparam[opt="│"] string char the character to draw
--- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
--- @treturn string ansi sequence to write to the terminal
--- @within lines
-function M.line_verticals(n, char, lastcolumn)
-  char = char or "│"
-  lastcolumn = lastcolumn and 1 or 0
-  local w = sys.utf8cwidth(char)
-  -- TODO: why do we need 'lastcolumn*2' here???
-  return (char .. cursor.position.lefts(w-lastcolumn*2) .. cursor.position.downs(1)):rep(n-1) .. char
-end
-
---- Draws a vertical line and writes it to the terminal.
--- Line is drawn top to bottom. Cursor is left to the right of the last character (so not below it).
--- @tparam number n number of rows/lines to draw
--- @tparam[opt="│"] string char the character to draw
--- @return true
--- @within lines
-function M.line_vertical(n, char)
-  output.write(M.line_verticals(n, char))
-  return true
-end
-
---- Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.
--- Line is drawn left to right. If the width is too small for the title, the title is truncated with "trailing `"..."`.
--- If less than 4 characters are available for the title, the title is omitted alltogether.
--- @tparam number width the total width of the line in columns
--- @tparam[opt=""] string title the title to draw (if empty or nil, only the line is drawn)
--- @tparam[opt="─"] string char the line-character to use
--- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
--- @tparam[opt=""] string post the postfix for the title, eg. " ├"
--- @treturn string ansi sequence to write to the terminal
--- @within lines
-function M.line_titles(width, title, char, pre, post)
-
-  -- TODO: strip any ansi sequences from the title before determining length
-  -- such that titles can have multiple colors etc. what if we truncate????
-
-  if title == nil or title == "" then
-    return M.line_horizontals(width, char)
-  end
-  pre = pre or ""
-  post = post or ""
-  local pre_w = sys.utf8swidth(pre)
-  local post_w = sys.utf8swidth(post)
-  local title_w = sys.utf8swidth(title)
-  local w_for_title = width - pre_w - post_w
-  if w_for_title > title_w then
-    -- enough space for title
-    local p1 = M.line_horizontals(math.floor((w_for_title - title_w) / 2), char) .. pre .. title .. post
-    return p1 .. M.line_horizontals(width - sys.utf8swidth(p1), char)
-  elseif w_for_title < 4 then
-    -- too little space for title, omit it alltogether
-    return M.line_horizontals(width, char)
-  elseif w_for_title == title_w then
-    -- exact space for title
-    return pre .. title .. post
-  else -- truncate the title
-    w_for_title = w_for_title - 3 -- for "..."
-    while title_w == nil or title_w > w_for_title do
-      title = title:sub(1, -2) -- drop last byte
-      title_w = sys.utf8swidth(title)
-    end
-    return pre .. title .. "..." .. post
-  end
-end
-
---- Draws a horizontal line with a title centered in it and writes it to the terminal.
--- Line is drawn left to right. If the width is too small for the title, the title is truncated with "trailing `"..."`.
--- If less than 4 characters are available for the title, the title is omitted alltogether.
--- @tparam string title the title to draw
--- @tparam number width the total width of the line in columns
--- @tparam[opt="─"] string char the line-character to use
--- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
--- @tparam[opt=""] string post the postfix for the title, eg. " ├"
--- @return true
--- @within lines
-function M.line_title(title, width, char, pre, post)
-  output.write(M.line_titles(title, width, char, pre, post))
-  return true
-end
-
---- Table with pre-defined box formats.
--- @table box_fmt
--- @field single Single line box format
--- @field double Double line box format
--- @field copy Function to copy a box format, see `box_fmt.copy` for details
--- @within lines
-M.box_fmt = utils.make_lookup("box-format", {
-  single = {
-    h = "─",
-    v = "│",
-    tl = "┌",
-    tr = "┐",
-    bl = "└",
-    br = "┘",
-    pre = "┤",
-    post = "├",
-  },
-  double = {
-    h = "═",
-    v = "║",
-    tl = "╔",
-    tr = "╗",
-    bl = "╚",
-    br = "╝",
-    pre = "╡",
-    post = "╞",
-  },
-  --- Copy a box format.
-  -- @function box_fmt.copy
-  -- @tparam table default the default format to copy
-  -- @treturn table a copy of the default format provided
-  -- @within lines
-  -- @usage -- create new format with spaces around the title
-  -- local fmt = t.box_fmt.copy(t.box_fmt.single)
-  -- fmt.pre = fmt.pre .. " "
-  -- fmt.post = " " .. fmt.post
-  copy = function(default)
-    return {
-      h = default.h,
-      v = default.v,
-      tl = default.tl,
-      tr = default.tr,
-      bl = default.bl,
-      br = default.br,
-      pre = default.pre,
-      post = default.post,
-    }
-  end,
-})
-
---- Creates a sequence to draw a box, without writing it to the terminal.
--- The box is drawn starting from the top-left corner at the current cursor position,
--- after drawing the cursor will be in the same position.
--- @tparam number height the height of the box in rows
--- @tparam number width the width of the box in columns
--- @tparam[opt] table format the format for the box (default is single line), with keys:
--- @tparam[opt=" "] string format.h the horizontal line character
--- @tparam[opt=""] string format.v the vertical line character
--- @tparam[opt=""] string format.tl the top left corner character
--- @tparam[opt=""] string format.tr the top right corner character
--- @tparam[opt=""] string format.bl the bottom left corner character
--- @tparam[opt=""] string format.br the bottom right corner character
--- @tparam[opt=""] string format.pre the title-prefix character(s)
--- @tparam[opt=""] string format.post the left-postfix character(s)
--- @tparam[opt=false] bool clear_flag whether to clear the box contents
--- @tparam[opt=""] string title the title to draw
--- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
--- @treturn string ansi sequence to write to the terminal
--- @within lines
-function M.boxs(height, width, format, clear_flag, title, lastcolumn)
-  format = format or M.box_fmt.single
-  local v_w = sys.utf8swidth(format.v or "")
-  local tl_w = sys.utf8swidth(format.tl or "")
-  local tr_w = sys.utf8swidth(format.tr or "")
-  local bl_w = sys.utf8swidth(format.bl or "")
-  local br_w = sys.utf8swidth(format.br or "")
-  local v_line_l = M.line_verticals(height - 2, format.v)
-  local v_line_r = v_line_l
-  if lastcolumn then
-    v_line_r = M.line_verticals(height - 2, format.v, lastcolumn)
-  end
-  lastcolumn = lastcolumn and 1 or 0
-
-  local r = {
-    -- draw top
-    format.tl or "",
-    M.line_titles(width - tl_w - tr_w, title, format.h or " ", format.pre or "", format.post or ""),
-    format.tr or "",
-    -- position to draw right, and draw it
-    cursor.position.moves(1, -v_w + lastcolumn),
-    v_line_r,
-    -- position back to top left, and draw left
-    cursor.position.moves(-height + 3, -width + lastcolumn),
-    v_line_l,
-    -- draw bottom
-    cursor.position.moves(1, -1),
-    format.bl or "",
-    M.line_horizontals(width - bl_w - br_w, format.h or " "),
-    format.br or "",
-    -- return to top left
-    cursor.position.moves(-height + 1, -width + lastcolumn),
-  }
-  if clear_flag then
-    local l = #r
-    r[l+1] = cursor.position.moves(1, v_w)
-    r[l+2] = clear.box_seq(height - 2, width - 2 * v_w)
-    r[l+3] = cursor.position.moves(-1, -v_w)
-  end
-  return table.concat(r)
-end
-
---- Draws a box and writes it to the terminal.
--- @tparam number height the height of the box in rows
--- @tparam number width the width of the box in columns
--- @tparam table format the format for the box, see `boxs` for details.
--- @tparam bool clear_flag whether to clear the box contents
--- @tparam[opt=""] string title the title to draw
--- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
--- @return true
--- @within lines
-function M.box(height, width, format, clear_flag, title, lastcolumn)
-  output.write(M.boxs(height, width, format, clear_flag, title, lastcolumn))
-  return true
-end
-
-
---=============================================================================
 -- terminal initialization, shutdown and miscellanea
 --=============================================================================
 --- Initialization.
 -- Initialization, termination and miscellaneous functions.
 -- @section initialization
 
+
+
 --- Returns a string sequence to make the terminal beep.
 -- @treturn string ansi sequence to write to the terminal
 function M.beeps()
   return "\a"
 end
+
+
 
 --- Write a sequence to the terminal to make it beep.
 -- @return true
@@ -744,11 +505,14 @@ function M.beep()
 end
 
 
+
 do
   local termbackup
   local reset = "\27[0m"
   local savescreen = "\27[?1049h" -- save cursor pos + switch to alternate screen buffer
   local restorescreen = "\27[?1049l" -- restore cursor pos + switch to main screen buffer
+
+
 
   --- Returns whether the terminal has been initialized and is ready for use.
   -- @treturn boolean true if the terminal has been initialized
@@ -756,6 +520,8 @@ do
   function M.ready()
     return termbackup ~= nil
   end
+
+
 
   --- Initializes the terminal for use.
   -- Makes a backup of the current terminal settings.
@@ -813,6 +579,8 @@ do
 
     return true
   end
+
+
 
   --- Shuts down the terminal, restoring the terminal settings.
   -- @return true

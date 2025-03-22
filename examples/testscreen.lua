@@ -43,7 +43,7 @@ testscreen()
 local edge = 2
 local r,c = sys.termsize()
 t.cursor.position.set(edge+1, edge+1)
-t.box(r - 2*edge, c - 2*edge, t.box_fmt.double, true, "test screen")
+t.draw.box(r - 2*edge, c - 2*edge, t.draw.box_fmt.double, true, "test screen")
 
 -- move cursor inside the box
 t.cursor.position.move(1, 1)
