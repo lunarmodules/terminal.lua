@@ -1,6 +1,6 @@
 describe("Cursor", function()
 
-  local cursor
+  local cursor, old_sys_termsize
 
   before_each(function()
     for mod in pairs(package.loaded) do
@@ -9,8 +9,22 @@ describe("Cursor", function()
       end
     end
 
+    local sys = require "system"
+    old_sys_termsize = sys.termsize
+    if os.getenv("GITHUB_ACTIONS") then
+      sys.termsize = function()
+        return 25, 80
+      end
+    end
+
     cursor = require "terminal.cursor"
   end)
+
+
+  after_each(function()
+    require("system").termsize = old_sys_termsize
+  end)
+
 
 
 

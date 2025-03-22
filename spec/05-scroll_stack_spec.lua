@@ -1,9 +1,18 @@
 describe("Scroll stack", function()
 
-  local stack, scroll
+  local stack, scroll, old_sys_termsize
 
   before_each(function()
     _G._TEST = true
+
+    local sys = require "system"
+    old_sys_termsize = sys.termsize
+    if os.getenv("GITHUB_ACTIONS") then
+      sys.termsize = function()
+        return 25, 80
+      end
+    end
+
     stack = require "terminal.scroll.stack"
     scroll = require "terminal.scroll"
   end)
@@ -11,6 +20,9 @@ describe("Scroll stack", function()
 
   after_each(function()
     _G._TEST = nil
+
+    require("system").termsize = old_sys_termsize
+
     for mod in pairs(package.loaded) do
       if mod:match("^terminal") then
         package.loaded[mod] = nil

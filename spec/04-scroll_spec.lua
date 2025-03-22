@@ -1,10 +1,24 @@
 describe("Scroll Module Tests", function()
 
-  local scroll
+  local scroll, old_sys_termsize
 
   setup(function()
+    local sys = require "system"
+    old_sys_termsize = sys.termsize
+    if os.getenv("GITHUB_ACTIONS") then
+      sys.termsize = function()
+        return 25, 80
+      end
+    end
+
     scroll = require "terminal.scroll"
   end)
+
+
+  teardown(function()
+    require("system").termsize = old_sys_termsize
+  end)
+
 
 
 
