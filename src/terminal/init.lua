@@ -200,95 +200,69 @@ function M.color_bg(r, g, b)
   return true
 end
 
---- Creates an ansi sequence to set the underline attribute without writing it to the terminal.
+
+
+--- Creates an ansi sequence to (un)set the underline attribute without writing it to the terminal.
+-- @tparam[opt=true] boolean on whether to set underline
 -- @treturn string ansi sequence to write to the terminal
 -- @within textcolor
-function M.underline_ons()
-  return underline_on
+function M.underlines(on)
+  return on == false and underline_off or underline_on
 end
 
---- Sets the underline attribute and writes it to the terminal.
+
+
+--- (Un)sets the underline attribute and writes it to the terminal.
+-- @tparam[opt=true] boolean on whether to set underline
 -- @return true
 -- @within textcolor
-function M.underline_on()
-  output.write(M.underline_ons())
+function M.underline(on)
+  output.write(M.underlines(on))
   return true
 end
 
---- Creates an ansi sequence to unset the underline attribute without writing it to the terminal.
+
+
+--- Creates an ansi sequence to (un)set the blink attribute without writing it to the terminal.
+-- @tparam[opt=true] boolean on whether to set blink
 -- @treturn string ansi sequence to write to the terminal
 -- @within textcolor
-function M.underline_offs()
-  return underline_off
+function M.blinks(on)
+  return on == false and blink_off or blink_on
 end
 
---- Unsets the underline attribute and writes it to the terminal.
+
+
+--- (Un)sets the blink attribute and writes it to the terminal.
+-- @tparam[opt=true] boolean on whether to set blink
 -- @return true
 -- @within textcolor
-function M.underline_off()
-  output.write(M.underline_offs())
+function M.blink(on)
+  output.write(M.blinks(on))
   return true
 end
 
---- Creates an ansi sequence to set the blink attribute without writing it to the terminal.
+
+
+--- Creates an ansi sequence to (un)set the reverse attribute without writing it to the terminal.
+-- @tparam[opt=true] boolean on whether to set reverse
 -- @treturn string ansi sequence to write to the terminal
 -- @within textcolor
-function M.blink_ons()
-  return blink_on
+function M.reverses(on)
+  return on == false and reverse_off or reverse_on
 end
 
---- Sets the blink attribute and writes it to the terminal.
+
+
+--- (Un)sets the reverse attribute and writes it to the terminal.
+-- @tparam[opt=true] boolean on whether to set reverse
 -- @return true
 -- @within textcolor
-function M.blink_on()
-  output.write(M.blink_ons())
+function M.reverse(on)
+  output.write(M.reverses(on))
   return true
 end
 
---- Creates an ansi sequence to unset the blink attribute without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within textcolor
-function M.blink_offs()
-  return blink_off
-end
-
---- Unsets the blink attribute and writes it to the terminal.
--- @return true
--- @within textcolor
-function M.blink_off()
-  output.write(M.blink_offs())
-  return true
-end
-
---- Creates an ansi sequence to set the reverse attribute without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within textcolor
-function M.reverse_ons()
-  return reverse_on
-end
-
---- Sets the reverse attribute and writes it to the terminal.
--- @return true
--- @within textcolor
-function M.reverse_on()
-  output.write(M.reverse_ons())
-  return true
-end
-
---- Creates an ansi sequence to unset the reverse attribute without writing it to the terminal.
--- @treturn string ansi sequence to write to the terminal
--- @within textcolor
-function M.reverse_offs()
-  return reverse_off
-end
-
---- Unsets the reverse attribute and writes it to the terminal.
--- @return true
--- @within textcolor
-function M.reverse_off()
-  output.write(M.reverse_offs())
-  return true
-end
 
 
 -- lookup brightness levels
