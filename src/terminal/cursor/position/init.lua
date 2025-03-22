@@ -54,15 +54,17 @@ end
 
 
 --- Creates ansi sequence to set the cursor position without writing it to the terminal.
--- @tparam number row
--- @tparam number column
+-- @tparam number row the new row. Negative values are resolved from the bottom of the screen,
+-- such that -1 is the last row.
+-- @tparam number column the new column. Negative values are resolved from the right of the screen,
+-- such that -1 is the last column.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.sets(row, column)
-  -- Resolve negative indices
+  -- Resolve negative indices, and range check
   local rows, cols = sys.termsize()
-  row = utils.resolve_index(row, rows)
-  column = utils.resolve_index(column, cols)
+  row = utils.resolve_index(row, rows, 1)
+  column = utils.resolve_index(column, cols, 1)
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
 end
 
@@ -270,11 +272,14 @@ end
 
 
 --- Creates an ansi sequence to move the cursor to a column on the current row without writing it to the terminal.
--- @tparam number column the column to move to
+-- @tparam number column the column to move to. Negative values are resolved from the right of the screen,
+-- such that -1 is the last column.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.columns(column)
-  -- TODO: implement negative indices
+  -- Resolve negative indices, and range check
+  local _, cols = sys.termsize()
+  column = utils.resolve_index(column, cols, 1)
   return "\27["..tostring(column).."G"
 end
 
@@ -291,11 +296,14 @@ end
 
 
 --- Creates an ansi sequence to move the cursor to a row on the current column without writing it to the terminal.
--- @tparam number row the row to move to
+-- @tparam number row the row to move to. Negative values are resolved from the bottom of the screen,
+-- such that -1 is the last row.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.rows(row)
-  -- TODO: implement negative indices
+  -- Resolve negative indices, and range check
+  local rows, _ = sys.termsize()
+  row = utils.resolve_index(row, rows, 1)
   return "\27["..tostring(row).."d"
 end
 

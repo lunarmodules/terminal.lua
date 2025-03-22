@@ -82,4 +82,25 @@ describe("Utils", function()
 
   end)
 
+
+
+  describe("resolve_index()", function()
+
+    local list = {
+      { i = 3,  max = 5, min = 2,   exp = 3, desc = "proper range remains unchanged" },
+      { i = 0,  max = 5, min = 2,   exp = 2, desc = "zero is clamped to min" },
+      { i = -1, max = 5, min = 2,   exp = 5, desc = "negative index is clamped to max" },
+      { i = -2, max = 5, min = 2,   exp = 4, desc = "negative index is resolved" },
+      { i = -6, max = 5, min = 2,   exp = 2, desc = "negative index is clamped to min" },
+      { i = 0,  max = 5, min = nil, exp = 1, desc = "minimum defaults to 1" },
+    }
+
+    for _, v in ipairs(list) do
+      it(v.desc, function()
+        assert.are.equal(v.exp, utils.resolve_index(v.i, v.max, v.min))
+      end)
+    end
+
+  end)
+
 end)

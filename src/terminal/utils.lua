@@ -103,13 +103,26 @@ end
 
 
 
---- Resolve negative indices.
+--- Resolve indices.
+-- This function resolves negative indices to positive indices.
+-- The result will be capped into the range [min_value, max_value].
 -- @tparam number index The index to resolve.
 -- @tparam number max_value The maximum value for the index.
-function M.resolve_index(index, max_value)
+-- @tparam[opt=1] number min_value The minimum value for the index.
+function M.resolve_index(index, max_value, min_value)
   if index < 0 then
-    return max_value + index + 1
+    index = max_value + index + 1
   end
+
+  min_value = min_value or 1
+  if index < min_value then
+    index = min_value
+  end
+
+  if index > max_value then
+    index = max_value
+  end
+
   return index
 end
 

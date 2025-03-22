@@ -214,6 +214,12 @@ describe("Cursor", function()
       assert.are.equal("\27[5;10H", cursor.position.sets(5, 10))
     end)
 
+
+    it("resolves negative indexes to absolute values", function()
+      -- values -5000 shoudl end up being 1
+      assert.are.equal("\27[1;1H", cursor.position.sets(-5000, -5000))
+    end)
+
   end)
 
 

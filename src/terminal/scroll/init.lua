@@ -31,15 +31,17 @@ end
 --- Creates an ANSI sequence to set the scroll region without writing to the terminal.
 -- Negative indices are supported, counting from the bottom of the screen.
 -- For example, `-1` refers to the last row, `-2` refers to the second-to-last row, etc.
--- @tparam number start_row The first row of the scroll region (can be negative).
--- @tparam number end_row The last row of the scroll region (can be negative).
+-- @tparam number start_row The first row of the scroll region. Negative values are resolved
+-- from the bottom of the screen, such that `-1` is the last row.
+-- @tparam number end_row The last row of the scroll region. Negative values are resolved
+-- from the bottom of the screen, such that `-1` is the last row.
 -- @treturn string The ANSI sequence for setting the scroll region.
 -- @within Sequences
 function M.sets(start_row, end_row)
   -- Resolve negative indices
   local rows, _ = sys.termsize()
-  start_row = utils.resolve_index(start_row, rows)
-  end_row = utils.resolve_index(end_row, rows)
+  start_row = utils.resolve_index(start_row, rows, 1)
+  end_row = utils.resolve_index(end_row, rows, start_row)
   return "\27[" .. tostring(start_row) .. ";" .. tostring(end_row) .. "r"
 end
 
