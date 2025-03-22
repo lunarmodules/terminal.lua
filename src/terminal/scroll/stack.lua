@@ -10,7 +10,7 @@ local scroll = require("terminal.scroll")
 
 
 local _scrollstack = {
-  scroll.resets(), -- Use the function from scroll module
+  { 1, -1 } -- first to last row
 }
 
 
@@ -19,7 +19,8 @@ local _scrollstack = {
 -- @treturn string The ANSI sequence representing the current scroll region.
 -- @within Sequences
 function M.applys()
-  return _scrollstack[#_scrollstack]
+  local entry = _scrollstack[#_scrollstack]
+  return scroll.sets(entry[1], entry[2])
 end
 
 
@@ -39,7 +40,7 @@ end
 -- @treturn string The ANSI sequence representing the pushed scroll region.
 -- @within Sequences
 function M.pushs(top, bottom)
-  _scrollstack[#_scrollstack + 1] = scroll.sets(top, bottom)
+  _scrollstack[#_scrollstack + 1] = { top, bottom }
   return M.applys()
 end
 
