@@ -44,7 +44,6 @@ M.box_fmt = utils.make_lookup("box-format", {
   -- @function box_fmt.copy
   -- @tparam table default the default format to copy
   -- @treturn table a copy of the default format provided
-  -- @within lines
   -- @usage -- create new format with spaces around the title
   -- local fmt = t.box_fmt.copy(t.box_fmt.single)
   -- fmt.pre = fmt.pre .. " "
@@ -83,6 +82,7 @@ M.box_fmt = utils.make_lookup("box-format", {
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
 function M.boxs(height, width, format, clear_flag, title, lastcolumn)
   format = format or M.box_fmt.single
   local v_w = sys.utf8swidth(format.v or "")

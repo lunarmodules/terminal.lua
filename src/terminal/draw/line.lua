@@ -18,6 +18,7 @@ local sys = require "system"
 -- @tparam number n number of columns to draw
 -- @tparam[opt="─"] string char the character to draw
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
 function M.horizontals(n, char)
   char = char or "─"
   local w = sys.utf8cwidth(char)
@@ -46,6 +47,7 @@ end
 -- @tparam[opt="│"] string char the character to draw
 -- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
 function M.verticals(n, char, lastcolumn)
   char = char or "│"
   lastcolumn = lastcolumn and 1 or 0
@@ -78,6 +80,7 @@ end
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
 function M.titles(width, title, char, pre, post)
 
   -- TODO: strip any ansi sequences from the title before determining length

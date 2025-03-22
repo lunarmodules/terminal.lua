@@ -105,7 +105,7 @@ end
 
 --- Resolve indices.
 -- This function resolves negative indices to positive indices.
--- The result will be capped into the range [min_value, max_value].
+-- The result will be capped into the range [`min_value`, `max_value`].
 -- @tparam number index The index to resolve.
 -- @tparam number max_value The maximum value for the index.
 -- @tparam[opt=1] number min_value The minimum value for the index.
