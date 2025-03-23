@@ -98,7 +98,7 @@ end
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @return true
 function M.fore(r, g, b)
-  output.write(M.color_fgs(r, g, b))
+  output.write(M.fores(r, g, b))
   return true
 end
 
@@ -127,7 +127,7 @@ end
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @return true
 function M.back(r, g, b)
-  output.write(M.color_bgs(r, g, b))
+  output.write(M.backs(r, g, b))
   return true
 end
 
