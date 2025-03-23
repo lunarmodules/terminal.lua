@@ -39,6 +39,7 @@ M.output = require("terminal.output")
 M.clear = require("terminal.clear")
 M.scroll = require("terminal.scroll")
 M.cursor = require("terminal.cursor")
+M.text = require("terminal.text")
 M.draw = require("terminal.draw")
 M.progress = require("terminal.progress")
 M.width = require("terminal.width")
@@ -46,6 +47,7 @@ M.width = require("terminal.width")
 local output = M.output
 local scroll = M.scroll
 local cursor = M.cursor
+local color = M.text.color
 
 
 -- Set defaults for sleep functions
@@ -71,27 +73,6 @@ local blink_off = "\27[25m"
 local reverse_on = "\27[7m"
 local reverse_off = "\27[27m"
 
-local fg_base_colors = utils.make_lookup("foreground color string", {
-  black = "\27[30m",
-  red = "\27[31m",
-  green = "\27[32m",
-  yellow = "\27[33m",
-  blue = "\27[34m",
-  magenta = "\27[35m",
-  cyan = "\27[36m",
-  white = "\27[37m",
-})
-
-local bg_base_colors = utils.make_lookup("background color string",{
-  black = "\27[40m",
-  red = "\27[41m",
-  green = "\27[42m",
-  yellow = "\27[43m",
-  blue = "\27[44m",
-  magenta = "\27[45m",
-  cyan = "\27[46m",
-  white = "\27[47m",
-})
 
 local default_colors = {
   fg = fg_color_reset, -- reset fg
@@ -106,100 +87,6 @@ local default_colors = {
 local _colorstack = {
   default_colors,
 }
-
--- Takes a color name/scheme by user and returns the ansi sequence for it.
--- This function takes three color types:
---
--- 1. base colors: black, red, green, yellow, blue, magenta, cyan, white. Use as `color("red")`.
--- 2. extended colors: a number between 0 and 255. Use as `color(123)`.
--- 3. RGB colors: three numbers between 0 and 255. Use as `color(123, 123, 123)`.
--- @tparam integer|string r the red value (in case of RGB), a number for extended colors, or a string color for base-colors
--- @tparam[opt] number g the green value (in case of RGB), nil otherwise
--- @tparam[opt] number b the blue value (in case of RGB), nil otherwise
--- @tparam[opt] boolean fg true for foreground, false for background
--- @treturn string ansi sequence to write to the terminal
-local function colorcode(r, g, b, fg)
-  if type(r) == "string" then
-    -- a string based color
-    return fg and fg_base_colors[r] or bg_base_colors[r]
-  end
-
-  if type(r) ~= "number" or r < 0 or r > 255 then
-    return error("expected arg #1 to be a string or an integer 0-255, got " .. tostring(r) .. " (" .. type(r) .. ")", 2)
-  end
-  r = tostring(math.floor(r))
-  if g == nil then
-    -- no g set, then r is the extended color
-    return fg and ("\27[38;5;" .. r .. "m") or ("\27[48;5;" .. r .. "m")
-  end
-
-  if type(g) ~= "number" or g < 0 or g > 255 then
-    return error("expected arg #2 to be a number 0-255, got " .. tostring(g) .. " (" .. type(g) .. ")", 2)
-  end
-  g = tostring(math.floor(g))
-
-  if type(b) ~= "number" or b < 0 or b > 255 then
-    return error("expected arg #3 to be a number 0-255, got " .. tostring(b) .. " (" .. type(b) .. ")", 2)
-  end
-  b = tostring(math.floor(b))
-
-  return fg and ("\27[38;2;" .. r .. ";" .. g .. ";" .. b .. "m") or ("\27[48;2;" .. r .. ";" .. g .. ";" .. b .. "m")
-end
-
---- Creates an ansi sequence to set the foreground color without writing it to the terminal.
--- This function takes three color types:
---
--- 1. base colors: black, red, green, yellow, blue, magenta, cyan, white. Use as `color_fgs("red")`.
--- 2. extended colors: a number between 0 and 255. Use as `color_fgs(123)`.
--- 3. RGB colors: three numbers between 0 and 255. Use as `color_fgs(123, 123, 123)`.
---
--- @tparam integer r in case of RGB, the red value, a number for extended colors, a string color for base-colors
--- @tparam[opt] number g in case of RGB, the green value
--- @tparam[opt] number b in case of RGB, the blue value
--- @treturn string ansi sequence to write to the terminal
--- @within textcolor
-function M.color_fgs(r, g, b)
-  return colorcode(r, g, b, true)
-end
-
---- Sets the foreground color and writes it to the terminal.
--- @tparam integer r in case of RGB, the red value, a number for extended colors, a string color for base-colors
--- @tparam[opt] number g in case of RGB, the green value
--- @tparam[opt] number b in case of RGB, the blue value
--- @return true
--- @within textcolor
-function M.color_fg(r, g, b)
-  output.write(M.color_fgs(r, g, b))
-  return true
-end
-
---- Creates an ansi sequence to set the background color without writing it to the terminal.
--- This function takes three color types:
---
--- 1. base colors: black, red, green, yellow, blue, magenta, cyan, white. Use as `color_bgs("red")`.
--- 2. extended colors: a number between 0 and 255. Use as `color_bgs(123)`.
--- 3. RGB colors: three numbers between 0 and 255. Use as `color_bgs(123, 123, 123)`.
---
--- @tparam integer r in case of RGB, the red value, a number for extended colors, a string color for base-colors
--- @tparam[opt] number g in case of RGB, the green value
--- @tparam[opt] number b in case of RGB, the blue value
--- @treturn string ansi sequence to write to the terminal
--- @within textcolor
-function M.color_bgs(r, g, b)
-  return colorcode(r, g, b, false)
-end
-
---- Sets the background color and writes it to the terminal.
--- @tparam integer r in case of RGB, the red value, a number for extended colors, a string color for base-colors
--- @tparam[opt] number g in case of RGB, the green value
--- @tparam[opt] number b in case of RGB, the blue value
--- @return true
--- @within textcolor
-function M.color_bg(r, g, b)
-  output.write(M.color_bgs(r, g, b))
-  return true
-end
-
 
 
 --- Creates an ansi sequence to (un)set the underline attribute without writing it to the terminal.
@@ -346,8 +233,8 @@ local function newtext(attr)
   local fg_color = attr.fg or attr.fg_r
   local bg_color = attr.bg or attr.bg_r
   local new = {
-    fg         = fg_color        == nil and last.fg         or colorcode(fg_color, attr.fg_g, attr.fg_b, true),
-    bg         = bg_color        == nil and last.bg         or colorcode(bg_color, attr.bg_g, attr.bg_b, false),
+    fg         = fg_color        == nil and last.fg         or color.fore(fg_color, attr.fg_g, attr.fg_b),
+    bg         = bg_color        == nil and last.bg         or color.back(bg_color, attr.bg_g, attr.bg_b),
     brightness = attr.brightness == nil and last.brightness or _brightness[attr.brightness],
     underline  = attr.underline  == nil and last.underline  or (not not attr.underline),
     blink      = attr.blink      == nil and last.blink      or (not not attr.blink),
