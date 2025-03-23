@@ -54,6 +54,7 @@ build = {
     ["terminal.draw.line"] = "src/terminal/draw/line.lua",
     ["terminal.text.init"] = "src/terminal/text/init.lua",
     ["terminal.text.color"] = "src/terminal/text/color.lua",
+    ["terminal.text.stack"] = "src/terminal/text/stack.lua",
   },
 
   copy_directories = {
