@@ -7,7 +7,6 @@ package.loaded["terminal.text"] = M -- Register the module early to avoid circul
 M.color = require("terminal.text.color")
 M.stack = require("terminal.text.stack")
 
-local terminal = require("terminal")
 local output = require("terminal.output")
 local utils = require("terminal.utils")
 local color = M.color
@@ -162,7 +161,7 @@ local _brightness_sequence_after_reset = {
 
 
 function M._newattr(attr)
-  local last = terminal._colorstack[#terminal._colorstack]
+  local last = M.stack._colorstack[#M.stack._colorstack]
   local fg_color = attr.fg or attr.fg_r
   local bg_color = attr.bg or attr.bg_r
   local new = {

@@ -11,14 +11,14 @@ local function main()
   t.cursor.position.stack.push(1,1)
 
   -- push text attribues on the stack
-  t.textpush{
+  t.text.stack.push{
     fg = "white",
     brightness = "dim",
   }
   t.output.print("Hello dim white World!")
 
 
-  t.textpush{
+  t.text.stack.push{
     fg = "white",
     bg = "blue",
     brightness = "normal",
@@ -26,7 +26,7 @@ local function main()
   t.output.print("Hello white on blue World!")
 
 
-  t.textpush{
+  t.text.stack.push{
     fg = "red",
     bg = "black",
     brightness = "bright",
@@ -34,13 +34,13 @@ local function main()
   t.output.print("Hello bright red World!")
 
   -- Unwind the stack, and restore text attributes along the way
-  t.textpop()
+  t.text.stack.pop()
   t.output.print("Hello white on blue World! (again)")
 
-  t.textpop()
+  t.text.stack.pop()
   t.output.print("Hello dim white World! (again)")
 
-  t.textpop()
+  t.text.stack.pop()
   t.output.write("Press any key, or wait 5 seconds...")
   t.output.flush()
   t.input.readansi(5)
