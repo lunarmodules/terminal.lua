@@ -1,6 +1,6 @@
 --- Terminal text-attribute stack module.
 -- Manages a stack of text-attributes for terminal control.
--- @module terminal.scroll.stack
+-- @module terminal.text.stack
 local M = {}
 package.loaded["terminal.text.stack"] = M -- Register this module in package.loaded
 

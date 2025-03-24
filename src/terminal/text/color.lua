@@ -45,6 +45,7 @@ local bg_base_colors = utils.make_lookup("background color string",{
 -- @tparam[opt] number b the blue value (in case of RGB), nil otherwise
 -- @tparam[opt] boolean fg true for foreground, false for background
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
 local function colorcode(r, g, b, fg)
   if type(r) == "string" then
     -- a string based color
@@ -86,6 +87,7 @@ end
 -- @tparam[opt] number g in case of RGB, the green value
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
 function M.fores(r, g, b)
   return colorcode(r, g, b, true)
 end
@@ -115,6 +117,7 @@ end
 -- @tparam[opt] number g in case of RGB, the green value
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
 function M.backs(r, g, b)
   return colorcode(r, g, b, false)
 end

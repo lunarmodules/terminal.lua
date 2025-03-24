@@ -133,7 +133,7 @@ end
 -- @tparam table format the format for the box, see `boxs` for details.
 -- @tparam bool clear_flag whether to clear the box contents
 -- @tparam[opt=""] string title the title to draw
--- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
+-- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @return true
 function M.box(height, width, format, clear_flag, title, lastcolumn)
   output.write(M.boxs(height, width, format, clear_flag, title, lastcolumn))

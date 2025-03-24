@@ -25,7 +25,7 @@ local attribute_reset = "\27[0m"
 --- Creates an ansi sequence to (un)set the underline attribute without writing it to the terminal.
 -- @tparam[opt=true] boolean on whether to set underline
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
+-- @within Sequences
 function M.underlines(on)
   return on == false and underline_off or underline_on
 end
@@ -35,7 +35,6 @@ end
 --- (Un)sets the underline attribute and writes it to the terminal.
 -- @tparam[opt=true] boolean on whether to set underline
 -- @return true
--- @within textcolor
 function M.underline(on)
   output.write(M.underlines(on))
   return true
@@ -46,7 +45,7 @@ end
 --- Creates an ansi sequence to (un)set the blink attribute without writing it to the terminal.
 -- @tparam[opt=true] boolean on whether to set blink
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
+-- @within Sequences
 function M.blinks(on)
   return on == false and blink_off or blink_on
 end
@@ -56,7 +55,6 @@ end
 --- (Un)sets the blink attribute and writes it to the terminal.
 -- @tparam[opt=true] boolean on whether to set blink
 -- @return true
--- @within textcolor
 function M.blink(on)
   output.write(M.blinks(on))
   return true
@@ -67,7 +65,7 @@ end
 --- Creates an ansi sequence to (un)set the reverse attribute without writing it to the terminal.
 -- @tparam[opt=true] boolean on whether to set reverse
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
+-- @within Sequences
 function M.reverses(on)
   return on == false and reverse_off or reverse_on
 end
@@ -77,7 +75,6 @@ end
 --- (Un)sets the reverse attribute and writes it to the terminal.
 -- @tparam[opt=true] boolean on whether to set reverse
 -- @return true
--- @within textcolor
 function M.reverse(on)
   output.write(M.reverses(on))
   return true
@@ -128,7 +125,7 @@ local _brightness_sequence = utils.make_lookup("brightness level", {
 --
 -- @tparam string|integer brightness the brightness to set
 -- @treturn string ansi sequence to write to the terminal
--- @within textcolor
+-- @within Sequences
 function M.brightnesss(brightness)
   return _brightness_sequence[_brightness[brightness]]
 end
@@ -138,7 +135,6 @@ end
 --- Sets the brightness and writes it to the terminal.
 -- @tparam string|integer brightness the brightness to set
 -- @return true
--- @within textcolor
 function M.brightness(brightness)
   output.write(M.brightnesss(brightness))
   return true
@@ -182,7 +178,7 @@ end
 
 
 
---- Creates an ansi sequence to set the text attributes/colors without writing it to the terminal.
+--- Creates an ansi sequence to set all text attributes/colors without writing it to the terminal.
 -- Only set what you change. Every element omitted in the `attr` table will be taken from the current top of the stack.
 -- @tparam table attr the attributes to set, with keys:
 -- @tparam[opt] string|integer attr.fg the foreground color to set. Base color (string), or extended color (number). Takes precedence of `fg_r`, `fg_g`, `fg_b`.
@@ -198,6 +194,16 @@ end
 -- @tparam[opt] boolean attr.blink whether to set blink
 -- @tparam[opt] boolean attr.reverse whether to set reverse
 -- @treturn string ansi sequence to write to the terminal
+-- @within Sequences
+-- @usage
+-- local str = terminal.text.attrs({
+--   fg = "red",
+--   bg = "black",
+--   brightness = 3,
+--   underline = true,
+--   blink = false,
+--   reverse = false
+-- })
 function M.attrs(attr)
   local new = M._newattr(attr)
   return new.ansi
@@ -205,10 +211,19 @@ end
 
 
 
---- Sets the text attributes/colors and writes it to the terminal.
+--- Sets all text attributes/colors and writes it to the terminal.
 -- Every element omitted in the `attr` table will be taken from the current top of the stack.
 -- @tparam table attr the attributes to set, see `attrs` for details.
 -- @return true
+-- @usage
+-- terminal.text.attr({
+--   fg = "red",
+--   bg = "black",
+--   brightness = 3,
+--   underline = true,
+--   blink = false,
+--   reverse = false
+-- })
 function M.attr(attr)
   output.write(M.textsets(attr))
   return true
