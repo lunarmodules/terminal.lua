@@ -37,6 +37,7 @@ describe("Clear Module Tests", function()
     assert.are.equal("\27[0J", clear.bottom_seq())
   end)
 
+
   it("should return correct ANSI sequence for clearing a box", function()
     local res = clear.box_seq(2, 2)
     assert.are.equal("  \27[2D\27[1B  \27[2D\27[1A", res)

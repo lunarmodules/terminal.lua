@@ -19,6 +19,10 @@ local char_widths = {} -- registry to keep track of already tested widths
 local t = require "terminal"
 local sys = require "system"
 
+local sys_utf8cwidth = sys.utf8cwidth
+--local sys_utf8swidth = sys.utf8swidth
+
+
 
 -- Test the width of a character by writing it to the terminal and measure cursor displacement.
 -- No colors or cursor positioning/moving back is involved.
@@ -35,6 +39,8 @@ local function test_width_by_writing(char)
   char_widths[char] = w
   return w
 end
+
+
 
 --- Write a character and report its width in columns.
 -- Writes a character to the terminal and returns its width in columns.
@@ -57,6 +63,8 @@ function M.write_cwidth(char)
   return test_width_by_writing(char)
 end
 
+
+
 --- Write a string and report its width in columns.
 -- Writes a string to the terminal and returns its width in columns.
 -- The width measured for each character is recorded in the cache.
@@ -69,6 +77,8 @@ function M.write_swidth(str)
   end
   return w
 end
+
+
 
 --- Reports the width of a character in columns.
 -- Same as `write_cwidth`, but writes it "invisible" (brightness = 0), so it
@@ -89,12 +99,14 @@ function M.get_cwidth(char)
     return w
   end
 
-  t.textpush({ brightness = 0 })
+  t.text.stack.push({ brightness = 0 })
   local w = test_width_by_writing(char)
-  t.textpop()
+  t.text.stack.pop()
   t.cursor.position.left(w)
   return w
 end
+
+
 
 --- Reports the width of a string in columns. Each character will be tested and
 -- the width recorded in the cache. This can be used to pre-load the cache with
@@ -111,9 +123,11 @@ function M.get_swidth(str)
   return w
 end
 
+
+
 --- Returns the width of a character in columns, matches `sys.utf8cwidth`.
 -- This will check the cache of recorded widths first, and if not found,
--- use `sys.utf8cwidth` to determine the width.
+-- use `system.utf8cwidth` to determine the width.
 -- @tparam string|number char the character (string or codepoint) to check
 -- @treturn number the width of the first character in columns
 function M.utf8cwidth(char)
@@ -122,47 +136,56 @@ function M.utf8cwidth(char)
   elseif type(char) ~= "number" then
     error("expected string or number, got " .. type(char), 2)
   end
-  return char_widths[utf8.char(char)] or sys.utf8cwidth(char)
+  return char_widths[utf8.char(char)] or sys_utf8cwidth(char)
 end
 
---- Returns the width of a string in columns, matches `sys.utf8swidth`.
--- It will use `utf8cwidth` to determine the width of each character, and as such
--- will use the cached widths created with `written_width` and `get_width`.
+
+
+--- Returns the width of a string in columns, matches `sys.utf8swidth` signature.
+-- It will use the cached widths, if no cached width is available it falls back on `system.utf8cwidth`.
 -- @tparam string str the string to check
 -- @treturn number the width of the string in columns
 function M.utf8swidth(str)
   local w = 0
   for pos, char in utf8.codes(str) do
-    w = w + M.utf8cwidth(char)
+    w = w + (char_widths[utf8.char(char)] or sys_utf8cwidth(char))
   end
   return w
 end
+
+
 
 --- Preload the cache with the widths of all characters in the string.
 -- Characters will be written 'invisible', so it does not show on the terminal.
 -- It will read many character-widths at once, and hence is a lot faster than checking
 -- each character individually.
 -- @tparam string str the string of characters to preload
--- @treturn[1] boolean true if successful
+-- @treturn[1] number width in columns of the string
 -- @treturn[2] nil
 -- @treturn[2] string error message
 function M.preload(str)
   local size = 50 -- max number of characters to do in 1 terminal write
   local test = {}
   local dup = {}
+  local width = 0
   for pos, char in utf8.codes(str) do
     char = utf8.char(char) -- convert back to utf8 string
-    if not (char_widths[char] or dup[char]) then
+    local cw = char_widths[char]
+    if cw then
+      -- we already know the width
+      width = width + cw
+    elseif not dup[char] then
+      -- we have no width, and it is not yet in the test list, so add it
       test[#test+1] = char
       dup[char] = true
     end
   end
 
   if #test == 0 then
-    return -- nothing to test
+    return width -- nothing to test, return the width
   end
 
-  t.textpush({ brightness = 0 }) -- set color to "hidden"
+  t.text.stack.push({ brightness = 0 }) -- set color to "hidden"
 
   local r, c = t.cursor.position.get() -- retrieve current position
   local setpos = t.cursor.position.sets(r, c) -- string to restore cursor to current position
@@ -180,7 +203,7 @@ function M.preload(str)
       t.output.write(table.concat(chunk))
       local positions, err = t.input.read_query_answer("^\27%[(%d+);(%d+)R$", #chunk)
       if not positions then
-        t.textpop() -- restore color (drop hidden)
+        t.text.stack.pop() -- restore color (drop hidden)
         return nil, err
       end
 
@@ -200,8 +223,10 @@ function M.preload(str)
     end
   end
 
-  t.textpop() -- restore color (drop hidden)
-  return true
+  t.text.stack.pop() -- restore color (drop hidden)
+  return M.preload(str) -- re-run to get the total width, since all widths are known now
 end
+
+
 
 return M

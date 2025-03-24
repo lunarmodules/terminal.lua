@@ -113,6 +113,7 @@ describe("text.color", function()
       end, "expected arg #1 to be a string or an integer 0-255, got -1 (number)")
     end)
 
+
     it("throws an error on bad RGB values", function()
       -- nil values
       assert.has.error(function()
