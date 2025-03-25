@@ -83,24 +83,24 @@ M.box_fmt = utils.make_lookup("box-format", {
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.boxs(height, width, format, clear_flag, title, lastcolumn)
+function M.box_seq(height, width, format, clear_flag, title, lastcolumn)
   format = format or M.box_fmt.single
   local v_w = sys.utf8swidth(format.v or "")
   local tl_w = sys.utf8swidth(format.tl or "")
   local tr_w = sys.utf8swidth(format.tr or "")
   local bl_w = sys.utf8swidth(format.bl or "")
   local br_w = sys.utf8swidth(format.br or "")
-  local v_line_l = M.line.verticals(height - 2, format.v)
+  local v_line_l = M.line.vertical_seq(height - 2, format.v)
   local v_line_r = v_line_l
   if lastcolumn then
-    v_line_r = M.line.verticals(height - 2, format.v, lastcolumn)
+    v_line_r = M.line.vertical_seq(height - 2, format.v, lastcolumn)
   end
   lastcolumn = lastcolumn and 1 or 0
 
   local r = {
     -- draw top
     format.tl or "",
-    M.line.titles(width - tl_w - tr_w, title, format.h or " ", format.pre or "", format.post or ""),
+    M.line.title_seq(width - tl_w - tr_w, title, format.h or " ", format.pre or "", format.post or ""),
     format.tr or "",
     -- position to draw right, and draw it
     cursor.position.move_seq(1, -v_w + lastcolumn),
@@ -111,7 +111,7 @@ function M.boxs(height, width, format, clear_flag, title, lastcolumn)
     -- draw bottom
     cursor.position.move_seq(1, -1),
     format.bl or "",
-    M.line.horizontals(width - bl_w - br_w, format.h or " "),
+    M.line.horizontal_seq(width - bl_w - br_w, format.h or " "),
     format.br or "",
     -- return to top left
     cursor.position.move_seq(-height + 1, -width + lastcolumn),
@@ -136,7 +136,7 @@ end
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @return true
 function M.box(height, width, format, clear_flag, title, lastcolumn)
-  output.write(M.boxs(height, width, format, clear_flag, title, lastcolumn))
+  output.write(M.box_seq(height, width, format, clear_flag, title, lastcolumn))
   return true
 end
 

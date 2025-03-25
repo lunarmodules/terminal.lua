@@ -19,7 +19,7 @@ local sys = require "system"
 -- @tparam[opt="─"] string char the character to draw
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.horizontals(n, char)
+function M.horizontal_seq(n, char)
   char = char or "─"
   local w = sys.utf8cwidth(char)
   return char:rep(math.floor(n / w))
@@ -35,7 +35,7 @@ end
 -- @tparam[opt="─"] string char the character to draw
 -- @return true
 function M.horizontal(n, char)
-  output.write(M.horizontals(n, char))
+  output.write(M.horizontal_seq(n, char))
   return true
 end
 
@@ -48,7 +48,7 @@ end
 -- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.verticals(n, char, lastcolumn)
+function M.vertical_seq(n, char, lastcolumn)
   char = char or "│"
   lastcolumn = lastcolumn and 1 or 0
   local w = sys.utf8cwidth(char)
@@ -65,7 +65,7 @@ end
 -- @tparam[opt] boolean lastcolumn whether to draw the last column of the terminal
 -- @return true
 function M.vertical(n, char, lastcolumn)
-  output.write(M.verticals(n, char, lastcolumn))
+  output.write(M.vertical_seq(n, char, lastcolumn))
   return true
 end
 
@@ -81,13 +81,13 @@ end
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.titles(width, title, char, pre, post)
+function M.title_seq(width, title, char, pre, post)
 
   -- TODO: strip any ansi sequences from the title before determining length
   -- such that titles can have multiple colors etc. what if we truncate????
 
   if title == nil or title == "" then
-    return M.horizontals(width, char)
+    return M.horizontal_seq(width, char)
   end
   pre = pre or ""
   post = post or ""
@@ -97,11 +97,11 @@ function M.titles(width, title, char, pre, post)
   local w_for_title = width - pre_w - post_w
   if w_for_title > title_w then
     -- enough space for title
-    local p1 = M.horizontals(math.floor((w_for_title - title_w) / 2), char) .. pre .. title .. post
-    return p1 .. M.horizontals(width - sys.utf8swidth(p1), char)
+    local p1 = M.horizontal_seq(math.floor((w_for_title - title_w) / 2), char) .. pre .. title .. post
+    return p1 .. M.horizontal_seq(width - sys.utf8swidth(p1), char)
   elseif w_for_title < 4 then
     -- too little space for title, omit it alltogether
-    return M.horizontals(width, char)
+    return M.horizontal_seq(width, char)
   elseif w_for_title == title_w then
     -- exact space for title
     return pre .. title .. post
@@ -127,7 +127,7 @@ end
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
 -- @return true
 function M.title(title, width, char, pre, post)
-  output.write(M.titles(title, width, char, pre, post))
+  output.write(M.title_seq(title, width, char, pre, post))
   return true
 end
 
