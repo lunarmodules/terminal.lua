@@ -37,7 +37,7 @@ M._colorstack = _colorstack
 -- Every element omitted in the `attr` table will be taken from the current top of the stack.
 -- @tparam table attr the attributes to set, see `text.attrs` for details.
 -- @treturn string ansi sequence to write to the terminal
-function M.pushs(attr)
+function M.push_seq(attr)
   local new = text._newattr(attr)
   _colorstack[#_colorstack + 1] = new
   return new.ansi
@@ -51,7 +51,7 @@ end
 -- @tparam table attr the attributes to set, see `text.attrs` for details.
 -- @return true
 function M.push(attr)
-  output.write(M.pushs(attr))
+  output.write(M.push_seq(attr))
   return true
 end
 
@@ -60,7 +60,7 @@ end
 --- Pops n attributes/colors off the stack (and returns the last one), without writing it to the terminal.
 -- @tparam[opt=1] number n number of attributes to pop
 -- @treturn string ansi sequence to write to the terminal
-function M.pops(n)
+function M.pop_seq(n)
   n = n or 1
   local newtop = math.max(#_colorstack - n, 1)
   for i = newtop + 1, #_colorstack do
@@ -75,7 +75,7 @@ end
 -- @tparam[opt=1] number n number of attributes to pop
 -- @return true
 function M.pop(n)
-  output.write(M.pops(n))
+  output.write(M.pop_seq(n))
   return true
 end
 
@@ -84,7 +84,7 @@ end
 --- Re-applies the current attributes/colors (at the top of the stack),
 -- returns the sequence without writing to the terminal.
 -- @treturn string ansi sequence to write to the terminal
-function M.applys()
+function M.apply_seq()
   return _colorstack[#_colorstack].ansi
 end
 

@@ -88,7 +88,7 @@ end
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.fores(r, g, b)
+function M.fore_seq(r, g, b)
   return colorcode(r, g, b, true)
 end
 
@@ -100,7 +100,7 @@ end
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @return true
 function M.fore(r, g, b)
-  output.write(M.fores(r, g, b))
+  output.write(M.fore_seq(r, g, b))
   return true
 end
 
@@ -118,7 +118,7 @@ end
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.backs(r, g, b)
+function M.back_seq(r, g, b)
   return colorcode(r, g, b, false)
 end
 
@@ -130,7 +130,7 @@ end
 -- @tparam[opt] number b in case of RGB, the blue value
 -- @return true
 function M.back(r, g, b)
-  output.write(M.backs(r, g, b))
+  output.write(M.back_seq(r, g, b))
   return true
 end
 
