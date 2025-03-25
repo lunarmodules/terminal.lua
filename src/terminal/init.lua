@@ -56,7 +56,7 @@ M._sleep = sys.sleep   -- a (optionally) non-blocking sleep function
 
 --- Returns a string sequence to make the terminal beep.
 -- @treturn string ansi sequence to write to the terminal
-function M.beeps()
+function M.beep_seq()
   return "\a"
 end
 
@@ -65,7 +65,7 @@ end
 --- Write a sequence to the terminal to make it beep.
 -- @return true
 function M.beep()
-  output.write(M.beeps())
+  output.write(M.beep_seq())
   return true
 end
 
