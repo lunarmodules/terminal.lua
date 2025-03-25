@@ -7,7 +7,7 @@ package.loaded["terminal.draw.line"] = M -- Push in `package.loaded` to avoid ci
 
 local output = require "terminal.output"
 local cursor = require "terminal.cursor"
-local sys = require "system"
+local text = require "terminal.text"
 
 
 
@@ -21,7 +21,7 @@ local sys = require "system"
 -- @within Sequences
 function M.horizontal_seq(n, char)
   char = char or "─"
-  local w = sys.utf8cwidth(char)
+  local w = text.width.utf8cwidth(char)
   return char:rep(math.floor(n / w))
 end
 
@@ -51,7 +51,7 @@ end
 function M.vertical_seq(n, char, lastcolumn)
   char = char or "│"
   lastcolumn = lastcolumn and 1 or 0
-  local w = sys.utf8cwidth(char)
+  local w = text.width.utf8cwidth(char)
   -- TODO: why do we need 'lastcolumn*2' here???
   return (char .. cursor.position.left_seq(w-lastcolumn*2) .. cursor.position.down_seq(1)):rep(n-1) .. char
 end
@@ -91,14 +91,14 @@ function M.title_seq(width, title, char, pre, post)
   end
   pre = pre or ""
   post = post or ""
-  local pre_w = sys.utf8swidth(pre)
-  local post_w = sys.utf8swidth(post)
-  local title_w = sys.utf8swidth(title)
+  local pre_w = text.width.utf8swidth(pre)
+  local post_w = text.width.utf8swidth(post)
+  local title_w = text.width.utf8swidth(title)
   local w_for_title = width - pre_w - post_w
   if w_for_title > title_w then
     -- enough space for title
     local p1 = M.horizontal_seq(math.floor((w_for_title - title_w) / 2), char) .. pre .. title .. post
-    return p1 .. M.horizontal_seq(width - sys.utf8swidth(p1), char)
+    return p1 .. M.horizontal_seq(width - text.width.utf8swidth(p1), char)
   elseif w_for_title < 4 then
     -- too little space for title, omit it alltogether
     return M.horizontal_seq(width, char)
@@ -109,7 +109,7 @@ function M.title_seq(width, title, char, pre, post)
     w_for_title = w_for_title - 3 -- for "..."
     while title_w == nil or title_w > w_for_title do
       title = title:sub(1, -2) -- drop last byte
-      title_w = sys.utf8swidth(title)
+      title_w = text.width.utf8swidth(title)
     end
     return pre .. title .. "..." .. post
   end

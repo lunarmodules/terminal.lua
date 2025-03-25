@@ -10,7 +10,7 @@ local output = require "terminal.output"
 local cursor = require "terminal.cursor"
 local clear = require "terminal.clear"
 local utils = require "terminal.utils"
-local sys = require "system"
+local text = require "terminal.text"
 
 
 
@@ -85,11 +85,11 @@ M.box_fmt = utils.make_lookup("box-format", {
 -- @within Sequences
 function M.box_seq(height, width, format, clear_flag, title, lastcolumn)
   format = format or M.box_fmt.single
-  local v_w = sys.utf8swidth(format.v or "")
-  local tl_w = sys.utf8swidth(format.tl or "")
-  local tr_w = sys.utf8swidth(format.tr or "")
-  local bl_w = sys.utf8swidth(format.bl or "")
-  local br_w = sys.utf8swidth(format.br or "")
+  local v_w = text.width.utf8swidth(format.v or "")
+  local tl_w = text.width.utf8swidth(format.tl or "")
+  local tr_w = text.width.utf8swidth(format.tr or "")
+  local bl_w = text.width.utf8swidth(format.bl or "")
+  local br_w = text.width.utf8swidth(format.br or "")
   local v_line_l = M.line.vertical_seq(height - 2, format.v)
   local v_line_r = v_line_l
   if lastcolumn then

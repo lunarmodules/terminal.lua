@@ -1,11 +1,14 @@
 --- A module for progress updating.
 
-local sys = require("system")
+local M = {}
+package.loaded["terminal.progress"] = M -- Register the module early to avoid circular dependencies
+
 local t = require("terminal")
 local Sequence = require("terminal.sequence")
 local utils = require("terminal.utils")
 
-local M = {}
+local gettime = require("system").gettime
+
 
 
 --- table with predefined sprites for progress spinners.
@@ -87,7 +90,7 @@ function M.spinner(opts)
     local attr_push, attr_pop -- both will remain nil, if no text attr set
     if textattr then
       attr_push = function() return t.text.stack.push_seq(textattr) end
-      attr_pop = t.text.stack.pops
+      attr_pop = t.text.stack.pop_seq
     end
     local attr_push_done = attr_push
     if opts.done_textattr then
@@ -103,22 +106,22 @@ function M.spinner(opts)
       local sequence = Sequence()
       sequence[#sequence+1] = pos_set
       sequence[#sequence+1] = (i == 0 and attr_push_done) or attr_push or nil
-      sequence[#sequence+1] = s .. t.cursor.position.left_seq(sys.utf8swidth(s))
+      sequence[#sequence+1] = s .. t.cursor.position.left_seq(t.text.width.utf8swidth(s))
       sequence[#sequence+1] = attr_pop
       sequence[#sequence+1] = pos_restore
       steps[i] = sequence
     end
   end
   local step = 0
-  local next_step = sys.gettime()
+  local next_step = gettime()
 
 
   return function(done)
-    if sys.gettime() >= next_step or done then
+    if gettime() >= next_step or done then
       if done then
         step = 0 -- will force to print element 0, the done message
       else
-        next_step = sys.gettime() + stepsize
+        next_step = gettime() + stepsize
         step = step + 1
         if step > #steps then
           step = 1
