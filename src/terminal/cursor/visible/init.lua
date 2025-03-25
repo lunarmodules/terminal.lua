@@ -21,7 +21,7 @@ local cursor_show = "\27[?25h"
 -- @tparam[opt=true] boolean visible true to show, false to hide
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.sets(visible)
+function M.set_seq(visible)
   return visible == false and cursor_hide or cursor_show
 end
 
@@ -31,7 +31,7 @@ end
 -- @tparam[opt=true] boolean visible true to show, false to hide
 -- @return true
 function M.set(visible)
-  output.write(M.sets(visible))
+  output.write(M.set_seq(visible))
   return true
 end
 

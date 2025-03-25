@@ -97,8 +97,8 @@ function M.width_test(str)
   t.text.stack.push({ brightness = 0 }) -- set color to "hidden"
 
   local r, c = t.cursor.position.get() -- retrieve current position
-  local setpos = t.cursor.position.sets(r, c) -- string to restore cursor to current position
-  local getpos = t.cursor.position.querys() -- string to inject query for current position
+  local setpos = t.cursor.position.set_seq(r, c) -- string to restore cursor to current position
+  local getpos = t.cursor.position.query_seq() -- string to inject query for current position
   local chunk = {}
   local chars = {}
   for i = 1, #test do -- process in chunks of max size
@@ -153,7 +153,7 @@ function M.width_test_write(str)
   local width = 0
 
   do -- parse the string to test
-    local getpos = t.cursor.position.querys() -- string to inject; query for current position
+    local getpos = t.cursor.position.query_seq() -- string to inject; query for current position
     local dups = {}
 
     for pos, char in utf8.codes(str) do

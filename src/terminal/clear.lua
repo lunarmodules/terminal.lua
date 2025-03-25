@@ -105,13 +105,13 @@ function M.box_seq(height, width)
   if height < 1 or width < 1 then
     return ""
   end
-  local line = (" "):rep(width) .. terminal.cursor.position.lefts(width)
-  local line_next = line .. terminal.cursor.position.downs()
+  local line = (" "):rep(width) .. terminal.cursor.position.left_seq(width)
+  local line_next = line .. terminal.cursor.position.down_seq()
   local res = line_next:rep(height - 1) .. line
   if height == 1 then
     return res
   end
-  return res .. terminal.cursor.position.ups(height - 1)
+  return res .. terminal.cursor.position.up_seq(height - 1)
 end
 
 --- Clears a box and writes it to the terminal.

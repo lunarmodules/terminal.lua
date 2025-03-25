@@ -19,11 +19,11 @@ local _positionstack = {}
 -- @tparam number column
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.pushs(row, column)
+function M.push_seq(row, column)
   local r, c = pos.get()
   -- ignore the error, since we need to keep the stack in sync for pop/push operations
   _positionstack[#_positionstack + 1] = { r, c }
-  return pos.sets(row, column)
+  return pos.set_seq(row, column)
 end
 
 
@@ -35,7 +35,7 @@ end
 -- @tparam number column
 -- @return true
 function M.push(row, column)
-  output.write(M.pushs(row, column))
+  output.write(M.push_seq(row, column))
   return true
 end
 
@@ -46,7 +46,7 @@ end
 -- @tparam[opt=1] number n number of positions to pop
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.pops(n)
+function M.pop_seq(n)
   n = n or 1
   local entry
   while n > 0 do
@@ -56,7 +56,7 @@ function M.pops(n)
   if not entry then
     return ""
   end
-  return pos.sets(entry[1], entry[2])
+  return pos.set_seq(entry[1], entry[2])
 end
 
 
@@ -66,7 +66,7 @@ end
 -- @tparam[opt=1] number n number of positions to pop
 -- @return true
 function M.pop(n)
-  output.write(M.pops(n))
+  output.write(M.pop_seq(n))
   return true
 end
 

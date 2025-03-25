@@ -53,7 +53,7 @@ function M.verticals(n, char, lastcolumn)
   lastcolumn = lastcolumn and 1 or 0
   local w = sys.utf8cwidth(char)
   -- TODO: why do we need 'lastcolumn*2' here???
-  return (char .. cursor.position.lefts(w-lastcolumn*2) .. cursor.position.downs(1)):rep(n-1) .. char
+  return (char .. cursor.position.left_seq(w-lastcolumn*2) .. cursor.position.down_seq(1)):rep(n-1) .. char
 end
 
 

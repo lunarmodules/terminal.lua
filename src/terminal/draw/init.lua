@@ -103,24 +103,24 @@ function M.boxs(height, width, format, clear_flag, title, lastcolumn)
     M.line.titles(width - tl_w - tr_w, title, format.h or " ", format.pre or "", format.post or ""),
     format.tr or "",
     -- position to draw right, and draw it
-    cursor.position.moves(1, -v_w + lastcolumn),
+    cursor.position.move_seq(1, -v_w + lastcolumn),
     v_line_r,
     -- position back to top left, and draw left
-    cursor.position.moves(-height + 3, -width + lastcolumn),
+    cursor.position.move_seq(-height + 3, -width + lastcolumn),
     v_line_l,
     -- draw bottom
-    cursor.position.moves(1, -1),
+    cursor.position.move_seq(1, -1),
     format.bl or "",
     M.line.horizontals(width - bl_w - br_w, format.h or " "),
     format.br or "",
     -- return to top left
-    cursor.position.moves(-height + 1, -width + lastcolumn),
+    cursor.position.move_seq(-height + 1, -width + lastcolumn),
   }
   if clear_flag then
     local l = #r
-    r[l+1] = cursor.position.moves(1, v_w)
+    r[l+1] = cursor.position.move_seq(1, v_w)
     r[l+2] = clear.box_seq(height - 2, width - 2 * v_w)
-    r[l+3] = cursor.position.moves(-1, -v_w)
+    r[l+3] = cursor.position.move_seq(-1, -v_w)
   end
   return table.concat(r)
 end

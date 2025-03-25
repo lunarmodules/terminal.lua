@@ -34,7 +34,7 @@ local shapes = utils.make_lookup("cursor shape", {
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.sets(shape)
+function M.set_seq(shape)
   return shapes[shape]
 end
 
@@ -45,7 +45,7 @@ end
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
 -- @return true
 function M.set(shape)
-  output.write(M.sets(shape))
+  output.write(M.set_seq(shape))
   return true
 end
 

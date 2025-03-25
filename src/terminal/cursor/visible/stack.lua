@@ -20,8 +20,8 @@ local _visible_stack = {
 --- Returns the ansi sequence to show/hide the cursor at the top of the stack without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.applys()
-  return visible.sets(_visible_stack[#_visible_stack])
+function M.apply_seq()
+  return visible.set_seq(_visible_stack[#_visible_stack])
 end
 
 
@@ -29,7 +29,7 @@ end
 --- Returns the ansi sequence to show/hide the cursor at the top of the stack, and writes it to the terminal.
 -- @return true
 function M.apply()
-  output.write(M.applys())
+  output.write(M.apply_seq())
   return true
 end
 
@@ -39,9 +39,9 @@ end
 -- @tparam[opt=true] boolean v true to show, false to hide
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.pushs(v)
+function M.push_seq(v)
   _visible_stack[#_visible_stack + 1] = (v ~= false)
-  return M.applys()
+  return M.apply_seq()
 end
 
 
@@ -50,7 +50,7 @@ end
 -- @tparam[opt=true] boolean v true to show, false to hide
 -- @return true
 function M.push(v)
-  output.write(M.pushs(v))
+  output.write(M.push_seq(v))
   return true
 end
 
@@ -60,12 +60,12 @@ end
 -- @tparam[opt=1] number n number of visibilities to pop
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.pops(n)
+function M.pop_seq(n)
   local new_last = math.max(#_visible_stack - (n or 1), 1)
   for i = new_last + 1, #_visible_stack do
     _visible_stack[i] = nil
   end
-  return M.applys()
+  return M.apply_seq()
 end
 
 
@@ -74,7 +74,7 @@ end
 -- @tparam[opt=1] number n number of visibilities to pop
 -- @return true
 function M.pop(n)
-  output.write(M.pops(n))
+  output.write(M.pop_seq(n))
   return true
 end
 
