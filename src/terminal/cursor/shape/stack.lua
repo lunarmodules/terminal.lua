@@ -21,7 +21,7 @@ local _shapestack = {
 --- Re-applies the shape at the top of the stack (returns it, does not write it to the terminal).
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.applys()
+function M.apply_seq()
   return _shapestack[#_shapestack]
 end
 
@@ -30,7 +30,7 @@ end
 --- Re-applies the shape at the top of the stack, and writes it to the terminal.
 -- @return true
 function M.apply()
-  output.write(M.applys())
+  output.write(M.apply_seq())
   return true
 end
 
@@ -41,9 +41,9 @@ end
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.pushs(s)
-  _shapestack[#_shapestack + 1] = shape.sets(s)
-  return M.applys()
+function M.push_seq(s)
+  _shapestack[#_shapestack + 1] = shape.set_seq(s)
+  return M.apply_seq()
 end
 
 
@@ -53,7 +53,7 @@ end
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
 -- @return true
 function M.push(s)
-  output.write(M.pushs(s))
+  output.write(M.push_seq(s))
   return true
 end
 
@@ -63,12 +63,12 @@ end
 -- @tparam[opt=1] number n number of shapes to pop
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.pops(n)
+function M.pop_seq(n)
   local new_last = math.max(#_shapestack - (n or 1), 1)
   for i = new_last + 1, #_shapestack do
     _shapestack[i] = nil
   end
-  return M.applys()
+  return M.apply_seq()
 end
 
 
@@ -77,7 +77,7 @@ end
 -- @tparam[opt=1] number n number of shapes to pop
 -- @return true
 function M.pop(n)
-  output.write(M.pops(n))
+  output.write(M.pop_seq(n))
   return true
 end
 

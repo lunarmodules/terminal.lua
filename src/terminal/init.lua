@@ -153,11 +153,11 @@ do
     -- restore all stacks
     local r,c = cursor.position.get() -- Mac: scroll-region reset changes cursor pos to 1,1, so store it
     output.write(
-      cursor.shape.stack.pops(math.huge),
-      cursor.visible.stack.pops(math.huge),
+      cursor.shape.stack.pop_seq(math.huge),
+      cursor.visible.stack.pop_seq(math.huge),
       text.stack.pops(math.huge),
       scroll.stack.pops(math.huge),
-      cursor.position.sets(r,c) -- restore cursor pos
+      cursor.position.set_seq(r,c) -- restore cursor pos
     )
     output.flush()
 

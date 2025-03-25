@@ -17,7 +17,7 @@ local sys = require("system")
 -- If you need to get the current position, use `get` instead.
 -- @treturn string the sequence for requesting cursor position
 -- @within Sequences
-function M.querys()
+function M.query_seq()
   return "\27[6n"
 end
 
@@ -26,7 +26,7 @@ end
 --- write the sequence for requesting cursor position, without flushing.
 -- If you need to get the current position, use `get` instead.
 function M.query()
-  output.write(M.querys())
+  output.write(M.query_seq())
 end
 
 
@@ -44,7 +44,7 @@ end
 -- @treturn[2] nil
 -- @treturn[2] string error message in case of a keyboard read error
 function M.get()
-  local r, err = input.query(M.querys(), "^\27%[(%d+);(%d+)R$")
+  local r, err = input.query(M.query_seq(), "^\27%[(%d+);(%d+)R$")
   if not r then
     return nil, err
   end
@@ -60,7 +60,7 @@ end
 -- such that -1 is the last column.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.sets(row, column)
+function M.set_seq(row, column)
   -- Resolve negative indices, and range check
   local rows, cols = sys.termsize()
   row = utils.resolve_index(row, rows, 1)
@@ -75,7 +75,7 @@ end
 -- @tparam number column
 -- @return true
 function M.set(row, column)
-  output.write(M.sets(row, column))
+  output.write(M.set_seq(row, column))
   return true
 end
 
@@ -84,7 +84,7 @@ end
 --- Returns the ansi sequence to backup the current cursor position (in terminal storage, not stacked).
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.backups()
+function M.backup_seq()
   return "\27[s"
 end
 
@@ -93,7 +93,7 @@ end
 --- Writes the ansi sequence to backup the current cursor position (in terminal storage, not stacked) to the terminal.
 -- @return true
 function M.backup()
-  output.write(M.backups())
+  output.write(M.backup_seq())
   return true
 end
 
@@ -102,7 +102,7 @@ end
 --- Returns the ansi sequence to restore the cursor position (from the terminal storage, not stacked).
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.restores()
+function M.restore_seq()
   return "\27[u"
 end
 
@@ -111,7 +111,7 @@ end
 --- Writes the ansi sequence to restore the cursor position (from the terminal storage, not stacked) to the terminal.
 -- @return true
 function M.restore()
-  output.write(M.restores())
+  output.write(M.restore_seq())
   return true
 end
 
@@ -121,7 +121,7 @@ end
 -- @tparam[opt=1] number n number of rows to move up
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.ups(n)
+function M.up_seq(n)
   n = n or 1
   return "\27["..tostring(n).."A"
 end
@@ -132,7 +132,7 @@ end
 -- @tparam[opt=1] number n number of rows to move up
 -- @return true
 function M.up(n)
-  output.write(M.ups(n))
+  output.write(M.up_seq(n))
   return true
 end
 
@@ -142,7 +142,7 @@ end
 -- @tparam[opt=1] number n number of rows to move down
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.downs(n)
+function M.down_seq(n)
   n = n or 1
   return "\27["..tostring(n).."B"
 end
@@ -153,7 +153,7 @@ end
 -- @tparam[opt=1] number n number of rows to move down
 -- @return true
 function M.down(n)
-  output.write(M.downs(n))
+  output.write(M.down_seq(n))
   return true
 end
 
@@ -163,7 +163,7 @@ end
 -- @tparam[opt=1] number n number of rows to move (negative for up, positive for down)
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.verticals(n)
+function M.vertical_seq(n)
   n = n or 1
   if n == 0 then
     return ""
@@ -177,7 +177,7 @@ end
 -- @tparam[opt=1] number n number of rows to move (negative for up, positive for down)
 -- @return true
 function M.vertical(n)
-  output.write(M.verticals(n))
+  output.write(M.vertical_seq(n))
   return true
 end
 
@@ -187,7 +187,7 @@ end
 -- @tparam[opt=1] number n number of columns to move left
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.lefts(n)
+function M.left_seq(n)
   n = n or 1
   return "\27["..tostring(n).."D"
 end
@@ -198,7 +198,7 @@ end
 -- @tparam[opt=1] number n number of columns to move left
 -- @return true
 function M.left(n)
-  output.write(M.lefts(n))
+  output.write(M.left_seq(n))
   return true
 end
 
@@ -208,7 +208,7 @@ end
 -- @tparam[opt=1] number n number of columns to move right
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.rights(n)
+function M.right_seq(n)
   n = n or 1
   return "\27["..tostring(n).."C"
 end
@@ -219,7 +219,7 @@ end
 -- @tparam[opt=1] number n number of columns to move right
 -- @return true
 function M.right(n)
-  output.write(M.rights(n))
+  output.write(M.right_seq(n))
   return true
 end
 
@@ -229,7 +229,7 @@ end
 -- @tparam[opt=1] number n number of columns to move (negative for left, positive for right)
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.horizontals(n)
+function M.horizontal_seq(n)
   n = n or 1
   if n == 0 then
     return ""
@@ -243,7 +243,7 @@ end
 -- @tparam[opt=1] number n number of columns to move (negative for left, positive for right)
 -- @return true
 function M.horizontal(n)
-  output.write(M.horizontals(n))
+  output.write(M.horizontal_seq(n))
   return true
 end
 
@@ -254,8 +254,8 @@ end
 -- @tparam[opt=0] number columns number of columns to move (negative for left, positive for right)
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.moves(rows, columns)
-  return M.verticals(rows or 0) .. M.horizontals(columns or 0)
+function M.move_seq(rows, columns)
+  return M.vertical_seq(rows or 0) .. M.horizontal_seq(columns or 0)
 end
 
 
@@ -265,7 +265,7 @@ end
 -- @tparam[opt=0] number columns number of columns to move (negative for left, positive for right)
 -- @return true
 function M.move(rows, columns)
-  output.write(M.moves(rows, columns))
+  output.write(M.move_seq(rows, columns))
   return true
 end
 
@@ -276,7 +276,7 @@ end
 -- such that -1 is the last column.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.columns(column)
+function M.column_seq(column)
   -- Resolve negative indices, and range check
   local _, cols = sys.termsize()
   column = utils.resolve_index(column, cols, 1)
@@ -289,7 +289,7 @@ end
 -- @tparam number column the column to move to
 -- @return true
 function M.column(column)
-  output.write(M.columns(column))
+  output.write(M.column_seq(column))
   return true
 end
 
@@ -300,7 +300,7 @@ end
 -- such that -1 is the last row.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.rows(row)
+function M.row_seq(row)
   -- Resolve negative indices, and range check
   local rows, _ = sys.termsize()
   row = utils.resolve_index(row, rows, 1)
@@ -313,7 +313,7 @@ end
 -- @tparam number row the row to move to
 -- @return true
 function M.row(row)
-  output.write(M.rows(row))
+  output.write(M.row_seq(row))
   return true
 end
 
