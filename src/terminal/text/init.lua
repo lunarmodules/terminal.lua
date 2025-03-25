@@ -27,7 +27,7 @@ local attribute_reset = "\27[0m"
 -- @tparam[opt=true] boolean on whether to set underline
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.underlines(on)
+function M.underline_seq(on)
   return on == false and underline_off or underline_on
 end
 
@@ -37,7 +37,7 @@ end
 -- @tparam[opt=true] boolean on whether to set underline
 -- @return true
 function M.underline(on)
-  output.write(M.underlines(on))
+  output.write(M.underline_seq(on))
   return true
 end
 
@@ -47,7 +47,7 @@ end
 -- @tparam[opt=true] boolean on whether to set blink
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.blinks(on)
+function M.blink_seq(on)
   return on == false and blink_off or blink_on
 end
 
@@ -57,7 +57,7 @@ end
 -- @tparam[opt=true] boolean on whether to set blink
 -- @return true
 function M.blink(on)
-  output.write(M.blinks(on))
+  output.write(M.blink_seq(on))
   return true
 end
 
@@ -67,7 +67,7 @@ end
 -- @tparam[opt=true] boolean on whether to set reverse
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.reverses(on)
+function M.reverse_seq(on)
   return on == false and reverse_off or reverse_on
 end
 
@@ -77,7 +77,7 @@ end
 -- @tparam[opt=true] boolean on whether to set reverse
 -- @return true
 function M.reverse(on)
-  output.write(M.reverses(on))
+  output.write(M.reverse_seq(on))
   return true
 end
 
@@ -127,7 +127,7 @@ local _brightness_sequence = utils.make_lookup("brightness level", {
 -- @tparam string|integer brightness the brightness to set
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.brightnesss(brightness)
+function M.brightness_seq(brightness)
   return _brightness_sequence[_brightness[brightness]]
 end
 
@@ -137,7 +137,7 @@ end
 -- @tparam string|integer brightness the brightness to set
 -- @return true
 function M.brightness(brightness)
-  output.write(M.brightnesss(brightness))
+  output.write(M.brightness_seq(brightness))
   return true
 end
 
@@ -162,8 +162,8 @@ function M._newattr(attr)
   local fg_color = attr.fg or attr.fg_r
   local bg_color = attr.bg or attr.bg_r
   local new = {
-    fg         = fg_color        == nil and last.fg         or color.fores(fg_color, attr.fg_g, attr.fg_b),
-    bg         = bg_color        == nil and last.bg         or color.backs(bg_color, attr.bg_g, attr.bg_b),
+    fg         = fg_color        == nil and last.fg         or color.fore_seq(fg_color, attr.fg_g, attr.fg_b),
+    bg         = bg_color        == nil and last.bg         or color.back_seq(bg_color, attr.bg_g, attr.bg_b),
     brightness = attr.brightness == nil and last.brightness or _brightness[attr.brightness],
     underline  = attr.underline  == nil and last.underline  or (not not attr.underline),
     blink      = attr.blink      == nil and last.blink      or (not not attr.blink),
@@ -171,9 +171,9 @@ function M._newattr(attr)
   }
   new.ansi = attribute_reset .. new.fg .. new.bg ..
     _brightness_sequence_after_reset[new.brightness] ..
-    (new.underline and M.underlines(true) or "") ..
-    (new.blink and M.blinks(true) or "") ..
-    (new.reverse and M.reverses(true) or "")
+    (new.underline and M.underline_seq(true) or "") ..
+    (new.blink and M.blink_seq(true) or "") ..
+    (new.reverse and M.reverse_seq(true) or "")
   return new
 end
 
@@ -205,7 +205,7 @@ end
 --   blink = false,
 --   reverse = false
 -- })
-function M.attrs(attr)
+function M.attr_seq(attr)
   local new = M._newattr(attr)
   return new.ansi
 end
@@ -226,7 +226,7 @@ end
 --   reverse = false
 -- })
 function M.attr(attr)
-  output.write(M.attrs(attr))
+  output.write(M.attr_seq(attr))
   return true
 end
 

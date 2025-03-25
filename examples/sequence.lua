@@ -8,7 +8,7 @@ local Sequence = require("terminal.sequence")
 
 -- print a green checkmark, without changing any other attributes
 local greencheck = Sequence(
-  function() return t.text.stack.pushs({ fg = "green" }) end, -- set green FG color AT TIME OF WRITING
+  function() return t.text.stack.push_seq({ fg = "green" }) end, -- set green FG color AT TIME OF WRITING
   "✔", -- write a check mark
   t.text.stack.pops -- passing in function is enough, since no parameters needed
 )

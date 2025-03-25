@@ -12,85 +12,85 @@ describe("text", function()
 
 
 
-  describe("underlines()", function()
+  describe("underline_seq()", function()
 
     it("returns 'on' sequence", function()
-      assert.are.equal("\27[4m", text.underlines())
+      assert.are.equal("\27[4m", text.underline_seq())
     end)
 
 
     it("returns 'off' sequence", function()
-      assert.are.equal("\27[24m", text.underlines(false))
+      assert.are.equal("\27[24m", text.underline_seq(false))
     end)
 
 
     it("defaults to 'on'", function()
-      assert.are.equal("\27[4m", text.underlines(true))
+      assert.are.equal("\27[4m", text.underline_seq(true))
     end)
 
   end)
 
 
 
-  describe("blinks()", function()
+  describe("blink_seq()", function()
 
     it("returns 'on' sequence", function()
-      assert.are.equal("\27[5m", text.blinks())
+      assert.are.equal("\27[5m", text.blink_seq())
     end)
 
 
     it("returns 'off' sequence", function()
-      assert.are.equal("\27[25m", text.blinks(false))
+      assert.are.equal("\27[25m", text.blink_seq(false))
     end)
 
 
     it("defaults to 'on'", function()
-      assert.are.equal("\27[5m", text.blinks(true))
+      assert.are.equal("\27[5m", text.blink_seq(true))
     end)
 
   end)
 
 
 
-  describe("reverses()", function()
+  describe("reverse_seq()", function()
 
     it("returns 'on' sequence", function()
-      assert.are.equal("\27[7m", text.reverses())
+      assert.are.equal("\27[7m", text.reverse_seq())
     end)
 
 
     it("returns 'off' sequence", function()
-      assert.are.equal("\27[27m", text.reverses(false))
+      assert.are.equal("\27[27m", text.reverse_seq(false))
     end)
 
 
     it("defaults to 'on'", function()
-      assert.are.equal("\27[7m", text.reverses(true))
+      assert.are.equal("\27[7m", text.reverse_seq(true))
     end)
 
   end)
 
 
 
-  describe("brightnesss()", function()
+  describe("brightness_seq()", function()
 
     it("0 sets 'invisible'", function()
-      assert.are.equal("\027[22m\027[8m", text.brightnesss(0))
+      assert.are.equal("\027[22m\027[8m", text.brightness_seq(0))
     end)
 
 
     it("1 sets 'dim'", function()
-      assert.are.equal("\027[22m\027[28m\027[2m", text.brightnesss(1))
+      assert.are.equal("\027[22m\027[28m\027[2m", text.brightness_seq(1))
     end)
 
 
     it("2 sets 'normal'", function()
-      assert.are.equal("\027[22m\027[28m", text.brightnesss(2))
+      assert.are.equal("\027[22m\027[28m", text.brightness_seq(2))
     end)
 
 
     it("3 sets 'bright'", function()
-      assert.are.equal("\027[22m\027[28m\027[1m", text.brightnesss(3))
+      assert.are.equal("\027[22m\027[28m\027[1m", text.brightness_seq(3))
     end)
 
 
@@ -106,14 +106,14 @@ describe("text", function()
                     } do
 
       it("sets '"..key.."' to "..val, function()
-        assert.are.equal(text.brightnesss(val), text.brightnesss(key))
+        assert.are.equal(text.brightness_seq(val), text.brightness_seq(key))
       end)
 
     end
 
 
     it("returns a meaningfull error on bad input", function()
-      assert.has_error(function() text.brightnesss("bad") end,
+      assert.has_error(function() text.brightness_seq("bad") end,
             'Invalid brightness setting: "bad". Expected one of: 0, 1, 2, 3, '..
             '"bold", "bright", "dim", "high", "invisible", "low", "normal", "off"')
     end)

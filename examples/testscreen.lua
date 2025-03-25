@@ -49,7 +49,7 @@ t.draw.box(r - 2*edge, c - 2*edge, t.draw.box_fmt.double, true, "test screen")
 t.cursor.position.move(1, 1)
 
 -- set text attributes (not using the stack this time)
-t.text.attrs{
+t.text.attr_seq{
   fg = "red",
   bg = "blue",
   brightness = 3,
