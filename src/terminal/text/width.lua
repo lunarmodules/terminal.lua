@@ -9,7 +9,7 @@
 --
 -- This module implements a cache of character widths as they have been measured.
 --
--- To populate the cache with tested widths use `width_test` and `width_test_write`.
+-- To populate the cache with tested widths use `test` and `test_write`.
 --
 -- To check width, using the cached widths, use `utf8cwidth` and `utf8swidth`.
 -- @module terminal.text.width
@@ -72,7 +72,7 @@ end
 -- @treturn[2] nil
 -- @treturn[2] string error message
 -- @within Testing
-function M.width_test(str)
+function M.test(str)
   local size = 50 -- max number of characters to do in 1 terminal write
   local test = {}
   local dup = {}
@@ -147,7 +147,7 @@ end
 -- @tparam string str the string of characters to write and test
 -- @treturn number the width of the string in columns
 -- @within Testing
-function M.width_test_write(str)
+function M.test_write(str)
   local chunk = {} -- every character, pre/post fixed with a query if needed
   local chars = {} -- array chars to test
   local width = 0
@@ -199,7 +199,7 @@ function M.width_test_write(str)
 
   -- re-run to get the total width, since all widths are known now,
   -- but this time do not write the string, just return the width
-  return M.width_test(str)
+  return M.test(str)
 end
 
 

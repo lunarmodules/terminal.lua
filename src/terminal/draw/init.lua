@@ -64,6 +64,23 @@ M.box_fmt = utils.make_lookup("box-format", {
 
 
 
+-- returns a string with all box_fmt characters, to pre-load the character width cache
+function M._box_fmt_chars()
+  local r = {}
+  for _, fmt in pairs(M.box_fmt) do
+    if type(fmt) == "table" then
+      for _, v in pairs(fmt) do
+        if type(v) == "string" then
+          r[#r+1] = v
+        end
+      end
+    end
+  end
+  return table.concat(r)
+end
+
+
+
 --- Creates a sequence to draw a box, without writing it to the terminal.
 -- The box is drawn starting from the top-left corner at the current cursor position,
 -- after drawing the cursor will be in the same position.

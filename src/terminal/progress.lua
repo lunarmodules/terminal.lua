@@ -50,6 +50,19 @@ M.sprites = utils.make_lookup("spinner-sprite", {
 
 
 
+-- returns a string with all spinner characters, to pre-load the character width cache
+function M._spinner_fmt_chars()
+  local r = {}
+  for _, fmt in pairs(M.sprites) do
+    for _, v in pairs(fmt) do
+      r[#r+1] = v
+    end
+  end
+  return table.concat(r)
+end
+
+
+
 --- Create a progress spinner.
 -- The returned spinner function can be called as often as needed to update the spinner. It will only update after
 -- the `stepsize` has passed since the last update. So try to call it at least every `stepsize` seconds, or more often.
