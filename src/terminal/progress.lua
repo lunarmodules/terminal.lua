@@ -86,12 +86,12 @@ function M.spinner(opts)
 
     local attr_push, attr_pop -- both will remain nil, if no text attr set
     if textattr then
-      attr_push = function() return t.textpushs(textattr) end
-      attr_pop = t.textpops
+      attr_push = function() return t.text.stack.pushs(textattr) end
+      attr_pop = t.text.stack.pops
     end
     local attr_push_done = attr_push
     if opts.done_textattr then
-      attr_push_done = function() return t.textpushs(opts.done_textattr) end
+      attr_push_done = function() return t.text.stack.pushs(opts.done_textattr) end
     end
 
     steps = {}

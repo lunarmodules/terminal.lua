@@ -11,7 +11,7 @@ local function testscreen()
   local row = ("1234567890"):rep(math.floor(c/10) + 1):sub(1, c)
 
   -- push a color on the stack
-  t.textpush{
+  t.text.stack.push{
     fg = "red",
     brightness = "dim",
   }
@@ -23,7 +23,7 @@ local function testscreen()
   end
 
   -- pop the color previously set, restoring the previous setting
-  t.textpop()
+  t.text.stack.pop()
 end
 
 
@@ -49,7 +49,7 @@ t.draw.box(r - 2*edge, c - 2*edge, t.draw.box_fmt.double, true, "test screen")
 t.cursor.position.move(1, 1)
 
 -- set text attributes (not using the stack this time)
-t.textset{
+t.text.attr{
   fg = "red",
   bg = "blue",
   brightness = 3,

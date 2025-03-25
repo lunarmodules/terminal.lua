@@ -57,7 +57,7 @@ function TerminalUI:cycleColor(isBackground)
     self.contentStyle.fg = colors[self.currentFgColorIndex]
   end
 
-  t.textset(self.contentStyle)
+  t.text.attr(self.contentStyle)
   self:refreshDisplay()
 end
 
@@ -73,9 +73,9 @@ function TerminalUI:readKey()
 end
 
 function TerminalUI:withStyle(style, callback)
-  t.textpush(style)
+  t.text.stack.push(style)
   callback()
-  t.textpop()
+  t.text.stack.pop()
 end
 
 function TerminalUI:drawBar(row, style, contentFn)
@@ -146,7 +146,7 @@ end
 function TerminalUI:initializeContent()
   local rows, cols = sys.termsize()
 
-  t.textset(self.contentStyle)
+  t.text.attr(self.contentStyle)
 
   for i = 2, rows - 1 do
     t.cursor.position.set(i, 1)
