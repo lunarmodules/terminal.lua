@@ -18,9 +18,9 @@ local _scrollstack = {
 --- Retrieves the current scroll region sequence from the top of the stack.
 -- @treturn string The ANSI sequence representing the current scroll region.
 -- @within Sequences
-function M.applys()
+function M.apply_seq()
   local entry = _scrollstack[#_scrollstack]
-  return scroll.sets(entry[1], entry[2])
+  return scroll.set_seq(entry[1], entry[2])
 end
 
 
@@ -28,7 +28,7 @@ end
 --- Applies the current scroll region by writing it to the terminal.
 -- @treturn true Always returns true after applying.
 function M.apply()
-  output.write(M.applys())
+  output.write(M.apply_seq())
   return true
 end
 
@@ -39,9 +39,9 @@ end
 -- @tparam number bottom The bottom line number of the scroll region.
 -- @treturn string The ANSI sequence representing the pushed scroll region.
 -- @within Sequences
-function M.pushs(top, bottom)
+function M.push_seq(top, bottom)
   _scrollstack[#_scrollstack + 1] = { top, bottom }
-  return M.applys()
+  return M.apply_seq()
 end
 
 
@@ -51,7 +51,7 @@ end
 -- @tparam number bottom The bottom line number of the scroll region.
 -- @treturn true Always returns true after applying.
 function M.push(top, bottom)
-  output.write(M.pushs(top, bottom))
+  output.write(M.push_seq(top, bottom))
   return true
 end
 
@@ -61,12 +61,12 @@ end
 -- @tparam number n The number of scroll regions to pop. Defaults to 1.
 -- @treturn string The ANSI sequence representing the new top of the stack.
 -- @within Sequences
-function M.pops(n)
+function M.pop_seq(n)
   local new_top = math.max(#_scrollstack - (n or 1), 1)
   for i = new_top + 1, #_scrollstack do
     _scrollstack[i] = nil
   end
-  return M.applys()
+  return M.apply_seq()
 end
 
 
@@ -75,7 +75,7 @@ end
 -- @tparam number n The number of scroll regions to pop. Defaults to 1.
 -- @treturn true Always returns true after applying.
 function M.pop(n)
-  output.write(M.pops(n))
+  output.write(M.pop_seq(n))
   return true
 end
 

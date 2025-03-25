@@ -156,7 +156,7 @@ do
       cursor.shape.stack.pop_seq(math.huge),
       cursor.visible.stack.pop_seq(math.huge),
       text.stack.pops(math.huge),
-      scroll.stack.pops(math.huge),
+      scroll.stack.pop_seq(math.huge),
       cursor.position.set_seq(r,c) -- restore cursor pos
     )
     output.flush()
