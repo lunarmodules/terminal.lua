@@ -6,6 +6,7 @@ package.loaded["terminal.text"] = M -- Register the module early to avoid circul
 
 M.color = require("terminal.text.color")
 M.stack = require("terminal.text.stack")
+M.width = require("terminal.text.width")
 
 local output = require("terminal.output")
 local utils = require("terminal.utils")
@@ -225,7 +226,7 @@ end
 --   reverse = false
 -- })
 function M.attr(attr)
-  output.write(M.textsets(attr))
+  output.write(M.attrs(attr))
   return true
 end
 

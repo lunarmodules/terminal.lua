@@ -34,7 +34,6 @@ build = {
 
   modules = {
     ["terminal.init"] = "src/terminal/init.lua",
-    ["terminal.width"] = "src/terminal/width.lua",
     ["terminal.progress"] = "src/terminal/progress.lua",
     ["terminal.sequence"] = "src/terminal/sequence.lua",
     ["terminal.input"] = "src/terminal/input.lua",
@@ -55,6 +54,7 @@ build = {
     ["terminal.text.init"] = "src/terminal/text/init.lua",
     ["terminal.text.color"] = "src/terminal/text/color.lua",
     ["terminal.text.stack"] = "src/terminal/text/stack.lua",
+    ["terminal.text.width"] = "src/terminal/text/width.lua",
   },
 
   copy_directories = {

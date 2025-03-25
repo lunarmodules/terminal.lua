@@ -41,7 +41,6 @@ M.cursor = require("terminal.cursor")
 M.text = require("terminal.text")
 M.draw = require("terminal.draw")
 M.progress = require("terminal.progress")
-M.width = require("terminal.width")
 -- create locals
 local output = M.output
 local scroll = M.scroll
