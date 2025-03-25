@@ -40,6 +40,7 @@
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
@@ -55,13 +56,18 @@
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
   <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
   <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
-  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
@@ -89,27 +95,20 @@
 
 
 
-<span class="keyword">local</span> w = <span class="keyword">function</span>()
-  t.output.<span class="function-name">write</span>(<span class="string">"press a key"</span>)
-  t.output.<span class="function-name">flush</span>()
-  t.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
-<span class="keyword">end</span>
-
-
 <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
   <span class="comment">-- clear the screen, and move cursor to top-left
 </span>  t.clear.<span class="function-name">screen</span>()
   t.cursor.position.stack.<span class="function-name">push</span>(<span class="number">1</span>,<span class="number">1</span>)
 
   <span class="comment">-- push text attribues on the stack
-</span>  t.<span class="function-name">textpush</span>{
+</span>  t.text.stack.<span class="function-name">push</span>{
     fg = <span class="string">"white"</span>,
     brightness = <span class="string">"dim"</span>,
   }
   t.output.<span class="global">print</span>(<span class="string">"Hello dim white World!"</span>)
 
 
-  t.<span class="function-name">textpush</span>{
+  t.text.stack.<span class="function-name">push</span>{
     fg = <span class="string">"white"</span>,
     bg = <span class="string">"blue"</span>,
     brightness = <span class="string">"normal"</span>,
@@ -117,7 +116,7 @@
   t.output.<span class="global">print</span>(<span class="string">"Hello white on blue World!"</span>)
 
 
-  t.<span class="function-name">textpush</span>{
+  t.text.stack.<span class="function-name">push</span>{
     fg = <span class="string">"red"</span>,
     bg = <span class="string">"black"</span>,
     brightness = <span class="string">"bright"</span>,
@@ -125,30 +124,30 @@
   t.output.<span class="global">print</span>(<span class="string">"Hello bright red World!"</span>)
 
   <span class="comment">-- Unwind the stack, and restore text attributes along the way
-</span>  t.<span class="function-name">textpop</span>()
+</span>  t.text.stack.<span class="function-name">pop</span>()
   t.output.<span class="global">print</span>(<span class="string">"Hello white on blue World! (again)"</span>)
 
-  t.<span class="function-name">textpop</span>()
+  t.text.stack.<span class="function-name">pop</span>()
   t.output.<span class="global">print</span>(<span class="string">"Hello dim white World! (again)"</span>)
 
-  t.<span class="function-name">textpop</span>()
+  t.text.stack.<span class="function-name">pop</span>()
   t.output.<span class="function-name">write</span>(<span class="string">"Press any key, or wait 5 seconds..."</span>)
   t.output.<span class="function-name">flush</span>()
   t.input.<span class="function-name">readansi</span>(<span class="number">5</span>)
 
-  <span class="comment">-- restore all settings (reverts to original screen buffer)
-</span>  t.<span class="function-name">shutdown</span>()
-
-  <span class="comment">-- this is printed on the original screen buffer
-</span>  <span class="global">print</span>(<span class="string">"done!"</span>)
+  <span class="keyword">return</span> <span class="keyword">true</span>
 <span class="keyword">end</span>
+
+
 
 <span class="comment">-- initialize terminal; backup (switch to alternate buffer) and set output to stdout
 </span><span class="keyword">local</span> opts = {
   displaybackup = <span class="keyword">true</span>,
   filehandle = <span class="global">io</span>.stdout,
 }
-t.<span class="function-name">initwrap</span>(opts, main)</pre>
+<span class="global">assert</span>(t.<span class="function-name">initwrap</span>(opts, main))
+
+<span class="global">print</span>(<span class="string">"done!"</span>)  <span class="comment">-- this is printed on the original screen buffer</span></pre>
 
 
 </div> <!-- id="content" -->

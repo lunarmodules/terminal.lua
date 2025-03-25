@@ -49,13 +49,18 @@
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
   <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
   <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
-  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
@@ -76,6 +81,7 @@
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
@@ -291,10 +297,7 @@
     <dd>
     Requests the current cursor position from the terminal.
  Will read entire keyboard buffer to empty it, then request the cursor position.
- The output buffer will be flushed.
- In case of a keyboard error, the error will be returned here, but also by
- <code>readansi</code> on a later call, because readansi retains the proper order of keyboard
- input, whilst this function buffers input.</p>
+ The output buffer will be flushed.</p>
 
 <p> <strong>This function is relatively slow!</strong> It will block until the terminal responds.
  A least 1 sleep step will be executed, which is 20+ milliseconds usually (depends
@@ -625,7 +628,8 @@
     <ul>
         <li><span class="parameter">column</span>
             <span class="types"><span class="type">number</span></span>
-         the column to move to
+         the column to move to. Negative values are resolved from the right of the screen,
+ such that -1 is the last column.
         </li>
     </ul>
 
@@ -838,7 +842,8 @@
     <ul>
         <li><span class="parameter">row</span>
             <span class="types"><span class="type">number</span></span>
-         the row to move to
+         the row to move to. Negative values are resolved from the bottom of the screen,
+ such that -1 is the last row.
         </li>
     </ul>
 
@@ -865,15 +870,13 @@
     <ul>
         <li><span class="parameter">row</span>
             <span class="types"><span class="type">number</span></span>
-
-
-
+         the new row. Negative values are resolved from the bottom of the screen,
+ such that -1 is the last row.
         </li>
         <li><span class="parameter">column</span>
             <span class="types"><span class="type">number</span></span>
-
-
-
+         the new column. Negative values are resolved from the right of the screen,
+ such that -1 is the last column.
         </li>
     </ul>
 

@@ -40,6 +40,7 @@
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
   <li><strong>sequence.lua</strong></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
@@ -55,13 +56,18 @@
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
   <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
   <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
-  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
@@ -83,7 +89,7 @@
     <h2>sequence.lua</h2>
 <pre>
 <span class="comment">-- An example of using <code>sequence</code> to create a reusable sequence of terminal commands.
-</span><span class="comment">-- This example uses the <code>textpushs</code> and <code>textpops</code> functions to change the text color.
+</span><span class="comment">-- This example uses the <code>text.stack.pushs</code> and <code>text.stack.pops</code> functions to change the text color.
 </span><span class="comment">-- By using functions instead of strings the color change is only active during the
 </span><span class="comment">-- execution of the sequence.
 </span>
@@ -92,9 +98,9 @@
 
 <span class="comment">-- print a green checkmark, without changing any other attributes
 </span><span class="keyword">local</span> greencheck = <span class="function-name">Sequence</span>(
-  <span class="keyword">function</span>() <span class="keyword">return</span> t.<span class="function-name">textpushs</span>({ fg = <span class="string">"green"</span> }) <span class="keyword">end</span>, <span class="comment">-- set green FG color AT TIME OF WRITING
+  <span class="keyword">function</span>() <span class="keyword">return</span> t.text.stack.<span class="function-name">pushs</span>({ fg = <span class="string">"green"</span> }) <span class="keyword">end</span>, <span class="comment">-- set green FG color AT TIME OF WRITING
 </span>  <span class="string">"✔"</span>, <span class="comment">-- write a check mark
-</span>  t.textpops <span class="comment">-- passing in function is enough, since no parameters needed
+</span>  t.text.stack.pops <span class="comment">-- passing in function is enough, since no parameters needed
 </span>)
 
 
@@ -123,9 +129,9 @@ t.<span class="function-name">initialize</span>()
 <span class="comment">-- print the green checkmarks, by default this will be on a black background
 </span>t.output.<span class="function-name">write</span>(greencheck, <span class="string">" hello "</span>, greencheck, <span class="string">" world "</span>, greencheck, <span class="string">"\n"</span>) <span class="comment">-- uses normal colors for the text
 </span><span class="comment">-- change background to red, and print again, the same sequence now properly prints on a red background
-</span>t.<span class="function-name">textpush</span>({ bg = <span class="string">"red"</span> })
+</span>t.text.stack.<span class="function-name">push</span>({ bg = <span class="string">"red"</span> })
 t.output.<span class="function-name">write</span>(greencheck, <span class="string">" hello "</span>, greencheck, <span class="string">" world "</span>, greencheck) <span class="comment">-- text is on red background now
-</span>t.<span class="function-name">textpop</span>() <span class="comment">-- whilst the cursor is still on the same line, otherwise if scrolling the scrolled line will be red!
+</span>t.text.stack.<span class="function-name">pop</span>() <span class="comment">-- whilst the cursor is still on the same line, otherwise if scrolling the scrolled line will be red!
 </span>t.output.<span class="function-name">write</span>(<span class="string">"\n"</span>) <span class="comment">-- push the newline
 </span><span class="comment">-- print again, and the background is back to black
 </span>t.output.<span class="function-name">write</span>(greencheck, <span class="string">" hello "</span>, greencheck, <span class="string">" world "</span>, greencheck, <span class="string">"\n"</span>) <span class="comment">-- text is back to normal colors

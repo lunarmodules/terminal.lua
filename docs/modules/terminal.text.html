@@ -1,0 +1,532 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Sequences">Sequences</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><strong>terminal.text</strong></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.text</code></h1>
+<p>Terminal text module.</p>
+<p> Provides utilities to set text attributes in terminals.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#attr">attr (attr)</a></td>
+	<td class="summary">Sets all text attributes/colors and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#blink">blink ([on=true])</a></td>
+	<td class="summary">(Un)sets the blink attribute and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#brightness">brightness (brightness)</a></td>
+	<td class="summary">Sets the brightness and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#reverse">reverse ([on=true])</a></td>
+	<td class="summary">(Un)sets the reverse attribute and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#underline">underline ([on=true])</a></td>
+	<td class="summary">(Un)sets the underline attribute and writes it to the terminal.</td>
+	</tr>
+</table>
+<h2><a href="#Sequences">Sequences</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#attrs">attrs (attr)</a></td>
+	<td class="summary">Creates an ansi sequence to set all text attributes/colors without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#blinks">blinks ([on=true])</a></td>
+	<td class="summary">Creates an ansi sequence to (un)set the blink attribute without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#brightnesss">brightnesss (brightness)</a></td>
+	<td class="summary">Creates an ansi sequence to set the brightness without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#reverses">reverses ([on=true])</a></td>
+	<td class="summary">Creates an ansi sequence to (un)set the reverse attribute without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#underlines">underlines ([on=true])</a></td>
+	<td class="summary">Creates an ansi sequence to (un)set the underline attribute without writing it to the terminal.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "attr"></a>
+    <strong>attr (attr)</strong>
+    </dt>
+    <dd>
+    Sets all text attributes/colors and writes it to the terminal.
+ Every element omitted in the <a href="../modules/terminal.text.html#attr">attr</a> table will be taken from the current top of the stack.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         the attributes to set, see <a href="../modules/terminal.text.html#attrs">attrs</a> for details.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">terminal.text.<span class="function-name">attr</span>({
+  fg = <span class="string">"red"</span>,
+  bg = <span class="string">"black"</span>,
+  brightness = <span class="number">3</span>,
+  underline = <span class="keyword">true</span>,
+  blink = <span class="keyword">false</span>,
+  reverse = <span class="keyword">false</span>
+})</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "blink"></a>
+    <strong>blink ([on=true])</strong>
+    </dt>
+    <dd>
+    (Un)sets the blink attribute and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">on</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set blink
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "brightness"></a>
+    <strong>brightness (brightness)</strong>
+    </dt>
+    <dd>
+    Sets the brightness and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">brightness</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">integer</span></span>
+         the brightness to set
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "reverse"></a>
+    <strong>reverse ([on=true])</strong>
+    </dt>
+    <dd>
+    (Un)sets the reverse attribute and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">on</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set reverse
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "underline"></a>
+    <strong>underline ([on=true])</strong>
+    </dt>
+    <dd>
+    (Un)sets the underline attribute and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">on</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set underline
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "attrs"></a>
+    <strong>attrs (attr)</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to set all text attributes/colors without writing it to the terminal.
+ Only set what you change. Every element omitted in the <a href="../modules/terminal.text.html#attr">attr</a> table will be taken from the current top of the stack.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">attr</span> the attributes to set, with keys:
+        <ul>
+        <li><span class="parameter">fg</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">integer</span></span>
+         the foreground color to set. Base color (string), or extended color (number). Takes precedence of <code>fg_r</code>, <code>fg_g</code>, <code>fg_b</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">fg_r</span>
+            <span class="types"><span class="type">integer</span></span>
+         the red value of the foreground color to set.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">fg_g</span>
+            <span class="types"><span class="type">integer</span></span>
+         the green value of the foreground color to set.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">fg_b</span>
+            <span class="types"><span class="type">integer</span></span>
+         the blue value of the foreground color to set.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bg</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">integer</span></span>
+         the background color to set. Base color (string), or extended color (number). Takes precedence of <code>bg_r</code>, <code>bg_g</code>, <code>bg_b</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bg_r</span>
+            <span class="types"><span class="type">integer</span></span>
+         the red value of the background color to set.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bg_g</span>
+            <span class="types"><span class="type">integer</span></span>
+         the green value of the background color to set.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">bg_b</span>
+            <span class="types"><span class="type">integer</span></span>
+         the blue value of the background color to set.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">brightness</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">number</span></span>
+         the brightness level to set
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">underline</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set underline
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">blink</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set blink
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">reverse</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set reverse
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> str = terminal.text.<span class="function-name">attrs</span>({
+  fg = <span class="string">"red"</span>,
+  bg = <span class="string">"black"</span>,
+  brightness = <span class="number">3</span>,
+  underline = <span class="keyword">true</span>,
+  blink = <span class="keyword">false</span>,
+  reverse = <span class="keyword">false</span>
+})</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "blinks"></a>
+    <strong>blinks ([on=true])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to (un)set the blink attribute without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">on</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set blink
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "brightnesss"></a>
+    <strong>brightnesss (brightness)</strong>
+    </dt>
+    <dd>
+
+<p>Creates an ansi sequence to set the brightness without writing it to the terminal.
+ <a href="../modules/terminal.text.html#brightness">brightness</a> can be one of the following:</p>
+
+<ul>
+    <li><code>0</code>, <code>&quot;off&quot;</code>, or <code>&quot;invisble&quot;</code> for invisible</li>
+    <li><code>1</code>, <code>&quot;low&quot;</code>, or <code>&quot;dim&quot;</code> for dim</li>
+    <li><code>2</code>, <code>&quot;normal&quot;</code> for normal</li>
+    <li><code>3</code>, <code>&quot;high&quot;</code>, <code>&quot;bright&quot;</code>, or <code>&quot;bold&quot;</code> for bright</li>
+</ul>
+
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">brightness</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">integer</span></span>
+         the brightness to set
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "reverses"></a>
+    <strong>reverses ([on=true])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to (un)set the reverse attribute without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">on</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set reverse
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "underlines"></a>
+    <strong>underlines ([on=true])</strong>
+    </dt>
+    <dd>
+    Creates an ansi sequence to (un)set the underline attribute without writing it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">on</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to set underline
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

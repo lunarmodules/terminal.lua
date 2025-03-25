@@ -55,9 +55,9 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><strong>terminal.scroll.stack</strong></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
-  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><strong>terminal.text.color</strong></li>
   <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
@@ -91,39 +91,31 @@
 
 <div id="content">
 
-<h1>Module <code>terminal.scroll.stack</code></h1>
-<p>Terminal scroll stack module.</p>
-<p> Manages a stack of scroll regions for terminal control.</p>
+<h1>Module <code>terminal.text.color</code></h1>
+<p>Terminal text color module.</p>
+<p> Provides utilities to set text color in terminals.</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#apply">apply ()</a></td>
-	<td class="summary">Applies the current scroll region by writing it to the terminal.</td>
+	<td class="name" nowrap><a href="#back">back (r[, g[, b]])</a></td>
+	<td class="summary">Sets the background color and writes it to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#pop">pop (n)</a></td>
-	<td class="summary">Pops the specified number of scroll regions from the stack and applies the new top by writing to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#push">push (top, bottom)</a></td>
-	<td class="summary">Pushes a new scroll region onto the stack and applies it by writing to the terminal.</td>
+	<td class="name" nowrap><a href="#fore">fore (r[, g[, b]])</a></td>
+	<td class="summary">Sets the foreground color and writes it to the terminal.</td>
 	</tr>
 </table>
 <h2><a href="#Sequences">Sequences</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#applys">applys ()</a></td>
-	<td class="summary">Retrieves the current scroll region sequence from the top of the stack.</td>
+	<td class="name" nowrap><a href="#backs">backs (r[, g[, b]])</a></td>
+	<td class="summary">Creates an ansi sequence to set the background color without writing it to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#pops">pops (n)</a></td>
-	<td class="summary">Pops the specified number of scroll regions from the stack without applying it.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#pushs">pushs (top, bottom)</a></td>
-	<td class="summary">Pushes a new scroll region onto the stack without applying it.</td>
+	<td class="name" nowrap><a href="#fores">fores (r[, g[, b]])</a></td>
+	<td class="summary">Creates an ansi sequence to set the foreground color without writing it to the terminal.</td>
 	</tr>
 </table>
 
@@ -135,19 +127,35 @@
 
     <dl class="function">
     <dt>
-    <a name = "apply"></a>
-    <strong>apply ()</strong>
+    <a name = "back"></a>
+    <strong>back (r[, g[, b]])</strong>
     </dt>
     <dd>
-    Applies the current scroll region by writing it to the terminal.
+    Sets the background color and writes it to the terminal.
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">r</span>
+            <span class="types"><span class="type">integer</span></span>
+         in case of RGB, the red value, a number for extended colors, a string color for base-colors
+        </li>
+        <li><span class="parameter">g</span>
+            <span class="types"><span class="type">number</span></span>
+         in case of RGB, the green value
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">b</span>
+            <span class="types"><span class="type">number</span></span>
+         in case of RGB, the blue value
+         (<em>optional</em>)
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after applying.
+        true
     </ol>
 
 
@@ -155,57 +163,35 @@
 
 </dd>
     <dt>
-    <a name = "pop"></a>
-    <strong>pop (n)</strong>
+    <a name = "fore"></a>
+    <strong>fore (r[, g[, b]])</strong>
     </dt>
     <dd>
-    Pops the specified number of scroll regions from the stack and applies the new top by writing to the terminal.
+    Sets the foreground color and writes it to the terminal.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">n</span>
+        <li><span class="parameter">r</span>
+            <span class="types"><span class="type">integer</span></span>
+         in case of RGB, the red value, a number for extended colors, a string color for base-colors
+        </li>
+        <li><span class="parameter">g</span>
             <span class="types"><span class="type">number</span></span>
-         The number of scroll regions to pop. Defaults to 1.
+         in case of RGB, the green value
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">b</span>
+            <span class="types"><span class="type">number</span></span>
+         in case of RGB, the blue value
+         (<em>optional</em>)
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after applying.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "push"></a>
-    <strong>push (top, bottom)</strong>
-    </dt>
-    <dd>
-    Pushes a new scroll region onto the stack and applies it by writing to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         The top line number of the scroll region.
-        </li>
-        <li><span class="parameter">bottom</span>
-            <span class="types"><span class="type">number</span></span>
-         The bottom line number of the scroll region.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after applying.
+        true
     </ol>
 
 
@@ -217,38 +203,38 @@
 
     <dl class="function">
     <dt>
-    <a name = "applys"></a>
-    <strong>applys ()</strong>
+    <a name = "backs"></a>
+    <strong>backs (r[, g[, b]])</strong>
     </dt>
     <dd>
-    Retrieves the current scroll region sequence from the top of the stack.
+
+<p>Creates an ansi sequence to set the background color without writing it to the terminal.
+ This function takes three color types:</p>
+
+<ol>
+    <li>base colors: black, red, green, yellow, blue, magenta, cyan, white. Use as <code>color_bgs(&quot;red&quot;)</code>.</li>
+    <li>extended colors: a number between 0 and 255. Use as <code>color_bgs(123)</code>.</li>
+    <li>RGB colors: three numbers between 0 and 255. Use as <code>color_bgs(123, 123, 123)</code>.</li>
+</ol>
 
 
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence representing the current scroll region.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "pops"></a>
-    <strong>pops (n)</strong>
-    </dt>
-    <dd>
-    Pops the specified number of scroll regions from the stack without applying it.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">n</span>
+        <li><span class="parameter">r</span>
+            <span class="types"><span class="type">integer</span></span>
+         in case of RGB, the red value, a number for extended colors, a string color for base-colors
+        </li>
+        <li><span class="parameter">g</span>
             <span class="types"><span class="type">number</span></span>
-         The number of scroll regions to pop. Defaults to 1.
+         in case of RGB, the green value
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">b</span>
+            <span class="types"><span class="type">number</span></span>
+         in case of RGB, the blue value
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -256,7 +242,7 @@
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence representing the new top of the stack.
+        ansi sequence to write to the terminal
     </ol>
 
 
@@ -264,22 +250,38 @@
 
 </dd>
     <dt>
-    <a name = "pushs"></a>
-    <strong>pushs (top, bottom)</strong>
+    <a name = "fores"></a>
+    <strong>fores (r[, g[, b]])</strong>
     </dt>
     <dd>
-    Pushes a new scroll region onto the stack without applying it.
+
+<p>Creates an ansi sequence to set the foreground color without writing it to the terminal.
+ This function takes three color types:</p>
+
+<ol>
+    <li>base colors: black, red, green, yellow, blue, magenta, cyan, white. Use as <code>color_fgs(&quot;red&quot;)</code>.</li>
+    <li>extended colors: a number between 0 and 255. Use as <code>color_fgs(123)</code>.</li>
+    <li>RGB colors: three numbers between 0 and 255. Use as <code>color_fgs(123, 123, 123)</code>.</li>
+</ol>
+
+
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         The top line number of the scroll region.
+        <li><span class="parameter">r</span>
+            <span class="types"><span class="type">integer</span></span>
+         in case of RGB, the red value, a number for extended colors, a string color for base-colors
         </li>
-        <li><span class="parameter">bottom</span>
+        <li><span class="parameter">g</span>
             <span class="types"><span class="type">number</span></span>
-         The bottom line number of the scroll region.
+         in case of RGB, the green value
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">b</span>
+            <span class="types"><span class="type">number</span></span>
+         in case of RGB, the blue value
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -287,7 +289,7 @@
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence representing the pushed scroll region.
+        ansi sequence to write to the terminal
     </ol>
 
 

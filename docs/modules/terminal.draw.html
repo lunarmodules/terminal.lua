@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Sequences">Sequences</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><strong>terminal.draw</strong></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.draw</code></h1>
+<p>Module for drawing lines and boxes.</p>
+<p> Provides functions to create lines and boxes on a terminal screen.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#box">box (height, width, format, clear_flag[, title=""[, lastcolumn=false]])</a></td>
+	<td class="summary">Draws a box and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#box_fmt.copy">box_fmt.copy (default)</a></td>
+	<td class="summary">Copy a box format.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#box_fmt">box_fmt</a></td>
+	<td class="summary">Table with pre-defined box formats.</td>
+	</tr>
+</table>
+<h2><a href="#Sequences">Sequences</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#boxs">boxs (height, width[, format[, clear_flag=" "[, title=""[, lastcolumn=""]]]])</a></td>
+	<td class="summary">Creates a sequence to draw a box, without writing it to the terminal.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "box"></a>
+    <strong>box (height, width, format, clear_flag[, title=""[, lastcolumn=false]])</strong>
+    </dt>
+    <dd>
+    Draws a box and writes it to the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         the height of the box in rows
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         the width of the box in columns
+        </li>
+        <li><span class="parameter">format</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         the format for the box, see <a href="../modules/terminal.draw.html#boxs">boxs</a> for details.
+        </li>
+        <li><span class="parameter">clear_flag</span>
+            <span class="types"><span class="type">bool</span></span>
+         whether to clear the box contents
+        </li>
+        <li><span class="parameter">title</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the title to draw
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">lastcolumn</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to draw the last column of the terminal
+         (<em>default</em> false)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "box_fmt.copy"></a>
+    <strong>box_fmt.copy (default)</strong>
+    </dt>
+    <dd>
+    Copy a box format.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">default</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         the default format to copy
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        a copy of the default format provided
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- create new format with spaces around the title
+</span><span class="keyword">local</span> fmt = t.box_fmt.<span class="function-name">copy</span>(t.box_fmt.single)
+fmt.pre = fmt.pre .. <span class="string">" "</span>
+fmt.post = <span class="string">" "</span> .. fmt.post</pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "box_fmt"></a>
+    <strong>box_fmt</strong>
+    </dt>
+    <dd>
+    Table with pre-defined box formats.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">single</span>
+         Single line box format
+        </li>
+        <li><span class="parameter">double</span>
+         Double line box format
+        </li>
+        <li><span class="parameter">copy</span>
+         Function to copy a box format, see <a href="../modules/terminal.draw.html#box_fmt.copy">box_fmt.copy</a> for details
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "boxs"></a>
+    <strong>boxs (height, width[, format[, clear_flag=" "[, title=""[, lastcolumn=""]]]])</strong>
+    </dt>
+    <dd>
+    Creates a sequence to draw a box, without writing it to the terminal.
+ The box is drawn starting from the top-left corner at the current cursor position,
+ after drawing the cursor will be in the same position.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         the height of the box in rows
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         the width of the box in columns
+        </li>
+        <li><span class="parameter">format</span> the format for the box (default is single line), with keys:
+        <ul>
+        <li><span class="parameter">h</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the horizontal line character
+         (<em>default</em> " ")
+        </li>
+        <li><span class="parameter">v</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the vertical line character
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">tl</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the top left corner character
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">tr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the top right corner character
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">bl</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the bottom left corner character
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">br</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the bottom right corner character
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">pre</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the title-prefix character(s)
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">post</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the left-postfix character(s)
+         (<em>default</em> "")
+        </li>
+        </li></ul>
+        <li><span class="parameter">clear_flag</span>
+            <span class="types"><span class="type">bool</span></span>
+         whether to clear the box contents
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">title</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the title to draw
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">lastcolumn</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to draw the last column of the terminal
+         (<em>default</em> false)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

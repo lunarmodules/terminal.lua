@@ -48,13 +48,18 @@
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
   <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
   <li><strong>terminal.output</strong></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
   <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
-  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
@@ -75,6 +80,7 @@
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
@@ -107,10 +113,6 @@ terminal.output.write(&quot;hello world&quot;)
 	<tr>
 	<td class="name" nowrap><a href="#print">print (...)</a></td>
 	<td class="summary">Prints to the stream in chunks.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#set_bsleep">set_bsleep (fsleep)</a></td>
-	<td class="summary">Set the <code>sleep</code> function to use when writing to the terminal.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#set_stream">set_stream (filehandle)</a></td>
@@ -164,34 +166,6 @@ terminal.output.write(&quot;hello world&quot;)
         </li>
     </ul>
 
-
-
-
-
-</dd>
-    <dt>
-    <a name = "set_bsleep"></a>
-    <strong>set_bsleep (fsleep)</strong>
-    </dt>
-    <dd>
-    Set the <code>sleep</code> function to use when writing to the terminal.
- This should be a blocking sleep function, used to throttle the output.
- A yielding/non-blocking sleep function could potentially cause race-conditions.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">fsleep</span>
-            <span class="types"><span class="type">function</span></span>
-         the sleep function to use.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
 
 
 

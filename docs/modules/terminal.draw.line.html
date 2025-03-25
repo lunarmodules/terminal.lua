@@ -1,0 +1,391 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Sequences">Sequences</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><strong>terminal.draw.line</strong></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.draw.line</code></h1>
+<p>Module for drawing lines.</p>
+<p> Provides functions to create lines on a terminal screen.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#horizontal">horizontal (n[, char="─"])</a></td>
+	<td class="summary">Draws a horizontal line and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#title">title (title, width[, char="─"[, pre=""[, post=""]]])</a></td>
+	<td class="summary">Draws a horizontal line with a title centered in it and writes it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#vertical">vertical (n[, char="│"[, lastcolumn]])</a></td>
+	<td class="summary">Draws a vertical line and writes it to the terminal.</td>
+	</tr>
+</table>
+<h2><a href="#Sequences">Sequences</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#horizontals">horizontals (n[, char="─"])</a></td>
+	<td class="summary">Creates a sequence to draw a horizontal line without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#titles">titles (width[, title=""[, char="─"[, pre=""[, post=""]]]])</a></td>
+	<td class="summary">Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#verticals">verticals (n[, char="│"[, lastcolumn]])</a></td>
+	<td class="summary">Creates a sequence to draw a vertical line without writing it to the terminal.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "horizontal"></a>
+    <strong>horizontal (n[, char="─"])</strong>
+    </dt>
+    <dd>
+    Draws a horizontal line and writes it to the terminal.
+ Line is drawn left to right.
+ Returned sequence might be shorter than requested if the character is a multi-byte character
+ and the number of columns is not a multiple of the character width.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to draw
+        </li>
+        <li><span class="parameter">char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the character to draw
+         (<em>default</em> "─")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "title"></a>
+    <strong>title (title, width[, char="─"[, pre=""[, post=""]]])</strong>
+    </dt>
+    <dd>
+    Draws a horizontal line with a title centered in it and writes it to the terminal.
+ Line is drawn left to right. If the width is too small for the title, the title is truncated with "trailing <code>&quot;...&quot;</code>.
+ If less than 4 characters are available for the title, the title is omitted alltogether.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">title</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the title to draw
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         the total width of the line in columns
+        </li>
+        <li><span class="parameter">char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the line-character to use
+         (<em>default</em> "─")
+        </li>
+        <li><span class="parameter">pre</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the prefix for the title, eg. "┤ "
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">post</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the postfix for the title, eg. " ├"
+         (<em>default</em> "")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "vertical"></a>
+    <strong>vertical (n[, char="│"[, lastcolumn]])</strong>
+    </dt>
+    <dd>
+    Draws a vertical line and writes it to the terminal.
+ Line is drawn top to bottom. Cursor is left to the right of the last character (so not below it).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows/lines to draw
+        </li>
+        <li><span class="parameter">char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the character to draw
+         (<em>default</em> "│")
+        </li>
+        <li><span class="parameter">lastcolumn</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to draw the last column of the terminal
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "horizontals"></a>
+    <strong>horizontals (n[, char="─"])</strong>
+    </dt>
+    <dd>
+    Creates a sequence to draw a horizontal line without writing it to the terminal.
+ Line is drawn left to right.
+ Returned sequence might be shorter than requested if the character is a multi-byte character
+ and the number of columns is not a multiple of the character width.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to draw
+        </li>
+        <li><span class="parameter">char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the character to draw
+         (<em>default</em> "─")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "titles"></a>
+    <strong>titles (width[, title=""[, char="─"[, pre=""[, post=""]]]])</strong>
+    </dt>
+    <dd>
+    Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.
+ Line is drawn left to right. If the width is too small for the title, the title is truncated with "trailing <code>&quot;...&quot;</code>.
+ If less than 4 characters are available for the title, the title is omitted alltogether.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         the total width of the line in columns
+        </li>
+        <li><span class="parameter">title</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the title to draw (if empty or nil, only the line is drawn)
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the line-character to use
+         (<em>default</em> "─")
+        </li>
+        <li><span class="parameter">pre</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the prefix for the title, eg. "┤ "
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">post</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the postfix for the title, eg. " ├"
+         (<em>default</em> "")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "verticals"></a>
+    <strong>verticals (n[, char="│"[, lastcolumn]])</strong>
+    </dt>
+    <dd>
+    Creates a sequence to draw a vertical line without writing it to the terminal.
+ Line is drawn top to bottom. Cursor is left to the right of the last character (so not below it).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows/lines to draw
+        </li>
+        <li><span class="parameter">char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the character to draw
+         (<em>default</em> "│")
+        </li>
+        <li><span class="parameter">lastcolumn</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to draw the last column of the terminal
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

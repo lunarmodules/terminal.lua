@@ -48,13 +48,18 @@
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
   <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><strong>terminal.input</strong></li>
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
   <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
-  <li><a href="../modules/terminal.width.html">terminal.width</a></li>
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
@@ -75,6 +80,7 @@
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
@@ -87,7 +93,7 @@
 <h1>Module <code>terminal.input</code></h1>
 <p>Module for getting keyboard input.</p>
 <p> Also enables querying the terminal for cursor position. When inmplementing any
- other queries, check out <a href="../modules/terminal.input.html#preread">preread</a> documentation, and <a href="../modules/terminal.input.html#read_cursor_pos">read_cursor_pos</a> for
+ other queries, check out <a href="../modules/terminal.input.html#preread">preread</a> documentation, and <code>read_cursor_pos</code> for
  an example.</p>
 
 <p> <em>Note:</em> This module will be available from the main <a href="../modules/terminal.html#">terminal</a> module, without
@@ -113,20 +119,16 @@ local char, typ, sequence = terminal.input.readansi(1)
 	<td class="summary">Pushes input into the buffer.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#read_cursor_pos">read_cursor_pos (count)</a></td>
-	<td class="summary">Read the requested number of cursor positions.</td>
+	<td class="name" nowrap><a href="#query">query (query, answer_pattern)</a></td>
+	<td class="summary">Query the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#read_query_answer">read_query_answer (answer_pattern[, count=1])</a></td>
+	<td class="summary">Reads the answer to a query from the terminal.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#readansi">readansi (timeout[, fsleep])</a></td>
 	<td class="summary">Same as <code>sys.readansi</code>, but works with the internal buffer required by <code>terminal.lua</code>.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#set_bsleep">set_bsleep (fsleep)</a></td>
-	<td class="summary">Set the blocking <code>sleep</code> function used when no yielding is allowed.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#set_sleep">set_sleep (fsleep)</a></td>
-	<td class="summary">Set the default <code>sleep</code> function to use by <a href="../modules/terminal.input.html#readansi">readansi</a>.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#sys_readansi">sys_readansi ()</a></td>
@@ -160,7 +162,7 @@ local char, typ, sequence = terminal.input.readansi(1)
     <li>call <code>flush</code> to ensure the ANSI sequences are sent to the terminal.</li>
     <li>call <a href="../modules/terminal.input.html#readansi">readansi</a> to read the terminal response in a loop until the expected response
     is received. Anything received that doesn't match the expected response should be
-    pushed into the internal buffer using <a href="../modules/terminal.input.html#push_input">push_input</a>. (see <a href="../modules/terminal.input.html#read_cursor_pos">read_cursor_pos</a> for an
+    pushed into the internal buffer using <a href="../modules/terminal.input.html#push_input">push_input</a>. (see <code>read_cursor_pos</code> for an
     example)</li>
 </ol>
 
@@ -213,20 +215,22 @@ local char, typ, sequence = terminal.input.readansi(1)
 
 </dd>
     <dt>
-    <a name = "read_cursor_pos"></a>
-    <strong>read_cursor_pos (count)</strong>
+    <a name = "query"></a>
+    <strong>query (query, answer_pattern)</strong>
     </dt>
     <dd>
-    Read the requested number of cursor positions.
- Ensure to request and flush this number of positions (by writing the query-cursor-position
- ANSI sequence) before calling.
+    Query the terminal.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">count</span>
-            <span class="types"><span class="type">int</span></span>
-         number of cursor positions to read
+        <li><span class="parameter">query</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the ANSI sequence to be written to query the terminal
+        </li>
+        <li><span class="parameter">answer_pattern</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         a pattern that matches the expected ANSI response sequence, and captures the data needed.
         </li>
     </ul>
 
@@ -234,7 +238,39 @@ local char, typ, sequence = terminal.input.readansi(1)
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-        cursor positions, each entry is an array with row and column
+        an array with the captures from the answer pattern.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "read_query_answer"></a>
+    <strong>read_query_answer (answer_pattern[, count=1])</strong>
+    </dt>
+    <dd>
+    Reads the answer to a query from the terminal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">answer_pattern</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         a pattern that matches the expected ANSI response sequence, and captures the data needed.
+        </li>
+        <li><span class="parameter">count</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of responses to read (in case multiple queries were sent)
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        an array with <code>count</code> entries. Each entry is another array with the captures from the answer pattern.
     </ol>
 
 
@@ -268,60 +304,6 @@ local char, typ, sequence = terminal.input.readansi(1)
         </li>
     </ul>
 
-
-
-
-
-</dd>
-    <dt>
-    <a name = "set_bsleep"></a>
-    <strong>set_bsleep (fsleep)</strong>
-    </dt>
-    <dd>
-    Set the blocking <code>sleep</code> function used when no yielding is allowed.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">fsleep</span>
-            <span class="types"><span class="type">function</span></span>
-         the sleep function to use.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "set_sleep"></a>
-    <strong>set_sleep (fsleep)</strong>
-    </dt>
-    <dd>
-    Set the default <code>sleep</code> function to use by <a href="../modules/terminal.input.html#readansi">readansi</a>.
- When using the library in a non-blocking environment, the <code>sleep</code> function must be
- set to a function that will yield control to the event loop.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">fsleep</span>
-            <span class="types"><span class="type">function</span></span>
-         the sleep function to use.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
 
 
 

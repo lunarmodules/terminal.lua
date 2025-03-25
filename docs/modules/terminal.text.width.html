@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Testing">Testing</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><strong>terminal.text.width</strong></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/unicode_width.lua.html">unicode_width.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.text.width</code></h1>
+<p>Module to check and validate character display widths.</p>
+<p> Not all characters are displayed with the same width on the terminal.
+ The Unicode standard defines the width of many characters, but not all.
+ Especially the <a href="https://www.unicode.org/Public/UCD/latest/ucd/EastAsianWidth.txt">'ambiguous width'</a>
+ characters can be displayed with different
+ widths especially when used with East Asian languages.
+ The only way to truly know their display width is to write them to the terminal
+ and measure the cursor position change.</p>
+
+<p> This module implements a cache of character widths as they have been measured.</p>
+
+<p> To populate the cache with tested widths use <a href="../modules/terminal.text.width.html#width_test">width_test</a> and <a href="../modules/terminal.text.width.html#width_test_write">width_test_write</a>.</p>
+
+<p> To check width, using the cached widths, use <a href="../modules/terminal.text.width.html#utf8cwidth">utf8cwidth</a> and <a href="../modules/terminal.text.width.html#utf8swidth">utf8swidth</a>.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#utf8cwidth">utf8cwidth (char)</a></td>
+	<td class="summary">Returns the width of a character in columns, matches <code>system.utf8cwidth</code> signature.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8swidth">utf8swidth (str)</a></td>
+	<td class="summary">Returns the width of a string in columns, matches <code>system.utf8swidth</code> signature.</td>
+	</tr>
+</table>
+<h2><a href="#Testing">Testing</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#width_test">width_test (str)</a></td>
+	<td class="summary">Returns the width of the string, by test writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#width_test_write">width_test_write (str)</a></td>
+	<td class="summary">Returns the width of the string, and writes it to the terminal.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "utf8cwidth"></a>
+    <strong>utf8cwidth (char)</strong>
+    </dt>
+    <dd>
+    Returns the width of a character in columns, matches <code>system.utf8cwidth</code> signature.
+ This will check the cache of recorded widths first, and if not found,
+ use <code>system.utf8cwidth</code> to determine the width. It will not test the width.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">number</span></span>
+         the character (string or codepoint) to check
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        the width of the first character in columns
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "utf8swidth"></a>
+    <strong>utf8swidth (str)</strong>
+    </dt>
+    <dd>
+    Returns the width of a string in columns, matches <code>system.utf8swidth</code> signature.
+ It will use the cached widths, if no cached width is available it falls back on <code>system.utf8cwidth</code>.
+ It will not test the width.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to check
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        the width of the string in columns
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Testing"></a>Testing</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "width_test"></a>
+    <strong>width_test (str)</strong>
+    </dt>
+    <dd>
+
+<p>Returns the width of the string, by test writing.
+ Characters will be written 'invisible', so it does not show on the terminal, but it does need
+ room to print them. The cursor is returned to its original position.
+ It will read many character-widths at once, and hence is a lot faster than checking
+ each character individually. The width of each character measured is recorded in the cache.</p>
+
+<ul>
+    <li>the text stack is used to set the brightness to 0 before, and restore colors/attributes after the test.</li>
+    <li>the test will be done at the current cursor position, and hence content there might be overwritten. Since
+    a character is either 1 or 2 columns wide. The content of those 2 columns might have to be restored.</li>
+</ul>
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string of characters to test
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        width in columns of the string
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+
+
+</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        error message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "width_test_write"></a>
+    <strong>width_test_write (str)</strong>
+    </dt>
+    <dd>
+    Returns the width of the string, and writes it to the terminal.
+ Writes the string to the terminal, visible, whilst at the same time injecting cursor-position queries
+ to detect the width of the unknown characters in the string.
+ It will read many character-widths at once, and hence is a lot faster than checking
+ each character individually.
+ The width of each character measured is recorded in the cache.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string of characters to write and test
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        the width of the string in columns
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

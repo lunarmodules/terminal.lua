@@ -34,7 +34,6 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
-<li><a href="#Sequences">Sequences</a></li>
 </ul>
 
 
@@ -55,10 +54,10 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><strong>terminal.scroll.stack</strong></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><strong>terminal.text.stack</strong></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
 </ul>
@@ -91,39 +90,39 @@
 
 <div id="content">
 
-<h1>Module <code>terminal.scroll.stack</code></h1>
-<p>Terminal scroll stack module.</p>
-<p> Manages a stack of scroll regions for terminal control.</p>
+<h1>Module <code>terminal.text.stack</code></h1>
+<p>Terminal text-attribute stack module.</p>
+<p> Manages a stack of text-attributes for terminal control.</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#apply">apply ()</a></td>
-	<td class="summary">Applies the current scroll region by writing it to the terminal.</td>
+	<td class="summary">Re-applies the current attributes/colors (at the top of the stack), and writes it to the terminal.</td>
 	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#pop">pop (n)</a></td>
-	<td class="summary">Pops the specified number of scroll regions from the stack and applies the new top by writing to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#push">push (top, bottom)</a></td>
-	<td class="summary">Pushes a new scroll region onto the stack and applies it by writing to the terminal.</td>
-	</tr>
-</table>
-<h2><a href="#Sequences">Sequences</a></h2>
-<table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#applys">applys ()</a></td>
-	<td class="summary">Retrieves the current scroll region sequence from the top of the stack.</td>
+	<td class="summary">Re-applies the current attributes/colors (at the top of the stack),
+ returns the sequence without writing to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#pops">pops (n)</a></td>
-	<td class="summary">Pops the specified number of scroll regions from the stack without applying it.</td>
+	<td class="name" nowrap><a href="#pop">pop ([n=1])</a></td>
+	<td class="summary">Pops n attributes/colors off the stack, and writes the last one to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#pushs">pushs (top, bottom)</a></td>
-	<td class="summary">Pushes a new scroll region onto the stack without applying it.</td>
+	<td class="name" nowrap><a href="#pops">pops ([n=1])</a></td>
+	<td class="summary">Pops n attributes/colors off the stack (and returns the last one), without writing it to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#push">push (attr)</a></td>
+	<td class="summary">Pushes the given attributes/colors onto the stack, and writes an ansi sequence to set the new
+ attributes to the terminal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#pushs">pushs (attr)</a></td>
+	<td class="summary">Pushes the given attributes/colors onto the stack, and returns an ansi sequence to set the new
+ attributes without writing it to the terminal.</td>
 	</tr>
 </table>
 
@@ -139,15 +138,35 @@
     <strong>apply ()</strong>
     </dt>
     <dd>
-    Applies the current scroll region by writing it to the terminal.
+    Re-applies the current attributes/colors (at the top of the stack), and writes it to the terminal.
 
 
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after applying.
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "applys"></a>
+    <strong>applys ()</strong>
+    </dt>
+    <dd>
+    Re-applies the current attributes/colors (at the top of the stack),
+ returns the sequence without writing to the terminal.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        ansi sequence to write to the terminal
     </ol>
 
 
@@ -156,80 +175,25 @@
 </dd>
     <dt>
     <a name = "pop"></a>
-    <strong>pop (n)</strong>
+    <strong>pop ([n=1])</strong>
     </dt>
     <dd>
-    Pops the specified number of scroll regions from the stack and applies the new top by writing to the terminal.
+    Pops n attributes/colors off the stack, and writes the last one to the terminal.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         The number of scroll regions to pop. Defaults to 1.
+         number of attributes to pop
+         (<em>default</em> 1)
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after applying.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "push"></a>
-    <strong>push (top, bottom)</strong>
-    </dt>
-    <dd>
-    Pushes a new scroll region onto the stack and applies it by writing to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         The top line number of the scroll region.
-        </li>
-        <li><span class="parameter">bottom</span>
-            <span class="types"><span class="type">number</span></span>
-         The bottom line number of the scroll region.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">true</span></span>
-        Always returns true after applying.
-    </ol>
-
-
-
-
-</dd>
-</dl>
-    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "applys"></a>
-    <strong>applys ()</strong>
-    </dt>
-    <dd>
-    Retrieves the current scroll region sequence from the top of the stack.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence representing the current scroll region.
+        true
     </ol>
 
 
@@ -238,17 +202,18 @@
 </dd>
     <dt>
     <a name = "pops"></a>
-    <strong>pops (n)</strong>
+    <strong>pops ([n=1])</strong>
     </dt>
     <dd>
-    Pops the specified number of scroll regions from the stack without applying it.
+    Pops n attributes/colors off the stack (and returns the last one), without writing it to the terminal.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         The number of scroll regions to pop. Defaults to 1.
+         number of attributes to pop
+         (<em>default</em> 1)
         </li>
     </ul>
 
@@ -256,7 +221,35 @@
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence representing the new top of the stack.
+        ansi sequence to write to the terminal
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "push"></a>
+    <strong>push (attr)</strong>
+    </dt>
+    <dd>
+    Pushes the given attributes/colors onto the stack, and writes an ansi sequence to set the new
+ attributes to the terminal.
+ Every element omitted in the <code>attr</code> table will be taken from the current top of the stack.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         the attributes to set, see <a href="../modules/terminal.text.html#attrs">text.attrs</a> for details.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
     </ol>
 
 
@@ -265,21 +258,19 @@
 </dd>
     <dt>
     <a name = "pushs"></a>
-    <strong>pushs (top, bottom)</strong>
+    <strong>pushs (attr)</strong>
     </dt>
     <dd>
-    Pushes a new scroll region onto the stack without applying it.
+    Pushes the given attributes/colors onto the stack, and returns an ansi sequence to set the new
+ attributes without writing it to the terminal.
+ Every element omitted in the <code>attr</code> table will be taken from the current top of the stack.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">top</span>
-            <span class="types"><span class="type">number</span></span>
-         The top line number of the scroll region.
-        </li>
-        <li><span class="parameter">bottom</span>
-            <span class="types"><span class="type">number</span></span>
-         The bottom line number of the scroll region.
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         the attributes to set, see <a href="../modules/terminal.text.html#attrs">text.attrs</a> for details.
         </li>
     </ul>
 
@@ -287,7 +278,7 @@
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The ANSI sequence representing the pushed scroll region.
+        ansi sequence to write to the terminal
     </ol>
 
 
