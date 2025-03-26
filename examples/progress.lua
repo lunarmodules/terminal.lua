@@ -68,9 +68,7 @@ local function main()
   end
   t.cursor.visible.set(true)
   t.output.print() -- move to new line (we're still on the 'press any key' line)
-
-  return true
 end
 
 -- run the main function, wrapped in terminal init/shutdown
-assert(t.initwrap({}, main))
+t.initwrap({}, main)

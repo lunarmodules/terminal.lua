@@ -222,7 +222,7 @@ function M.initwrap(opts, main, ...)
   M.shutdown()
 
   if not ok then
-    return nil, err
+    error(err, 2)
   end
   return unpack(results)
 end
