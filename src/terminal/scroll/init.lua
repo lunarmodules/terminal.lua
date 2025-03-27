@@ -4,7 +4,7 @@
 local M = {}
 package.loaded["terminal.scroll"] = M -- Register the module early to avoid circular dependencies
 
-local sys = require "system"
+local terminal = require("terminal")
 local output = require("terminal.output")
 local utils = require("terminal.utils")
 
@@ -39,7 +39,7 @@ end
 -- @within Sequences
 function M.set_seq(start_row, end_row)
   -- Resolve negative indices
-  local rows, _ = sys.termsize()
+  local rows, _ = terminal.size()
   start_row = utils.resolve_index(start_row, rows, 1)
   end_row = utils.resolve_index(end_row, rows, start_row)
   return "\27[" .. tostring(start_row) .. ";" .. tostring(end_row) .. "r"

@@ -54,6 +54,17 @@ M._sleep = sys.sleep   -- a (optionally) non-blocking sleep function
 
 
 
+--- Returns the terminal size in rows and columns.
+-- Just a convenience, maps 1-on-1 to `system.termsize`.
+-- @treturn[1] number number of rows
+-- @treturn[1] number number of columns
+-- @treturn[2] nil on error
+-- @treturn[2] string error message
+-- @function size
+M.size = sys.termsize
+
+
+
 --- Returns a string sequence to make the terminal beep.
 -- @treturn string ansi sequence to write to the terminal
 function M.beep_seq()

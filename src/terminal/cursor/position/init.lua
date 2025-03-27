@@ -6,10 +6,10 @@ local M = {}
 package.loaded["terminal.cursor.position"] = M -- Register the module early to avoid circular dependencies
 M.stack = require "terminal.cursor.position.stack"
 
+local terminal = require("terminal")
 local output = require("terminal.output")
 local input = require("terminal.input")
 local utils = require("terminal.utils")
-local sys = require("system")
 
 
 
@@ -62,7 +62,7 @@ end
 -- @within Sequences
 function M.set_seq(row, column)
   -- Resolve negative indices, and range check
-  local rows, cols = sys.termsize()
+  local rows, cols = terminal.size()
   row = utils.resolve_index(row, rows, 1)
   column = utils.resolve_index(column, cols, 1)
   return "\27[" .. tostring(row) .. ";" .. tostring(column) .. "H"
@@ -278,7 +278,7 @@ end
 -- @within Sequences
 function M.column_seq(column)
   -- Resolve negative indices, and range check
-  local _, cols = sys.termsize()
+  local _, cols = terminal.size()
   column = utils.resolve_index(column, cols, 1)
   return "\27["..tostring(column).."G"
 end
@@ -302,7 +302,7 @@ end
 -- @within Sequences
 function M.row_seq(row)
   -- Resolve negative indices, and range check
-  local rows, _ = sys.termsize()
+  local rows, _ = terminal.size()
   row = utils.resolve_index(row, rows, 1)
   return "\27["..tostring(row).."d"
 end

@@ -1,13 +1,12 @@
 -- This example writes a testscreen (background filled with numbers) and then
 -- writes a box with a message inside.
 
-local sys = require("system")
 local t = require("terminal")
 
 
 -- writes entire screen with numbers 1-9
 local function testscreen()
-  local r, c = sys.termsize()
+  local r, c = t.size()
   local row = ("1234567890"):rep(math.floor(c/10) + 1):sub(1, c)
 
   -- push a color on the stack
@@ -41,7 +40,7 @@ testscreen()
 
 -- draw a box, with 2 cols/rows margin around the screen
 local edge = 2
-local r,c = sys.termsize()
+local r,c = t.size()
 t.cursor.position.set(edge+1, edge+1)
 t.draw.box(r - 2*edge, c - 2*edge, t.draw.box_fmt.double, true, "test screen")
 

@@ -121,7 +121,7 @@ function M.test(str)
         local w = pos[2] - c
         if w < 0 then
           -- cursor wrapped to next line
-          local _, cols = t.termsize()
+          local _, cols = t.size()
           w = w + cols
         end
         char_widths[chars[j]] = w
@@ -191,7 +191,7 @@ function M.test_write(str)
     local w = col_end - col_start
     if w < 0 then
       -- cursor wrapped to next line
-      local _, cols = t.termsize()
+      local _, cols = t.size()
       w = w + cols
     end
     char_widths[char] = w
