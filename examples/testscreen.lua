@@ -6,6 +6,8 @@
 
 local t = require("terminal")
 
+
+
 local main do
   -- writes entire screen with numbers 1-9
   local function testscreen(o)
@@ -66,6 +68,7 @@ t.initwrap({
   displaybackup = true,
   filehandle = io.stdout,
 }, main)
+
 
 
 -- this is printed on the original screen buffer

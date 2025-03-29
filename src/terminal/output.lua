@@ -15,11 +15,7 @@ local terminal = require("terminal")
 
 
 local t = io.stderr -- the terminal/stream to operate on
-
-local chunksize = 512 -- chunk size to write in one go
-local bytecount_left = chunksize -- number of bytes to write before flush+sleep required
-local delay = 0.001 -- delay in seconds after each chunk write
-
+local delay = 0.050 -- delay in seconds added after each retry
 
 
 local pack do
@@ -44,48 +40,51 @@ end
 
 
 
---- Writes to the stream in chunks.
--- Parameters are written to the stream, and flushed after each chunk. A small sleep is
--- added after each chunk to allow the terminal to process the data.
--- This is done to prevent the terminal buffer from overrunning and dropping data.
---
+--- Writes to the stream.
+-- This is a safer write-function than the standard Lua one.
 -- Differences from the standard Lua write function:
 --
 -- - parameters will be tostring-ed before writing
+-- - will retry on EAGAIN or EWOULDBLOCK errors (after a short sleep)
+-- - will flush the stream
 -- @param ... the values to write
 -- @return the return value of the stream's `write` function
 function M.write(...)
   local args = pack(...)
-  if args.n == 0 then
-    return t:write("") -- ensure we return the same return values as the stream's write function
-  end
-
   for i = 1, args.n do
     args[i] = tostring(args[i])
   end
+
   local data = table.concat(args)
 
-  -- write to stream, in chunks. flush and sleep in between
-  local ok, err
-  while #data > 0 do
-    local chunk = data:sub(1, bytecount_left)
-    data = data:sub(bytecount_left + 1)
+  if data == "" then
+    return t:write("") -- ensure we return the same return values as the stream's write function
+  end
 
-    ok, err = t:write(chunk)
-    if not ok then
-      return ok, err
-    end
-
-    bytecount_left = bytecount_left - #chunk
-    if bytecount_left <= 0 then
-      bytecount_left = chunksize
+  -- write to stream, in bytes. flush and sleep in between
+  local ok, err, errno, tries
+  local i = 1
+  local size = #data
+  while i <= size do
+    ok, err, errno = t:write(data:sub(i, i))
+    if ok then
       t:flush()
-      -- sleep a bit to allow the terminal to process the data
-      terminal._bsleep(delay) -- blocking because we do not want to risk yielding here
+      i = i + 1
+      tries = nil
+    else
+      if errno == 11 or errno == 35 then
+        -- EAGAIN or EWOULDBLOCK, retry
+        tries = (tries or 0) + 1
+        t:flush()
+        terminal._bsleep(delay * tries) -- blocking because we do not want to risk yielding here
+      else
+        -- some other error
+        return ok, err, errno
+      end
     end
   end
 
-  return ok, err
+  return ok, err, errno
 end
 
 
