@@ -40,6 +40,48 @@ end
 
 
 
+local writer do
+  local function write_windows(data)
+    return t:write(data)
+  end
+
+  local function write_posix(data)
+    local ok, err, errno, tries
+    local i = 1
+    local size = #data
+    while i <= size do
+      ok, err, errno = t:write(data:sub(i, i)) -- only 1 byte at a time, thx OSX :(
+      if ok then
+        t:flush()
+        i = i + 1
+        tries = nil
+      else
+        if errno == 11 or errno == 35 then
+          -- EAGAIN or EWOULDBLOCK, retry
+          tries = (tries or 0) + 1
+          t:flush()
+          terminal._bsleep(delay * tries) -- blocking because we do not want to risk yielding here
+        else
+          -- some other error
+          return ok, err, errno
+        end
+      end
+    end
+
+    return ok, err, errno
+  end
+
+
+  -- select the writer function based on the platform
+  if package.config:sub(1, 1) == "\\" then
+    writer = write_windows
+  else
+    writer = write_posix
+  end
+end
+
+
+
 --- Writes to the stream.
 -- This is a safer write-function than the standard Lua one.
 -- Differences from the standard Lua write function:
@@ -58,33 +100,10 @@ function M.write(...)
   local data = table.concat(args)
 
   if data == "" then
-    return t:write("") -- ensure we return the same return values as the stream's write function
+    return t:write("")
   end
 
-  -- write to stream, in bytes. flush and sleep in between
-  local ok, err, errno, tries
-  local i = 1
-  local size = #data
-  while i <= size do
-    ok, err, errno = t:write(data:sub(i, i))
-    if ok then
-      t:flush()
-      i = i + 1
-      tries = nil
-    else
-      if errno == 11 or errno == 35 then
-        -- EAGAIN or EWOULDBLOCK, retry
-        tries = (tries or 0) + 1
-        t:flush()
-        terminal._bsleep(delay * tries) -- blocking because we do not want to risk yielding here
-      else
-        -- some other error
-        return ok, err, errno
-      end
-    end
-  end
-
-  return ok, err, errno
+  return writer(data)
 end
 
 
