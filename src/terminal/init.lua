@@ -174,14 +174,15 @@ do
     assert(M.ready(), "terminal not initialized")
 
     -- restore all stacks
-    local r,c = cursor.position.get() -- Mac: scroll-region reset changes cursor pos to 1,1, so store it
-    output.write(
-      cursor.shape.stack.pop_seq(math.huge),
-      cursor.visible.stack.pop_seq(math.huge),
-      text.stack.pop_seq(math.huge),
-      scroll.stack.pop_seq(math.huge),
-      cursor.position.set_seq(r,c) -- restore cursor pos
-    )
+    local ok, r,c = pcall(cursor.position.get) -- Mac: scroll-region reset changes cursor pos to 1,1, so store it
+    cursor.shape.stack.pop(math.huge)
+    cursor.visible.stack.pop(math.huge)
+    text.stack.pop(math.huge)
+    scroll.stack.pop(math.huge)
+
+    if ok and r then
+      cursor.position.set(r,c) -- restore cursor pos
+    end
     output.flush()
 
     if termbackup.displaybackup then
