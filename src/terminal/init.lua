@@ -122,8 +122,7 @@ do
   -- @tparam[opt=io.stderr] filehandle opts.filehandle the stream to use for output
   -- @tparam[opt=sys.sleep] function opts.bsleep the blocking sleep function to use.
   -- This should never be set to a yielding sleep function! This function
-  -- will be used by the `terminal.write` and `terminal.print` to prevent buffer-overflows and
-  -- truncation when writing to the terminal. And by `cursor.position.get` when reading the cursor position.
+  -- will be used by `cursor.position.get` when reading the cursor position.
   -- @tparam[opt=sys.sleep] function opts.sleep the default sleep function to use for `readansi`.
   -- In an async application (coroutines), this should be a yielding sleep function, eg. `copas.pause`.
   -- @return true
@@ -142,6 +141,8 @@ do
 
     M._asleep = opts.sleep or sys.sleep
     assert(type(M._asleep) == "function", "invalid opts.sleep function, expected a function, got " .. type(opts.sleep))
+
+    sys.detachfds()
 
     termbackup = sys.termbackup()
     if opts.displaybackup then
