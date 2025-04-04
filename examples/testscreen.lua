@@ -52,11 +52,12 @@ local main do
       bg = "blue",
       brightness = 3,
     }
-    o[#o+1] = "Hello World! press any key, or wait 5 seconds..."
+    o[#o+1] = "press any key, or wait 5 seconds..."
 
     -- write the whole thing at once
-    -- this is a safe write, it will retry if the output buffer is full
     assert(t.output.write(table.concat(o)))
+
+    -- wait for user input, or timeout after 5 seconds
     t.input.readansi(5)
   end
 end
