@@ -54,7 +54,7 @@ M.sys_readansi = sys.readansi
 function M.readansi(timeout, fsleep)
   if kbend == 0 then
     -- buffer is empty, so read from the terminal
-    return M.sys_readansi(timeout, fsleep or terminal._sleep)
+    return M.sys_readansi(timeout, fsleep or terminal._asleep)
   end
 
   -- return buffered input

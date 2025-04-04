@@ -57,9 +57,9 @@ describe("input:", function()
     it("uses the sleep function set", function()
       local called = false
       local old_sleep = t._sleep
-      t._sleep = function() called = true end
+      t._asleep = function() called = true end
       finally(function()
-        t._sleep = old_sleep
+        t._asleep = old_sleep
       end)
 
       t.input.readansi(0.01)
