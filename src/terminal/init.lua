@@ -210,35 +210,40 @@ end
 -- If an error is caught, it first shutsdown the terminal and then rethrows the error.
 -- @tparam[opt] table opts options table, to pass to `initialize`.
 -- @tparam function main the function to wrap
--- @param ... any parameters to pass to the main function
--- @return the return values of the wrapped function
--- @usage local function main(param1, param2)
+-- @treturn function wrapped function
+-- @usage
+-- local function main(param1, param2)
 --
 --   -- your main app functionality here
 --   error("oops...")
 --
 -- end
 --
--- local opts = {
+-- main = t.initwrap(main, {
 --   filehandle = io.stderr,
 --   displaybackup = true,
--- }
--- t.initwrap(opts, main, "one", "two") -- rethrows any error after termimal restore
-function M.initwrap(opts, main, ...)
-  assert(type(main) == "function", "expected main to be a function, got " .. type(main))
-  M.initialize(opts)
+-- })
+--
+-- main("one", "two") -- rethrows any error after termimal restore
+function M.initwrap(main, opts)
+  assert(type(main) == "function", "expected arg#1 to be a function, got " .. type(main))
 
-  local results
-  local ok, err = xpcall(function(...)
-    results = pack(main(...))
-  end, debug.traceback, ...)
+  return function(...)
+    M.initialize(opts)
 
-  M.shutdown()
+    local args = pack(...)
+    local results
+    local ok, err = xpcall(function()
+      results = pack(main(unpack(args)))
+    end, debug.traceback)
 
-  if not ok then
-    return error(err, 2)
+    M.shutdown()
+
+    if not ok then
+      return error(err, 2)
+    end
+    return unpack(results)
   end
-  return unpack(results)
 end
 
 

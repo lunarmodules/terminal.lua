@@ -64,10 +64,10 @@ end
 
 
 -- initialize terminal; backup (switch to alternate buffer) and set output to stdout
-t.initwrap({
+t.initwrap(main, {
   displaybackup = true,
   filehandle = io.stdout,
-}, main)
+})()
 
 
 

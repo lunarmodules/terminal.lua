@@ -49,10 +49,9 @@ end
 
 
 -- initialize terminal; backup (switch to alternate buffer) and set output to stdout
-local opts = {
+t.initwrap(main, {
   displaybackup = true,
   filehandle = io.stdout,
-}
-t.initwrap(opts, main)
+})()
 
 print("done!")  -- this is printed on the original screen buffer

@@ -48,8 +48,8 @@ end)
 
 
 -- start the copas loop, wrapped in term setup/teardown
-t.initwrap({
+t.initwrap(copas.loop,{
   displaybackup = true,
   filehandle = io.stdout,
   sleep = copas.pause, -- ensure readansi is yielding
-}, copas.loop)
+})()
