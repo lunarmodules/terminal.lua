@@ -1,6 +1,6 @@
 --- A module for progress updating.
 -- @module terminal.progress
-
+local utf8 = require("utf8")
 local M = {}
 package.loaded["terminal.progress"] = M -- Register the module early to avoid circular dependencies
 
@@ -97,12 +97,11 @@ function ProgressSpinner:new(opts)
     s[#s+1] = savepos
     s[#s+1] = setpos
     s[#s+1] = (i == 0 and attr_push_done) or attr_push
-    s[#s+1] = sprite .. t.cursor.position.left_seq(tw.utf8swidth(sprite))
+    s[#s+1] = sprite .. t.cursor.position.left_seq(tw.utf8swidth(sprite, utf8))
     s[#s+1] = attr_pop
     s[#s+1] = restorepos
-    self.steps[i] = s
+    self.steps[i == 0 and (#self.sprites + 1) or i] = s
   end
-
   return self
 end
 
@@ -111,7 +110,7 @@ end
 function ProgressSpinner:step_once(done)
   if gettime() >= self.next_step or done then
     if done then
-      self.step = 0
+      self.step = #self.sprites + 1
     else
       self.next_step = gettime() + self.stepsize
       self.step = self.step + 1
