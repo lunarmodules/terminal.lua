@@ -128,4 +128,54 @@ end
 
 
 
+do
+  local constructor = function(cls, instance)
+    assert(rawget(cls, "__index"), "Constructor can only be called on a Class")
+    instance = instance or {}
+    setmetatable(instance, cls)
+    if instance.init then
+      instance:init()
+    end
+    return instance
+  end
+
+
+  local base = {}
+  base.__index = base
+  base.__call = constructor
+
+
+  --- Creates a (sub)class.
+  -- This function creates a new class, which is a subclass of the given baseclass.
+  -- An instance can be created by calling on the class, the table passed in becomes the new instance.
+  -- If the class has an `init` method, then it will be called upon instantiation.
+  -- @tparam[opt] class baseclass The base-class to inherit from.
+  -- @treturn table The new class.
+  -- @usage
+  -- local Cat = utils.class()
+  -- function Cat:init()
+  --   self.value = self.value or 42
+  -- end
+  --
+  -- local Lion = utils.class(Cat)
+  -- function Lion:init()
+  --   Cat.init(self)        -- call ancestor initializer
+  --   self.value = self.value * 2
+  -- end
+  --
+  -- local instance1 = Lion()
+  -- print(instance1.value)      --> 84
+  -- local instance2 = Lion({ value = 10 })
+  -- print(instance2.value)      --> 20
+  function M.class(baseclass)
+    baseclass = baseclass or base
+    assert(rawget(baseclass, "__index"), "Baseclass is not a Class, can only subclass a Class")
+    local class = setmetatable({}, baseclass)
+    class.__index = class
+    class.__call = constructor
+
+    return setmetatable(class, baseclass)
+  end
+end
+
 return M
