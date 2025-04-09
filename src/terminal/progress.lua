@@ -1,4 +1,5 @@
 --- A module for progress updating.
+-- @module terminal.progress
 
 local M = {}
 package.loaded["terminal.progress"] = M -- Register the module early to avoid circular dependencies
@@ -7,17 +8,13 @@ local t = require("terminal")
 local tw = require("terminal.text.width")
 local Sequence = require("terminal.sequence")
 local utils = require("terminal.utils")
-
 local gettime = require("system").gettime
-
-
 
 --- table with predefined sprites for progress spinners.
 -- The sprites are tables of strings, where each string is a frame in the spinner animation.
 -- The frame at index 0 is optional and is the "done" message, the rest are the animation frames.
 --
 -- Available pre-defined spinners are:
---
 -- * `bar_vertical` - a vertical bar that grows from the bottom to the top
 -- * `bar_horizontal` - a horizontal bar that grows from left to right
 -- * `square_rotate` - a square that rotates clockwise
@@ -49,139 +46,82 @@ M.sprites = utils.make_lookup("spinner-sprite", {
   dot_horizontal = { [0] = "   ", "   ", ".  ", ".. ", "..." },
 })
 
+-- Class definition for ProgressSpinner
+local ProgressSpinner = {}
+ProgressSpinner.__index = ProgressSpinner
 
+--- Creates a new ProgressSpinner instance.
+-- @tparam table opts Configuration options:
+-- @tparam table opts.sprites A table of animation frames (index 1..n) and optionally a [0] "done" frame.
+-- @tparam[opt=0.2] number opts.stepsize Time in seconds between updates.
+-- @tparam table opts.textattr Text styling applied to the spinner.
+-- @tparam table opts.done_textattr Styling applied to the done sprite.
+-- @tparam string opts.done_sprite Overrides [0] sprite.
+-- @tparam number opts.row Row position (if provided, col must be too).
+-- @tparam number opts.col Column position.
+-- @usage
+-- local spinner = ProgressSpinner:new{ sprites = ProgressSpinner.sprites.spinner }
+-- while running do spinner:step_once() end
+-- spinner:step_once(true)
+function ProgressSpinner:new(opts)
+  assert(opts and opts.sprites and #opts.sprites > 0, "sprites must be provided")
 
--- returns a string with all spinner characters, to pre-load the character width cache
-function M._spinner_fmt_chars()
-  local r = {}
-  for _, fmt in pairs(M.sprites) do
-    for _, v in pairs(fmt) do
-      r[#r+1] = v
-    end
+  local self = setmetatable({}, ProgressSpinner)
+  self.sprites = opts.sprites
+  self.stepsize = opts.stepsize or 0.2
+  self.textattr = opts.textattr
+  self.done_textattr = opts.done_textattr
+  self.done_sprite = opts.done_sprite
+  self.row = opts.row
+  self.col = opts.col
+  self.step = 0
+  self.next_step = gettime()
+
+  assert((not self.row and not self.col) or (self.row and self.col),
+    "both row and col must be provided, or neither")
+
+  self.steps = {}
+  local setpos = (self.row and t.cursor.position.set_seq(self.row, self.col)) or ""
+  local savepos = (self.row and t.cursor.position.backup_seq()) or ""
+  local restorepos = (self.row and t.cursor.position.restore_seq()) or ""
+
+  local attr_push = self.textattr and function() return t.text.stack.push_seq(self.textattr) end
+  local attr_pop = self.textattr and t.text.stack.pop_seq or nil
+
+  local attr_push_done = self.done_textattr and function() return t.text.stack.push_seq(self.done_textattr) end or attr_push
+
+  for i = 0, #self.sprites do
+    local sprite = self.sprites[i] or ""
+    if i == 0 and self.done_sprite then sprite = self.done_sprite end
+    local s = Sequence()
+    s[#s+1] = savepos
+    s[#s+1] = setpos
+    s[#s+1] = (i == 0 and attr_push_done) or attr_push
+    s[#s+1] = sprite .. t.cursor.position.left_seq(tw.utf8swidth(sprite))
+    s[#s+1] = attr_pop
+    s[#s+1] = restorepos
+    self.steps[i] = s
   end
-  return table.concat(r)
+
+  return self
 end
 
-
-
---- Create a progress spinner.
--- The returned spinner function can be called as often as needed to update the spinner. It will only update after
--- the `stepsize` has passed since the last update. So try to call it at least every `stepsize` seconds, or more often.
--- If `row` and `col` are given then terminal memory is used to (re)store the cursor position. If they are not given
--- then the spinner will be printed at the current cursor position, and the cursor will return to the same position
--- after each update.
--- @tparam table opts a table of options;
--- @tparam table opts.sprites a table of strings to display, one at a time, overwriting the previous one. Index 0 is the "done" message.
--- See `sprites` for a table of predefined sprites.
--- @tparam[opt=0.2] number opts.stepsize the time in seconds between each step (before printing the next string from the sequence)
--- @tparam textattr opts.textattr a table of text attributes to apply to the text (using the stack), or nil to not change the attributes.
--- @tparam[opt] textattr opts.done_textattr a table of text attributes to apply to the "done" message, or nil to not change the attributes.
--- @tparam[opt] string opts.done_sprite the sprite to display when the spinner is done. This overrides `sprites[0]` if provided.
--- @tparam[opt] number opts.row the row to print the spinner (required if `col` is provided)
--- @tparam[opt] number opts.col the column to print the spinner (required if `row` is provided)
--- @treturn function a stepper function that should be called in a loop to update the spinner. Signature: `nil = stepper(done)` where
--- `done` is a boolean indicating that the spinner should print the "done" message.
-function M.spinner(opts)
-  opts = opts or {}
-  assert(opts.sprites and #opts.sprites > 0, "sprites must be provided")
-  local stepsize = opts.stepsize or 0.2
-  local textattr = opts.textattr
-  local row = opts.row
-  local col = opts.col
-  if col or row then
-    assert(col and row, "both row and col must be provided, or neither")
-  end
-
-  -- copy sequence to include cursor movement to return to start position.
-  -- include character display width check using LuaSystem
-  local steps do
-    local pos_set, pos_restore
-    if row then
-      pos_set = t.cursor.position.backup_seq() .. t.cursor.position.set_seq(row, col)
-      pos_restore = t.cursor.position.restore_seq()
+--- Updates the spinner animation or renders the final "done" sprite.
+-- @tparam[opt=false] boolean done If true, renders the done sprite.
+function ProgressSpinner:step_once(done)
+  if gettime() >= self.next_step or done then
+    if done then
+      self.step = 0
+    else
+      self.next_step = gettime() + self.stepsize
+      self.step = self.step + 1
+      if self.step > #self.sprites then self.step = 1 end
     end
-
-    local attr_push, attr_pop -- both will remain nil, if no text attr set
-    if textattr then
-      attr_push = function() return t.text.stack.push_seq(textattr) end
-      attr_pop = t.text.stack.pop_seq
-    end
-    local attr_push_done = attr_push
-    if opts.done_textattr then
-      attr_push_done = function() return t.text.stack.push_seq(opts.done_textattr) end
-    end
-
-    steps = {}
-    for i=0, #opts.sprites do
-      local s = opts.sprites[i] or ""
-      if i == 0 then
-        s = opts.done_sprite or s
-      end
-      local sequence = Sequence()
-      sequence[#sequence+1] = pos_set
-      sequence[#sequence+1] = (i == 0 and attr_push_done) or attr_push or nil
-      sequence[#sequence+1] = s .. t.cursor.position.left_seq(t.text.width.utf8swidth(s))
-      sequence[#sequence+1] = attr_pop
-      sequence[#sequence+1] = pos_restore
-      steps[i] = sequence
-    end
-  end
-  local step = 0
-  local next_step = gettime()
-
-  return function(done)
-    if gettime() >= next_step or done then
-      if done then
-        step = 0 -- will force to print element 0, the done message
-      else
-        next_step = gettime() + stepsize
-        step = step + 1
-        if step > #steps then
-          step = 1
-        end
-      end
-
-      t.output.write(steps[step])
-    end
+    t.output.write(self.steps[self.step])
   end
 end
 
-
-
---- Create a text/led ticker like sprite-sequence for use with a progress spinner.
--- @tparam string text the text to display
--- @tparam[opt=40] number width the width of the ticker, in characters
--- @tparam[opt=""] string text_done the text to display when the spinner is done
--- @treturn table a table of sprites to use with a spinner
-function M.ticker(text, width, text_done)
-  -- TODO: make it UTF-8 aware, and char-display-width aware
-  assert(text, "text must be provided")
-  width = width or 40
-  text_done = text_done or ""
-
-  local base = (" "):rep(width) .. text .. (" "):rep(width)
-  local result = { [0] = text_done .. (" "):rep(width) }
-  local lengths = { [0] = width + utf8.len(text) }
-
-  -- Simultaneously records max of lengths, later on we use this max_len as a standard for other strings
-  local max_len = 0
-  for i = 1, lengths[0] do
-    result[i] = tw.utf8sub(base, i, i + width - 1)
-    lengths[i] = tw.utf8swidth(result[i])
-    max_len = math.max(max_len, lengths[i])
-  end
-  result[0] = tw.utf8sub(result[0], 1, max_len)
-
-  for i = 1, math.floor(lengths[0] / 2) do
-    result[i] = (" "):rep(max_len - lengths[i]) .. result[i]
-  end
-
-  for i = math.floor(lengths[0] / 2) + 1, (width + utf8.len(text)) do
-    result[i] = result[i] .. (" "):rep(max_len - lengths[i])
-  end
-  return result
-end
-
-
-
-return M
+return {
+  ProgressSpinner = ProgressSpinner,
+  sprites = M.sprites,
+}
