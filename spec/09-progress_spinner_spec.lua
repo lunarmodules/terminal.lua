@@ -1,4 +1,3 @@
-local t = require("terminal")
 local progress = require("terminal.progress")
 local ProgressSpinner = progress.ProgressSpinner
 
