@@ -81,7 +81,7 @@ function ProgressSpinner:new(opts)
     "both row and col must be provided, or neither")
 
   self.steps = {}
-  local setpos = (self.row and t.cursor.position.set_seq(self.row, self.col)) or ""
+  local setpos = (self.row and self.col) and t.cursor.position.set_seq(self.row, self.col) or ""
   local savepos = (self.row and t.cursor.position.backup_seq()) or ""
   local restorepos = (self.row and t.cursor.position.restore_seq()) or ""
 
