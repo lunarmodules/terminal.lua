@@ -39,8 +39,9 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><strong>testscreen.lua</strong></li>
 </ul>
@@ -89,66 +90,76 @@
 <pre>
 <span class="comment">-- This example writes a testscreen (background filled with numbers) and then
 </span><span class="comment">-- writes a box with a message inside.
+</span><span class="comment">-- It creates one very large string, and writes it at once to the terminal.
+</span><span class="comment">-- It uses the <code>output.write</code> function to do so safely with retries to ensure
+</span><span class="comment">-- that the entire string is written.
 </span>
-<span class="keyword">local</span> sys = <span class="global">require</span>(<span class="string">"system"</span>)
 <span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
 
 
-<span class="comment">-- writes entire screen with numbers 1-9
-</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">testscreen</span>()
-  <span class="keyword">local</span> r, c = sys.<span class="function-name">termsize</span>()
-  <span class="keyword">local</span> row = (<span class="string">"1234567890"</span>):<span class="function-name">rep</span>(<span class="global">math</span>.<span class="function-name">floor</span>(c/<span class="number">10</span>) + <span class="number">1</span>):<span class="function-name">sub</span>(<span class="number">1</span>, c)
 
-  <span class="comment">-- push a color on the stack
-</span>  t.text.stack.<span class="function-name">push</span>{
-    fg = <span class="string">"red"</span>,
-    brightness = <span class="string">"dim"</span>,
-  }
+<span class="keyword">local</span> main <span class="keyword">do</span>
+  <span class="comment">-- writes entire screen with numbers 1-9
+</span>  <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">testscreen</span>(o)
+    <span class="keyword">local</span> r, c = t.<span class="function-name">size</span>()
+    <span class="keyword">local</span> row = (<span class="string">"1234567890"</span>):<span class="function-name">rep</span>(<span class="global">math</span>.<span class="function-name">floor</span>(c/<span class="number">10</span>) + <span class="number">1</span>):<span class="function-name">sub</span>(<span class="number">1</span>, c)
 
-  <span class="comment">-- print all rows to fill the screen
-</span>  <span class="keyword">for</span> i = <span class="number">1</span>, r <span class="keyword">do</span>
-    t.cursor.position.<span class="function-name">set</span>(i, <span class="number">1</span>)
-    t.output.<span class="function-name">write</span>(row)
+    <span class="comment">-- push a color on the stack
+</span>    o[#o+<span class="number">1</span>] = t.text.stack.<span class="function-name">push_seq</span>{
+      fg = <span class="string">"red"</span>,
+      brightness = <span class="string">"dim"</span>,
+    }
+
+    <span class="comment">-- print all rows to fill the screen
+</span>    <span class="keyword">for</span> i = <span class="number">1</span>, r <span class="keyword">do</span>
+      o[#o+<span class="number">1</span>] = t.cursor.position.<span class="function-name">set_seq</span>(i, <span class="number">1</span>)
+      o[#o+<span class="number">1</span>] = row
+    <span class="keyword">end</span>
+
+    <span class="comment">-- pop the color previously set, restoring the previous setting
+</span>    o[#o+<span class="number">1</span>] = t.text.stack.<span class="function-name">pop_seq</span>()
   <span class="keyword">end</span>
 
-  <span class="comment">-- pop the color previously set, restoring the previous setting
-</span>  t.text.stack.<span class="function-name">pop</span>()
+
+  main = <span class="keyword">function</span>()
+    <span class="keyword">local</span> o = {}
+    <span class="comment">-- clear the screen, and draw the test screen
+</span>    o[#o+<span class="number">1</span>] = t.clear.<span class="function-name">screen_seq</span>()
+    <span class="function-name">testscreen</span>(o)
+
+    <span class="comment">-- draw a box, with 2 cols/rows margin around the screen
+</span>    <span class="keyword">local</span> edge = <span class="number">2</span>
+    <span class="keyword">local</span> r,c = t.<span class="function-name">size</span>()
+    o[#o+<span class="number">1</span>] = t.cursor.position.<span class="function-name">set_seq</span>(edge+<span class="number">1</span>, edge+<span class="number">1</span>)
+    o[#o+<span class="number">1</span>] = t.draw.<span class="function-name">box_seq</span>(r - <span class="number">2</span>*edge, c - <span class="number">2</span>*edge, t.draw.box_fmt.double, <span class="keyword">true</span>, <span class="string">"test screen"</span>)
+
+    <span class="comment">-- move cursor inside the box
+</span>    o[#o+<span class="number">1</span>] = t.cursor.position.<span class="function-name">move_seq</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+    <span class="comment">-- set text attributes (not using the stack this time)
+</span>    o[#o+<span class="number">1</span>] = t.text.<span class="function-name">attr_seq</span>{
+      fg = <span class="string">"red"</span>,
+      bg = <span class="string">"blue"</span>,
+      brightness = <span class="number">3</span>,
+    }
+    o[#o+<span class="number">1</span>] = <span class="string">"Hello World! press any key, or wait 5 seconds..."</span>
+
+    <span class="comment">-- write the whole thing at once
+</span>    <span class="comment">-- this is a safe write, it will retry if the output buffer is full
+</span>    <span class="global">assert</span>(t.output.<span class="function-name">write</span>(<span class="global">table</span>.<span class="function-name">concat</span>(o)))
+    t.input.<span class="function-name">readansi</span>(<span class="number">5</span>)
+  <span class="keyword">end</span>
 <span class="keyword">end</span>
 
 
 
-
 <span class="comment">-- initialize terminal; backup (switch to alternate buffer) and set output to stdout
-</span>t.<span class="function-name">initialize</span>{
+</span>t.<span class="function-name">initwrap</span>(main, {
   displaybackup = <span class="keyword">true</span>,
   filehandle = <span class="global">io</span>.stdout,
-}
+})()
 
-<span class="comment">-- clear the screen, and draw the test screen
-</span>t.clear.<span class="function-name">screen</span>()
-<span class="function-name">testscreen</span>()
 
-<span class="comment">-- draw a box, with 2 cols/rows margin around the screen
-</span><span class="keyword">local</span> edge = <span class="number">2</span>
-<span class="keyword">local</span> r,c = sys.<span class="function-name">termsize</span>()
-t.cursor.position.<span class="function-name">set</span>(edge+<span class="number">1</span>, edge+<span class="number">1</span>)
-t.draw.<span class="function-name">box</span>(r - <span class="number">2</span>*edge, c - <span class="number">2</span>*edge, t.draw.box_fmt.double, <span class="keyword">true</span>, <span class="string">"test screen"</span>)
-
-<span class="comment">-- move cursor inside the box
-</span>t.cursor.position.<span class="function-name">move</span>(<span class="number">1</span>, <span class="number">1</span>)
-
-<span class="comment">-- set text attributes (not using the stack this time)
-</span>t.text.<span class="function-name">attr</span>{
-  fg = <span class="string">"red"</span>,
-  bg = <span class="string">"blue"</span>,
-  brightness = <span class="number">3</span>,
-}
-t.output.<span class="function-name">write</span>(<span class="string">"Hello World! press any key, or wait 5 seconds..."</span>)
-t.output.<span class="function-name">flush</span>()
-t.input.<span class="function-name">readansi</span>(<span class="number">5</span>)
-
-<span class="comment">-- restore all settings (reverts to original screen buffer)
-</span>t.<span class="function-name">shutdown</span>()
 
 <span class="comment">-- this is printed on the original screen buffer
 </span><span class="global">print</span>(<span class="string">"done!"</span>)</pre>

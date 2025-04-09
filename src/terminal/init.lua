@@ -208,8 +208,8 @@ end
 -- When an error occurs, and the application exits, the terminal might not be properly shut down.
 -- This function wraps a function in calls to `initialize` and `shutdown`, ensuring the terminal is properly shut down.
 -- If an error is caught, it first shutsdown the terminal and then rethrows the error.
--- @tparam[opt] table opts options table, to pass to `initialize`.
 -- @tparam function main the function to wrap
+-- @tparam[opt] table opts options table, to pass to `initialize`.
 -- @treturn function wrapped function
 -- @usage
 -- local function main(param1, param2)

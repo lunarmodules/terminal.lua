@@ -39,8 +39,9 @@
   <li><strong>colors.lua</strong></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -133,18 +134,15 @@
   t.output.<span class="function-name">write</span>(<span class="string">"Press any key, or wait 5 seconds..."</span>)
   t.output.<span class="function-name">flush</span>()
   t.input.<span class="function-name">readansi</span>(<span class="number">5</span>)
-
-  <span class="keyword">return</span> <span class="keyword">true</span>
 <span class="keyword">end</span>
 
 
 
 <span class="comment">-- initialize terminal; backup (switch to alternate buffer) and set output to stdout
-</span><span class="keyword">local</span> opts = {
+</span>t.<span class="function-name">initwrap</span>(main, {
   displaybackup = <span class="keyword">true</span>,
   filehandle = <span class="global">io</span>.stdout,
-}
-<span class="global">assert</span>(t.<span class="function-name">initwrap</span>(opts, main))
+})()
 
 <span class="global">print</span>(<span class="string">"done!"</span>)  <span class="comment">-- this is printed on the original screen buffer</span></pre>
 

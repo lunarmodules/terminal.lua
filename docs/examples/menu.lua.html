@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><strong>menu.lua</strong></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>menu.lua</h2>
+<pre>
+<span class="comment">-- This example shows how to create a CLI based widget for user input.
+</span><span class="comment">-- It presents the user with a list of options, that can be selected using
+</span><span class="comment">-- the arrow keys, and by pressing enter.
+</span><span class="comment">--
+</span><span class="comment">-- What it does well:
+</span><span class="comment">-- - only uses relative positioning, such that the user scrolling the screen up/down
+</span><span class="comment">--   does not affect the widget
+</span><span class="comment">-- - positions the cursor statically below the widget, because resizing the terminal
+</span><span class="comment">--   can have a different effect on the line where the cursor is.
+</span><span class="comment">-- - entire widget is drawn from a single (dynamic) sequence, simplifying the remainder of the code
+</span><span class="comment">-- - ends each line with a <code>clear.eol()</code> call, such that it cleans up after a resize/redraw.
+</span><span class="comment">-- - the sequence ansures the cursor returns to the original position. Such that writing the
+</span><span class="comment">--   sequence again just works.
+</span><span class="comment">--
+</span><span class="comment">-- To be improved:
+</span><span class="comment">-- - moving cursor up/down is relative, but if the prompt or an option rolls-over to the next line
+</span><span class="comment">--   we'd need an extra up/down to get the cursor back to the right position.
+</span><span class="comment">-- - the rolling-over needs to be dynamic, since the user might also resize the screen.
+</span><span class="comment">-- - when the user resizes, it should redraw, instead of waiting for a key-press
+</span><span class="comment">-- - it uses its own class/instance mechanism, which should be externalised
+</span>
+<span class="keyword">local</span> t = <span class="global">require</span> <span class="string">"terminal"</span>
+<span class="keyword">local</span> Sequence = <span class="global">require</span>(<span class="string">"terminal.sequence"</span>)
+
+
+
+<span class="comment">-- Key bindings for arrow keys, 'j', 'k', and Enter.
+</span><span class="keyword">local</span> key_names = {
+  [<span class="string">"\27[A"</span>] = <span class="string">"up"</span>,  <span class="comment">-- Up arrow key
+</span>  [<span class="string">"k"</span>] = <span class="string">"up"</span>,      <span class="comment">-- 'k' key
+</span>  [<span class="string">"\27[B"</span>] = <span class="string">"down"</span>,<span class="comment">-- Down arrow key
+</span>  [<span class="string">"j"</span>] = <span class="string">"down"</span>,    <span class="comment">-- 'j' key
+</span>  [<span class="string">"\r"</span>] = <span class="string">"enter"</span>,  <span class="comment">-- Carriage return (Enter)
+</span>  [<span class="string">"\n"</span>] = <span class="string">"enter"</span>,  <span class="comment">-- Newline (Enter)
+</span>  [<span class="string">"\27"</span>] = <span class="string">"esc"</span>,   <span class="comment">-- Escape key
+</span>}
+
+<span class="keyword">local</span> diamond      = <span class="string">"◇"</span>
+<span class="keyword">local</span> pipe         = <span class="string">"│"</span>
+<span class="keyword">local</span> circle       = <span class="string">"○"</span>
+<span class="keyword">local</span> dot          = <span class="string">"●"</span>
+
+
+
+<span class="comment">-- define the class
+</span><span class="keyword">local</span> IMenu = {}
+IMenu.__index = IMenu
+
+
+
+<span class="keyword">function</span> IMenu:<span class="function-name">__call</span>()
+  <span class="comment">-- This method is called when calling on an INSTANCE
+</span>  <span class="comment">-- run the instance
+</span>  <span class="keyword">return</span> self:<span class="function-name">run</span>()
+<span class="keyword">end</span>
+
+
+
+<span class="global">setmetatable</span>(IMenu, {
+  <span class="comment">-- This method is called when calling on the CLASS
+</span>  <span class="comment">-- create an instance
+</span>  __call = <span class="keyword">function</span>(cls, options)
+    <span class="keyword">local</span> self = <span class="global">setmetatable</span>({}, cls)
+
+    <span class="comment">-- validate options
+</span>    <span class="global">assert</span>(<span class="global">type</span>(options) == <span class="string">"table"</span>, <span class="string">"options must be a table, got "</span> .. <span class="global">type</span>(options))
+    <span class="global">assert</span>(<span class="global">type</span>(options.choices) == <span class="string">"table"</span>, <span class="string">"options.choices must be a table, got "</span> .. <span class="global">type</span>(options.choices))
+    <span class="global">assert</span>(#options.choices &gt; <span class="number">0</span>, <span class="string">"options.choices must not be empty"</span>)
+    <span class="keyword">for</span> _, val <span class="keyword">in</span> <span class="global">pairs</span>(options.choices) <span class="keyword">do</span>
+      <span class="keyword">if</span> <span class="global">type</span>(val) ~= <span class="string">"string"</span> <span class="keyword">then</span>
+        <span class="keyword">return</span> <span class="keyword">nil</span>, <span class="string">"expected option.choices entries to be a string but got"</span> .. <span class="global">type</span>(val) .. <span class="string">" instead"</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="keyword">local</span> default = options.default <span class="keyword">or</span> <span class="number">1</span>
+    <span class="global">assert</span>(<span class="global">type</span>(default) == <span class="string">"number"</span>, <span class="string">"options.default must be a number, got "</span> .. <span class="global">type</span>(default))
+    <span class="global">assert</span>(default &gt;= <span class="number">1</span> <span class="keyword">and</span> default &lt;= #options.choices, <span class="string">"options.default out of range"</span>)
+
+    <span class="keyword">local</span> prompt = options.prompt <span class="keyword">or</span> <span class="string">"Select an option:"</span>
+    <span class="global">assert</span>(<span class="global">type</span>(prompt) == <span class="string">"string"</span>, <span class="string">"options.prompt must be a string, got "</span> .. <span class="global">type</span>(prompt))
+
+    self._choices = options.choices
+    self.selected = default
+    self.prompt = prompt
+    self.cancellable = <span class="keyword">not</span> <span class="keyword">not</span> options.cancellable
+    self:<span class="function-name">template</span>() <span class="comment">-- build the template
+</span>    <span class="keyword">return</span> self
+  <span class="keyword">end</span>,
+})
+
+
+
+<span class="comment">-- build the entire prompt as a single sequence
+</span><span class="keyword">function</span> IMenu:<span class="function-name">template</span>()
+  <span class="comment">-- display the prompt
+</span>  <span class="keyword">local</span> res = <span class="function-name">Sequence</span>(
+    t.cursor.position.<span class="function-name">up_seq</span>():<span class="function-name">rep</span>(#self._choices + <span class="number">1</span>), <span class="comment">-- move cursor up
+</span>    <span class="keyword">function</span>() <span class="keyword">return</span> t.text.stack.<span class="function-name">push_seq</span>({fg = <span class="string">"green"</span>}) <span class="keyword">end</span>,
+    diamond,
+    t.text.stack.pop_seq,
+    <span class="string">" "</span>,
+    self.prompt,
+    t.clear.eol_seq,
+    <span class="string">"\n"</span>
+  )
+  <span class="comment">-- add options, dynamically coloring the selected one
+</span>  <span class="keyword">for</span> i, option <span class="keyword">in</span> <span class="global">pairs</span>(self._choices) <span class="keyword">do</span>
+    res = res + <span class="function-name">Sequence</span>(
+      pipe,
+      <span class="string">"   "</span>,
+      <span class="keyword">function</span>() <span class="keyword">return</span> i == self.selected <span class="keyword">and</span> dot <span class="keyword">or</span> circle <span class="keyword">end</span>,
+      <span class="string">" "</span>,
+      <span class="keyword">function</span>()
+        <span class="keyword">if</span> i == self.selected <span class="keyword">then</span>
+          <span class="keyword">return</span> t.text.stack.<span class="function-name">push_seq</span>({fg = <span class="string">"yellow"</span>, brightness = <span class="string">"normal"</span>})
+        <span class="keyword">else</span>
+          <span class="keyword">return</span> t.text.stack.<span class="function-name">push_seq</span>({fg = <span class="string">"white"</span>, brightness = <span class="string">"dim"</span>})
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>,
+      option,
+      t.text.stack.pop_seq,
+      t.clear.eol_seq,
+      <span class="string">"\n"</span>
+    )
+  <span class="keyword">end</span>
+
+  self.__template = res
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> IMenu:<span class="function-name">readKey</span>()
+  <span class="keyword">local</span> key = t.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
+  <span class="keyword">return</span> key, key_names[key] <span class="keyword">or</span> key
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> IMenu:<span class="function-name">handleInput</span>()
+  <span class="keyword">local</span> res1, res2
+  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    t.output.<span class="function-name">write</span>(self.__template)                 <span class="comment">-- Write the template to the screen.
+</span>
+    <span class="keyword">local</span>  _, keyName = self:<span class="function-name">readKey</span>()
+
+    <span class="keyword">if</span> keyName == <span class="string">"up"</span> <span class="keyword">then</span>
+      self.selected = <span class="global">math</span>.<span class="function-name">max</span>(<span class="number">1</span>, self.selected - <span class="number">1</span>)
+
+    <span class="keyword">elseif</span> keyName == <span class="string">"down"</span> <span class="keyword">then</span>
+      self.selected = <span class="global">math</span>.<span class="function-name">min</span>(#self._choices, self.selected + <span class="number">1</span>)
+
+    <span class="keyword">elseif</span> keyName == <span class="string">"esc"</span> <span class="keyword">and</span> self.cancellable <span class="keyword">then</span>
+      res1 = <span class="keyword">nil</span>
+      res2 = <span class="string">"cancelled"</span>
+      <span class="keyword">break</span>
+
+    <span class="keyword">elseif</span> keyName == <span class="string">"enter"</span> <span class="keyword">then</span>
+      res1 = self.selected
+      <span class="keyword">break</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">return</span> res1, res2
+<span class="keyword">end</span>
+
+
+
+<span class="comment">-- Runs the prompt and returns the selected option index.
+</span><span class="keyword">function</span> IMenu:<span class="function-name">run</span>()
+  <span class="global">assert</span>(self ~= IMenu, <span class="string">"IMenu is a class, not an instance"</span>)
+  <span class="keyword">local</span> revert
+  <span class="keyword">if</span> <span class="keyword">not</span> t.<span class="function-name">ready</span>() <span class="keyword">then</span> <span class="comment">-- initialize only if not done already
+</span>    t.<span class="function-name">initialize</span>()
+    revert = <span class="keyword">true</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">-- make room for our widget
+</span>  t.output.<span class="function-name">write</span>((<span class="string">"\n"</span>):<span class="function-name">rep</span>(#self._choices + <span class="number">1</span>))
+
+  t.cursor.visible.stack.<span class="function-name">push</span>(<span class="keyword">false</span>)
+  <span class="keyword">local</span> idx, err = self:<span class="function-name">handleInput</span>()
+  t.cursor.visible.stack.<span class="function-name">pop</span>()
+
+  <span class="keyword">if</span> revert <span class="keyword">then</span>
+    t.<span class="function-name">shutdown</span>()
+  <span class="keyword">end</span>
+
+  <span class="keyword">if</span> <span class="keyword">not</span> idx <span class="keyword">then</span>
+    <span class="keyword">return</span> <span class="keyword">nil</span>, err
+  <span class="keyword">end</span>
+
+  <span class="keyword">return</span> idx, self._choices[idx]
+<span class="keyword">end</span>
+
+
+
+<span class="comment">-- =================================================
+</span><span class="comment">--   End of the class definition
+</span><span class="comment">-- =================================================
+</span>
+<span class="comment">-- Example usage
+</span><span class="keyword">local</span> myMenu = <span class="function-name">IMenu</span>{
+  prompt = <span class="string">"Select a Lua version:"</span>,
+  choices = { <span class="string">"Lua 5.1"</span>, <span class="string">"Lua 5.2"</span>, <span class="string">"LuaJIT"</span>, <span class="string">"Lua 5.3"</span>, <span class="string">"Lua 5.4"</span>, <span class="string">"Teal"</span> },
+  default = <span class="number">5</span>,          <span class="comment">-- default to Lua 5.4
+</span>  cancellable = <span class="keyword">true</span>,   <span class="comment">-- press &lt;esc&gt; to cancel
+</span>}
+
+<span class="keyword">local</span> idx, option = <span class="function-name">myMenu</span>()
+<span class="global">print</span>(<span class="string">"selected: "</span> .. <span class="global">tostring</span>(idx) .. <span class="string">", option: "</span> .. option)</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

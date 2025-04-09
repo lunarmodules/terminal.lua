@@ -79,8 +79,9 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -98,6 +99,10 @@
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#class">class ([baseclass])</a></td>
+	<td class="summary">Creates a (sub)class.</td>
+	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#invalid_constant">invalid_constant (value, constants[, prefix="Invalid value: "])</a></td>
 	<td class="summary">Returns an error message for an invalid lookup constant.</td>
@@ -123,6 +128,55 @@
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
 
     <dl class="function">
+    <dt>
+    <a name = "class"></a>
+    <strong>class ([baseclass])</strong>
+    </dt>
+    <dd>
+    Creates a (sub)class.
+ This function creates a new class, which is a subclass of the given baseclass.
+ An instance can be created by calling on the class, the table passed in becomes the new instance.
+ If the class has an <code>init</code> method, then it will be called upon instantiation.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">baseclass</span>
+            <span class="types"><a class="type" href="../modules/terminal.utils.html#class">class</a></span>
+         The base-class to inherit from.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        The new class.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Cat = utils.<span class="function-name">class</span>()
+<span class="keyword">function</span> Cat:<span class="function-name">init</span>()
+  self.value = self.value <span class="keyword">or</span> <span class="number">42</span>
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> Lion = utils.<span class="function-name">class</span>(Cat)
+<span class="keyword">function</span> Lion:<span class="function-name">init</span>()
+  Cat.<span class="function-name">init</span>(self)        <span class="comment">-- call ancestor initializer
+</span>  self.value = self.value * <span class="number">2</span>
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> instance1 = <span class="function-name">Lion</span>()
+<span class="global">print</span>(instance1.value)      <span class="comment">--&gt; 84
+</span><span class="keyword">local</span> instance2 = <span class="function-name">Lion</span>({ value = <span class="number">10</span> })
+<span class="global">print</span>(instance2.value)      <span class="comment">--&gt; 20</span></pre>
+    </ul>
+
+</dd>
     <dt>
     <a name = "invalid_constant"></a>
     <strong>invalid_constant (value, constants[, prefix="Invalid value: "])</strong>

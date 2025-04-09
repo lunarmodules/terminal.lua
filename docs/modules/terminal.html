@@ -79,8 +79,9 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -122,11 +123,11 @@
 	<td class="summary">Initializes the terminal for use.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#initwrap">initwrap ([opts], main, ...)</a></td>
+	<td class="name" nowrap><a href="#initwrap">initwrap (main[, opts])</a></td>
 	<td class="summary">Wrap a function in <a href="../modules/terminal.html#initialize">initialize</a> and <a href="../modules/terminal.html#shutdown">shutdown</a> calls.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#preload_widths">preload_widths (str)</a></td>
+	<td class="name" nowrap><a href="#preload_widths">preload_widths ([str])</a></td>
 	<td class="summary">Preload known characters into the width-cache.</td>
 	</tr>
 	<tr>
@@ -136,6 +137,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#shutdown">shutdown ()</a></td>
 	<td class="summary">Shuts down the terminal, restoring the terminal settings.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#size">size ()</a></td>
+	<td class="summary">Returns the terminal size in rows and columns.</td>
 	</tr>
 </table>
 
@@ -242,35 +247,33 @@
 </dd>
     <dt>
     <a name = "initwrap"></a>
-    <strong>initwrap ([opts], main, ...)</strong>
+    <strong>initwrap (main[, opts])</strong>
     </dt>
     <dd>
     Wrap a function in <a href="../modules/terminal.html#initialize">initialize</a> and <a href="../modules/terminal.html#shutdown">shutdown</a> calls.
  When an error occurs, and the application exits, the terminal might not be properly shut down.
  This function wraps a function in calls to <a href="../modules/terminal.html#initialize">initialize</a> and <a href="../modules/terminal.html#shutdown">shutdown</a>, ensuring the terminal is properly shut down.
+ If an error is caught, it first shutsdown the terminal and then rethrows the error.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">opts</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         options table, to pass to <a href="../modules/terminal.html#initialize">initialize</a>.
-         (<em>optional</em>)
-        </li>
         <li><span class="parameter">main</span>
             <span class="types"><span class="type">function</span></span>
          the function to wrap
         </li>
-        <li><span class="parameter">...</span>
-         any parameters to pass to the main function
+        <li><span class="parameter">opts</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         options table, to pass to <a href="../modules/terminal.html#initialize">initialize</a>.
+         (<em>optional</em>)
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">any</span></span>
-        the return values of the wrapped function, or nil+err in case of an error
+           <span class="types"><span class="type">function</span></span>
+        wrapped function
     </ol>
 
 
@@ -278,26 +281,28 @@
     <h3>Usage:</h3>
     <ul>
         <pre class="example"><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>(param1, param2)
-  <span class="comment">-- your main app functionality here
-</span>
-  <span class="keyword">return</span> <span class="keyword">true</span> <span class="comment">-- return truthy to pass assertion below
-</span><span class="keyword">end</span>
 
-<span class="keyword">local</span> opts = {
+  <span class="comment">-- your main app functionality here
+</span>  <span class="global">error</span>(<span class="string">"oops..."</span>)
+
+<span class="keyword">end</span>
+
+main = t.<span class="function-name">initwrap</span>(main, {
   filehandle = <span class="global">io</span>.stderr,
   displaybackup = <span class="keyword">true</span>,
-}
-<span class="global">assert</span>(t.<span class="function-name">initwrap</span>(opts, main, <span class="string">"one"</span>, <span class="string">"two"</span>)) <span class="comment">-- assert to rethrow any error after termimal restore</span></pre>
+})
+
+<span class="function-name">main</span>(<span class="string">"one"</span>, <span class="string">"two"</span>) <span class="comment">-- rethrows any error after termimal restore</span></pre>
     </ul>
 
 </dd>
     <dt>
     <a name = "preload_widths"></a>
-    <strong>preload_widths (str)</strong>
+    <strong>preload_widths ([str])</strong>
     </dt>
     <dd>
     Preload known characters into the width-cache.
- Source is the <code>draw.box</code> formats, and the <code>progress</code> spinner sprites.
+ Characters loaded will be the <code>draw.box</code> formats, and the <code>progress</code> spinner sprites.
  Uses <code>text.width.test</code> to test the widths of the characters.
 
 
@@ -306,6 +311,7 @@
         <li><span class="parameter">str</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          additional character string to preload
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -352,6 +358,39 @@
     <ol>
 
         true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "size"></a>
+    <strong>size ()</strong>
+    </dt>
+    <dd>
+    Returns the terminal size in rows and columns.
+ Just a convenience, maps 1-on-1 to <code>system.termsize</code>.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        number of rows</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        number of columns</li>
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        on error</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        error message</li>
     </ol>
 
 

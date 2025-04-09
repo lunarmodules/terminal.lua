@@ -39,8 +39,9 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><strong>progress.lua</strong></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -127,7 +128,8 @@
 
   <span class="comment">-- add the ticker one last
 </span>  spinners[#spinners+<span class="number">1</span>] = p.<span class="function-name">spinner</span> {
-    sprites = p.<span class="function-name">ticker</span>(<span class="string">"please wait..."</span>, <span class="number">30</span>, <span class="string">"Done!"</span>),
+    <span class="comment">-- uses utf8 character
+</span>    sprites = p.<span class="function-name">ticker</span>(<span class="string">"🕓-Please wait-🎹..."</span>, <span class="number">30</span>, <span class="string">"Done!"</span>),
     col = <span class="number">1</span>,
     row = r - <span class="number">1</span>,
     textattr = {fg = <span class="string">"black"</span>, bg = <span class="string">"red"</span>, brightness = <span class="string">"normal"</span>},
@@ -156,12 +158,10 @@
   <span class="keyword">end</span>
   t.cursor.visible.<span class="function-name">set</span>(<span class="keyword">true</span>)
   t.output.<span class="global">print</span>() <span class="comment">-- move to new line (we're still on the 'press any key' line)
-</span>
-  <span class="keyword">return</span> <span class="keyword">true</span>
-<span class="keyword">end</span>
+</span><span class="keyword">end</span>
 
 <span class="comment">-- run the main function, wrapped in terminal init/shutdown
-</span><span class="global">assert</span>(t.<span class="function-name">initwrap</span>({}, main))</pre>
+</span>t.<span class="function-name">initwrap</span>(main)()</pre>
 
 
 </div> <!-- id="content" -->

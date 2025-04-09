@@ -79,8 +79,9 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -119,7 +120,7 @@ terminal.output.write(&quot;hello world&quot;)
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#write">write (...)</a></td>
-	<td class="summary">Writes to the stream in chunks.</td>
+	<td class="summary">Writes to the stream.</td>
 	</tr>
 </table>
 
@@ -204,15 +205,14 @@ terminal.output.write(&quot;hello world&quot;)
     </dt>
     <dd>
 
-<p>Writes to the stream in chunks.
- Parameters are written to the stream, and flushed after each chunk. A small sleep is
- added after each chunk to allow the terminal to process the data.
- This is done to prevent the terminal buffer from overrunning and dropping data.</p>
-
-<p> Differences from the standard Lua write function:</p>
+<p>Writes to the stream.
+ This is a safer write-function than the standard Lua one.
+ Differences from the standard Lua write function:</p>
 
 <ul>
     <li>parameters will be tostring-ed before writing</li>
+    <li>will retry on EAGAIN or EWOULDBLOCK errors (after a short sleep)</li>
+    <li>will flush the stream</li>
 </ul>
 
 

@@ -80,8 +80,9 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -112,6 +113,11 @@
 	<tr>
 	<td class="name" nowrap><a href="#utf8cwidth">utf8cwidth (char)</a></td>
 	<td class="summary">Returns the width of a character in columns, matches <code>system.utf8cwidth</code> signature.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
+	<td class="summary">Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
+ Preserves utf8.len()</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#utf8swidth">utf8swidth (str)</a></td>
@@ -160,6 +166,42 @@
 
            <span class="types"><span class="type">number</span></span>
         the width of the first character in columns
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "utf8sub"></a>
+    <strong>utf8sub (str, i, j)</strong>
+    </dt>
+    <dd>
+    Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
+ Preserves utf8.len()
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to take the substring of
+        </li>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         the starting index of the substring
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         the ending index of the substring
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the substring
     </ol>
 
 

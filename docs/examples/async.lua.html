@@ -39,8 +39,9 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/menu.lua.html">menu.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
-  <li><a href="../examples/readline.lua.html">readline.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -87,51 +88,61 @@
 
     <h2>async.lua</h2>
 <pre>
-<span class="keyword">local</span> sys = <span class="global">require</span>(<span class="string">"system"</span>)
-
-<span class="keyword">local</span> startTime = sys.<span class="function-name">gettime</span>()
-<span class="keyword">local</span> timeoutDuration = <span class="number">3</span> <span class="comment">-- seconds
+<span class="comment">-- An example of asynchoneous input and output using the <code>copas</code> library.
+</span><span class="comment">-- This example shows how to use the <code>copas</code> library to create a simple
+</span><span class="comment">-- terminal application that displays the current time and waits for keyboard input.
 </span>
-<span class="comment">-- set io.stdin to non-blocking mode
-</span><span class="comment">-- setup Windows console to handle ANSI processing
-</span>sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdout, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdout) + sys.COF_VIRTUAL_TERMINAL_PROCESSING)
-sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdin, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdin) + sys.CIF_VIRTUAL_TERMINAL_INPUT)
-
-<span class="comment">-- setup Posix to disable canonical mode and echo
-</span><span class="keyword">local</span> of_attr = sys.<span class="function-name">tcgetattr</span>(<span class="global">io</span>.stdin)
-sys.<span class="function-name">setnonblock</span>(<span class="global">io</span>.stdin, <span class="keyword">true</span>)
-sys.<span class="function-name">tcsetattr</span>(<span class="global">io</span>.stdin, sys.TCSANOW, {
-  lflag = of_attr.lflag - sys.L_ICANON - sys.L_ECHO, <span class="comment">-- disable canonical mode and echo
-</span>})
+<span class="keyword">local</span> copas = <span class="global">require</span>(<span class="string">"copas"</span>)
+<span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
 
 
 
-<span class="global">print</span>(<span class="string">"Press any key (timeout: 3 seconds)..."</span>)
-<span class="keyword">local</span> key, typ
-<span class="keyword">while</span> sys.<span class="function-name">gettime</span>() - startTime &lt; timeoutDuration <span class="keyword">do</span>
-  key, typ = sys.<span class="function-name">readansi</span>(<span class="number">0.3</span>)
-  <span class="keyword">if</span> key <span class="keyword">then</span>
-    <span class="global">print</span>(<span class="string">"You pressed:"</span>, key, <span class="string">"(type:"</span>, typ, <span class="string">")"</span>)
-    <span class="keyword">break</span>
+<span class="comment">-- add timer display thread
+</span>copas.<span class="function-name">addthread</span>(<span class="keyword">function</span>()
+
+  <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">updatetime</span>(time)
+    <span class="keyword">local</span> dt = <span class="global">os</span>.<span class="function-name">date</span>(<span class="string">" %H:%M:%S "</span>, time)
+    t.output.<span class="function-name">write</span>(
+      t.cursor.position.stack.<span class="function-name">push_seq</span>(<span class="number">1</span>, - #dt),
+      t.text.stack.<span class="function-name">push_seq</span>{ fg = <span class="string">"black"</span>, bg = <span class="string">"white"</span> },
+      dt,
+      t.text.stack.<span class="function-name">pop_seq</span>(),
+      t.cursor.position.stack.<span class="function-name">pop_seq</span>()
+    )
   <span class="keyword">end</span>
-<span class="keyword">end</span>
 
-<span class="keyword">if</span> <span class="keyword">not</span> key <span class="keyword">then</span>
-  <span class="global">print</span>(<span class="string">"No key pressed within timeout."</span>)
-<span class="keyword">end</span>
+  <span class="keyword">while</span> <span class="keyword">not</span> copas.<span class="function-name">exiting</span>() <span class="keyword">do</span>
+    <span class="keyword">local</span> t = copas.<span class="function-name">gettime</span>()
+    <span class="function-name">updatetime</span>(<span class="global">math</span>.<span class="function-name">floor</span>(t))
+    copas.<span class="function-name">pause</span>(<span class="number">1</span> - (t - <span class="global">math</span>.<span class="function-name">floor</span>(t))) <span class="comment">-- sleep until the next second
+</span>  <span class="keyword">end</span>
+<span class="keyword">end</span>)
 
 
-<span class="comment">-- restore old setting
-</span><span class="comment">-- windows
-</span>sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdout, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdout) - sys.COF_VIRTUAL_TERMINAL_PROCESSING)
-sys.<span class="function-name">setconsoleflags</span>(<span class="global">io</span>.stdin, sys.<span class="function-name">getconsoleflags</span>(<span class="global">io</span>.stdin) - sys.CIF_VIRTUAL_TERMINAL_INPUT)
 
-<span class="comment">-- posix
-</span><span class="keyword">local</span> of_attr = sys.<span class="function-name">tcgetattr</span>(<span class="global">io</span>.stdin)
-sys.<span class="function-name">setnonblock</span>(<span class="global">io</span>.stdin, <span class="keyword">false</span>)
-sys.<span class="function-name">tcsetattr</span>(<span class="global">io</span>.stdin, sys.TCSANOW, {
-  lflag = of_attr.lflag + sys.L_ICANON + sys.L_ECHO,
-})</pre>
+<span class="comment">-- add thread waiting for keyboard input
+</span>copas.<span class="function-name">addthread</span>(<span class="keyword">function</span>()
+  t.output.<span class="global">print</span>(<span class="string">"Press 'q' to exit..."</span>)
+
+  <span class="keyword">while</span> <span class="keyword">not</span> copas.<span class="function-name">exiting</span>() <span class="keyword">do</span>
+    <span class="keyword">local</span> key = t.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
+    <span class="keyword">if</span> key <span class="keyword">then</span>
+      t.output.<span class="global">print</span>(<span class="string">"You pressed: "</span> .. key:<span class="function-name">gsub</span>(<span class="string">"\027"</span>, <span class="string">"\\027"</span>))
+      <span class="keyword">if</span> key == <span class="string">"q"</span> <span class="keyword">then</span>
+        copas.<span class="function-name">exit</span>()
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>)
+
+
+
+<span class="comment">-- start the copas loop, wrapped in term setup/teardown
+</span>t.<span class="function-name">initwrap</span>(copas.loop,{
+  displaybackup = <span class="keyword">true</span>,
+  filehandle = <span class="global">io</span>.stdout,
+  sleep = copas.pause, <span class="comment">-- ensure readansi is yielding
+</span>})()</pre>
 
 
 </div> <!-- id="content" -->
