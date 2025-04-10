@@ -1,11 +1,7 @@
 --- Support functions.
 -- @module terminal.utils
 
-
-
 local M = {}
-
-
 
 -- Converts table-keys to a string for error messages.
 -- Takes a constants table, and returns a string containing the keys such that the
@@ -35,8 +31,6 @@ local function constants_to_string(constants)
   return table.concat(keys_num, ", ")
 end
 
-
-
 --- Returns an error message for an invalid lookup constant.
 -- This function is used to generate error messages for invalid arguments.
 -- @tparam number|string value The value that wasn't found.
@@ -55,8 +49,6 @@ function M.invalid_constant(value, constants, prefix)
   return prefix .. value .. ". Expected one of: " .. list
 end
 
-
-
 --- Throws an error message for an invalid lookup constant.
 -- This function is used to generate error messages for invalid arguments.
 -- @tparam number|string value The value that wasn't found.
@@ -69,8 +61,6 @@ function M.throw_invalid_constant(value, constants, prefix, err_lvl)
   error(M.invalid_constant(value, constants, prefix), err_lvl)
   -- unreachable
 end
-
-
 
 --- Converts a lookup table to a constant table with user friendly error reporting.
 -- The constant table is modified in-place, a metatable with an __index metamethod
@@ -101,8 +91,6 @@ function M.make_lookup(value_type, t)
   return t
 end
 
-
-
 --- Resolve indices.
 -- This function resolves negative indices to positive indices.
 -- The result will be capped into the range [`min_value`, `max_value`].
@@ -126,15 +114,13 @@ function M.resolve_index(index, max_value, min_value)
   return index
 end
 
-
-
+-- Minimal object-oriented class model
 do
-  local constructor = function(cls, instance)
+  local constructor = function(cls, arg)
     assert(rawget(cls, "__index"), "Constructor can only be called on a Class")
-    instance = instance or {}
-    setmetatable(instance, cls)
+    local instance = setmetatable({}, cls)
     if instance.init then
-      instance:init()
+      instance:init(arg)
     end
     return instance
   end
@@ -143,7 +129,6 @@ do
   local base = {}
   base.__index = base
   base.__call = constructor
-
 
   --- Creates a (sub)class.
   -- This function creates a new class, which is a subclass of the given baseclass.
@@ -173,7 +158,6 @@ do
     local class = setmetatable({}, baseclass)
     class.__index = class
     class.__call = constructor
-
     return setmetatable(class, baseclass)
   end
 end
