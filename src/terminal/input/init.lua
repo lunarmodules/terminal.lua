@@ -16,6 +16,7 @@ local sys = require "system"
 
 local M = {}
 package.loaded["terminal.input"] = M -- Register the module early to avoid circular dependencies
+M.keymap = require("terminal.input.keymap")
 local terminal = require("terminal")
 local output = require("terminal.output")
 
