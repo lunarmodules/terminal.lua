@@ -1,54 +1,55 @@
 -- experimental/luarox.lua
--- Interactive LuaRocks wrapper prototype using terminal.cli widgets
+-- Minimal LuaRocks wrapper prototype using only terminal.cli.select
 
+local t = require("terminal")
 local Select = require("terminal.cli.select")
-local Prompt = require("terminal.cli.prompt")
+local draw = t.draw
 
--- Function to draw divider
-local function divider(title)
-  print("\n" .. ("-"):rep(40))
-  if title then print(title) end
-  print(("="):rep(40) .. "\n")
+-- Helper to run shell commands safely
+local function run_shell_command(cmd)
+  io.flush()
+  t.shutdown()
+  os.execute(cmd)
+  io.write("\nPress Enter to continue...") io.flush()
+  io.read("*l")
+  t.initialize()
+  io.flush()
 end
 
--- Main loop
-while true do
-  local menu = Select{
-    prompt = "Select a LuaRocks command:",
-    choices = {
-      "luarocks install",
-      "luarocks list",
-      "luarocks search",
-      "Exit"
-    },
-    cancellable = true
-  }
+local function main()
+  while true do
+    local menu = Select{
+      prompt = "Select a LuaRocks command:",
+      choices = {
+        "luarocks install",
+        "luarocks list",
+        "luarocks search",
+        "Exit"
+      },
+      cancellable = true
+    }
 
-  local _, selection = menu()
-  if not selection or selection == "Exit" then
-    print("Goodbye!")
-    break
-  end
-
-  divider("You selected: " .. selection)
-
-  if selection == "luarocks list" then
-    os.execute("luarocks list")
-
-  elseif selection == "luarocks install" then
-    local rock = Prompt{ prompt = "Enter rock to install:" }()
-    if rock and rock ~= "" then
-      os.execute("luarocks install " .. rock)
-    else
-      print("No rock entered. Aborting.")
+    local _, selection = menu()
+    selection = tostring(selection)
+    if selection == "Exit" then
+      print("Goodbye!")
+      break
     end
 
-  elseif selection == "luarocks search" then
-    local rock = Prompt{ prompt = "Enter rock to search:" }()
-    if rock and rock ~= "" then
-      os.execute("luarocks search " .. rock)
-    else
-      print("No rock entered. Aborting.")
+    local _, width = t.size()
+    width = width or 80
+    draw.line.title(width, "You selected: " .. selection)
+
+    if selection == "luarocks list" then
+      run_shell_command("luarocks list")
+
+    elseif selection == "luarocks install" then
+      print("You selected install")
+
+    elseif selection == "luarocks search" then
+      print("You selected search")
     end
   end
 end
+
+t.initwrap(main)()

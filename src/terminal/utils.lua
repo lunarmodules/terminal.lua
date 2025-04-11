@@ -118,7 +118,7 @@ end
 do
   local constructor = function(cls, arg)
     assert(rawget(cls, "__index"), "Constructor can only be called on a Class")
-    local instance = setmetatable({}, cls)
+    local instance = setmetatable(arg or {}, cls)
     if instance.init then
       instance:init(arg)
     end
