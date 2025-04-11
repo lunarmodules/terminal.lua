@@ -3,7 +3,6 @@
 local t = require("terminal")
 local Sequence = require("terminal.sequence")
 local utils = require("terminal.utils")
-local keymap = require("terminal.keymap").map
 
 local Select = utils.class()
 
