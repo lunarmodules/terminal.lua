@@ -3,19 +3,9 @@
 local t = require("terminal")
 local Sequence = require("terminal.sequence")
 local utils = require("terminal.utils")
+local keymap = require("terminal.keymap").map
 
 local Select = utils.class()
-
--- Key bindings
-local key_names = {
-  ["\27[A"] = "up",    -- Up arrow
-  ["k"]     = "up",    -- Vim-style up
-  ["\27[B"] = "down",  -- Down arrow
-  ["j"]     = "down",  -- Vim-style down
-  ["\r"]    = "enter", -- Carriage return (Enter)
-  ["\n"]    = "enter", -- Newline (Enter)
-  ["\27"]   = "esc",   -- Escape
-}
 
 -- UI symbols
 local diamond = "◇"
@@ -86,7 +76,7 @@ end
 -- Read and normalize key input
 function Select:readKey()
   local key = t.input.readansi(math.huge)
-  return key, key_names[key] or key
+  return key, keymap[key] or key
 end
 
 -- Handle input loop and navigation
