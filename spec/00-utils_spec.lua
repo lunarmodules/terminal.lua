@@ -129,7 +129,9 @@ describe("Utils", function()
     it("subclassing works", function()
       local Cat = utils.class()
       function Cat:init()
-        self.value = 42
+        if self.value == nil then
+          self.value = 42
+        end
       end
 
       local Lion = utils.class(Cat)
