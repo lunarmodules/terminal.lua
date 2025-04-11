@@ -30,6 +30,7 @@ function Select:init(options)
   self.selected = default
   self.prompt = options.prompt or "Select an option:"
   self.cancellable = not not options.cancellable
+  self.keymap = options.keymap or require("terminal.keymap").map
 
   self:template()
 end
@@ -76,7 +77,7 @@ end
 -- Read and normalize key input
 function Select:readKey()
   local key = t.input.readansi(math.huge)
-  return key, keymap[key] or key
+  return key, self.keymap[key] or key
 end
 
 -- Handle input loop and navigation
