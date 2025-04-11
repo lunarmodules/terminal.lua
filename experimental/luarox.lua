@@ -16,6 +16,18 @@ local function run_shell_command(cmd)
   io.flush()
 end
 
+-- Reads a line in blocking + canonical mode temporarily
+local function read_blocking_line(prompt)
+  t.shutdown()               -- exit raw mode (back to normal terminal)
+  io.write(prompt or "> ")   -- print prompt
+  io.flush()
+  local line = io.read("*l") -- read user input (blocking)
+  t.initialize()             -- re-enable raw mode for terminal.lua
+  io.flush()
+  return line
+end
+
+
 local function main()
   while true do
     local menu = Select{
@@ -44,10 +56,20 @@ local function main()
       run_shell_command("luarocks list")
 
     elseif selection == "luarocks install" then
-      print("You selected install")
+      local rock = read_blocking_line("Enter rock to install: ")
+      if rock and rock ~= "" then
+        run_shell_command("luarocks install " .. rock .. " --local")
+      else
+        print("No rock entered. Aborting.")
+      end
 
     elseif selection == "luarocks search" then
-      print("You selected search")
+      local term = read_blocking_line("Enter term to search: ")
+      if term and term ~= "" then
+        run_shell_command("luarocks search " .. term)
+      else
+        print("No search term entered.")
+      end
     end
   end
 end
