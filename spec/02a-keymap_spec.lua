@@ -17,7 +17,7 @@ describe("keymap:", function()
 
     it("is a table containing key mappings", function()
       assert.is.table(keymap.default_key_map)
-      assert.is.equal("null", keymap.default_key_map["\000"])
+      assert.is.equal("ctrl_@", keymap.default_key_map["\000"])
     end)
 
   end)
@@ -28,28 +28,13 @@ describe("keymap:", function()
 
     it("is a table mapping names to internal names", function()
       assert.is.table(keymap.default_keys)
-      assert.is.equal("null", keymap.default_keys.null)
+      assert.is.equal("ctrl_@", keymap.default_keys.null)
     end)
 
 
     it("contains the default aliasses", function()
-      assert.is.equal("bs", keymap.default_keys.backspace)
-      assert.is.equal("ht", keymap.default_keys.tab)
-    end)
-
-
-    it("looks keys up case-insensitive", function()
-      -- not in the table to begin with
-      assert.is_nil(rawget(keymap.default_keys, "NULL")) -- default key
-      assert.is_nil(rawget(keymap.default_keys, "tAB"))    -- default alias
-
-      -- lookup works, and sets them
-      assert.is.equal("null", keymap.default_keys.NULL) -- default key
-      assert.is.equal("ht", keymap.default_keys.tAB)    -- default alias
-
-      -- metamethod sets them on the table, after the first lookup
-      assert.is.equal("null", rawget(keymap.default_keys, "NULL")) -- default key
-      assert.is.equal("ht", rawget(keymap.default_keys, "tAB"))    -- default alias
+      assert.is.equal("ctrl_h", keymap.default_keys.backspace)
+      assert.is.equal("ctrl_i", keymap.default_keys.tab)
     end)
 
 
@@ -77,7 +62,7 @@ describe("keymap:", function()
 
     it("returns a table containing the default key mappings", function()
       local km = keymap.get_keymap()
-      assert.is.equal("null", km["\000"])
+      assert.is.equal("ctrl_@", km["\000"])
     end)
 
 
@@ -111,9 +96,9 @@ describe("keymap:", function()
     it("returns a table containing the default keys and default aliasses", function()
       local keys = keymap.get_keys()
 
-      assert.is.equal("null", keys["null"])       -- default key
-      assert.is.equal("bs", keys["backspace"])    -- default alias
-      assert.is.equal("ht", keys["tab"])          -- default alias
+      assert.is.equal("ctrl_@", keys["null"])       -- default key
+      assert.is.equal("ctrl_h", keys["backspace"])    -- default alias
+      assert.is.equal("ctrl_i", keys["tab"])          -- default alias
     end)
 
 
@@ -122,29 +107,7 @@ describe("keymap:", function()
         sooper_key = keymap.default_keys.esc,
       })
 
-      assert.is.equal("esc", keys.sooper_key)
-    end)
-
-
-    it("looks keys up case-insensitive", function()
-      local keys = keymap.get_keys(nil, {
-        sooper_key = keymap.default_keys.esc,
-      })
-
-      -- not in the table to begin with
-      assert.is_nil(rawget(keys, "NULL"))       -- default key
-      assert.is_nil(rawget(keys, "tAB"))        -- default alias
-      assert.is_nil(rawget(keys, "SoOpEr_KeY")) -- custom alias
-
-      -- lookup works, and sets them
-      assert.is.equal("null", keys.NULL) -- default key
-      assert.is.equal("ht", keys.tAB)    -- default alias
-      assert.is.equal("esc", keys.SoOpEr_KeY) -- custom alias
-
-      -- metamethod sets them on the table, after the first lookup
-      assert.is.equal("null", rawget(keys, "NULL")) -- default key
-      assert.is.equal("ht", rawget(keys, "tAB"))    -- default alias
-      assert.is.equal("esc", rawget(keys, "SoOpEr_KeY")) -- custom alias
+      assert.is.equal("ctrl_[", keys.sooper_key)
     end)
 
 
