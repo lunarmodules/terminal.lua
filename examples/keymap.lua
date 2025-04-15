@@ -7,6 +7,33 @@ local print = t.output.print
 local write = t.output.write
 
 
+local function yellow(str)
+  return t.text.stack.push_seq({fg="yellow"}) .. str .. t.text.stack.pop_seq()
+end
+
+
+
+local function to_hex_debug_format(str)
+  local hex_part = ""
+  local char_part = ""
+
+  for i = 1, #str do
+    local byte = string.byte(str, i)
+    local char = str:sub(i, i)
+
+    hex_part = hex_part .. string.format("%02X", byte) .. " "
+    if byte < 32 or byte > 126 then
+      char_part = char_part .. "."
+    else
+      char_part = char_part .. char
+    end
+  end
+
+  return yellow("\ttext: ") .. char_part .. yellow("\n\thex : ") .. hex_part
+end
+
+
+
 local function main()
   repeat
     write("Press 'q' to exit, any other key to see its name and aliasses...")
@@ -15,20 +42,19 @@ local function main()
     t.clear.eol()
 
     if not key then
-      print("an error occured while reading input: " .. tostring(key))
+      print(yellow("an error occured while reading input: "))
+      print(to_hex_debug_format(key))
 
     elseif key == "q" then
-      print("Exiting!")
+      print(yellow("Exiting!"))
 
     else
-      if #key == 1 and key:sub(1,1):byte() < 32 then
-        print("received a '" .. keytype .."' control character: " .. tostring(key:sub(1,1):byte()))
-      else
-        print("received a '" .. keytype .."' key: '" .. key:gsub("\027", "\\027").."' (" .. tostring(#key) .. " bytes)")
-      end
+      print(yellow("received a '") .. keytype .. yellow("' key:"))
+      print(to_hex_debug_format(key))
+
       local keyname = keymap[key]
-      print("\tit has the internal name: '" .. tostring(keyname) .. "'")
-      print("\tit maps to the names:")
+      print(yellow("\tit has the internal name: '") .. tostring(keyname) .. yellow("'"))
+      print(yellow("\tit maps to the names:"))
       for k, v in pairs(keys) do
         if v == keyname then
           print("\t\t" .. k)
