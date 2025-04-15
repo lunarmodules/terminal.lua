@@ -127,6 +127,8 @@ do
   -- In an async application (coroutines), this should be a yielding sleep function, eg. `copas.pause`.
   -- @tparam[opt=true] boolean opts.autotermrestore if `false`, the terminal settings will not be restored.
   -- See `luasystem.autotermrestore`.
+  -- @tparam[opt=false] boolean opts.disable_sigint if `true`, the terminal will not send a SIGINT signal
+  -- on Ctrl-C. Disables Ctrl-C, Ctrl-Z, and Ctrl-\, which allows the application to handle them.
   -- @return true
   function M.initialize(opts)
     assert(not M.ready(), "terminal already initialized")
@@ -169,6 +171,14 @@ do
     })
     -- setup stdin to non-blocking mode
     sys.setnonblock(io.stdin, true)
+
+    if opts.disable_sigint then
+      -- let the app handle ctrl-c, don't send SIGINT
+      sys.tcsetattr(io.stdin, sys.TCSANOW, {
+        lflag = sys.tcgetattr(io.stdin).lflag - sys.L_ISIG,
+      })
+      sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) - sys.CIF_PROCESSED_INPUT)
+    end
 
     return true
   end

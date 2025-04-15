@@ -198,6 +198,11 @@ end
 --   End of the class definition
 -- =================================================
 
+t.initialize{
+  disable_sigint = true,
+  autotermrestore = true,
+}
+
 -- Example usage
 local myMenu = IMenu{
   prompt = "Select a Lua version:",
