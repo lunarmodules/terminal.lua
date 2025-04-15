@@ -4,6 +4,7 @@
 local t = require("terminal")
 local Select = require("terminal.cli.select")
 local draw = t.draw
+local print = t.output.print
 
 -- Helper to run shell commands safely
 local function run_shell_command(cmd)
@@ -51,6 +52,7 @@ local function main()
     local _, width = t.size()
     width = width or 80
     draw.line.title(width, "You selected: " .. selection)
+    print()
 
     if selection == "luarocks list" then
       run_shell_command("luarocks list")

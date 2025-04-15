@@ -24,22 +24,20 @@ local circle = "○"
 local dot = "●"
 
 -- Initialize menu
-function Select:init(options)
-  assert(type(options) == "table", "options must be a table")
-  assert(type(options.choices) == "table", "choices must be a table")
-  assert(#options.choices > 0, "choices must not be empty")
-  for _, val in ipairs(options.choices) do
+function Select:init()
+  assert(type(self.choices) == "table", "choices must be a table")
+  assert(#self.choices > 0, "choices must not be empty")
+  for _, val in ipairs(self.choices) do
     assert(type(val) == "string", "each choice must be a string")
   end
 
-  local default = options.default or 1
-  assert(type(default) == "number", "default must be a number")
-  assert(default >= 1 and default <= #options.choices, "default out of range")
+  self.default = self.default or 1
+  assert(type(self.default) == "number", "default must be a number")
+  assert(self.default >= 1 and self.default <= #self.choices, "default out of range")
 
-  self._choices = options.choices
-  self.selected = default
-  self.prompt = options.prompt or "Select an option:"
-  self.cancellable = not not options.cancellable
+  self.selected = self.default
+  self.prompt = self.prompt or "Select an option:"
+  self.cancellable = not not self.cancellable
 
   self:template()
 end
@@ -52,7 +50,7 @@ end
 -- Build full UI sequence
 function Select:template()
   local res = Sequence(
-    t.cursor.position.up_seq():rep(#self._choices + 1),
+    t.cursor.position.up_seq():rep(#self.choices + 1),
     function() return t.text.stack.push_seq({ fg = "green" }) end,
     diamond,
     t.text.stack.pop_seq,
@@ -62,7 +60,7 @@ function Select:template()
     "\n"
   )
 
-  for i, option in ipairs(self._choices) do
+  for i, option in ipairs(self.choices) do
     res = res + Sequence(
       pipe, "   ",
       function() return i == self.selected and dot or circle end,
@@ -100,7 +98,7 @@ function Select:handleInput()
     if keyName == "up" then
       self.selected = math.max(1, self.selected - 1)
     elseif keyName == "down" then
-      self.selected = math.min(#self._choices, self.selected + 1)
+      self.selected = math.min(#self.choices, self.selected + 1)
     elseif keyName == "esc" and self.cancellable then
       res1, res2 = nil, "cancelled"
       break
@@ -121,7 +119,7 @@ function Select:run()
   end
 
   -- Reserve space for rendering
-  t.output.write(("\n"):rep(#self._choices + 1))
+  t.output.write(("\n"):rep(#self.choices + 1))
   t.cursor.visible.stack.push(false)
 
   local idx, err = self:handleInput()
@@ -133,7 +131,7 @@ function Select:run()
     return nil, err
   end
 
-  return idx, self._choices[idx]
+  return idx, self.choices[idx]
 end
 
 return Select
