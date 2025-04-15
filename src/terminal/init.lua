@@ -125,6 +125,8 @@ do
   -- will be used by `cursor.position.get` when reading the cursor position.
   -- @tparam[opt=sys.sleep] function opts.sleep the default sleep function to use for `readansi`.
   -- In an async application (coroutines), this should be a yielding sleep function, eg. `copas.pause`.
+  -- @tparam[opt=true] boolean opts.autotermrestore if `false`, the terminal settings will not be restored.
+  -- See `luasystem.autotermrestore`.
   -- @return true
   function M.initialize(opts)
     assert(not M.ready(), "terminal already initialized")
@@ -141,6 +143,10 @@ do
 
     M._asleep = opts.sleep or sys.sleep
     assert(type(M._asleep) == "function", "invalid opts.sleep function, expected a function, got " .. type(opts.sleep))
+
+    if opts.autotermrestore ~= nil then
+      sys.autotermrestore()
+    end
 
     sys.detachfds()
 
