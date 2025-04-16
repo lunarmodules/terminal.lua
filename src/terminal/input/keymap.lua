@@ -2,6 +2,7 @@
 -- Check the examples below for usage.
 
 local M = {}
+local sys = require("system")
 
 --- The default list of key-mapping from sequences/chars to key names.
 -- @table default_key_map
@@ -255,8 +256,8 @@ do
     -- Human-readable aliases
     ["backspace"] = "ctrl_h",
     ["tab"] = "ctrl_i",
-    ["enter"] = "ctrl_m",
-    ["return"] = "ctrl_m",
+    ["enter"] = sys.windows and "ctrl_m" or "ctrl_j",
+    ["return"] = sys.windows and "ctrl_m" or "ctrl_j",
     ["newline"] = "ctrl_j",
     ["escape"] = "ctrl_[",
 
