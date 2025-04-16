@@ -7,15 +7,12 @@ local utils = require("terminal.utils")
 local Select = utils.class()
 
 -- Key bindings
-local key_names = {
-  ["\27[A"] = "up",    -- Up arrow
-  ["k"]     = "up",    -- Vim-style up
-  ["\27[B"] = "down",  -- Down arrow
-  ["j"]     = "down",  -- Vim-style down
-  ["\r"]    = "enter", -- Carriage return (Enter)
-  ["\n"]    = "enter", -- Newline (Enter)
-  ["\27"]   = "esc",   -- Escape
-}
+local keys = t.input.keymap.get_keys()
+local keymap = t.input.keymap.get_keymap({
+  k = keys.up,    -- Vim-style up
+  j = keys.down,  -- Vim-style down
+  ctrl_c = keys.escape, -- Ctrl+C
+})
 
 -- UI symbols
 local diamond = "◇"
@@ -84,7 +81,7 @@ end
 -- Read and normalize key input
 function Select:readKey()
   local key = t.input.readansi(math.huge)
-  return key, key_names[key] or key
+  return key, keymap[key] or key
 end
 
 -- Handle input loop and navigation
@@ -95,14 +92,17 @@ function Select:handleInput()
 
     local _, keyName = self:readKey()
 
-    if keyName == "up" then
+    if keyName == keys.up then
       self.selected = math.max(1, self.selected - 1)
-    elseif keyName == "down" then
+
+    elseif keyName == keys.down then
       self.selected = math.min(#self.choices, self.selected + 1)
-    elseif keyName == "esc" and self.cancellable then
+
+    elseif keyName == keys.escape and self.cancellable then
       res1, res2 = nil, "cancelled"
       break
-    elseif keyName == "enter" then
+
+    elseif keyName == keys.enter then
       res1 = self.selected
       break
     end

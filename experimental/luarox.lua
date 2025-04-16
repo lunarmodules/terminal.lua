@@ -44,7 +44,7 @@ local function main()
 
     local _, selection = menu()
     selection = tostring(selection)
-    if selection == "Exit" then
+    if selection == "Exit" or selection == "cancelled" then
       print("Goodbye!")
       break
     end
