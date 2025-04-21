@@ -1,13 +1,27 @@
---- terminal.cli.select
--- A single-choice interactive menu widget for CLI tools.
+--- A single-choice interactive menu widget for CLI tools.
 --
 -- This module provides a simple way to create a menu with a list of choices,
 -- allowing the user to navigate and select an option using keyboard input.
 -- The menu is displayed in the terminal, and the user can use the arrow keys
 -- to navigate through the options. The selected option is highlighted, and the
--- user can confirm their choice by pressing Enter. Optionally he menu can also be
--- cancelled by pressing Escape or Ctrl+C.
--- @classmod Select
+-- user can confirm their choice by pressing Enter. Optionally the menu can also be
+-- cancelled by pressing `<esc>` or `<ctrl+c>`.
+-- @classmod cli.Select
+-- @usage
+-- local menu = cli.Select{   -- invokes the 'init' method
+--   prompt = "Select an option:",
+--   choices = {
+--     "Option 1",
+--     "Option 2",
+--     "Option 3"
+--   },
+--   default = 1,
+--   cancellable = true
+-- }
+--
+-- local selected_index, selected_value = menu()  -- invokes the 'run' method
+-- print("Selected index: " .. selected_index)
+-- print("Selected value: " .. selected_value)
 
 local t = require("terminal")
 local Sequence = require("terminal.sequence")
@@ -32,6 +46,7 @@ local diamond = "◇"
 local pipe = "│"
 local circle = "○"
 local dot = "●"
+local angle = "└"
 
 
 
@@ -42,22 +57,6 @@ local dot = "●"
 -- @tparam[opt=1] number opts.default Default choice index (1-based).
 -- @tparam[opt="Select an option:"] string opts.prompt Prompt message to display.
 -- @tparam[opt=false] boolean opts.cancellable Whether the menu can be cancelled (by pressing `<esc>` or `<ctrl+c>`).
--- @treturn Select A new Select instance.
--- @usage
--- local menu = Select{   -- invokes the 'init' method
---   prompt = "Select an option:",
---   choices = {
---     "Option 1",
---     "Option 2",
---     "Option 3"
---   },
---   default = 1,
---   cancellable = true
--- }
---
--- local selected_index, selected_value = menu()  -- invokes the 'run' method
--- print("Selected index: " .. selected_index)
--- print("Selected value: " .. selected_value)
 function Select:init(opts)
   assert(type(opts) == "table", "options must be a table")
   assert(type(opts.choices) == "table", "choices must be a table")
@@ -104,7 +103,8 @@ function Select:template()
 
   for i, option in ipairs(self.choices) do
     res = res + Sequence(
-      pipe, "   ",
+      i == #self.choices and angle or pipe,
+      "  ",
       function() return i == self.selected and dot or circle end,
       " ",
       function()
@@ -161,7 +161,7 @@ end
 
 
 
---- Executes the menu.
+--- Executes the widget.
 -- If necessary it initializes the terminal first.
 -- It also handles the cleanup of the terminal state after the menu is closed.
 -- @treturn number|nil The index of the selected choice (1-based) or nil if cancelled.
