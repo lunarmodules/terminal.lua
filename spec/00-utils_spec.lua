@@ -165,6 +165,26 @@ describe("Utils", function()
     end)
 
 
+    it("calling 'init' on an instance throws an error", function()
+      local Cat = utils.class()
+      function Cat:init(value)
+        self.value = value or 42
+      end
+
+      local Lion = utils.class(Cat)
+      function Lion:init(...)
+        Cat.init(self, ...)  -- call ancenstor initializer
+        self.value = self.value * 2
+      end
+
+      local instance = Lion(10)
+      local f = function()
+        instance:init(20)
+      end
+      assert.has_error(f, "the 'init' method should never be called directly")
+    end)
+
+
     it("instantiating an instance of a class throws an error", function()
       local MyClass = utils.class()
       local myInstance = MyClass()

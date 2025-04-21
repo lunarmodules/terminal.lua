@@ -148,6 +148,13 @@ do
 
 
 
+  -- init placholder for proper usage
+  local function init_instance()
+    error("the 'init' method should never be called directly", 2)
+  end
+
+
+
   -- upon instantiation, create a 'fat' instance, copying all class + ancestor methods
   -- into the instance, so that they can be called without the class lookup chain.
   local function constructor(cls, ...)
@@ -167,6 +174,7 @@ do
       instance.init = nil
       cls.init(instance, ...)
     end
+    instance.init = init_instance
 
     return instance
   end
@@ -180,8 +188,13 @@ do
 
   --- Creates a (sub)class.
   -- This function creates a new class, which is a subclass of the given baseclass.
-  -- An instance can be created by calling on the class, the table passed in becomes the new instance.
-  -- If the class has an `init` method, then it will be called upon instantiation.
+  -- An instance can be created by calling on the class, any parameteres passed in will be passed on
+  -- to the `init` method. The `init` method (if present), will be called upon instantiation.
+  --
+  -- Every instance will:
+  --
+  -- - have a `super` property, which points to the class itself.
+  -- - upon creation call the `init` method (if present) with the parameters passed when calling on the Class.
   -- @tparam[opt] class baseclass The base-class to inherit from.
   -- @treturn table The new class.
   -- @usage
