@@ -122,6 +122,7 @@ describe("Utils", function()
       end
       local instance = MyClass()
       assert.is_not_nil(instance)
+      assert.are.equal(instance.super, MyClass)
       assert.are.equal(42, instance.value)
     end)
 
@@ -140,26 +141,26 @@ describe("Utils", function()
 
       local instance = Lion()
       assert.is_not_nil(instance)
+      assert.are.equal(Lion.super, Cat)
       assert.are.equal(84, instance.value)
     end)
 
 
-    it("instantiating uses the table passed in", function()
+    it("instantiating calls initializer with parameters", function()
       local Cat = utils.class()
-      function Cat:init()
-        self.value = self.value or 42
+      function Cat:init(value)
+        self.value = value or 42
       end
 
       local Lion = utils.class(Cat)
-      function Lion:init()
-        Cat.init(self)  -- call ancenstor initializer
+      function Lion:init(...)
+        Cat.init(self, ...)  -- call ancenstor initializer
         self.value = self.value * 2
       end
 
-      local table_in = { value = 10 }
-      local instance = Lion(table_in)
+      local instance = Lion(10)
       assert.is_not_nil(instance)
-      assert.equal(table_in, instance)
+      assert.are.equal(instance.super, Lion)
       assert.are.equal(20, instance.value)
     end)
 
