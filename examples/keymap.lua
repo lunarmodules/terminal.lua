@@ -71,4 +71,5 @@ end
 t.initwrap(main, {
   displaybackup = false,
   filehandle = io.stdout,
+  disable_sigint = true,
 })()

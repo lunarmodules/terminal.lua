@@ -129,15 +129,56 @@ end
 
 
 do
-  local constructor = function(cls, instance)
-    assert(rawget(cls, "__index"), "Constructor can only be called on a Class")
-    instance = instance or {}
-    setmetatable(instance, cls)
-    if instance.init then
-      instance:init()
+  -- copy class methods and properties into an instance table.
+  -- traverses up the chain to copy all methods and properties of ancestors as well.
+  local function copy_class_methods(cls)
+    local instance = {}
+    while cls do
+      for k, v in pairs(cls) do
+        if not rawget(instance, k) then
+          instance[k] = v
+        end
+      end
+
+      cls = cls.super
     end
+
     return instance
   end
+
+
+
+  -- init placholder for proper usage
+  local function init_instance()
+    error("the 'init' method should never be called directly", 2)
+  end
+
+
+
+  -- upon instantiation, create a 'fat' instance, copying all class + ancestor methods
+  -- into the instance, so that they can be called without the class lookup chain.
+  local function constructor(cls, ...)
+    assert(rawget(cls, "__index"), "Constructor can only be called on a Class")
+
+    -- populate the instance
+    local instance = copy_class_methods(cls)
+
+    -- clear unused entries, used only for classes
+    instance.__call = nil
+    instance.__index = nil
+
+    instance.super = cls
+    setmetatable(instance, cls)
+
+    if instance.init then
+      instance.init = nil
+      cls.init(instance, ...)
+    end
+    instance.init = init_instance
+
+    return instance
+  end
+
 
 
   local base = {}
@@ -147,25 +188,31 @@ do
 
   --- Creates a (sub)class.
   -- This function creates a new class, which is a subclass of the given baseclass.
-  -- An instance can be created by calling on the class, the table passed in becomes the new instance.
-  -- If the class has an `init` method, then it will be called upon instantiation.
+  -- An instance can be created by calling on the class, any parameteres passed in will be passed on
+  -- to the `init` method. The `init` method (if present), will be called upon instantiation.
+  --
+  -- Every instance will:
+  --
+  -- - have a `super` property, which points to the class itself.
+  -- - upon creation call the `init` method (if present) with the parameters passed when calling on the Class.
   -- @tparam[opt] class baseclass The base-class to inherit from.
   -- @treturn table The new class.
   -- @usage
   -- local Cat = utils.class()
-  -- function Cat:init()
-  --   self.value = self.value or 42
+  -- function Cat:init(value)
+  --   self.value = value or 42
   -- end
   --
   -- local Lion = utils.class(Cat)
-  -- function Lion:init()
-  --   Cat.init(self)        -- call ancestor initializer
+  -- function Lion:init(value)
+  --   assert(self.super == Cat, "Superclass is not a Cat")
+  --   Cat.init(self, value)   -- call ancestor initializer
   --   self.value = self.value * 2
   -- end
   --
   -- local instance1 = Lion()
   -- print(instance1.value)      --> 84
-  -- local instance2 = Lion({ value = 10 })
+  -- local instance2 = Lion(10)
   -- print(instance2.value)      --> 20
   function M.class(baseclass)
     baseclass = baseclass or base
@@ -173,6 +220,7 @@ do
     local class = setmetatable({}, baseclass)
     class.__index = class
     class.__call = constructor
+    class.super = baseclass
 
     return setmetatable(class, baseclass)
   end
