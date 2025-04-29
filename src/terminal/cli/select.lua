@@ -57,6 +57,7 @@ local angle   = "└  "
 -- @tparam[opt=1] number opts.default Default choice index (1-based).
 -- @tparam[opt="Select an option:"] string opts.prompt Prompt message to display.
 -- @tparam[opt=false] boolean opts.cancellable Whether the menu can be cancelled (by pressing `<esc>` or `<ctrl+c>`).
+-- @tparam[opt=false] boolean opts.clear Whether to clear the widget from screen after completion.
 function Select:init(opts)
   assert(type(opts) == "table", "options must be a table")
   assert(type(opts.choices) == "table", "choices must be a table")
@@ -75,6 +76,7 @@ function Select:init(opts)
 
   self.selected = self.default
   self.cancellable = not not opts.cancellable
+  self.clear = not not opts.clear
 
   self:template()
 end
@@ -185,6 +187,17 @@ end
 
 
 
+--- Clears the widget.
+function Select:clear_widget()
+  t.output.write(
+    t.cursor.position.up_seq():rep(self:height()),
+    (t.clear.eol_seq() .. "\n"):rep(self:height()),
+    t.cursor.position.up_seq():rep(self:height())
+  )
+end
+
+
+
 --- Executes the widget.
 -- If necessary it initializes the terminal first.
 -- It also handles the cleanup of the terminal state after the menu is closed.
@@ -202,6 +215,10 @@ function Select:run()
   t.cursor.visible.stack.push(false)
 
   local idx, err = self:handleInput()
+
+  if self.clear then
+    self:clear_widget()
+  end
 
   t.cursor.visible.stack.pop()
   if revert then t.shutdown() end
