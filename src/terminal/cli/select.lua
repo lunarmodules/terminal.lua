@@ -41,12 +41,12 @@ local keymap = t.input.keymap.get_keymap({
 
 
 
--- UI symbols
-local diamond = "◇"
-local pipe = "│"
-local circle = "○"
-local dot = "●"
-local angle = "└"
+-- UI symbols (including trailing whitespace)
+local diamond = "◇ "
+local circle  = "○ "
+local dot     = "● "
+local pipe    = "│  "
+local angle   = "└  "
 
 
 
@@ -91,11 +91,10 @@ end
 -- Build full UI sequence
 function Select:template()
   local res = Sequence(
-    t.cursor.position.up_seq():rep(#self.choices + 1),
+    function() return t.cursor.position.up_seq():rep(self:height()) end,
     function() return t.text.stack.push_seq({ fg = "green" }) end,
     diamond,
     t.text.stack.pop_seq,
-    " ",
     self.prompt,
     t.clear.eol_seq,
     "\n"
@@ -104,9 +103,7 @@ function Select:template()
   for i, option in ipairs(self.choices) do
     res = res + Sequence(
       i == #self.choices and angle or pipe,
-      "  ",
       function() return i == self.selected and dot or circle end,
-      " ",
       function()
         return t.text.stack.push_seq({
           fg = (i == self.selected) and "yellow" or "white",
@@ -157,6 +154,33 @@ function Select:handleInput()
     end
   end
   return res1, res2
+end
+
+
+
+--- Returns the display height in rows.
+-- Note: on a first call it will test character widths, see `terminal.text.width.test`.
+-- So terminal must be initialized before calling this method.
+-- @treturn number The height of the menu in rows.
+function Select:height()
+
+  if not self.widths then
+    -- first call, so test display width
+    t.text.width.test(self.prompt .. diamond .. circle .. dot .. pipe .. angle .. table.concat(self.choices))
+    -- calculate display width
+    self.widths = {}
+    for i, txt in ipairs(self.choices) do
+      self.widths[i] = t.text.width.utf8swidth(pipe .. circle .. txt)
+    end
+    self.widths[0] = t.text.width.utf8swidth(diamond .. self.prompt)
+  end
+
+  local _, cols = t.size()
+  local rows = 0
+  for i = 0, #self.choices do
+    rows = rows + math.ceil(self.widths[i] / cols)
+  end
+  return rows
 end
 
 
