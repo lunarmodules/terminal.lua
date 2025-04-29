@@ -94,7 +94,8 @@ function M.spinner(opts)
 
   -- copy sequence to include cursor movement to return to start position.
   -- include character display width check using LuaSystem
-  local steps do
+  local steps
+  do
     local pos_set, pos_restore
     if row then
       pos_set = t.cursor.position.backup_seq() .. t.cursor.position.set_seq(row, col)
@@ -154,14 +155,16 @@ end
 -- @tparam[opt=""] string text_done the text to display when the spinner is done
 -- @treturn table a table of sprites to use with a spinner
 function M.ticker(text, width, text_done)
-  -- TODO: make it UTF-8 aware, and char-display-width aware
+  -- Char-display-width aware ticker (TODO fully remove if covered)
   assert(text, "text must be provided")
   width = width or 40
   text_done = text_done or ""
 
-  local base = (" "):rep(width) .. text .. (" "):rep(width)
+  local base   = (" "):rep(width) .. text .. (" "):rep(width)
   local result = { [0] = text_done .. (" "):rep(width) }
-  local lengths = { [0] = width + utf8.len(text) }
+  -- compute real display width instead of code‐points
+  local text_width = tw.utf8swidth(text)
+  local lengths   = { [0] = width + text_width }
 
   -- Simultaneously records max of lengths, later on we use this max_len as a standard for other strings
   local max_len = 0
@@ -176,7 +179,7 @@ function M.ticker(text, width, text_done)
     result[i] = (" "):rep(max_len - lengths[i]) .. result[i]
   end
 
-  for i = math.floor(lengths[0] / 2) + 1, (width + utf8.len(text)) do
+  for i = math.floor(lengths[0] / 2) + 1, (width + text_width) do
     result[i] = result[i] .. (" "):rep(max_len - lengths[i])
   end
   return result
