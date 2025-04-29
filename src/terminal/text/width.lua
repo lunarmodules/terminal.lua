@@ -133,7 +133,7 @@ function M.test(str)
   end
 
   t.text.stack.pop() -- restore color (drop hidden)
-  return M.preload(str) -- re-run to get the total width, since all widths are known now
+  return M.test(str) -- re-run to get the total width, since all widths are known now
 end
 
 
