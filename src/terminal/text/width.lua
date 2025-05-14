@@ -11,7 +11,8 @@
 --
 -- To populate the cache with tested widths use `test` and `test_write`.
 --
--- To check width, using the cached widths, use `utf8cwidth` and `utf8swidth`.
+-- To check width, using the cached widths, use `utf8cwidth` and `utf8swidth`. Any
+-- character not in the cache will be passed to `system.utf8cwidth` to determine the width.
 -- @module terminal.text.width
 
 local M = {}

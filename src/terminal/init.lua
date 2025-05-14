@@ -7,7 +7,7 @@
 -- It provides a simple and consistent interface to the terminal, allowing for cursor positioning,
 -- cursor shape and visibility, text formatting, and more.
 --
--- For generic instruction please read the [introduction](topics/01-introduction.md.html).
+-- For generic instruction please read the [introduction](../topics/01-introduction.md.html).
 --
 -- @copyright Copyright (c) 2024-2024 Thijs Schreijer
 -- @author Thijs Schreijer
@@ -83,10 +83,13 @@ end
 
 
 --- Preload known characters into the width-cache.
--- Characters loaded will be the `draw.box` formats, and the `progress` spinner sprites.
--- Uses `text.width.test` to test the widths of the characters.
+-- Typically this should be called right after initialization. It will check default
+-- characters in use by this library, and the optional specified characters in `str`.
+-- Characters loaded will be the `terminal.draw.box_fmt` formats, and the `progress` spinner sprites.
+-- Uses `terminal.text.width.test` to test the widths of the characters.
 -- @tparam[opt] string str additional character string to preload
 -- @return true
+-- @within Initialization
 function M.preload_widths(str)
   text.width.test((str or "") .. M.progress._spinner_fmt_chars() .. M.draw.box_fmt_chars())
   return true
@@ -104,6 +107,7 @@ do
 
   --- Returns whether the terminal has been initialized and is ready for use.
   -- @treturn boolean true if the terminal has been initialized
+  -- @within Initialization
   function M.ready()
     return termbackup ~= nil
   end
@@ -130,6 +134,7 @@ do
   -- @tparam[opt=false] boolean opts.disable_sigint if `true`, the terminal will not send a SIGINT signal
   -- on Ctrl-C. Disables Ctrl-C, Ctrl-Z, and Ctrl-\, which allows the application to handle them.
   -- @return true
+  -- @within Initialization
   function M.initialize(opts)
     assert(not M.ready(), "terminal already initialized")
 
@@ -187,6 +192,7 @@ do
 
   --- Shuts down the terminal, restoring the terminal settings.
   -- @return true
+  -- @within Initialization
   function M.shutdown()
     assert(M.ready(), "terminal not initialized")
 
@@ -228,6 +234,7 @@ end
 -- @tparam function main the function to wrap
 -- @tparam[opt] table opts options table, to pass to `initialize`.
 -- @treturn function wrapped function
+-- @within Initialization
 -- @usage
 -- local function main(param1, param2)
 --

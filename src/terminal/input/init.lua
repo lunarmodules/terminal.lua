@@ -1,10 +1,7 @@
 --- Module for getting keyboard input.
--- Also enables querying the terminal for cursor position. When inmplementing any
--- other queries, check out `preread` documentation, and `read_cursor_pos` for
--- an example.
+-- Also enables querying the terminal. When inmplementing any
+-- other queries, check out `preread` and `read_query_answer` documentation.
 --
--- *Note:* This module will be available from the main `terminal` module, without
--- explicitly requiring it.
 -- @usage
 -- local terminal = require "terminal"
 -- terminal.initialize()
@@ -72,7 +69,8 @@ end
 
 
 --- Pushes input into the buffer.
--- The input will be appended to the current buffer contents.
+-- The input will be appended to the current buffer contents. This means the data being pushed
+-- ends up after the current buffer contents, but before the next data read from stdin.
 -- The input parameters are the same as those returned by `readansi`.
 -- @param seq the sequence of input
 -- @param typ the type of input
@@ -97,13 +95,8 @@ end
 -- 1. call `preread` to empty `stdin` buffer into internal buffer.
 -- 2. query terminal by writing the required ANSI escape sequences.
 -- 3. call `flush` to ensure the ANSI sequences are sent to the terminal.
--- 4. call `readansi` to read the terminal response in a loop until the expected response
--- is received. Anything received that doesn't match the expected response should be
--- pushed into the internal buffer using `push_input`. (see `read_cursor_pos` for an
--- example)
+-- 4. call `read_query_answer` to read the terminal responses.
 --
--- *Note:* step 4, calling `readansi` in a loop, should be done while passing a blocking
--- sleep function to prevent yielding, and introducing potential race conditionas.
 -- @return true if successful, nil and an error message if reading failed
 function M.preread()
   while true do
@@ -163,6 +156,8 @@ end
 
 
 --- Query the terminal.
+-- This is a wrapper around `preread` and `read_query_answer`. It sends a single query and reads the answer
+-- in one go. It is a convenience function for simple queries. It is limited to only a single query/answer pair.
 -- @tparam string query the ANSI sequence to be written to query the terminal
 -- @tparam string answer_pattern a pattern that matches the expected ANSI response sequence, and captures the data needed.
 -- @treturn table an array with the captures from the answer pattern.
