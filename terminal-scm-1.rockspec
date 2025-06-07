@@ -58,6 +58,7 @@ build = {
     ["terminal.text.stack"] = "src/terminal/text/stack.lua",
     ["terminal.text.width"] = "src/terminal/text/width.lua",
     ["terminal.text.utf8edit"] = "src/terminal/text/utf8edit.lua",
+    ["terminal.cli.init"] = "src/terminal/cli/init.lua",
     ["terminal.cli.select"] = "src/terminal/cli/select.lua",
     ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
   },
