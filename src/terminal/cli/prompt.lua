@@ -36,25 +36,25 @@ Prompt.keyname2actions = {
   ["ctrl_h"] = "backspace",
   ["left"] = "left",
   ["right"] = "right",
-  -- ["up"] = "up",                     -- TODO: implement
-  -- ["down"] = "down",                 -- TODO: implement
-  -- emacs keybinding
+  ["up"] = "up",
+  ["down"] = "down",
+  --- emacs keybinding
   ["ctrl_f"] = "left",
   ["ctrl_b"] = "right",
-  -- ["ctrl_a"] = "home",               -- TODO: implement
-  -- ["ctrl_e"] = "end",                -- TODO: implement
-  -- ["ctrl_w"] = "backspace_word",     -- TODO: implement
-  -- ["ctrl_u"] = "backspace_to_start", -- TODO: implement
-  -- ["ctrl_d"] = "delete_word",        -- TODO: implement
-  -- ["ctrl_k"] = "delete_to_end",      -- TODO: implement
-  -- ["ctrl_l"] = "clear",              -- TODO: implement
+  ["ctrl_a"] = "home",
+  ["ctrl_e"] = "end",
+  ["ctrl_w"] = "backspace_word",
+  ["ctrl_u"] = "backspace_to_start",
+  ["ctrl_d"] = "delete_word",
+  ["ctrl_k"] = "delete_to_end",
+  ["ctrl_l"] = "clear",
 }
 
 Prompt.actions2redraw = utils.make_lookup("actions", {
   ["backspace"] = true,
   ["delete"] = true,
-  ["backspace_word"] = true,
-  ["backspace_to_start"] = true,
+  ["backsapce_word"] = true,
+  ["backsapce_to_start"] = true,
   ["delete_word"] = true,
   ["delete_to_end"] = true,
   ["clear"] = true,
@@ -67,14 +67,6 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
   ["end"] = false,
 })
 
-
---- Create a new Prompt instance.
--- @tparam table opts Options for the prompt.
--- @tparam[opt=""] string opts.prompt The prompt text to display.
--- @tparam[opt=""] string opts.value The initial value of the prompt.
--- @tparam[opt=80] number opts.max_length The maximum length of the input.
--- @tparam[opt=false] boolean opts.drawn_before If the prompt has been drawn before.
--- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
   self.value = UTF8EditLine(opts.value or "")
   self.prompt = opts.prompt or ""          -- the prompt to display
