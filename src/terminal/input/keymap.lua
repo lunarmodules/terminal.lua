@@ -405,7 +405,66 @@ end
 -- @table default_keys
 M.default_keys = M.get_keys(M.default_key_map)
 
+--- Lookup table of control characters
+-- @table control_characters
+M.control_characters = {
+  -- Control characters (ASCII 0–31, 127)
+  ["\000"] = "ctrl_@", -- null
+  ["\001"] = "ctrl_a",
+  ["\002"] = "ctrl_b",
+  ["\003"] = "ctrl_c",
+  ["\004"] = "ctrl_d",
+  ["\005"] = "ctrl_e",
+  ["\006"] = "ctrl_f",
+  ["\007"] = "ctrl_g",
+  ["\008"] = "ctrl_h", -- bs
+  ["\009"] = "ctrl_i", -- ht
+  ["\010"] = "ctrl_j", -- lf
+  ["\011"] = "ctrl_k",
+  ["\012"] = "ctrl_l", -- ff
+  ["\013"] = "ctrl_m", -- cr
+  ["\014"] = "ctrl_n",
+  ["\015"] = "ctrl_o",
+  ["\016"] = "ctrl_p",
+  ["\017"] = "ctrl_q",
+  ["\018"] = "ctrl_r",
+  ["\019"] = "ctrl_s",
+  ["\020"] = "ctrl_t",
+  ["\021"] = "ctrl_u",
+  ["\022"] = "ctrl_v",
+  ["\023"] = "ctrl_w",
+  ["\024"] = "ctrl_x",
+  ["\025"] = "ctrl_y",
+  ["\026"] = "ctrl_z",
+  ["\027"] = "ctrl_[",  -- esc
+  ["\028"] = "ctrl_\\", -- fs
+  ["\029"] = "ctrl_]",  -- gs
+  ["\030"] = "ctrl_^",  -- rs
+  ["\031"] = "ctrl__",  -- us
+  ["\127"] = "ctrl_?",  -- del
+}
 
+--- Returns a constant lookup table with key-names.
+-- Looking up an unknown name will throw an error. Use this instead of magic-strings
+-- when checking for specific keys.
+-- @tparam[opt=default-key-map] table keymap, either `default_key_map`, or the result from `get_keymap`.
+-- @tparam[opt] table aliasses a table with key-value pairs to override the default key map.
+-- The key is the alias, the value is the name of the already existing key.
+-- @treturn table constant table where the keys map to the key names.
+-- @usage
+-- local keys = terminal.input.keymap.default_keys
+-- local key = terminal.input.readansi(math.huge)
+-- local keyname = terminal.input.keymap.default_key_map[key]
+--
+-- if     keyname == "up" then     -- will work
+-- elseif keyname == "upx" then    -- will not work, but will silently be ignored
+-- elseif keyname == keys.up then  -- will work
+-- elseif keyname == keys.upx then -- will throw an error, due to typo
+-- end
+function M.is_printable(keystroke)
+  return keystroke:sub(1) ~= "\027" -- is NOT ANSI sequence
+      and not M.control_characters[keystroke] -- is NOT control character
+end
 
 --- Checks if a raw-key is printable.
 -- A printable key is a key that is not an ANSI escape sequence and not a control character (bytes
