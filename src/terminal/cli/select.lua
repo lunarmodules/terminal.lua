@@ -6,6 +6,7 @@
 -- to navigate through the options. The selected option is highlighted, and the
 -- user can confirm their choice by pressing Enter. Optionally the menu can also be
 -- cancelled by pressing `<esc>` or `<ctrl+c>`.
+-- NOTE: you MUST `terminal.initialize()` before calling this widget's `:run()`
 -- @classmod cli.Select
 -- @usage
 -- local menu = cli.Select{   -- invokes the 'init' method
@@ -204,12 +205,6 @@ end
 -- @treturn number|nil The index of the selected choice (1-based) or nil if cancelled.
 -- @treturn string|err The selected choice or `"cancelled"` if cancelled.
 function Select:run()
-  local revert
-  if not t.ready() then
-    t.initialize()
-    revert = true
-  end
-
   -- Reserve space for rendering
   t.output.write(("\n"):rep(#self.choices + 1))
   t.cursor.visible.stack.push(false)
@@ -221,7 +216,6 @@ function Select:run()
   end
 
   t.cursor.visible.stack.pop()
-  if revert then t.shutdown() end
 
   if not idx then
     return nil, err
