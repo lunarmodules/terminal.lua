@@ -12,30 +12,28 @@ local _positionstack = {}
 
 
 
---- Pushes the current cursor position onto the stack, and returns an ansi sequence to move to
--- the new position without writing it to the terminal.
+--- Pushes the current cursor position onto the stack, and returns an ansi sequence to move to the new position (if applicable) without writing it to the terminal.
 -- Calls `position.get` under the hood.
--- @tparam number row
--- @tparam number column
+-- @tparam[opt] number row
+-- @tparam[opt] number column
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.push_seq(row, column)
   local r, c = pos.get()
   -- ignore the error, since we need to keep the stack in sync for pop/push operations
   _positionstack[#_positionstack + 1] = { r, c }
-  return pos.set_seq(row, column)
+  return (row and column) and pos.set_seq(row, column) or ""
 end
 
 
 
---- Pushes the current cursor position onto the stack, and writes an ansi sequence to move to
--- the new position to the terminal.
+--- Pushes the current cursor position onto the stack, and writes an ansi sequence to move to the new position (if applicable) to the terminal.
 -- Calls `position.get` under the hood.
--- @tparam number row
--- @tparam number column
+-- @tparam[opt] number row
+-- @tparam[opt] number column
 -- @return true
 function M.push(row, column)
-  output.write(M.push_seq(row, column))
+  output.write((row and column) and M.push_seq(row, column) or "")
   return true
 end
 
