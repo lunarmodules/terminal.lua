@@ -22,7 +22,10 @@ function M.push_seq(row, column)
   local r, c = pos.get()
   -- ignore the error, since we need to keep the stack in sync for pop/push operations
   _positionstack[#_positionstack + 1] = { r, c }
-  return (row and column) and pos.set_seq(row, column) or ""
+  if row or column then
+    return pos.set_seq(row, column)
+  end
+  return ""
 end
 
 
@@ -33,7 +36,7 @@ end
 -- @tparam[opt] number column
 -- @return true
 function M.push(row, column)
-  output.write((row and column) and M.push_seq(row, column) or "")
+  output.write(M.push_seq(row, column))
   return true
 end
 
