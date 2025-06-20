@@ -38,7 +38,7 @@ Prompt.keyname2actions = {
   ["right"] = "right",
   ["up"] = "up",
   ["down"] = "down",
-  --- emacs keybinding
+  -- emacs keybinding
   ["ctrl_f"] = "left",
   ["ctrl_b"] = "right",
   ["ctrl_a"] = "home",
@@ -107,7 +107,6 @@ end
 --- Processes key input async
 -- This function listens for key events and processes them.
 -- If an exit key is pressed, it yields the input value and the exit key.
--- @event key Triggered when a key is pressed.
 -- @tparam string key The key that was pressed.
 -- @tparam string keytype The type of the key (e.g., "ansi", "control").
 function Prompt:handleInput()

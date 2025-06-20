@@ -355,7 +355,6 @@ M.default_keys = M.get_keys(M.default_key_map)
 --- Lookup table of control characters
 -- @table control_characters
 M.control_characters = {
-  -- Control characters (ASCII 0–31, 127)
   ["\000"] = "ctrl_@", -- null
   ["\001"] = "ctrl_a",
   ["\002"] = "ctrl_b",
