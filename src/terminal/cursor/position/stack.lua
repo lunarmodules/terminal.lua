@@ -14,16 +14,16 @@ local _positionstack = {}
 
 --- Pushes the current cursor position onto the stack, and returns an ansi sequence to move to the new position (if applicable) without writing it to the terminal.
 -- Calls `position.get` under the hood.
--- @tparam[opt] number row
--- @tparam[opt] number column
--- @treturn string ansi sequence to write to the terminal
+-- @tparam[opt] number new_row
+-- @tparam[opt] number new_column
+-- @treturn string ansi sequence to write to the terminal, or an empty string if no position is given
 -- @within Sequences
-function M.push_seq(row, column)
+function M.push_seq(new_row, new_column)
   local r, c = pos.get()
   -- ignore the error, since we need to keep the stack in sync for pop/push operations
   _positionstack[#_positionstack + 1] = { r, c }
-  if row or column then
-    return pos.set_seq(row, column)
+  if new_row or new_column then
+    return pos.set_seq(new_row, new_column)
   end
   return ""
 end
@@ -32,11 +32,11 @@ end
 
 --- Pushes the current cursor position onto the stack, and writes an ansi sequence to move to the new position (if applicable) to the terminal.
 -- Calls `position.get` under the hood.
--- @tparam[opt] number row
--- @tparam[opt] number column
+-- @tparam[opt] number new_row
+-- @tparam[opt] number new_column
 -- @return true
-function M.push(row, column)
-  output.write(M.push_seq(row, column))
+function M.push(new_row, new_column)
+  output.write(M.push_seq(new_row, new_column))
   return true
 end
 

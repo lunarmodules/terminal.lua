@@ -403,16 +403,24 @@ describe("Cursor", function()
     pending("negative indices", function()
       -- TODO: implement
     end)
+
   end)
 
+
+
   describe("position.stack.push_seq()", function()
+
     local old_get
+
     setup(function()
       old_get = cursor.position.get
     end)
+
+
     teardown(function()
       cursor.position.get = old_get
     end)
+
 
     it("returns ANSI sequence for moving to a new position", function()
       -- mock position.get to return fixed values
@@ -428,18 +436,24 @@ describe("Cursor", function()
 
       assert.are.equal("", cursor.position.stack.push_seq())
     end)
+
   end)
 
 
 
   describe("position.stack.pop_seq()", function()
+
     local old_get
+
     setup(function()
       old_get = cursor.position.get
     end)
+
+
     teardown(function()
       cursor.position.get = old_get
     end)
+
 
     it("returns ANSI sequence for moving to the previous position", function()
       -- mock position.get to return fixed values
@@ -498,5 +512,7 @@ describe("Cursor", function()
       assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.stack.pop_seq(1)) -- first pop works
       assert.are.equal("", cursor.position.stack.pop_seq(100))                          -- over-popping
     end)
+
   end)
+
 end)
