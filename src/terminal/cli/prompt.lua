@@ -13,7 +13,6 @@
 --     max_length = 62,
 --     overflow = "wrap" -- or "scroll"
 --     position = 2,
---     fsleep = sys.sleep,
 -- }
 -- local result, exitkey = pr:run()
 
@@ -72,7 +71,6 @@ function Prompt:init(opts)
   self.prompt = opts.prompt or ""        -- the prompt to display
   self.max_length = opts.max_length      -- the maximum length of the input
   self.drawn_before = false              -- if the prompt has been drawn
-  self.fsleep = opts.fsleep or sys.sleep -- the sleep function to use
 end
 
 function Prompt:draw(redraw)
@@ -100,7 +98,7 @@ end
 
 -- Read and normalize key input
 function Prompt:readKey()
-  local key = t.input.readansi(math.huge, self.fsleep)
+  local key = t.input.readansi(math.huge)
   return key, keymap[key] or key
 end
 
