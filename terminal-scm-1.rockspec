@@ -26,7 +26,7 @@ description = {
 dependencies = {
   "lua >= 5.1, < 5.5",
   "luasystem >= 0.6.0",
-  "utf8",
+  "utf8 >= 1.3.0",
 }
 
 build = {
@@ -56,7 +56,10 @@ build = {
     ["terminal.text.color"] = "src/terminal/text/color.lua",
     ["terminal.text.stack"] = "src/terminal/text/stack.lua",
     ["terminal.text.width"] = "src/terminal/text/width.lua",
+    ["terminal.text.utf8edit"] = "src/terminal/text/utf8edit.lua",
+    ["terminal.cli.init"] = "src/terminal/cli/init.lua",
     ["terminal.cli.select"] = "src/terminal/cli/select.lua",
+    ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
   },
 
   copy_directories = {
