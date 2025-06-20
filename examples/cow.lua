@@ -29,9 +29,13 @@ local character = "🐄" --
 local xc, yc = 14, 5
 
 terminal.initwrap(function()
-  local top = position.set_seq(position.get())
+  terminal.output.write("use arrows to move the cow, esc to exit\n")
   terminal.output.write(background)
-  local bottom = position.set_seq(position.get())
+  local top, bottom do
+    local r, c = position.get()
+    bottom = position.set_seq(r, c)
+    top = position.set_seq(r - 10, 1)
+  end
 
   terminal.cursor.visible.set(false)
 
