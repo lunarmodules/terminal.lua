@@ -14,22 +14,22 @@ local keymap = terminal.input.keymap.get_keymap {
 
 local background =
 [[
-🙶🙸-====-🙠 ^🙧 🙴.🙥 %🙡 -=====-🙸🙷
+╭--====-~~~~~~~~~~~~-=====--╮
 |                           |
-|   ---------------------   🙖
-🙑  | 🙾               🌙  |  |
+|   ---------------------   │
+│  | ▚               🌙  |  |
 |  |        /            |  |
-|  |  _🌷_  __/  ___ _   |  🙑
+|  |  _🌷_  __/  ___ _   |  │
 |  _-___________________-_  |
 | /---/--/-/-+-\-\--\--\--\ |
 |/__/_/_/----+-----\__\____\|
-➹------/🙠 ^🙧 🙴.🙥 %🙡 \--------
+╰--------~~~~~~~~~----------╯
 ]]
 local character = "🐄" --
 local xc, yc = 14, 5
 
 terminal.initwrap(function()
-  terminal.output.write("use arrows to move the cow, esc to exit\n")
+  terminal.output.write("Use arrows to move the cow, Esc to exit\n")
   terminal.output.write(background)
   local top, bottom do
     local r, c = position.get()
