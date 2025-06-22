@@ -21,7 +21,7 @@ local t = require("terminal")
 local utils = require("terminal.utils")
 local width = require("terminal.text.width")
 local output = require("terminal.output")
-local UTF8EditLine = require("terminal.text.utf8edit").UTF8EditLine
+local UTF8EditLine = require("terminal.text.utf8edit")
 local utf8 = require("utf8") -- explicitly requires lua-utf8 for Lua < 5.3
 
 -- Key bindings
@@ -159,7 +159,7 @@ function Prompt:handleInput()
       elseif self.value.ilen >= self.max_length or utf8.len(key) ~= 1 then
         t.bell()
       else -- add the character at the current cursor
-        self.value:add(key)
+        self.value:insert(key)
         self:draw(false)
         self:updateCursor()
       end
