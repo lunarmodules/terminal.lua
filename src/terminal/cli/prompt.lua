@@ -22,7 +22,7 @@ local t = require("terminal")
 local utils = require("terminal.utils")
 local width = require("terminal.text.width")
 local output = require("terminal.output")
-local UTF8EditLine = require("terminal.text.utf8edit")
+local UTF8EditLine = require("terminal.utf8edit")
 local utf8 = require("utf8") -- explicitly requires lua-utf8 for Lua < 5.3
 
 -- Key bindings

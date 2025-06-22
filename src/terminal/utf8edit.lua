@@ -1,10 +1,10 @@
 --- UTF8 based editline class.
 --
--- This class handles a UTF8 string with operations, and cursor tracking.
+-- This class handles a UTF8 string with editing operations, and cursor and width tracking.
 --
--- @classmod text.utf8edit
+-- @classmod Utf8edit
 -- @usage
--- local Utf8edit = require("terminal.text.utf8edit")
+-- local Utf8edit = require("terminal.utf8edit")
 -- local line = Utf8edit("héllo界")
 --
 -- print(line)                                      -- Output: héllo界
@@ -44,7 +44,7 @@ end
 -- @tparam[opt=""] string s the UTF8 string to parse
 -- @return new editline object
 -- @usage
--- local Utf8edit = require("terminal.text.utf8edit")
+-- local Utf8edit = require("terminal.utf8edit")
 -- local newLineObj = Utf8edit("héllo界")
 function UTF8EditLine:init(s)
   self.icursor = {}          -- tracking the cursor internally (utf8 characters)

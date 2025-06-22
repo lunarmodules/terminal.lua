@@ -3,7 +3,7 @@ describe("Utf8editLine:", function()
   local Utf8edit
 
   before_each(function()
-    Utf8edit = require("terminal.text.Utf8edit")
+    Utf8edit = require("terminal.utf8edit")
   end)
 
 
