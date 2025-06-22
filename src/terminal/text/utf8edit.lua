@@ -4,8 +4,21 @@
 --
 -- @classmod text.utf8edit
 -- @usage
--- local prompt = ...
-
+-- local Utf8edit = require("terminal.text.utf8edit")
+-- local line = Utf8edit("héllo界")
+--
+-- print(line)                                      -- Output: héllo界
+-- print("Characters:", line:len_char())            -- Output: Characters: 6
+-- print("Columns:", line:len_col())                -- Output: Columns: 7 (since '界' is width 2)
+--
+-- -- Move the cursor
+-- line:left(2)
+-- print("Cursor char position:", line:pos_char())  -- Output: 4
+-- print("Cursor column position:", line:pos_col()) -- Output: 4
+--
+-- -- Editing
+-- line:add("!")
+-- print(line)                                      -- Output: héll!o界
 
 local utils = require("terminal.utils")
 local width = require("terminal.text.width")
