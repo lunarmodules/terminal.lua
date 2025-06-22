@@ -42,7 +42,7 @@ describe("Utf8editLine:", function()
     it("initializes cursor position at the end", function()
       local line = Utf8edit("hello")
       assert.are.equal(6, line:pos_char())  -- cursor should be at the end of "hello"
-      line:add("!")
+      line:insert("!")
       assert.are.equal("hello!", tostring(line))
     end)
 
@@ -80,7 +80,7 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("你好世界")
       line:left(2) -- move to after '好'
       assert.are.equal(3, line:pos_char())
-      line:add("！")
+      line:insert("！")
       -- Cursor is after '！', which is character 3
       assert.are.equal(4, line:pos_char())
     end)
@@ -137,10 +137,10 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("你好世界")
       line:left(2) -- move to after '好'
       assert.are.equal(5, line:pos_col())
-      line:add("a") -- ASCII, width 1
+      line:insert("a") -- ASCII, width 1
       -- Cursor is after 'a', which should be column 6
       assert.are.equal(6, line:pos_col())
-      line:add("界") -- wide char, width 2
+      line:insert("界") -- wide char, width 2
       -- Cursor is after '界', which should be column 8
       assert.are.equal(8, line:pos_col())
     end)
@@ -184,9 +184,9 @@ describe("Utf8editLine:", function()
 
     it("returns correct length after adding characters", function()
       local line = Utf8edit("hi")
-      line:add("!")
+      line:insert("!")
       assert.are.equal(3, line:len_char())
-      line:add("界")
+      line:insert("界")
       assert.are.equal(4, line:len_char())
     end)
 
@@ -217,9 +217,9 @@ describe("Utf8editLine:", function()
 
     it("returns correct width after adding mixed-width characters", function()
       local line = Utf8edit("hi")
-      line:add("界") -- width 2
+      line:insert("界") -- width 2
       assert.are.equal(4, line:len_col()) -- "hi" (2) + "界" (2)
-      line:add("a") -- width 1
+      line:insert("a") -- width 1
       assert.are.equal(5, line:len_col())
     end)
 
@@ -231,14 +231,14 @@ describe("Utf8editLine:", function()
 
     it("adds a character to the line", function()
       local line = Utf8edit("he")
-      line:add("l")
+      line:insert("l")
       assert.are.equal("hel", tostring(line))
     end)
 
 
     it("adds a UTF-8 character to the line", function()
       local line = Utf8edit("你")
-      line:add("好")
+      line:insert("好")
       assert.are.equal("你好", tostring(line))
     end)
 
@@ -246,7 +246,7 @@ describe("Utf8editLine:", function()
     it("adds a character at the start", function()
       local line = Utf8edit("ello")
       line:left(4)
-      line:add("h")
+      line:insert("h")
       assert.are.equal("hello", tostring(line))
     end)
 
@@ -260,7 +260,7 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("hello")
       line:left()
       assert.are.equal(5, line:pos_char())  -- cursor should be at 'o'
-      line:add("!")
+      line:insert("!")
       assert.are.equal("hell!o", tostring(line))
     end)
 
@@ -269,7 +269,7 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("hello")
       line:left(3)
       assert.are.equal(3, line:pos_char())  -- cursor should be at 'o'
-      line:add("!")
+      line:insert("!")
       assert.are.equal("he!llo", tostring(line))
     end)
 
@@ -278,7 +278,7 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("hello")
       line:left(10)  -- trying to move left more than available
       assert.are.equal(1, line:pos_char())  -- cursor should be at the start
-      line:add("!")
+      line:insert("!")
       assert.are.equal("!hello", tostring(line))
     end)
 
@@ -290,7 +290,7 @@ describe("Utf8editLine:", function()
       line:left()
       assert.are.equal(7, line:pos_col())  -- cursor should be at last character
       assert.are.equal(4, line:pos_char())  -- cursor should be at last character
-      line:add("！")
+      line:insert("！")
       assert.are.equal("你好世！界", tostring(line))
     end)
 
@@ -300,7 +300,7 @@ describe("Utf8editLine:", function()
       line:left(3)
       assert.are.equal(2, line:pos_char())  -- cursor should be at third character
       assert.are.equal(3, line:pos_col())  -- cursor should be at third character
-      line:add("！")
+      line:insert("！")
       assert.are.equal("你！好世界", tostring(line))
     end)
 
@@ -309,7 +309,7 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("你好世界")
       line:left(10)  -- trying to move left more than available
       assert.are.equal(1, line:pos_char())  -- cursor should be at the start
-      line:add("！")
+      line:insert("！")
       assert.are.equal("！你好世界", tostring(line))
     end)
 
@@ -324,7 +324,7 @@ describe("Utf8editLine:", function()
       line:left(3) -- move to position 3
       line:right()
       assert.are.equal(4, line:pos_char())  -- cursor should be at position 4
-      line:add("!")
+      line:insert("!")
       assert.are.equal("hel!lo", tostring(line))
     end)
 
@@ -333,7 +333,7 @@ describe("Utf8editLine:", function()
       line:left(4) -- move to position 2
       line:right(3)
       assert.are.equal(5, line:pos_char())  -- cursor should be at position 5
-      line:add("!")
+      line:insert("!")
       assert.are.equal("hell!o", tostring(line))
     end)
 
@@ -341,7 +341,7 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("hello")
       line:right(10)  -- trying to move right more than available
       assert.are.equal(6, line:pos_char())  -- cursor should be at the end
-      line:add("!")
+      line:insert("!")
       assert.are.equal("hello!", tostring(line))
     end)
 
@@ -468,7 +468,7 @@ describe("Utf8editLine:", function()
     it("handles left and right cursor movements with UTF-8", function()
       local line = Utf8edit("你好世界")
       line:left(2)
-      line:add("！")
+      line:insert("！")
       assert.are.equal(7, line:pos_col())
       assert.are.equal(4, line:pos_char())
       assert.are.equal("你好！世界", tostring(line))
@@ -517,9 +517,9 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("hello")
       line:left(2)
       line:backspace()
-      line:add("y")
+      line:insert("y")
       line:right()
-      line:add("!")
+      line:insert("!")
       assert.are.equal(6, line:pos_char())
       assert.are.equal("heyl!o", tostring(line))
     end)
@@ -529,9 +529,9 @@ describe("Utf8editLine:", function()
       local line = Utf8edit("你好世界")
       line:left(2)
       line:backspace()
-      line:add("a")
+      line:insert("a")
       line:right()
-      line:add("！")
+      line:insert("！")
       assert.are.equal(8, line:pos_col())
       assert.are.equal(5, line:pos_char())
       assert.are.equal("你a世！界", tostring(line))

@@ -17,7 +17,7 @@
 -- print("Cursor column position:", line:pos_col()) -- Output: 4
 --
 -- -- Editing
--- line:add("!")
+-- line:insert("!")
 -- print(line)                                      -- Output: héll!o界
 
 local utils = require("terminal.utils")
@@ -39,10 +39,13 @@ end
 
 
 
---- Creates a new `utf8edit` instance.
+--- Creates a new `utf8edit` instance. This method is invoked by calling on the class.
 -- The cursor position will be at the end of the string.
 -- @tparam[opt=""] string s the UTF8 string to parse
--- @treturn table the list of characters
+-- @return new editline object
+-- @usage
+-- local Utf8edit = require("terminal.text.utf8edit")
+-- local newLineObj = Utf8edit("héllo界")
 function UTF8EditLine:init(s)
   self.icursor = {}          -- tracking the cursor internally (utf8 characters)
   self.ocursor = 1           -- tracking the cursor externally (columns)
@@ -52,8 +55,8 @@ function UTF8EditLine:init(s)
   self.tail = self.icursor   -- prepare linked list
   self.tail.prev = self.head
   self.head.next = self.tail
-  for _, c in utf8.codes(s or "") do
-    self:add(utf8.char(c))
+  if s then
+    self:insert(s)
   end
 end
 
@@ -100,24 +103,24 @@ end
 
 
 
---- Inserts a character at the current cursor position.
--- @tparam string c the character to insert
--- @return nothing
-function UTF8EditLine:add(c) -- add to string at index
-  -- TODO: rename to "insert" and allow multi character strings to be added
-  if c == nil then return end
-  local node = { value = c, next = self.icursor, prev = self.icursor.prev }
-  self.icursor.prev.next = node
-  self.icursor.prev = node
-  self.ilen = self.ilen + 1
-  self.olen = self.olen + width.utf8cwidth(c)
-  self.ocursor = self.ocursor + width.utf8cwidth(c)
+--- Inserts a string at the current cursor position.
+-- @tparam string s the string to insert
+function UTF8EditLine:insert(s)
+  for _, cp in utf8.codes(s or "") do
+    local node = { value = utf8.char(cp), next = self.icursor, prev = self.icursor.prev }
+    self.icursor.prev.next = node
+    self.icursor.prev = node
+    self.ilen = self.ilen + 1
+    self.olen = self.olen + width.utf8cwidth(cp)
+    self.ocursor = self.ocursor + width.utf8cwidth(cp)
+  end
 end
 
 
 
 --- Deletes the character left of the current cursor position.
 -- If/once the cursor is at the start of the string, it does nothing.
+-- @tparam[opt=1] number n the number of characters to delete
 function UTF8EditLine:backspace(n)
   for _ = 1, n or 1 do
     if self.icursor.prev == self.head then return end
