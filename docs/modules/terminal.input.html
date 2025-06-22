@@ -65,11 +65,14 @@
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -79,9 +82,11 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -93,12 +98,8 @@
 
 <h1>Module <code>terminal.input</code></h1>
 <p>Module for getting keyboard input.</p>
-<p> Also enables querying the terminal for cursor position. When inmplementing any
- other queries, check out <a href="../modules/terminal.input.html#preread">preread</a> documentation, and <code>read_cursor_pos</code> for
- an example.</p>
-
-<p> <em>Note:</em> This module will be available from the main <a href="../modules/terminal.html#">terminal</a> module, without
- explicitly requiring it.</p>
+<p> Also enables querying the terminal. When inmplementing any
+ other queries, check out <a href="../modules/terminal.input.html#preread">preread</a> and <a href="../modules/terminal.input.html#read_query_answer">read_query_answer</a> documentation.</p>
     <h3>Usage:</h3>
     <ul>
         <pre class="example">local terminal = require &quot;terminal&quot;
@@ -149,7 +150,8 @@ local char, typ, sequence = terminal.input.readansi(1)
     <strong>preread ()</strong>
     </dt>
     <dd>
-    Preread <code>stdin</code> buffer into internal buffer.
+
+<p>Preread <code>stdin</code> buffer into internal buffer.
  This function will read from <code>stdin</code> and store the input in the internal buffer.
  This is required because querying the terminal (e.g. getting cursor position) might
  read data from the keyboard buffer, which would be lost if not buffered. Hence this
@@ -161,14 +163,10 @@ local char, typ, sequence = terminal.input.readansi(1)
     <li>call <a href="../modules/terminal.input.html#preread">preread</a> to empty <code>stdin</code> buffer into internal buffer.</li>
     <li>query terminal by writing the required ANSI escape sequences.</li>
     <li>call <code>flush</code> to ensure the ANSI sequences are sent to the terminal.</li>
-    <li>call <a href="../modules/terminal.input.html#readansi">readansi</a> to read the terminal response in a loop until the expected response
-    is received. Anything received that doesn't match the expected response should be
-    pushed into the internal buffer using <a href="../modules/terminal.input.html#push_input">push_input</a>. (see <code>read_cursor_pos</code> for an
-    example)</li>
+    <li>call <a href="../modules/terminal.input.html#read_query_answer">read_query_answer</a> to read the terminal responses.</li>
 </ol>
 
-<p> <em>Note:</em> step 4, calling <a href="../modules/terminal.input.html#readansi">readansi</a> in a loop, should be done while passing a blocking
- sleep function to prevent yielding, and introducing potential race conditionas.
+
 
 
 
@@ -188,7 +186,8 @@ local char, typ, sequence = terminal.input.readansi(1)
     </dt>
     <dd>
     Pushes input into the buffer.
- The input will be appended to the current buffer contents.
+ The input will be appended to the current buffer contents. This means the data being pushed
+ ends up after the current buffer contents, but before the next data read from stdin.
  The input parameters are the same as those returned by <a href="../modules/terminal.input.html#readansi">readansi</a>.
 
 
@@ -221,6 +220,8 @@ local char, typ, sequence = terminal.input.readansi(1)
     </dt>
     <dd>
     Query the terminal.
+ This is a wrapper around <a href="../modules/terminal.input.html#preread">preread</a> and <a href="../modules/terminal.input.html#read_query_answer">read_query_answer</a>. It sends a single query and reads the answer
+ in one go. It is a convenience function for simple queries. It is limited to only a single query/answer pair.
 
 
     <h3>Parameters:</h3>
@@ -331,7 +332,6 @@ local char, typ, sequence = terminal.input.readansi(1)
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-04-16 09:19:34 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
