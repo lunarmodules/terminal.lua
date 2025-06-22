@@ -103,16 +103,24 @@ end
 
 
 
+--- Inserts a unicode codepoint at the current cursor position.
+-- @tparam number cp the codepoint to insert
+function UTF8EditLine:insert_cp(cp)
+  local node = { value = utf8.char(cp), next = self.icursor, prev = self.icursor.prev }
+  self.icursor.prev.next = node
+  self.icursor.prev = node
+  self.ilen = self.ilen + 1
+  self.olen = self.olen + width.utf8cwidth(cp)
+  self.ocursor = self.ocursor + width.utf8cwidth(cp)
+end
+
+
+
 --- Inserts a string at the current cursor position.
 -- @tparam string s the string to insert
 function UTF8EditLine:insert(s)
   for _, cp in utf8.codes(s or "") do
-    local node = { value = utf8.char(cp), next = self.icursor, prev = self.icursor.prev }
-    self.icursor.prev.next = node
-    self.icursor.prev = node
-    self.ilen = self.ilen + 1
-    self.olen = self.olen + width.utf8cwidth(cp)
-    self.ocursor = self.ocursor + width.utf8cwidth(cp)
+    self:insert_cp(cp)
   end
 end
 
