@@ -12,7 +12,8 @@
 --     prompt = "Enter something: ",
 --     value = "Hello, 你-好 World 🚀!",
 --     max_length = 62,
---     overflow = "wrap" -- or "scroll"
+--     overflow = "wrap" -- or "scroll"   -- TODO: implement
+--     -- cancellable = true, -- TODO: implement
 --     position = 2,
 -- }
 -- local result, exitkey = pr:run()
@@ -35,25 +36,25 @@ Prompt.keyname2actions = {
   ["ctrl_h"] = "backspace",
   ["left"] = "left",
   ["right"] = "right",
-  ["up"] = "up",
-  ["down"] = "down",
+  -- ["up"] = "up",                     -- TODO: implement
+  -- ["down"] = "down",                 -- TODO: implement
   -- emacs keybinding
   ["ctrl_f"] = "left",
   ["ctrl_b"] = "right",
-  ["ctrl_a"] = "home",
-  ["ctrl_e"] = "end",
-  ["ctrl_w"] = "backspace_word",
-  ["ctrl_u"] = "backspace_to_start",
-  ["ctrl_d"] = "delete_word",
-  ["ctrl_k"] = "delete_to_end",
-  ["ctrl_l"] = "clear",
+  -- ["ctrl_a"] = "home",               -- TODO: implement
+  -- ["ctrl_e"] = "end",                -- TODO: implement
+  -- ["ctrl_w"] = "backspace_word",     -- TODO: implement
+  -- ["ctrl_u"] = "backspace_to_start", -- TODO: implement
+  -- ["ctrl_d"] = "delete_word",        -- TODO: implement
+  -- ["ctrl_k"] = "delete_to_end",      -- TODO: implement
+  -- ["ctrl_l"] = "clear",              -- TODO: implement
 }
 
 Prompt.actions2redraw = utils.make_lookup("actions", {
   ["backspace"] = true,
   ["delete"] = true,
-  ["backsapce_word"] = true,
-  ["backsapce_to_start"] = true,
+  ["backspace_word"] = true,
+  ["backspace_to_start"] = true,
   ["delete_word"] = true,
   ["delete_to_end"] = true,
   ["clear"] = true,
