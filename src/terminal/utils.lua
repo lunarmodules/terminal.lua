@@ -5,6 +5,7 @@
 
 local M = {}
 
+local utf8 = require("utf8") -- explicit, since 5.1 en 5.2 don't have it by default
 
 
 -- Converts table-keys to a string for error messages.
@@ -225,5 +226,36 @@ do
     return setmetatable(class, baseclass)
   end
 end
+
+
+
+--- Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
+--- Preserves utf8.len()
+-- @tparam string str the string to take the substring of
+-- @tparam number i the starting index of the substring
+-- @tparam number j the ending index of the substring
+-- @treturn string the substring
+function M.utf8sub(str, i, j)
+  local n = utf8.len(str)
+  if #str == n then -- fast path, no utf8 codes
+    return str:sub(i, j)
+  end
+
+  i = i or 1
+  j = j or -1
+  i = ((i - (i >= 0 and 1 or 0)) % n) + 1
+  j = ((j - (j >= 0 and 1 or 0)) % n) + 1
+  if j < i then
+    return ""
+  end
+  local indices = {}
+  for pos, _ in utf8.codes(str) do
+    indices[#indices + 1] = pos
+  end
+  indices[#indices + 1] = #str + 1
+  return str:sub(indices[i], indices[j + 1] - 1)
+end
+
+
 
 return M
