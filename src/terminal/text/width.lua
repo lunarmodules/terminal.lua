@@ -21,6 +21,7 @@ package.loaded["terminal.text.width"] = M -- Register the module early to avoid 
 local t = require "terminal"
 local sys = require "system"
 local sys_utf8cwidth = sys.utf8cwidth
+local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 compatibility
 
 
 
@@ -201,33 +202,6 @@ function M.test_write(str)
   -- re-run to get the total width, since all widths are known now,
   -- but this time do not write the string, just return the width
   return M.test(str)
-end
-
-
---- Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
---- Preserves utf8.len()
--- @tparam string str the string to take the substring of
--- @tparam number i the starting index of the substring
--- @tparam number j the ending index of the substring
--- @treturn string the substring
-function M.utf8sub(str, i, j)
-  local n = utf8.len(str)
-  if #str == n then
-    return str:sub(i, j)
-  end
-  i = i or 1
-  j = j or -1
-  i = ((i - (i >= 0 and 1 or 0)) % n) + 1
-  j = ((j - (j >= 0 and 1 or 0)) % n) + 1
-  if j < i then
-    return ""
-  end
-  local indices = {}
-  for pos, _ in utf8.codes(str) do
-    indices[#indices + 1] = pos
-  end
-  indices[#indices + 1] = #str + 1
-  return str:sub(indices[i], indices[j + 1] - 1)
 end
 
 return M

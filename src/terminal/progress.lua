@@ -7,6 +7,7 @@ local t = require("terminal")
 local tw = require("terminal.text.width")
 local Sequence = require("terminal.sequence")
 local utils = require("terminal.utils")
+local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 compatibility
 
 local gettime = require("system").gettime
 
@@ -166,11 +167,11 @@ function M.ticker(text, width, text_done)
   -- Simultaneously records max of lengths, later on we use this max_len as a standard for other strings
   local max_len = 0
   for i = 1, lengths[0] do
-    result[i] = tw.utf8sub(base, i, i + width - 1)
+    result[i] = utils.utf8sub(base, i, i + width - 1)
     lengths[i] = tw.utf8swidth(result[i])
     max_len = math.max(max_len, lengths[i])
   end
-  result[0] = tw.utf8sub(result[0], 1, max_len)
+  result[0] = utils.utf8sub(result[0], 1, max_len)
 
   for i = 1, math.floor(lengths[0] / 2) do
     result[i] = (" "):rep(max_len - lengths[i]) .. result[i]
