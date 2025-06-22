@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><strong>cli.Select</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>cli.Select</code></h1>
+<p>A single-choice interactive menu widget for CLI tools.</p>
+<p> This module provides a simple way to create a menu with a list of choices,
+ allowing the user to navigate and select an option using keyboard input.
+ The menu is displayed in the terminal, and the user can use the arrow keys
+ to navigate through the options. The selected option is highlighted, and the
+ user can confirm their choice by pressing Enter. Optionally the menu can also be
+ cancelled by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>.
+ NOTE: you MUST <code>terminal.initialize()</code> before calling this widget's <code>:run()</code></p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local menu = cli.Select{   -- invokes the &apos;init&apos; method
+  prompt = &quot;Select an option:&quot;,
+  choices = {
+    &quot;Option 1&quot;,
+    &quot;Option 2&quot;,
+    &quot;Option 3&quot;
+  },
+  default = 1,
+  cancellable = true
+}
+
+local selected_index, selected_value = menu()  -- invokes the &apos;run&apos; method
+print(&quot;Selected index: &quot; .. selected_index)
+print(&quot;Selected value: &quot; .. selected_value)
+</pre>
+    </ul>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cli.select:clear_widget">cli.select:clear_widget ()</a></td>
+	<td class="summary">Clears the widget.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cli.select:height">cli.select:height ()</a></td>
+	<td class="summary">Returns the display height in rows.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cli.select:init">cli.select:init (opts)</a></td>
+	<td class="summary">Initialize Select.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cli.select:run">cli.select:run ()</a></td>
+	<td class="summary">Executes the widget.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cli.select:clear_widget"></a>
+    <strong>cli.select:clear_widget ()</strong>
+    </dt>
+    <dd>
+    Clears the widget.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cli.select:height"></a>
+    <strong>cli.select:height ()</strong>
+    </dt>
+    <dd>
+    Returns the display height in rows.
+ Note: on a first call it will test character widths, see <a href="../modules/terminal.text.width.html#test">terminal.text.width.test</a>.
+ So terminal must be initialized before calling this method.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The height of the menu in rows.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cli.select:init"></a>
+    <strong>cli.select:init (opts)</strong>
+    </dt>
+    <dd>
+    Initialize Select.
+ This method is invoked by calling on the class.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options for the Select menu.
+        <ul>
+        <li><span class="parameter">choices</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         List of choices (strings) to display.
+        </li>
+        <li><span class="parameter">default</span>
+            <span class="types"><span class="type">number</span></span>
+         Default choice index (1-based).
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">prompt</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Prompt message to display.
+         (<em>default</em> "Select an option:")
+        </li>
+        <li><span class="parameter">cancellable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether the menu can be cancelled (by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>).
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">clear</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to clear the widget from screen after completion.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cli.select:run"></a>
+    <strong>cli.select:run ()</strong>
+    </dt>
+    <dd>
+    Executes the widget.
+ If necessary it initializes the terminal first.
+ It also handles the cleanup of the terminal state after the menu is closed.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span> or <span class="type">nil</span></span>
+        The index of the selected choice (1-based) or nil if cancelled.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">err</span></span>
+        The selected choice or <code>&quot;cancelled&quot;</code> if cancelled.</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

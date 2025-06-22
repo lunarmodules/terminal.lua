@@ -34,6 +34,7 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
+<li><a href="#Initialization">Initialization</a></li>
 </ul>
 
 
@@ -65,11 +66,14 @@
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -79,9 +83,11 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -100,7 +106,7 @@
 <p> It provides a simple and consistent interface to the terminal, allowing for cursor positioning,
  cursor shape and visibility, text formatting, and more.</p>
 
-<p> For generic instruction please read the <a href="topics/01-introduction.md.html">introduction</a>.</p>
+<p> For generic instruction please read the <a href="../topics/01-introduction.md.html">introduction</a>.</p>
     <h3>Info:</h3>
     <ul>
         <li><strong>Copyright</strong>: Copyright (c) 2024-2024 Thijs Schreijer</li>
@@ -112,13 +118,20 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#beep">beep ()</a></td>
+	<td class="name" nowrap><a href="#bell">bell ()</a></td>
 	<td class="summary">Write a sequence to the terminal to make it beep.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#beep_seq">beep_seq ()</a></td>
+	<td class="name" nowrap><a href="#bell_seq">bell_seq ()</a></td>
 	<td class="summary">Returns a string sequence to make the terminal beep.</td>
 	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#size">size ()</a></td>
+	<td class="summary">Returns the terminal size in rows and columns.</td>
+	</tr>
+</table>
+<h2><a href="#Initialization">Initialization</a></h2>
+<table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#initialize">initialize ([opts])</a></td>
 	<td class="summary">Initializes the terminal for use.</td>
@@ -139,10 +152,6 @@
 	<td class="name" nowrap><a href="#shutdown">shutdown ()</a></td>
 	<td class="summary">Shuts down the terminal, restoring the terminal settings.</td>
 	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#size">size ()</a></td>
-	<td class="summary">Returns the terminal size in rows and columns.</td>
-	</tr>
 </table>
 
 <br/>
@@ -153,8 +162,8 @@
 
     <dl class="function">
     <dt>
-    <a name = "beep"></a>
-    <strong>beep ()</strong>
+    <a name = "bell"></a>
+    <strong>bell ()</strong>
     </dt>
     <dd>
     Write a sequence to the terminal to make it beep.
@@ -172,8 +181,8 @@
 
 </dd>
     <dt>
-    <a name = "beep_seq"></a>
-    <strong>beep_seq ()</strong>
+    <a name = "bell_seq"></a>
+    <strong>bell_seq ()</strong>
     </dt>
     <dd>
     Returns a string sequence to make the terminal beep.
@@ -191,6 +200,43 @@
 
 
 </dd>
+    <dt>
+    <a name = "size"></a>
+    <strong>size ()</strong>
+    </dt>
+    <dd>
+    Returns the terminal size in rows and columns.
+ Just a convenience, maps 1-on-1 to <code>system.termsize</code>.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        number of rows</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        number of columns</li>
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        on error</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        error message</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Initialization"></a>Initialization</h2>
+
+    <dl class="function">
     <dt>
     <a name = "initialize"></a>
     <strong>initialize ([opts])</strong>
@@ -314,8 +360,10 @@ main = t.<span class="function-name">initwrap</span>(main, {
     </dt>
     <dd>
     Preload known characters into the width-cache.
- Characters loaded will be the <code>draw.box</code> formats, and the <code>progress</code> spinner sprites.
- Uses <code>text.width.test</code> to test the widths of the characters.
+ Typically this should be called right after initialization. It will check default
+ characters in use by this library, and the optional specified characters in <code>str</code>.
+ Characters loaded will be the <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a> formats, and the <code>progress</code> spinner sprites.
+ Uses <a href="../modules/terminal.text.width.html#test">terminal.text.width.test</a> to test the widths of the characters.
 
 
     <h3>Parameters:</h3>
@@ -376,39 +424,6 @@ main = t.<span class="function-name">initwrap</span>(main, {
 
 
 </dd>
-    <dt>
-    <a name = "size"></a>
-    <strong>size ()</strong>
-    </dt>
-    <dd>
-    Returns the terminal size in rows and columns.
- Just a convenience, maps 1-on-1 to <code>system.termsize</code>.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-        <li>
-           <span class="types"><span class="type">number</span></span>
-        number of rows</li>
-        <li>
-           <span class="types"><span class="type">number</span></span>
-        number of columns</li>
-    </ol>
-     <h3>Or</h3>
-    <ol>
-        <li>
-           <span class="types"><span class="type">nil</span></span>
-        on error</li>
-        <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        error message</li>
-    </ol>
-
-
-
-
-</dd>
 </dl>
 
 
@@ -416,7 +431,6 @@ main = t.<span class="function-name">initwrap</span>(main, {
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-04-16 09:19:34 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

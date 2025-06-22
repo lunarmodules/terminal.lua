@@ -66,11 +66,14 @@
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -80,9 +83,11 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -105,9 +110,8 @@
  the last one to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#push">push (row, column)</a></td>
-	<td class="summary">Pushes the current cursor position onto the stack, and writes an ansi sequence to move to
- the new position to the terminal.</td>
+	<td class="name" nowrap><a href="#push">push ([new_row[, new_column]])</a></td>
+	<td class="summary">Pushes the current cursor position onto the stack, and writes an ansi sequence to move to the new position (if applicable) to the terminal.</td>
 	</tr>
 </table>
 <h2><a href="#Sequences">Sequences</a></h2>
@@ -118,9 +122,8 @@
  the last one without writing it to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#push_seq">push_seq (row, column)</a></td>
-	<td class="summary">Pushes the current cursor position onto the stack, and returns an ansi sequence to move to
- the new position without writing it to the terminal.</td>
+	<td class="name" nowrap><a href="#push_seq">push_seq ([new_row[, new_column]])</a></td>
+	<td class="summary">Pushes the current cursor position onto the stack, and returns an ansi sequence to move to the new position (if applicable) without writing it to the terminal.</td>
 	</tr>
 </table>
 
@@ -161,27 +164,28 @@
 </dd>
     <dt>
     <a name = "push"></a>
-    <strong>push (row, column)</strong>
+    <strong>push ([new_row[, new_column]])</strong>
     </dt>
     <dd>
-    Pushes the current cursor position onto the stack, and writes an ansi sequence to move to
- the new position to the terminal.
+    Pushes the current cursor position onto the stack, and writes an ansi sequence to move to the new position (if applicable) to the terminal.
  Calls <a href="../modules/terminal.cursor.position.html#get">position.get</a> under the hood.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">row</span>
+        <li><span class="parameter">new_row</span>
             <span class="types"><span class="type">number</span></span>
 
 
 
+         (<em>optional</em>)
         </li>
-        <li><span class="parameter">column</span>
+        <li><span class="parameter">new_column</span>
             <span class="types"><span class="type">number</span></span>
 
 
 
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -230,27 +234,28 @@
 </dd>
     <dt>
     <a name = "push_seq"></a>
-    <strong>push_seq (row, column)</strong>
+    <strong>push_seq ([new_row[, new_column]])</strong>
     </dt>
     <dd>
-    Pushes the current cursor position onto the stack, and returns an ansi sequence to move to
- the new position without writing it to the terminal.
+    Pushes the current cursor position onto the stack, and returns an ansi sequence to move to the new position (if applicable) without writing it to the terminal.
  Calls <a href="../modules/terminal.cursor.position.html#get">position.get</a> under the hood.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">row</span>
+        <li><span class="parameter">new_row</span>
             <span class="types"><span class="type">number</span></span>
 
 
 
+         (<em>optional</em>)
         </li>
-        <li><span class="parameter">column</span>
+        <li><span class="parameter">new_column</span>
             <span class="types"><span class="type">number</span></span>
 
 
 
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -258,7 +263,7 @@
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
+        ansi sequence to write to the terminal, or an empty string if no position is given
     </ol>
 
 
@@ -272,7 +277,6 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-04-16 09:19:34 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

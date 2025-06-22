@@ -33,11 +33,17 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Functions">Functions</a></li>
-<li><a href="#Sequences">Sequences</a></li>
+<li><a href="#Methods">Methods</a></li>
 </ul>
 
 
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><strong>cli.Prompt</strong></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+</ul>
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><a href="../modules/terminal.html">terminal</a></li>
@@ -48,7 +54,7 @@
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><strong>terminal.cursor.visible.stack</strong></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -62,13 +68,6 @@
   <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
-</ul>
-<h2>Classes</h2>
-<ul class="nowrap">
-  <li><a href="../classes/Sequence.html">Sequence</a></li>
-  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
-  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
-  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -97,42 +96,47 @@
 
 <div id="content">
 
-<h1>Module <code>terminal.cursor.visible.stack</code></h1>
-<p>Cursor visibility stack.</p>
-<p> Managing the visibility of the cursor based on a stack. Since the
- current visibility cannot be requested, using stacks allows the user to revert to
- a previous state since the stacks keeps track of that.
- It does however require the user to use balanced operations; <a href="../modules/terminal.cursor.visible.stack.html#push">push</a>/<a href="../modules/terminal.cursor.visible.stack.html#pop">pop</a>.</p>
+<h1>Class <code>cli.Prompt</code></h1>
+<p>Prompt input for CLI tools.</p>
+<p> This module provides a simple way to read line input from the terminal. The user can
+ confirm their choices by pressing &lt;Enter&gt; or cancel their choices by pressing &lt;Esc&gt;.</p>
+
+<p> Features: Prompt, UTF8 support, async input, (to be added: secrets, scrolling and wrapping)</p>
+
+<p> NOTE: you MUST <code>terminal.initialize()</code> before calling this widget's <code>:run()</code></p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local prompt = Prompt {
+    prompt = &quot;Enter something: &quot;,
+    value = &quot;Hello, 你-好 World 🚀!&quot;,
+    max_length = 62,
+    overflow = &quot;wrap&quot; -- or &quot;scroll&quot;   -- TODO: implement
+    -- cancellable = true, -- TODO: implement
+    position = 2,
+}
+local result, exitkey = pr:run()
+</pre>
+    </ul>
 
 
-<h2><a href="#Functions">Functions</a></h2>
+<h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#apply">apply ()</a></td>
-	<td class="summary">Returns the ansi sequence to show/hide the cursor at the top of the stack, and writes it to the terminal.</td>
+	<td class="name" nowrap><a href="#cli.prompt:draw">cli.prompt:draw (redraw)</a></td>
+	<td class="summary">Draw the prompt and input value.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#pop">pop ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> cursor visibility(ies) off the stack, and writes the last one to the terminal.</td>
+	<td class="name" nowrap><a href="#cli.prompt:handleInput">cli.prompt:handleInput ()</a></td>
+	<td class="summary">Processes key input async
+ This function listens for key events and processes them.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#push">push ([v=true])</a></td>
-	<td class="summary">Pushes a cursor visibility onto the stack, and writes it to the terminal.</td>
-	</tr>
-</table>
-<h2><a href="#Sequences">Sequences</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#apply_seq">apply_seq ()</a></td>
-	<td class="summary">Returns the ansi sequence to show/hide the cursor at the top of the stack without writing it to the terminal.</td>
+	<td class="name" nowrap><a href="#cli.prompt:init">cli.prompt:init (opts)</a></td>
+	<td class="summary">Create a new Prompt instance.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#pop_seq">pop_seq ([n=1])</a></td>
-	<td class="summary">Pops <code>n</code> cursor visibility(ies) off the stack (and returns the last one), without writing it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#push_seq">push_seq ([v=true])</a></td>
-	<td class="summary">Pushes a cursor visibility onto the stack (and returns it), without writing it to the terminal.</td>
+	<td class="name" nowrap><a href="#cli.prompt:run">cli.prompt:run (redraw)</a></td>
+	<td class="summary">Starts the prompt input loop.</td>
 	</tr>
 </table>
 
@@ -140,100 +144,50 @@
 <br/>
 
 
-    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
 
     <dl class="function">
     <dt>
-    <a name = "apply"></a>
-    <strong>apply ()</strong>
+    <a name = "cli.prompt:draw"></a>
+    <strong>cli.prompt:draw (redraw)</strong>
     </dt>
     <dd>
-    Returns the ansi sequence to show/hide the cursor at the top of the stack, and writes it to the terminal.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "pop"></a>
-    <strong>pop ([n=1])</strong>
-    </dt>
-    <dd>
-    Pops <code>n</code> cursor visibility(ies) off the stack, and writes the last one to the terminal.
+    Draw the prompt and input value.
+ This function writes the prompt and the current input value to the terminal.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
-         number of visibilities to pop
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "push"></a>
-    <strong>push ([v=true])</strong>
-    </dt>
-    <dd>
-    Pushes a cursor visibility onto the stack, and writes it to the terminal.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">v</span>
+        <li><span class="parameter">redraw</span>
             <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-         (<em>default</em> true)
+         ????
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-        true
+        nothing
     </ol>
 
 
 
 
 </dd>
-</dl>
-    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
-
-    <dl class="function">
     <dt>
-    <a name = "apply_seq"></a>
-    <strong>apply_seq ()</strong>
+    <a name = "cli.prompt:handleInput"></a>
+    <strong>cli.prompt:handleInput ()</strong>
     </dt>
     <dd>
-    Returns the ansi sequence to show/hide the cursor at the top of the stack without writing it to the terminal.
+    Processes key input async
+ This function listens for key events and processes them.
 
 
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
+        string "returned" or "cancelled" based on the key pressed.
     </ol>
 
 
@@ -241,27 +195,45 @@
 
 </dd>
     <dt>
-    <a name = "pop_seq"></a>
-    <strong>pop_seq ([n=1])</strong>
+    <a name = "cli.prompt:init"></a>
+    <strong>cli.prompt:init (opts)</strong>
     </dt>
     <dd>
-    Pops <code>n</code> cursor visibility(ies) off the stack (and returns the last one), without writing it to the terminal.
+    Create a new Prompt instance.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">n</span>
+        <li><span class="parameter">opts</span> Options for the prompt.
+        <ul>
+        <li><span class="parameter">prompt</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The prompt text to display.
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The initial value of the prompt.
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">max_length</span>
             <span class="types"><span class="type">number</span></span>
-         number of visibilities to pop
-         (<em>default</em> 1)
+         The maximum length of the input.
+         (<em>default</em> 80)
         </li>
+        <li><span class="parameter">drawn_before</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If the prompt has been drawn before.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
+           <span class="types"><a class="type" href="../classes/cli.Prompt.html">Prompt</a></span>
+        A new Prompt instance.
     </ol>
 
 
@@ -269,27 +241,31 @@
 
 </dd>
     <dt>
-    <a name = "push_seq"></a>
-    <strong>push_seq ([v=true])</strong>
+    <a name = "cli.prompt:run"></a>
+    <strong>cli.prompt:run (redraw)</strong>
     </dt>
     <dd>
-    Pushes a cursor visibility onto the stack (and returns it), without writing it to the terminal.
+    Starts the prompt input loop.
+ This function initializes the input loop for the readline instance.
+ It uses a coroutine to process key input until an exit key is pressed.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">v</span>
+        <li><span class="parameter">redraw</span>
             <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-         (<em>default</em> true)
+         Whether to redraw the prompt initially.
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
-
+        <li>
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
+        The final input value entered by the user.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The exit key that terminated the input loop.</li>
     </ol>
 
 

@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><strong>cow.lua</strong></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>cow.lua</h2>
+<pre>
+<span class="keyword">local</span> terminal = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> position = <span class="global">require</span>(<span class="string">"terminal.cursor.position"</span>)
+<span class="keyword">local</span> Sequence = <span class="global">require</span>(<span class="string">"terminal.sequence"</span>)
+<span class="keyword">local</span> utils    = <span class="global">require</span>(<span class="string">"terminal.utils"</span>)
+
+<span class="keyword">local</span> keys = terminal.input.keymap.<span class="function-name">get_keys</span>()
+<span class="keyword">local</span> keymap = terminal.input.keymap.<span class="function-name">get_keymap</span> {
+  [<span class="string">"j"</span>] = keys.down,
+  [<span class="string">"k"</span>] = keys.up,
+  [<span class="string">"h"</span>] = keys.left,
+  [<span class="string">"l"</span>] = keys.right,
+  [<span class="string">"ctrl_c"</span>] = keys.escape
+}
+
+<span class="keyword">local</span> background =
+<span class="string">[[
+╭--====-~~~~~~~~~~~~-=====--╮
+|                           |
+|   ---------------------   │
+│  | ▚               🌙  |  |
+|  |        /            |  |
+|  |  _🌷_  __/  ___ _   |  │
+|  _-___________________-_  |
+| /---/--/-/-+-\-\--\--\--\ |
+|/__/_/_/----+-----\__\____\|
+╰--------~~~~~~~~~----------╯
+]]</span>
+<span class="keyword">local</span> character = <span class="string">"🐄"</span> <span class="comment">--
+</span><span class="keyword">local</span> xc, yc = <span class="number">14</span>, <span class="number">5</span>
+
+terminal.<span class="function-name">initwrap</span>(<span class="keyword">function</span>()
+  terminal.output.<span class="function-name">write</span>(<span class="string">"Use arrows to move the cow, Esc to exit\n"</span>)
+  terminal.output.<span class="function-name">write</span>(background)
+  <span class="keyword">local</span> top, bottom <span class="keyword">do</span>
+    <span class="keyword">local</span> r, c = position.<span class="function-name">get</span>()
+    bottom = position.<span class="function-name">set_seq</span>(r, c)
+    top = position.<span class="function-name">set_seq</span>(r - <span class="number">10</span>, <span class="number">1</span>)
+  <span class="keyword">end</span>
+
+  terminal.cursor.visible.<span class="function-name">set</span>(<span class="keyword">false</span>)
+
+  <span class="keyword">local</span> renderer = <span class="function-name">Sequence</span>(
+    top,
+    background,
+    top,
+    <span class="keyword">function</span>()
+      <span class="keyword">return</span> position.<span class="function-name">move_seq</span>(yc, xc)
+    <span class="keyword">end</span>,
+    character,
+    bottom
+  )
+
+  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    terminal.output.<span class="function-name">write</span>(renderer)
+    <span class="keyword">local</span> keyname = keymap[terminal.input.<span class="function-name">readansi</span>(<span class="number">0.02</span>)]
+    <span class="keyword">if</span> keyname == keys.up <span class="keyword">then</span>
+      yc = utils.<span class="function-name">resolve_index</span>(yc - <span class="number">1</span>, <span class="number">5</span>, <span class="number">4</span>)
+
+    <span class="keyword">elseif</span> keyname == keys.down <span class="keyword">then</span>
+      yc = utils.<span class="function-name">resolve_index</span>(yc + <span class="number">1</span>, <span class="number">5</span>, <span class="number">4</span>)
+
+    <span class="keyword">elseif</span> keyname == keys.left <span class="keyword">then</span>
+      xc = utils.<span class="function-name">resolve_index</span>(xc - <span class="number">1</span>, <span class="number">23</span>, <span class="number">5</span>)
+
+    <span class="keyword">elseif</span> keyname == keys.right <span class="keyword">then</span>
+      xc = utils.<span class="function-name">resolve_index</span>(xc + <span class="number">1</span>, <span class="number">23</span>, <span class="number">5</span>)
+
+    <span class="keyword">elseif</span> keyname == keys.escape <span class="keyword">then</span>
+      terminal.cursor.visible.<span class="function-name">set</span>(<span class="keyword">true</span>)
+      <span class="global">print</span>(<span class="string">'Moo!'</span>)
+      <span class="keyword">break</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>)()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

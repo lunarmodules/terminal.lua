@@ -66,11 +66,14 @@
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -80,9 +83,11 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -96,23 +101,70 @@
 <p>Module to map received input to key-names.</p>
 <p> Check the examples below for usage.</p>
 
+<p> <strong>key-map</strong>:
+ a <code>key-map</code> is a table that maps raw key-stroke input (from <code>readansi</code>) to key-names.
+ The raw input can be a control-character (bytes 0-31 + 127), or an ANSI escape sequence.</p>
+
+<p> note: a raw-key only maps to 1 name, even if the sequence is known under multiple names.
+ For example, the raw key <code>&quot;\013&quot;</code> (carriage return) maps to the name <code>&quot;ctrl_m&quot;</code>. Though on
+ Windows it is also know as keyname <code>&quot;enter&quot;</code> or <code>&quot;return&quot;</code>, it will not map to these names.</p>
+
+<p> That's why there is <strong>keys</strong>:
+ a <code>map</code> of aliases for key-names to official key-names. This allows to use user-friendly names for keys.
+ For example, the key-name <code>&quot;ctrl_m&quot;</code> can be aliased to <code>&quot;enter&quot;</code> or <code>&quot;return&quot;</code>, so that
+ you can use these names in your code, instead of the raw key-name. For unknown keys,
+ an error will be thrown, so you can catch typos in your code early.</p>
+
+<p> So in key-map; raw-key <code>&quot;\013&quot;</code> maps to <code>&quot;ctrl_m&quot;</code></p>
+
+<p> In <code>keys</code>; the keys <code>&quot;ctrl_m&quot;</code>, <code>&quot;enter&quot;</code>, and <code>&quot;return&quot;</code>, all map to the same key-name; <code>&quot;ctrl_m&quot;</code>.</p>
+
+<p> Check the source code for default keys and aliases. Custom maps can be created with
+ <a href="../modules/terminal.input.keymap.html#get_keymap">get_keymap</a> and <a href="../modules/terminal.input.keymap.html#get_keys">get_keys</a>.</p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local rawkey = &quot;\013&quot; -- carriage return
+local keymap = terminal.input.keymap.default_key_map
+local keys = terminal.input.keymap.default_keys
+
+local keyname = key_map[rawkey] --&gt; &quot;ctrl_m&quot;
+
+-- the following if statements are equivalent:
+if keyname == &quot;ctrl_m&quot; then     -- uses magic strings, typos are lurking bugs!
+if keyname == keys.ctrl_m then  -- uses the official name, prevents typos, hard to read
+if keyname == keys.enter then   -- uses alias, easily readable, prevents typos
+if keyname == keys.return then  -- uses alias, easily readable, prevents typos
+
+-- This will throw an error when running due to the typo:
+if keyname == keys.retunr then  -- typo, will throw an error
+</pre>
+    </ul>
+
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#get_keymap">get_keymap ([overrides])</a></td>
-	<td class="summary">Returns a new key-map to map incoming key-strokes to a key-name.</td>
+	<td class="summary">Returns a new key-map to map incoming raw key-strokes to a key-name.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#get_keys">get_keys ([keymap=default-key-map[, aliasses]])</a></td>
 	<td class="summary">Returns a constant lookup table with key-names.</td>
 	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_printable">is_printable (keystroke)</a></td>
+	<td class="summary">Checks if a raw-key is printable.</td>
+	</tr>
 </table>
 <h2><a href="#Tables">Tables</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#control_characters">control_characters</a></td>
+	<td class="summary">Key-map of only control characters.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#default_key_map">default_key_map</a></td>
-	<td class="summary">The default list of key-mapping from sequences/chars to key names.</td>
+	<td class="summary">The default list of key-mapping from raw-input to key names.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#default_keys">default_keys</a></td>
@@ -132,7 +184,7 @@
     <strong>get_keymap ([overrides])</strong>
     </dt>
     <dd>
-    Returns a new key-map to map incoming key-strokes to a key-name.
+    Returns a new key-map to map incoming raw key-strokes to a key-name.
  Generates a new key-map, containing the <a href="../modules/terminal.input.keymap.html#default_key_map">default_key_map</a>, and the provided overrides.
 
 
@@ -140,8 +192,9 @@
     <ul>
         <li><span class="parameter">overrides</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         a table with key-value pairs to override the default key map. The key should be the
- character or sequence as returned by <code>readansi</code>, the value should be the name of the key.
+         a table with key-value pairs to override the default key map.
+ The key should be the raw-key (character or sequence) as returned by <code>readansi</code>, the value
+ should be the name of the key.
          (<em>optional</em>)
         </li>
     </ul>
@@ -150,8 +203,7 @@
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-        key_map a table with the key map. Keys are the incoming key strokes/ansi
- sequences, values the name.
+        new key_map
     </ol>
 
 
@@ -159,10 +211,10 @@
     <h3>Usage:</h3>
     <ul>
         <pre class="example"><span class="comment">-- use overrides to re-map vim-oriented keys to arrow-keys
-</span><span class="keyword">local</span> default_keys = terminal.input.keymap.default_keys
+</span><span class="keyword">local</span> keys = terminal.input.keymap.default_keys
 <span class="keyword">local</span> vi_keymap = terminal.input.keymap.<span class="function-name">get_keymap</span>({
-  [<span class="string">"j"</span>] = default_keys.down,   <span class="comment">-- use lookup table, not magic strings
-</span>  [<span class="string">"k"</span>] = default_keys.up,     <span class="comment">-- use lookup table, not magic strings
+  [<span class="string">"j"</span>] = keys.down,   <span class="comment">-- use lookup table, not magic strings
+</span>  [<span class="string">"k"</span>] = keys.up,     <span class="comment">-- use lookup table, not magic strings
 </span>})
 
 <span class="keyword">local</span> keystroke, keytype = terminal.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
@@ -186,6 +238,8 @@
     </dt>
     <dd>
     Returns a constant lookup table with key-names.
+ It will contain everything from the <a href="../modules/terminal.input.keymap.html">keymap</a> table, the default key-aliases, and the provided
+ aliasses.
  Looking up an unknown name will throw an error. Use this instead of magic-strings
  when checking for specific keys.
 
@@ -200,7 +254,7 @@
         <li><span class="parameter">aliasses</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          a table with key-value pairs to override the default key map.
- The key is the alias, the value is the name of the already existing key.
+ The key is the alias, the value is the official name of the key.
          (<em>optional</em>)
         </li>
     </ul>
@@ -209,7 +263,7 @@
     <ol>
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-        constant table where the keys map to the key names.
+        constant table where the aliases/keys map to the official key names.
     </ol>
 
 
@@ -217,7 +271,7 @@
     <h3>Usage:</h3>
     <ul>
         <pre class="example"><span class="keyword">local</span> keys = terminal.input.keymap.default_keys
-<span class="keyword">local</span> key = terminal.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
+<span class="keyword">local</span> rawkey = terminal.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
 <span class="keyword">local</span> keyname = terminal.input.keymap.default_key_map[key]
 
 <span class="keyword">if</span>     keyname == <span class="string">"up"</span> <span class="keyword">then</span>     <span class="comment">-- will work
@@ -228,16 +282,65 @@
     </ul>
 
 </dd>
+    <dt>
+    <a name = "is_printable"></a>
+    <strong>is_printable (keystroke)</strong>
+    </dt>
+    <dd>
+    Checks if a raw-key is printable.
+ A printable key is a key that is not an ANSI escape sequence and not a control character (bytes
+ 0-31 and 127).</p>
+
+<p> <strong>Note</strong>: Tab, Cr, and Lf, which are control characters, are considered non-printable by this function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">keystroke</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the raw key-stroke as returned by <code>readansi</code>.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+        <code>true</code> if the key is printable, <code>false</code> otherwise.
+    </ol>
+
+
+
+
+</dd>
 </dl>
     <h2 class="section-header "><a name="Tables"></a>Tables</h2>
 
     <dl class="function">
     <dt>
+    <a name = "control_characters"></a>
+    <strong>control_characters</strong>
+    </dt>
+    <dd>
+    Key-map of only control characters.
+ The control characters are single byte strings, with byte values 0-31 and 127.
+ The map maps the raw control character to a key-name.
+ The key-names are the names of the control characters, e.g. <code>&quot;ctrl_a&quot;</code> for byte 1, or
+ <code>&quot;ctrl_[&quot;</code> for byte 27 (ESC).
+
+
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "default_key_map"></a>
     <strong>default_key_map</strong>
     </dt>
     <dd>
-    The default list of key-mapping from sequences/chars to key names.
+    The default list of key-mapping from raw-input to key names.
 
 
 
@@ -267,7 +370,6 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-04-16 09:19:34 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

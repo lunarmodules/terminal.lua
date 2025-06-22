@@ -65,11 +65,14 @@
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-todo.md.html">2. TODO items</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -79,9 +82,11 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/copas.lua.html">copas.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -120,6 +125,11 @@
 	<td class="name" nowrap><a href="#throw_invalid_constant">throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</a></td>
 	<td class="summary">Throws an error message for an invalid lookup constant.</td>
 	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
+	<td class="summary">Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
+ Preserves utf8.len()</td>
+	</tr>
 </table>
 
 <br/>
@@ -134,10 +144,19 @@
     <strong>class ([baseclass])</strong>
     </dt>
     <dd>
-    Creates a (sub)class.
+
+<p>Creates a (sub)class.
  This function creates a new class, which is a subclass of the given baseclass.
- An instance can be created by calling on the class, the table passed in becomes the new instance.
- If the class has an <code>init</code> method, then it will be called upon instantiation.
+ An instance can be created by calling on the class, any parameteres passed in will be passed on
+ to the <code>init</code> method. The <code>init</code> method (if present), will be called upon instantiation.</p>
+
+<p> Every instance will:</p>
+
+<ul>
+    <li>have a <code>super</code> property, which points to the class itself.</li>
+    <li>upon creation call the <code>init</code> method (if present) with the parameters passed when calling on the Class.</li>
+</ul>
+
 
 
     <h3>Parameters:</h3>
@@ -161,19 +180,20 @@
     <h3>Usage:</h3>
     <ul>
         <pre class="example"><span class="keyword">local</span> Cat = utils.<span class="function-name">class</span>()
-<span class="keyword">function</span> Cat:<span class="function-name">init</span>()
-  self.value = self.value <span class="keyword">or</span> <span class="number">42</span>
+<span class="keyword">function</span> Cat:<span class="function-name">init</span>(value)
+  self.value = value <span class="keyword">or</span> <span class="number">42</span>
 <span class="keyword">end</span>
 
 <span class="keyword">local</span> Lion = utils.<span class="function-name">class</span>(Cat)
-<span class="keyword">function</span> Lion:<span class="function-name">init</span>()
-  Cat.<span class="function-name">init</span>(self)        <span class="comment">-- call ancestor initializer
+<span class="keyword">function</span> Lion:<span class="function-name">init</span>(value)
+  <span class="global">assert</span>(self.super == Cat, <span class="string">"Superclass is not a Cat"</span>)
+  Cat.<span class="function-name">init</span>(self, value)   <span class="comment">-- call ancestor initializer
 </span>  self.value = self.value * <span class="number">2</span>
 <span class="keyword">end</span>
 
 <span class="keyword">local</span> instance1 = <span class="function-name">Lion</span>()
 <span class="global">print</span>(instance1.value)      <span class="comment">--&gt; 84
-</span><span class="keyword">local</span> instance2 = <span class="function-name">Lion</span>({ value = <span class="number">10</span> })
+</span><span class="keyword">local</span> instance2 = <span class="function-name">Lion</span>(<span class="number">10</span>)
 <span class="global">print</span>(instance2.value)      <span class="comment">--&gt; 20</span></pre>
     </ul>
 
@@ -335,6 +355,42 @@
 
 
 </dd>
+    <dt>
+    <a name = "utf8sub"></a>
+    <strong>utf8sub (str, i, j)</strong>
+    </dt>
+    <dd>
+    Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
+ Preserves utf8.len()
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to take the substring of
+        </li>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         the starting index of the substring
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         the ending index of the substring
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the substring
+    </ol>
+
+
+
+
+</dd>
 </dl>
 
 
@@ -342,7 +398,6 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-04-16 09:19:34 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
