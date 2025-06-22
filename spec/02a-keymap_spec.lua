@@ -120,4 +120,29 @@ describe("keymap:", function()
 
   end)
 
+
+
+  describe("is_printable()", function()
+
+    it("returns true for printable characters", function()
+      assert.is_true(keymap.is_printable("a"))
+      assert.is_true(keymap.is_printable("1"))
+      assert.is_true(keymap.is_printable(" "))
+      -- add some utf8 chars
+      assert.is_true(keymap.is_printable("é"))
+      assert.is_true(keymap.is_printable("😊"))
+    end)
+
+
+    it("returns false for non-printable characters", function()
+      assert.is_false(keymap.is_printable("\n"))
+      assert.is_false(keymap.is_printable("\r"))
+      assert.is_false(keymap.is_printable("\t"))
+      assert.is_false(keymap.is_printable("\000")) -- null character
+      assert.is_false(keymap.is_printable("\027")) -- escape character
+      assert.is_false(keymap.is_printable("\027OP")) -- ansi sequence for F1 key
+    end)
+
+  end)
+
 end)
