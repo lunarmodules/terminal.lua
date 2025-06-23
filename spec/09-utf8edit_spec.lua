@@ -463,6 +463,164 @@ describe("Utf8editLine:", function()
 
 
 
+  describe("goto_home()", function()
+
+    it("moves the cursor to the start of the line (ASCII)", function()
+      local line = Utf8edit("hello")
+      line:goto_home()
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("moves the cursor to the start of the line (UTF-8)", function()
+      local line = Utf8edit("你好世界")
+      line:goto_home()
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("allows inserting at the start after goto_home", function()
+      local line = Utf8edit("world")
+      line:goto_home()
+      line:insert("hello ")
+      assert.are.equal("hello world", tostring(line))
+      assert.are.equal(7, line:pos_char())
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("allows inserting at the start of empty string after goto_home", function()
+      local line = Utf8edit("")
+      line:goto_home()
+      line:insert("X")
+      assert.are.equal("X", tostring(line))
+      assert.are.equal(2, line:pos_char())
+      assert.are.equal(2, line:pos_col())
+    end)
+
+  end)
+
+
+
+  describe("goto_end()", function()
+
+    it("moves the cursor to the end of the line (ASCII)", function()
+      local line = Utf8edit("hello")
+      line:left(3)
+      line:goto_end()
+      line:insert("X")
+      assert.are.equal("helloX", tostring(line))
+      assert.are.equal(7, line:pos_char())
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("moves the cursor to the end of the line (UTF-8)", function()
+      local line = Utf8edit("你好世界")
+      line:left(3)
+      line:goto_end()
+      assert.are.equal(5, line:pos_char())
+      assert.are.equal(9, line:pos_col())
+    end)
+
+
+    it("allows inserting at the end after goto_end", function()
+      local line = Utf8edit("hello")
+      line:left(3)
+      line:goto_end()
+      line:insert(" world")
+      assert.are.equal("hello world", tostring(line))
+      assert.are.equal(12, line:pos_char())
+      assert.are.equal(12, line:pos_col())
+    end)
+
+
+    it("allows inserting at the end of empty string after goto_end", function()
+      local line = Utf8edit("")
+      line:goto_end()
+      line:insert("X")
+      assert.are.equal("X", tostring(line))
+      assert.are.equal(2, line:pos_char())
+      assert.are.equal(2, line:pos_col())
+    end)
+
+  end)
+
+
+
+  describe("goto_index()", function()
+
+    it("moves the cursor to the given index (ASCII)", function()
+      local line = Utf8edit("hello")
+      line:goto_index(3)
+      line:insert("X")
+      assert.are.equal("heXllo", tostring(line))
+      assert.are.equal(4, line:pos_char())
+      assert.are.equal(4, line:pos_col())
+    end)
+
+
+    it("moves the cursor to the given index (UTF-8)", function()
+      local line = Utf8edit("1你好世界")
+      line:goto_index(3)
+      line:insert("X")
+      assert.are.equal("1你X好世界", tostring(line))
+      assert.are.equal(4, line:pos_char())
+      assert.are.equal(5, line:pos_col())
+    end)
+
+
+    it("moves the cursor to the start if index is 1", function()
+      local line = Utf8edit("hello")
+      line:goto_index(1)
+      line:insert("1你")
+      assert.are.equal("1你hello", tostring(line))
+      assert.are.equal(3, line:pos_char())
+      assert.are.equal(4, line:pos_col())
+    end)
+
+
+    it("moves the cursor to the end if index is greater than length", function()
+      local line = Utf8edit("hello")
+      line:goto_index(10)
+      assert.are.equal(6, line:pos_char())
+      assert.are.equal(6, line:pos_col())
+    end)
+
+
+    it("does nothing if the string is empty", function()
+      local line = Utf8edit("")
+      line:goto_index(3)
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("handles negative indices correctly", function()
+      local line = Utf8edit("hello")
+      line:goto_index(-3)  -- should go to second last character
+      line:insert("X")
+      assert.are.equal("helXlo", tostring(line))
+      assert.are.equal(5, line:pos_char())
+      assert.are.equal(5, line:pos_col())
+    end)
+
+
+    it("moves to start if negative index is less than -length", function()
+      local line = Utf8edit("hello")
+      line:goto_index(-10)  -- should go to start
+      line:insert("X")
+      assert.are.equal("Xhello", tostring(line))
+      assert.are.equal(2, line:pos_char())
+      assert.are.equal(2, line:pos_col())
+    end)
+
+  end)
+
+
+
   describe("complex string edits", function()
 
     it("handles left and right cursor movements with UTF-8", function()

@@ -186,4 +186,51 @@ end
 
 
 
+--- Moves the cursor to the start of the string.
+function UTF8EditLine:goto_home()
+  self.icursor = self.head.next
+  self.ocursor = 1
+end
+
+
+
+--- Moves the cursor to the end of the string.
+function UTF8EditLine:goto_end()
+  self.icursor = self.tail
+  self.ocursor = self.olen + 1
+end
+
+
+
+--- Moves the cursor to the position given by the index.
+-- Cursor position indexes range from 1 to `len + 1`, where `len` is the length of the string in characters.
+-- Negative indexes are counted from the end backwards, so `-1` is the same as `goto_end`.
+-- If the index is out of bounds, it will move the cursor to the closest valid position.
+-- @tparam number pos the position (in characters) to move the cursor to (0-based index)
+function UTF8EditLine:goto_index(pos)
+  pos = utils.resolve_index(pos, self.ilen + 1, 1)
+  if pos < 0 then
+    return self:goto_home()
+  end
+
+  if pos >= self.ilen + 1 then
+    return self:goto_end()
+  end
+
+  local head = self.head.next
+  local l = 1
+  self.ocursor = 1
+  while head do
+    if l == pos then
+      self.icursor = head
+      return
+    end
+    self.ocursor = self.ocursor + width.utf8cwidth(head.value or "")
+    l = l + 1
+    head = head.next
+  end
+end
+
+
+
 return UTF8EditLine
