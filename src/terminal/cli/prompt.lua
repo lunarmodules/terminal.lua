@@ -41,13 +41,13 @@ Prompt.keyname2actions = {
   --- emacs keybinding
   ["ctrl_f"] = "left",
   ["ctrl_b"] = "right",
-  ["ctrl_a"] = "home",
-  ["ctrl_e"] = "end",
-  ["ctrl_w"] = "backspace_word",
-  ["ctrl_u"] = "backspace_to_start",
-  ["ctrl_d"] = "delete_word",
-  ["ctrl_k"] = "delete_to_end",
-  ["ctrl_l"] = "clear",
+  ["ctrl_a"] = "home",              -- TODO: implement
+  ["ctrl_e"] = "end",               -- TODO: implement
+  ["ctrl_w"] = "backspace_word",    -- TODO: implement
+  ["ctrl_u"] = "backspace_to_start", -- TODO: implement
+  ["ctrl_d"] = "delete_word",       -- TODO: implement
+  ["ctrl_k"] = "delete_to_end",     -- TODO: implement
+  ["ctrl_l"] = "clear",             -- TODO: implement
 }
 
 Prompt.actions2redraw = utils.make_lookup("actions", {
