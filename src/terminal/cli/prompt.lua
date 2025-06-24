@@ -77,12 +77,18 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam table opts Options for the prompt.
 -- @tparam[opt=""] string opts.prompt The prompt text to display.
 -- @tparam[opt=""] string opts.value The initial value of the prompt.
+-- @tparam[opt=len_char] number opts.position The initial cursor position (in char) of the input
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
   self.value = UTF8EditLine(opts.value or "")
   self.prompt = opts.prompt or ""          -- the prompt to display
   self.max_length = opts.max_length or 80  -- the maximum length of the input
+  if opts.position then
+    local pos = utils.resolve_index(opts.position, self.value:len_char(), 1)
+    self.value:goto_home()
+    self.value:right(pos - 1)
+  end
 end
 
 
@@ -130,6 +136,8 @@ end
 function Prompt:updateCursor(column)
   -- move to cursor position
   t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value.ocursor)
+  -- unhide the cursor
+  t.cursor.visible.set(true)
 end
 
 
