@@ -38,16 +38,16 @@ Prompt.keyname2actions = {
   ["right"] = "right",
   ["up"] = "up",
   ["down"] = "down",
-  --- emacs keybinding
+  -- emacs keybinding
   ["ctrl_f"] = "left",
   ["ctrl_b"] = "right",
-  ["ctrl_a"] = "home",              -- TODO: implement
-  ["ctrl_e"] = "end",               -- TODO: implement
-  ["ctrl_w"] = "backspace_word",    -- TODO: implement
+  ["ctrl_a"] = "home",               -- TODO: implement
+  ["ctrl_e"] = "end",                -- TODO: implement
+  ["ctrl_w"] = "backspace_word",     -- TODO: implement
   ["ctrl_u"] = "backspace_to_start", -- TODO: implement
-  ["ctrl_d"] = "delete_word",       -- TODO: implement
-  ["ctrl_k"] = "delete_to_end",     -- TODO: implement
-  ["ctrl_l"] = "clear",             -- TODO: implement
+  ["ctrl_d"] = "delete_word",        -- TODO: implement
+  ["ctrl_k"] = "delete_to_end",      -- TODO: implement
+  ["ctrl_l"] = "clear",              -- TODO: implement
 }
 
 Prompt.actions2redraw = utils.make_lookup("actions", {
@@ -66,6 +66,7 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
   ["down"] = false,
   ["end"] = false,
 })
+
 
 --- Create a new Prompt instance.
 -- @tparam table opts Options for the prompt.

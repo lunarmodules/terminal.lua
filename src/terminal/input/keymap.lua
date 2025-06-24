@@ -405,6 +405,8 @@ end
 -- @table default_keys
 M.default_keys = M.get_keys(M.default_key_map)
 
+
+
 --- Checks if a raw-key is printable.
 -- A printable key is a key that is not an ANSI escape sequence and not a control character (bytes
 -- 0-31 and 127).
