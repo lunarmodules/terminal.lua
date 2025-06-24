@@ -71,34 +71,45 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam[opt=""] string opts.prompt The prompt text to display.
 -- @tparam[opt=""] string opts.value The initial value of the prompt.
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
--- @tparam[opt=false] boolean opts.drawn_before If the prompt has been drawn before.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
   self.value = UTF8EditLine(opts.value or "")
   self.prompt = opts.prompt or ""          -- the prompt to display
   self.max_length = opts.max_length or 80  -- the maximum length of the input
-  self.drawn_before = false                -- if the prompt has been drawn
 end
 
 
 
---- Draw the prompt and input value.
+--- Draw the whole thing: prompt and input value.
 -- This function writes the prompt and the current input value to the terminal.
--- @tparam boolean redraw ????
 -- @return nothing
-function Prompt:draw(redraw)
-  if redraw or not self.prompt_ready then
-    -- we are at start of prompt
-    self.prompt_ready = true
-    t.cursor.position.column(1)
-    output.write(tostring(self.prompt))
-  else
-    -- we are at current cursor position, move to start of prompt
-    t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
-  end
+function Prompt:draw()
+  -- hide the cursor
+  t.cursor.visible.set(false)
+  -- move to the left margin
+  t.cursor.position.column(1)
   -- write prompt & value
-  local value = tostring(self.value)
-  output.write(value)
+  output.write(tostring(self.prompt))
+  output.write(tostring(self.value))
+    -- unhide the cursor
+  t.cursor.visible.set(true)
+  output.write(t.clear.eol_seq())
+  -- clear remainder of input size
+  output.flush()
+end
+
+--- Draw the input value where the prompt ends.
+-- This function writes input value to the terminal.
+-- @return nothing
+function Prompt:drawInput()
+  -- hide the cursor
+  t.cursor.visible.set(false)
+  -- move to end of prompt
+  t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
+  -- write value
+  output.write(tostring(self.value))
+  -- unhide the cursor
+  t.cursor.visible.set(true)
   output.write(t.clear.eol_seq())
   -- clear remainder of input size
   output.flush()
@@ -145,7 +156,7 @@ function Prompt:handleInput()
           handle_action(self.value)
         end
         if redraw then
-          self:draw(false)
+          self:drawInput()
         end
         self:updateCursor()
       elseif keyname == keys.escape and self.cancellable then
@@ -159,7 +170,7 @@ function Prompt:handleInput()
         t.bell()
       else -- add the character at the current cursor
         self.value:insert(key)
-        self:draw(false)
+        self:drawInput()
         self:updateCursor()
       end
     end
