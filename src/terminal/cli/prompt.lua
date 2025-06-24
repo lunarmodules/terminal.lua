@@ -66,6 +66,13 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
   ["goto_end"] = false,
 })
 
+--- Create a new Prompt instance.
+-- @tparam table opts Options for the prompt.
+-- @tparam[opt=""] string opts.prompt The prompt text to display.
+-- @tparam[opt=""] string opts.value The initial value of the prompt.
+-- @tparam[opt=80] number opts.max_length The maximum length of the input.
+-- @tparam[opt=false] boolean opts.drawn_before If the prompt has been drawn before.
+-- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
   self.value = UTF8EditLine(opts.value or "")
   self.prompt = opts.prompt or ""          -- the prompt to display
