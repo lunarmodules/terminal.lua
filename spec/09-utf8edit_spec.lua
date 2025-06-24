@@ -711,4 +711,119 @@ describe("Utf8editLine:", function()
 
   end)
 
+
+
+  describe("clear()", function()
+
+    it("clears the line", function()
+      local line = Utf8edit("hello")
+      line:clear()
+      assert.are.equal("", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("does nothing if the line is already empty", function()
+      local line = Utf8edit("")
+      line:clear()
+      assert.are.equal("", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+  end)
+
+
+
+  describe("replace()", function()
+
+    it("replaces the line with a new ASCII string", function()
+      local line = Utf8edit("hello")
+      line:replace("world")
+      assert.are.equal("world", tostring(line))
+      assert.are.equal(6, line:pos_char())
+      assert.are.equal(6, line:pos_col())
+    end)
+
+
+    it("replaces the line with a new UTF-8 string", function()
+      local line = Utf8edit("hello")
+      line:replace("你好")
+      assert.are.equal("你好", tostring(line))
+      assert.are.equal(3, line:pos_char())
+      assert.are.equal(5, line:pos_col())
+    end)
+
+
+    it("replaces the line with an empty string", function()
+      local line = Utf8edit("hello")
+      line:replace("")
+      assert.are.equal("", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+  end)
+
+
+
+  describe("backspace_to_start()", function()
+
+    it("removes all characters to the left of the cursor", function()
+      local line = Utf8edit("hello world")
+      line:left(6) -- move cursor after 'hello'
+      line:backspace_to_start()
+      assert.are.equal(" world", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("does nothing if cursor is at the start", function()
+      local line = Utf8edit("hello")
+      line:goto_home()
+      line:backspace_to_start()
+      assert.are.equal("hello", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+  end)
+
+
+
+  describe("delete_to_end()", function()
+
+    it("removes all characters to the right of the cursor", function()
+      local line = Utf8edit("hello world")
+      line:left(6) -- move cursor after 'hello'
+      line:delete_to_end()
+      assert.are.equal("hello", tostring(line))
+      assert.are.equal(6, line:pos_char())
+      assert.are.equal(6, line:pos_col())
+    end)
+
+
+    it("removes all characters to the right of the cursor (UTF-8)", function()
+      local line = Utf8edit("你好世界abc")
+      line:left(5) -- move cursor after '你好'
+      line:delete_to_end()
+      assert.are.equal("你好", tostring(line))
+      assert.are.equal(3, line:pos_char())
+      assert.are.equal(5, line:pos_col())
+    end)
+
+
+    it("does nothing if cursor is at the end", function()
+      local line = Utf8edit("hello")
+      line:goto_end()
+      line:delete_to_end()
+      assert.are.equal("hello", tostring(line))
+      assert.are.equal(6, line:pos_char())
+      assert.are.equal(6, line:pos_col())
+    end)
+
+  end)
+
 end)

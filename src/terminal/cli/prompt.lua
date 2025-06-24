@@ -33,21 +33,26 @@ local Prompt = utils.class()
 
 Prompt.keyname2actions = {
   ["ctrl_?"] = "backspace",
-  ["ctrl_h"] = "backspace",
   ["left"] = "left",
   ["right"] = "right",
   ["up"] = "up",
   ["down"] = "down",
+  ["home"] = "goto_home",
+  ["end"] = "goto_end",
   -- emacs keybinding
   ["ctrl_f"] = "left",
   ["ctrl_b"] = "right",
-  ["ctrl_a"] = "home",               -- TODO: implement
-  ["ctrl_e"] = "end",                -- TODO: implement
+  ["ctrl_a"] = "goto_home",
+  ["ctrl_e"] = "goto_end",
+  ["ctrl_h"] = "backspace",
   ["ctrl_w"] = "backspace_word",     -- TODO: implement
-  ["ctrl_u"] = "backspace_to_start", -- TODO: implement
-  ["ctrl_d"] = "delete_word",        -- TODO: implement
-  ["ctrl_k"] = "delete_to_end",      -- TODO: implement
-  ["ctrl_l"] = "clear",              -- TODO: implement
+  ["ctrl_u"] = "backspace_to_start",
+  ["ctrl_d"] = "delete",
+  ["ctrl_k"] = "delete_to_end",
+  ["ctrl_l"] = "clear",
+  ["alt_b"] = "left_word",           -- TODO: implement
+  ["alt_f"] = "right_word",          -- TODO: implement
+  ["alt_d"] = "delete_word",         -- TODO: implement
 }
 
 Prompt.actions2redraw = utils.make_lookup("actions", {
@@ -61,10 +66,10 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
   --
   ["left"] = false,
   ["right"] = false,
-  ["home"] = false,
   ["up"] = false,
   ["down"] = false,
-  ["end"] = false,
+  ["goto_home"] = false,
+  ["goto_end"] = false,
 })
 
 

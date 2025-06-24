@@ -233,4 +233,45 @@ end
 
 
 
+--- Clears the input.
+function UTF8EditLine:clear()
+  self.head.next = self.tail
+  self.tail.prev = self.head
+  self.icursor = self.tail
+  self.ocursor = 1
+  self.ilen = 0
+  self.olen = 0
+end
+
+
+
+--- Replaces the current input with a new string.
+-- This function clears the current input and inserts the new string at the end.
+-- The cursor will be at the end of the new string.
+-- @tparam string s the new string to insert
+function UTF8EditLine:replace(s)
+  self:clear()
+  self:insert(s)
+end
+
+
+
+--- Deletes all characters to the left of the current cursor position.
+function UTF8EditLine:backspace_to_start()
+  while self.icursor.prev ~= self.head do
+    self:backspace()
+  end
+end
+
+
+
+--- Deletes all characters to the right of the current cursor position.
+function UTF8EditLine:delete_to_end()
+  while self.icursor ~= self.tail do
+    self:delete()
+  end
+end
+
+
+
 return UTF8EditLine
