@@ -33,6 +33,8 @@ local Prompt = utils.class()
 
 Prompt.keyname2actions = {
   ["ctrl_?"] = "backspace",
+  ["ctrl_h"] = "backspace",
+  ["delete"] = "delete",
   ["left"] = "left",
   ["right"] = "right",
   ["up"] = "up",
@@ -40,8 +42,8 @@ Prompt.keyname2actions = {
   --- emacs keybinding
   ["ctrl_f"] = "left",
   ["ctrl_b"] = "right",
-  ["ctrl_a"] = "home",              -- TODO: implement
-  ["ctrl_e"] = "end",               -- TODO: implement
+  ["ctrl_a"] = "goto_home",
+  ["ctrl_e"] = "goto_end",
   ["ctrl_w"] = "backspace_word",    -- TODO: implement
   ["ctrl_u"] = "backspace_to_start", -- TODO: implement
   ["ctrl_d"] = "delete_word",       -- TODO: implement
@@ -60,6 +62,7 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
   --
   ["left"] = false,
   ["right"] = false,
+  ["goto_home"] = false,
   ["up"] = false,
   ["down"] = false,
   ["goto_home"] = false,
@@ -70,12 +73,18 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam table opts Options for the prompt.
 -- @tparam[opt=""] string opts.prompt The prompt text to display.
 -- @tparam[opt=""] string opts.value The initial value of the prompt.
+-- @tparam[opt=len_char] number opts.pos The initial cursor position (in char) of the input
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
   self.value = UTF8EditLine(opts.value or "")
   self.prompt = opts.prompt or ""          -- the prompt to display
   self.max_length = opts.max_length or 80  -- the maximum length of the input
+  if opts.position then
+    local pos = utils.resolve_index(opts.position, self.value:len_char(), 1)
+    self.value:goto_home()
+    self.value:right(pos - 1)
+  end
 end
 
 
@@ -91,9 +100,8 @@ function Prompt:draw()
   -- write prompt & value
   output.write(tostring(self.prompt))
   output.write(tostring(self.value))
-    -- unhide the cursor
-  t.cursor.visible.set(true)
   output.write(t.clear.eol_seq())
+  self:updateCursor()
   -- clear remainder of input size
   output.flush()
 end
@@ -108,8 +116,6 @@ function Prompt:drawInput()
   t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
   -- write value
   output.write(tostring(self.value))
-  -- unhide the cursor
-  t.cursor.visible.set(true)
   output.write(t.clear.eol_seq())
   -- clear remainder of input size
   output.flush()
@@ -122,9 +128,11 @@ end
 -- @tparam number column The column to move the cursor to. If not provided, it defaults to the end of
 -- the prompt plus the current input value cursor position.
 -- @return nothing
-function Prompt:updateCursor(column)
+function Prompt:updateCursor()
   -- move to cursor position
-  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value.ocursor)
+  t.cursor.position.column(width.utf8swidth(self.prompt) + self.value.ocursor)
+  -- unhide the cursor
+  t.cursor.visible.set(true)
 end
 
 
