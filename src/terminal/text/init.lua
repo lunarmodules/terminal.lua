@@ -7,7 +7,6 @@ package.loaded["terminal.text"] = M -- Register the module early to avoid circul
 M.color = require("terminal.text.color")
 M.stack = require("terminal.text.stack")
 M.width = require("terminal.text.width")
-M.utf8edit = require("terminal.text.utf8edit")
 
 local output = require("terminal.output")
 local utils = require("terminal.utils")
