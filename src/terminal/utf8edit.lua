@@ -41,10 +41,10 @@ end
 -- @string default_word_delimiters
 UTF8EditLine.default_word_delimiters = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]]
 
---- Checks if the current character is a word delimiter.
+-- Checks if the current character is a word delimiter.
 -- @tparam table node the node to check
 -- @treturn boolean true if the character is a word delimiter, false otherwise
-function UTF8EditLine:is_delimiter(node)
+local function is_delimiter(self, node)
   local char = node.value or ""
   return self.word_delimiters[char] == true
 end
@@ -304,13 +304,13 @@ end
 function UTF8EditLine:left_word(n)
   for _ = 1, n or 1 do
     while self.icursor.prev ~= self.head do
-      if self:is_delimiter(self.icursor.prev) == false then
+      if is_delimiter(self, self.icursor.prev) == false then
         break
       end
       self:left()
     end
     while self.icursor.prev ~= self.head do
-      if self:is_delimiter(self.icursor.prev) then
+      if is_delimiter(self, self.icursor.prev) then
         break
       end
       self:left()
@@ -325,13 +325,13 @@ end
 function UTF8EditLine:right_word(n)
   for _ = 1, n or 1 do
     while self.icursor ~= self.tail do
-      if self:is_delimiter(self.icursor) then
+      if is_delimiter(self, self.icursor) then
         break
       end
       self:right()
     end
     while self.icursor ~= self.tail do
-      if not self:is_delimiter(self.icursor) then
+      if not is_delimiter(self, self.icursor) then
         break
       end
       self:right()
@@ -345,13 +345,13 @@ end
 function UTF8EditLine:backspace_word(n)
   for _ = 1, n or 1 do
     while self.icursor.prev ~= self.head do
-      if self:is_delimiter(self.icursor.prev) == false then
+      if is_delimiter(self, self.icursor.prev) == false then
         break
       end
       self:backspace()
     end
     while self.icursor.prev ~= self.head do
-      if self:is_delimiter(self.icursor.prev) then
+      if is_delimiter(self, self.icursor.prev) then
         break
       end
       self:backspace()
@@ -365,13 +365,13 @@ end
 function UTF8EditLine:delete_word(n)
   for _ = 1, n or 1 do
     while self.icursor ~= self.tail do
-      if self:is_delimiter(self.icursor) == false then
+      if is_delimiter(self, self.icursor) == false then
         break
       end
       self:delete()
     end
     while self.icursor ~= self.tail do
-      if self:is_delimiter(self.icursor) then
+      if is_delimiter(self, self.icursor) then
         break
       end
       self:delete()
