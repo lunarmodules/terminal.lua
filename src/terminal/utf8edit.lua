@@ -37,6 +37,17 @@ function UTF8EditLine:__tostring()
   return table.concat(res)
 end
 
+--- A list of word delimiters for word-wise navigation
+-- @string default_word_delimiters
+UTF8EditLine.default_word_delimiters = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]]
+
+--- Checks if the current character is a word delimiter.
+-- @tparam table node the node to check
+-- @treturn boolean true if the character is a word delimiter, false otherwise
+function UTF8EditLine:is_delimiter(node)
+  local char = node.value or ""
+  return self.word_delimiters[char] == true
+end
 
 
 --- Creates a new `utf8edit` instance. This method is invoked by calling on the class.
@@ -46,7 +57,7 @@ end
 -- @usage
 -- local Utf8edit = require("terminal.utf8edit")
 -- local newLineObj = Utf8edit("héllo界")
-function UTF8EditLine:init(s)
+function UTF8EditLine:init(opts)
   self.icursor = {}          -- tracking the cursor internally (utf8 characters)
   self.ocursor = 1           -- tracking the cursor externally (columns)
   self.ilen = 0              -- tracking the length internally (# of utf8 characters)
@@ -55,9 +66,22 @@ function UTF8EditLine:init(s)
   self.tail = self.icursor   -- prepare linked list
   self.tail.prev = self.head
   self.head.next = self.tail
-  if s then
-    self:insert(s)
+
+  if opts == nil or type(opts) == "string" then
+    opts = { value = opts or ""}
   end
+
+  self:insert(opts.value) -- inserts the value
+
+  if opts.position then
+    self:goto_index(opts.position) -- move the cursor to the inital position
+  end
+
+  self.word_delimiters = {} -- set the word delimiters
+  for _, c in utf8.codes(opts.word_delimiters or UTF8EditLine.default_word_delimiters) do
+    self.word_delimiters[utf8.char(c)] = true
+  end
+
 end
 
 
@@ -273,5 +297,86 @@ function UTF8EditLine:delete_to_end()
 end
 
 
+--- Moves the cursor to the start of the current word. If already at start, moves to the start of the previous word.
+-- This function moves the cursor left until it reaches the start of the previous word.
+-- Words are defined by non-delimiter characters.
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:left_word(n)
+  for _ = 1, n or 1 do
+    while self.icursor.prev ~= self.head do
+      if self:is_delimiter(self.icursor.prev) == false then
+        break
+      end
+      self:left()
+    end
+    while self.icursor.prev ~= self.head do
+      if self:is_delimiter(self.icursor.prev) then
+        break
+      end
+      self:left()
+    end
+  end
+end
+
+--- Moves the cursor to the start of the next word.
+-- This function moves the cursor right until it reaches the end of the next word.
+-- Words are defined by non-delimiter characters.
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:right_word(n)
+  for _ = 1, n or 1 do
+    while self.icursor ~= self.tail do
+      if self:is_delimiter(self.icursor) then
+        break
+      end
+      self:right()
+    end
+    while self.icursor ~= self.tail do
+      if not self:is_delimiter(self.icursor) then
+        break
+      end
+      self:right()
+    end
+  end
+end
+
+--- Backspace until the start of the current word. If at the start, backspace to the start of the previous word.
+-- Words are defined by non-delimiter characters.
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:backspace_word(n)
+  for _ = 1, n or 1 do
+    while self.icursor.prev ~= self.head do
+      if self:is_delimiter(self.icursor.prev) == false then
+        break
+      end
+      self:backspace()
+    end
+    while self.icursor.prev ~= self.head do
+      if self:is_delimiter(self.icursor.prev) then
+        break
+      end
+      self:backspace()
+    end
+  end
+end
+
+--- Delete until the end of the current word.
+-- Words are defined by non-delimiter characters.
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:delete_word(n)
+  for _ = 1, n or 1 do
+    while self.icursor ~= self.tail do
+      if self:is_delimiter(self.icursor) == false then
+        break
+      end
+      self:delete()
+    end
+    while self.icursor ~= self.tail do
+      if self:is_delimiter(self.icursor) then
+        break
+      end
+      self:delete()
+    end
+  end
+end
 
 return UTF8EditLine

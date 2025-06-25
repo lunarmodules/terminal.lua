@@ -41,18 +41,23 @@ Prompt.keyname2actions = {
   ["end"] = "goto_end",
   -- emacs keybinding
   ["ctrl_f"] = "left",
+  ["alt_b"] = "left_word",
   ["ctrl_b"] = "right",
+  ["alt_f"] = "right_word",
   ["ctrl_a"] = "goto_home",
   ["ctrl_e"] = "goto_end",
   ["ctrl_h"] = "backspace",
-  ["ctrl_w"] = "backspace_word",     -- TODO: implement
   ["ctrl_u"] = "backspace_to_start",
+  ["ctrl_w"] = "backspace_word",
   ["ctrl_d"] = "delete",
   ["ctrl_k"] = "delete_to_end",
+  ["alt_d"] = "delete_word",
   ["ctrl_l"] = "clear",
-  ["alt_b"] = "left_word",           -- TODO: implement
-  ["alt_f"] = "right_word",          -- TODO: implement
-  ["alt_d"] = "delete_word",         -- TODO: implement
+  -- other keybindings
+  ["ctrl_left"] = "left_word",
+  ["ctrl_right"] = "right_word",
+  -- ["ctrl_backspace ???"] = "backspace_word", -- TODO: if backspace is ctrl + h, how does ctrl + backspace work?
+  -- ["ctrl_deelte ???"] -- TODO: same as above
 }
 
 Prompt.actions2redraw = utils.make_lookup("actions", {
@@ -65,6 +70,8 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
   ["clear"] = true,
   --
   ["left"] = false,
+  ["left_word"] = false,
+  ["right_word"] = false,
   ["right"] = false,
   ["up"] = false,
   ["down"] = false,
@@ -77,41 +84,51 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam table opts Options for the prompt.
 -- @tparam[opt=""] string opts.prompt The prompt text to display.
 -- @tparam[opt=""] string opts.value The initial value of the prompt.
+-- @tparam[opt=len_char] number opts.position The initial cursor position (in char) of the input
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
--- @tparam[opt=false] boolean opts.drawn_before If the prompt has been drawn before.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
-  self.value = UTF8EditLine(opts.value or "")
-  self.prompt = opts.prompt or ""          -- the prompt to display
-  self.max_length = opts.max_length or 80  -- the maximum length of the input
-  self.drawn_before = false                -- if the prompt has been drawn
+  self.value = UTF8EditLine({
+    value = opts.value,
+    word_delimiters = opts.word_delimiters,
+    position = opts.position,
+  })
+  self.prompt = opts.prompt or ""         -- the prompt to display
+  self.max_length = opts.max_length or 80 -- the maximum length of the input
 end
 
-
-
---- Draw the prompt and input value.
+--- Draw the whole thing: prompt and input value.
 -- This function writes the prompt and the current input value to the terminal.
--- @tparam boolean redraw ????
 -- @return nothing
-function Prompt:draw(redraw)
-  if redraw or not self.prompt_ready then
-    -- we are at start of prompt
-    self.prompt_ready = true
-    t.cursor.position.column(1)
-    output.write(tostring(self.prompt))
-  else
-    -- we are at current cursor position, move to start of prompt
-    t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
-  end
+function Prompt:draw()
+  -- hide the cursor
+  t.cursor.visible.set(false)
+  -- move to the left margin
+  t.cursor.position.column(1)
   -- write prompt & value
-  local value = tostring(self.value)
-  output.write(value)
+  output.write(tostring(self.prompt))
+  output.write(tostring(self.value))
   output.write(t.clear.eol_seq())
+  self:updateCursor()
   -- clear remainder of input size
   output.flush()
 end
 
-
+--- Draw the input value where the prompt ends.
+-- This function writes input value to the terminal.
+-- @return nothing
+function Prompt:drawInput()
+  -- hide the cursor
+  t.cursor.visible.set(false)
+  -- move to end of prompt
+  t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
+  -- write value
+  output.write(tostring(self.value))
+  output.write(t.clear.eol_seq())
+  self:updateCursor()
+  -- clear remainder of input size
+  output.flush()
+end
 
 -- Update the cursor position.
 -- This function moves the cursor to the current position based on the prompt and input value.
@@ -121,17 +138,15 @@ end
 function Prompt:updateCursor(column)
   -- move to cursor position
   t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value.ocursor)
+  -- unhide the cursor
+  t.cursor.visible.set(true)
 end
-
-
 
 -- Read and normalize key input
 function Prompt:readKey()
   local key = t.input.readansi(math.huge)
   return key, keymap[key] or key
 end
-
-
 
 --- Processes key input async
 -- This function listens for key events and processes them.
@@ -152,28 +167,26 @@ function Prompt:handleInput()
           handle_action(self.value)
         end
         if redraw then
-          self:draw(false)
+          self:drawInput()
+        else
+          self:updateCursor()
         end
-        self:updateCursor()
       elseif keyname == keys.escape and self.cancellable then
         return "cancelled"
       elseif keyname == keys.enter then
         return "returned"
-      -- TODO: wait for luasystem's new readansi release
+        -- TODO: wait for luasystem's new readansi release
       elseif t.input.keymap.is_printable(key) == false then
         t.bell()
       elseif self.value.ilen >= self.max_length or utf8.len(key) ~= 1 then
         t.bell()
       else -- add the character at the current cursor
         self.value:insert(key)
-        self:draw(false)
-        self:updateCursor()
+        self:drawInput()
       end
     end
   end
 end
-
-
 
 --- Starts the prompt input loop.
 -- This function initializes the input loop for the readline instance.
@@ -194,7 +207,5 @@ function Prompt:run()
     return nil, status
   end
 end
-
-
 
 return Prompt
