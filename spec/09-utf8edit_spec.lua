@@ -826,4 +826,96 @@ describe("Utf8editLine:", function()
 
   end)
 
+
+
+  describe("left_word()", function()
+
+    it("moves the cursor to the start of the previous word (ASCII)", function()
+      local line = Utf8edit("hello world")
+      line:left_word()
+      assert.are.equal(7, line:pos_char())  -- cursor should be at the start of "world"
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("moves the cursor to the start of the previous word (UTF-8)", function()
+      local line = Utf8edit("你好 thế giới")
+      line:left_word()
+      assert.are.equal(8, line:pos_char())  -- cursor should be at the start of "giới"
+      assert.are.equal(10, line:pos_col())
+    end)
+  end)
+
+
+
+  describe("right_word()", function()
+
+    it("moves the cursor to the start of the next word (ASCII)", function()
+      local line = Utf8edit("hello world")
+      line:goto_home()
+      line:right_word()
+      assert.are.equal(7, line:pos_char())  -- cursor should be at the end of "hello"
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("moves the cursor to the end of the next word (UTF-8)", function()
+      local line = Utf8edit("你好 thế giới")
+      line:goto_home()
+      line:right_word()
+      assert.are.equal(4, line:pos_char())  -- cursor should be at the end of "你好"
+      assert.are.equal(6, line:pos_col())
+    end)
+  end)
+
+
+
+  describe("backspace_word()", function()
+
+    it("deletes the word to the left of the cursor (ASCII)", function()
+      local line = Utf8edit("hello my world")
+      line:left_word()
+      line:backspace_word()
+      assert.are.equal("hello world", tostring(line))  -- "my" should be deleted
+      assert.are.equal(7, line:pos_char())
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("deletes the word to the left of the cursor (UTF-8)", function()
+      local line = Utf8edit("你好 thế giới")
+      line:left_word()
+      line:backspace_word()
+      assert.are.equal("你好 giới", tostring(line)) -- "thế" should be deleted
+      assert.are.equal(4, line:pos_char())
+      assert.are.equal(6, line:pos_col())
+    end)
+  end)
+
+
+
+  describe("delete_word()", function()
+
+    it("deletes the word to the right of the cursor (ASCII)", function()
+      local line = Utf8edit("hello my world")
+      line:left_word()
+      line:left_word()
+      line:delete_word()
+      assert.are.equal("hello  world", tostring(line))  -- "world" should be deleted
+      assert.are.equal(7, line:pos_char())
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("deletes the word to the right of the cursor (UTF-8)", function()
+      local line = Utf8edit("你好 thế giới")
+      line:left_word()
+      line:left_word()
+      line:delete_word()
+      assert.are.equal("你好  giới", tostring(line)) -- "thế" should be deleted
+      assert.are.equal(4, line:pos_char())
+      assert.are.equal(6, line:pos_col())
+    end)
+  end)
+
 end)

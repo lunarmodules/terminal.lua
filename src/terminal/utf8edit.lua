@@ -37,7 +37,11 @@ function UTF8EditLine:__tostring()
   return table.concat(res)
 end
 
+-- TODO: Should i setter/getter this? 👇
 
+--- A list of word delimiters for word-wise navigation
+-- @string word_delimiters
+UTF8EditLine.word_delimiters = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]]
 
 --- Creates a new `utf8edit` instance. This method is invoked by calling on the class.
 -- The cursor position will be at the end of the string.
@@ -272,6 +276,75 @@ function UTF8EditLine:delete_to_end()
   end
 end
 
+--- Checks if the current character is a word delimiter.
+-- @tparam table node the node to check
+-- @treturn boolean true if the character is a word delimiter, false otherwise
+function UTF8EditLine:is_delimiter(node)
+  local char = node.value or ""
+  -- use non-pattern matching
+  return self.word_delimiters:find(char, 1, true) ~= nil
+end
 
+
+--- Moves the cursor to the start of the current word. If already at start, moves to the start of the previous word.
+-- This function moves the cursor left until it reaches the start of the previous word.
+-- Words are defined by non-delimiter characters.
+function UTF8EditLine:left_word()
+  if self:is_delimiter(self.icursor.prev) then
+    self:left()
+  end
+  while self.icursor.prev ~= self.head do
+    -- non-pattern matching
+    if self:is_delimiter(self.icursor.prev) then
+      break
+    end
+    self:left()
+  end
+end
+
+--- Moves the cursor to the start of the next word.
+-- This function moves the cursor right until it reaches the end of the next word.
+-- Words are defined by non-delimiter characters.
+function UTF8EditLine:right_word()
+  while self.icursor ~= self.tail do
+    if self:is_delimiter(self.icursor) then
+      break
+    end
+    self:right()
+  end
+  while self.icursor ~= self.tail do
+    if not self:is_delimiter(self.icursor) then
+      break
+    end
+    self:right()
+  end
+end
+
+--- Backspace until the start of the current word. If at the start, backspace to the start of the previous word.
+-- Words are defined by non-delimiter characters.
+function UTF8EditLine:backspace_word()
+  if self:is_delimiter(self.icursor.prev) then
+    self:backspace()
+  end
+  while self.icursor.prev ~= self.head do
+    -- non-pattern matching
+    if self:is_delimiter(self.icursor.prev) then
+      break
+    end
+    self:backspace()
+  end
+end
+
+--- Delete until the end of the current word.
+-- Words are defined by non-delimiter characters.
+function UTF8EditLine:delete_word()
+  while self.icursor ~= self.tail do
+    -- non-pattern matching
+    if self:is_delimiter(self.icursor) then
+      break
+    end
+    self:delete()
+  end
+end
 
 return UTF8EditLine
