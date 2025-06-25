@@ -844,6 +844,60 @@ describe("Utf8editLine:", function()
       assert.are.equal(8, line:pos_char())  -- cursor should be at the start of "giới"
       assert.are.equal(10, line:pos_col())
     end)
+
+
+    it("moves to the beginning of the line if cursor is already at the first word", function()
+      local line = Utf8edit("hello world")
+      line:goto_home()
+
+      line:right(2)                        -- cursor at 'e'
+      line:left_word()
+      assert.are.equal(1, line:pos_char()) -- cursor should be at the beginning
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("does nothing if cursor is already at the beginning", function()
+      local line = Utf8edit("hello world")
+      line:goto_home()
+      line:left_word()
+      assert.are.equal(1, line:pos_char()) -- cursor should stay at the beginning
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("ignore consecutive spaces", function()
+      local line = Utf8edit("hello.()''''''][]   world")
+      line:left_word()
+      assert.are.equal(21, line:pos_char()) -- cursor should be at the start of "world"
+      assert.are.equal(21, line:pos_col())
+    end)
+
+    -- TODO: is_delimiter needs to support UTF8
+    pending("skips over consecutive spaces", function()
+      local line = Utf8edit("(╯°□°) ╯︵        ┻━┻)")
+      --                      |                ^ 1st left_word()
+      --                      ^ 2nd left_word()
+      line:left_word(2)
+      assert.are.equal(8, line:pos_char())
+      assert.are.equal(19, line:pos_col())
+    end)
+
+    it("go to line start if there's only delimiters to the left ", function()
+      local line = Utf8edit("([[._.]]）-------  ┻━┻)")
+      line:left_word(4)
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("does nothing if the string is empty", function()
+      local line = Utf8edit("")
+      line:left_word()
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
   end)
 
 
@@ -865,6 +919,41 @@ describe("Utf8editLine:", function()
       line:right_word()
       assert.are.equal(4, line:pos_char())  -- cursor should be at the end of "你好"
       assert.are.equal(6, line:pos_col())
+    end)
+
+
+    it("moves to the end of the line if cursor is already at the last word", function()
+      local line = Utf8edit("hello world")
+      line:goto_index(8)                    -- cursor at 'o' in 'world'
+      line:right_word()
+      assert.are.equal(12, line:pos_char()) -- cursor should be at the end
+      assert.are.equal(12, line:pos_col())
+    end)
+
+
+    it("does nothing if cursor is already at the end", function()
+      local line = Utf8edit("hello world")
+      line:goto_end()
+      line:right_word()
+      assert.are.equal(12, line:pos_char()) -- cursor should stay at the end
+      assert.are.equal(12, line:pos_col())
+    end)
+
+
+    it("skips over consecutive spaces", function()
+      local line = Utf8edit("hello***-.-***   world")
+      line:goto_home()
+      line:right_word()
+      assert.are.equal(18, line:pos_char()) -- cursor should be at the start of "world"
+      assert.are.equal(18, line:pos_col())
+    end)
+
+
+    it("does nothing if the string is empty", function()
+      local line = Utf8edit("")
+      line:right_word()
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
     end)
   end)
 
@@ -890,6 +979,45 @@ describe("Utf8editLine:", function()
       assert.are.equal(4, line:pos_char())
       assert.are.equal(6, line:pos_col())
     end)
+
+
+    it("does nothing if cursor is at the beginning", function()
+      local line = Utf8edit("hello world")
+      line:goto_home()
+      line:backspace_word()
+      assert.are.equal("hello world", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("deletes previous word over multiple spaces if at start", function()
+      local line = Utf8edit("hello.....   world")
+      line:left_word()
+      line:backspace_word()
+      assert.are.equal("world", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+
+
+    it("deletes partial word if cursor is in middle of word", function()
+      local line = Utf8edit("hello world")
+      line:goto_index(9) -- cursor   ^
+      line:backspace_word()
+      assert.are.equal("hello rld", tostring(line))
+      assert.are.equal(7, line:pos_char())
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("does nothing if the string is empty", function()
+      local line = Utf8edit("")
+      line:backspace_word()
+      assert.are.equal("", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
   end)
 
 
@@ -898,10 +1026,9 @@ describe("Utf8editLine:", function()
 
     it("deletes the word to the right of the cursor (ASCII)", function()
       local line = Utf8edit("hello my world")
-      line:left_word()
-      line:left_word()
+      line:left_word(2)
       line:delete_word()
-      assert.are.equal("hello  world", tostring(line))  -- "world" should be deleted
+      assert.are.equal("hello  world", tostring(line))  -- "my" should be deleted
       assert.are.equal(7, line:pos_char())
       assert.are.equal(7, line:pos_col())
     end)
@@ -909,13 +1036,50 @@ describe("Utf8editLine:", function()
 
     it("deletes the word to the right of the cursor (UTF-8)", function()
       local line = Utf8edit("你好 thế giới")
-      line:left_word()
-      line:left_word()
+      line:left_word(2)
       line:delete_word()
       assert.are.equal("你好  giới", tostring(line)) -- "thế" should be deleted
       assert.are.equal(4, line:pos_char())
       assert.are.equal(6, line:pos_col())
     end)
-  end)
 
+
+    it("does nothing if cursor is at the end", function()
+      local line = Utf8edit("hello world")
+      line:goto_end()
+      line:delete_word()
+      assert.are.equal("hello world", tostring(line))
+      assert.are.equal(12, line:pos_char())
+      assert.are.equal(12, line:pos_col())
+    end)
+
+
+    it("deletes partial word if cursor is in middle of word", function()
+      local line = Utf8edit("hello world beautiful")
+      line:goto_index(8)  --        ^ cursor here
+      line:delete_word()
+      assert.are.equal("hello w beautiful", tostring(line))
+      assert.are.equal(8, line:pos_char())
+      assert.are.equal(8, line:pos_col())
+    end)
+
+
+    it("deletes all delimiters if there's only delimiters to the right", function()
+      local line = Utf8edit("hello  -?:: :::**")
+      line:goto_index(7)  --       ^ cursor here
+      line:delete_word()
+      assert.are.equal("hello ", tostring(line))
+      assert.are.equal(7, line:pos_char())
+      assert.are.equal(7, line:pos_col())
+    end)
+
+
+    it("does nothing if the string is empty", function()
+      local line = Utf8edit("")
+      line:delete_word()
+      assert.are.equal("", tostring(line))
+      assert.are.equal(1, line:pos_char())
+      assert.are.equal(1, line:pos_col())
+    end)
+  end)
 end)

@@ -292,7 +292,11 @@ end
 -- @tparam[opt=1] number n the number of words to move left
 function UTF8EditLine:left_word(n)
   for _ = 1, n or 1 do
-    if self:is_delimiter(self.icursor.prev) then
+    while self.icursor.prev ~= self.head do
+      -- non-pattern matching
+      if self:is_delimiter(self.icursor.prev) == false then
+        break
+      end
       self:left()
     end
     while self.icursor.prev ~= self.head do
@@ -331,7 +335,11 @@ end
 -- @tparam[opt=1] number n the number of words to move left
 function UTF8EditLine:backspace_word(n)
   for _ = 1, n or 1 do
-    if self:is_delimiter(self.icursor.prev) then
+    while self.icursor.prev ~= self.head do
+      -- non-pattern matching
+      if self:is_delimiter(self.icursor.prev) == false then
+        break
+      end
       self:backspace()
     end
     while self.icursor.prev ~= self.head do
@@ -349,6 +357,13 @@ end
 -- @tparam[opt=1] number n the number of words to move left
 function UTF8EditLine:delete_word(n)
   for _ = 1, n or 1 do
+    while self.icursor ~= self.tail do
+      -- non-pattern matching
+      if self:is_delimiter(self.icursor) == false then
+        break
+      end
+      self:delete()
+    end
     while self.icursor ~= self.tail do
       -- non-pattern matching
       if self:is_delimiter(self.icursor) then
