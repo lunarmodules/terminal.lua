@@ -21,6 +21,18 @@ describe("Utf8editLine:", function()
     end)
 
 
+    it("defaults to an empty string with an empty table", function()
+      local line = Utf8edit {}
+      assert.are.equal("", tostring(line))
+    end)
+
+
+    it("defaults to an empty string with an irrelevant table", function()
+      local line = Utf8edit { is_lua_terminal_cool = true }
+      assert.are.equal("", tostring(line))
+    end)
+
+
     it("initializes with a given string", function()
       local line = Utf8edit("hello")
       assert.are.equal("hello", tostring(line))
@@ -38,6 +50,30 @@ describe("Utf8editLine:", function()
       assert.are.equal("こんにちは", tostring(line))
     end)
 
+    it("initializes with a given table (ASCII)", function()
+      local line = Utf8edit({
+        value = "hello",
+        position = 3,
+        word_delimiters = [[123456]]
+      })
+      assert.are.equal("hello", tostring(line))
+      assert.are.equal(3, line:pos_char())
+      assert.are.equal(3, line:pos_col())
+      assert.are.equal([[123456]], line.word_delimiters)
+    end)
+
+
+    it("initializes with a given table (UTF8)", function()
+      local line = Utf8edit({
+        value = "こんにちは",
+        position = 3,
+        word_delimiters = [[123456]]
+      })
+      assert.are.equal("こんにちは", tostring(line))
+      assert.are.equal(3, line:pos_char())
+      assert.are.equal(5, line:pos_col())
+      assert.are.equal([[123456]], line.word_delimiters)
+    end)
 
     it("initializes cursor position at the end", function()
       local line = Utf8edit("hello")

@@ -88,14 +88,13 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
-  self.value = UTF8EditLine(opts.value or "")
+  self.value = UTF8EditLine({
+    value = opts.value,
+    word_delimiters = opts.word_delimiters,
+    position = opts.position,
+  })
   self.prompt = opts.prompt or ""         -- the prompt to display
   self.max_length = opts.max_length or 80 -- the maximum length of the input
-  if opts.position then
-    local pos = utils.resolve_index(opts.position, self.value:len_char(), 1)
-    self.value:goto_home()
-    self.value:right(pos - 1)
-  end
 end
 
 --- Draw the whole thing: prompt and input value.

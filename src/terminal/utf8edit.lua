@@ -50,7 +50,7 @@ UTF8EditLine.word_delimiters = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]]
 -- @usage
 -- local Utf8edit = require("terminal.utf8edit")
 -- local newLineObj = Utf8edit("héllo界")
-function UTF8EditLine:init(s)
+function UTF8EditLine:init(opts)
   self.icursor = {}          -- tracking the cursor internally (utf8 characters)
   self.ocursor = 1           -- tracking the cursor externally (columns)
   self.ilen = 0              -- tracking the length internally (# of utf8 characters)
@@ -59,8 +59,16 @@ function UTF8EditLine:init(s)
   self.tail = self.icursor   -- prepare linked list
   self.tail.prev = self.head
   self.head.next = self.tail
-  if s then
-    self:insert(s)
+  if type(opts) == "table" then
+    self:insert(opts.value)
+    self.word_delimiters = opts.word_delimiters
+    if opts.position then
+      local pos = utils.resolve_index(opts.position, self:len_char(), 1)
+      self:goto_home()
+      self:right(pos - 1)
+    end
+  else
+    self:insert(opts)
   end
 end
 
