@@ -54,12 +54,17 @@ describe("Utf8editLine:", function()
       local line = Utf8edit({
         value = "hello",
         position = 3,
-        word_delimiters = [[123456]]
+        word_delimiters = [[abcd]]
       })
       assert.are.equal("hello", tostring(line))
       assert.are.equal(3, line:pos_char())
       assert.are.equal(3, line:pos_col())
-      assert.are.equal([[123456]], line.word_delimiters)
+      assert.are.same({
+        a = true,
+        b = true,
+        c = true,
+        d = true,
+      }, line.word_delimiters)
     end)
 
 
@@ -67,12 +72,17 @@ describe("Utf8editLine:", function()
       local line = Utf8edit({
         value = "こんにちは",
         position = 3,
-        word_delimiters = [[123456]]
+        word_delimiters = [[abcd]]
       })
       assert.are.equal("こんにちは", tostring(line))
       assert.are.equal(3, line:pos_char())
       assert.are.equal(5, line:pos_col())
-      assert.are.equal([[123456]], line.word_delimiters)
+      assert.are.same({
+        a = true,
+        b = true,
+        c = true,
+        d = true,
+      }, line.word_delimiters)
     end)
 
     it("initializes cursor position at the end", function()
@@ -909,14 +919,13 @@ describe("Utf8editLine:", function()
       assert.are.equal(21, line:pos_col())
     end)
 
-    -- TODO: is_delimiter needs to support UTF8
-    pending("skips over consecutive spaces", function()
+    it("skips over consecutive spaces", function()
       local line = Utf8edit("(╯°□°) ╯︵        ┻━┻)")
-      --                      |                ^ 1st left_word()
-      --                      ^ 2nd left_word()
+      --                            |          ^ 1st left_word()
+      --                            ^ 2nd left_word()
       line:left_word(2)
       assert.are.equal(8, line:pos_char())
-      assert.are.equal(19, line:pos_col())
+      assert.are.equal(8, line:pos_col())
     end)
 
     it("go to line start if there's only delimiters to the left ", function()

@@ -37,11 +37,18 @@ function UTF8EditLine:__tostring()
   return table.concat(res)
 end
 
--- TODO: Should i setter/getter this? 👇
-
 --- A list of word delimiters for word-wise navigation
--- @string word_delimiters
-UTF8EditLine.word_delimiters = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]]
+-- @string default_word_delimiters
+UTF8EditLine.default_word_delimiters = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]]
+
+--- Checks if the current character is a word delimiter.
+-- @tparam table node the node to check
+-- @treturn boolean true if the character is a word delimiter, false otherwise
+function UTF8EditLine:is_delimiter(node)
+  local char = node.value or ""
+  return self.word_delimiters[char] == true
+end
+
 
 --- Creates a new `utf8edit` instance. This method is invoked by calling on the class.
 -- The cursor position will be at the end of the string.
@@ -59,17 +66,22 @@ function UTF8EditLine:init(opts)
   self.tail = self.icursor   -- prepare linked list
   self.tail.prev = self.head
   self.head.next = self.tail
-  if type(opts) == "table" then
-    self:insert(opts.value)
-    self.word_delimiters = opts.word_delimiters
-    if opts.position then
-      local pos = utils.resolve_index(opts.position, self:len_char(), 1)
-      self:goto_home()
-      self:right(pos - 1)
-    end
-  else
-    self:insert(opts)
+
+  if opts == nil or type(opts) == "string" then
+    opts = { value = opts or ""}
   end
+
+  self:insert(opts.value) -- inserts the value
+
+  if opts.position then
+    self:goto_index(opts.position) -- move the cursor to the inital position
+  end
+
+  self.word_delimiters = {} -- set the word delimiters
+  for _, c in utf8.codes(opts.word_delimiters or UTF8EditLine.default_word_delimiters) do
+    self.word_delimiters[utf8.char(c)] = true
+  end
+
 end
 
 
@@ -282,15 +294,6 @@ function UTF8EditLine:delete_to_end()
   while self.icursor ~= self.tail do
     self:delete()
   end
-end
-
---- Checks if the current character is a word delimiter.
--- @tparam table node the node to check
--- @treturn boolean true if the character is a word delimiter, false otherwise
-function UTF8EditLine:is_delimiter(node)
-  local char = node.value or ""
-  -- use non-pattern matching
-  return self.word_delimiters:find(char, 1, true) ~= nil
 end
 
 
