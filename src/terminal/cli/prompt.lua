@@ -41,18 +41,23 @@ Prompt.keyname2actions = {
   ["end"] = "goto_end",
   -- emacs keybinding
   ["ctrl_f"] = "left",
+  ["alt_b"] = "left_word",
   ["ctrl_b"] = "right",
+  ["alt_f"] = "right_word",
   ["ctrl_a"] = "goto_home",
   ["ctrl_e"] = "goto_end",
   ["ctrl_h"] = "backspace",
-  ["ctrl_w"] = "backspace_word",     -- TODO: implement
   ["ctrl_u"] = "backspace_to_start",
+  ["ctrl_w"] = "backspace_word",
   ["ctrl_d"] = "delete",
   ["ctrl_k"] = "delete_to_end",
+  ["alt_d"] = "delete_word",
   ["ctrl_l"] = "clear",
-  ["alt_b"] = "left_word",           -- TODO: implement
-  ["alt_f"] = "right_word",          -- TODO: implement
-  ["alt_d"] = "delete_word",         -- TODO: implement
+  -- other keybindings
+  ["ctrl_left"] = "left_word",
+  ["ctrl_right"] = "right_word",
+  -- ["ctrl_backspace ???"] = "backspace_word", -- TODO: if backspace is ctrl + h, how does ctrl + backspace work?
+  -- ["ctrl_deelte ???"] -- TODO: same as above
 }
 
 Prompt.actions2redraw = utils.make_lookup("actions", {
@@ -65,6 +70,8 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
   ["clear"] = true,
   --
   ["left"] = false,
+  ["left_word"] = false,
+  ["right_word"] = false,
   ["right"] = false,
   ["up"] = false,
   ["down"] = false,
@@ -82,16 +89,14 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
   self.value = UTF8EditLine(opts.value or "")
-  self.prompt = opts.prompt or ""          -- the prompt to display
-  self.max_length = opts.max_length or 80  -- the maximum length of the input
+  self.prompt = opts.prompt or ""         -- the prompt to display
+  self.max_length = opts.max_length or 80 -- the maximum length of the input
   if opts.position then
     local pos = utils.resolve_index(opts.position, self.value:len_char(), 1)
     self.value:goto_home()
     self.value:right(pos - 1)
   end
 end
-
-
 
 --- Draw the whole thing: prompt and input value.
 -- This function writes the prompt and the current input value to the terminal.
@@ -126,8 +131,6 @@ function Prompt:drawInput()
   output.flush()
 end
 
-
-
 -- Update the cursor position.
 -- This function moves the cursor to the current position based on the prompt and input value.
 -- @tparam number column The column to move the cursor to. If not provided, it defaults to the end of
@@ -140,15 +143,11 @@ function Prompt:updateCursor(column)
   t.cursor.visible.set(true)
 end
 
-
-
 -- Read and normalize key input
 function Prompt:readKey()
   local key = t.input.readansi(math.huge)
   return key, keymap[key] or key
 end
-
-
 
 --- Processes key input async
 -- This function listens for key events and processes them.
@@ -177,7 +176,7 @@ function Prompt:handleInput()
         return "cancelled"
       elseif keyname == keys.enter then
         return "returned"
-      -- TODO: wait for luasystem's new readansi release
+        -- TODO: wait for luasystem's new readansi release
       elseif t.input.keymap.is_printable(key) == false then
         t.bell()
       elseif self.value.ilen >= self.max_length or utf8.len(key) ~= 1 then
@@ -189,8 +188,6 @@ function Prompt:handleInput()
     end
   end
 end
-
-
 
 --- Starts the prompt input loop.
 -- This function initializes the input loop for the readline instance.
@@ -211,7 +208,5 @@ function Prompt:run()
     return nil, status
   end
 end
-
-
 
 return Prompt
