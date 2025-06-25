@@ -170,6 +170,8 @@ function Prompt:handleInput()
         end
         if redraw then
           self:drawInput()
+        else
+          self:updateCursor()
         end
       elseif keyname == keys.escape and self.cancellable then
         return "cancelled"
