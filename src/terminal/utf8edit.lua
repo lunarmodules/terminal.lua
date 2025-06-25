@@ -289,61 +289,73 @@ end
 --- Moves the cursor to the start of the current word. If already at start, moves to the start of the previous word.
 -- This function moves the cursor left until it reaches the start of the previous word.
 -- Words are defined by non-delimiter characters.
-function UTF8EditLine:left_word()
-  if self:is_delimiter(self.icursor.prev) then
-    self:left()
-  end
-  while self.icursor.prev ~= self.head do
-    -- non-pattern matching
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:left_word(n)
+  for _ = 1, n or 1 do
     if self:is_delimiter(self.icursor.prev) then
-      break
+      self:left()
     end
-    self:left()
+    while self.icursor.prev ~= self.head do
+      -- non-pattern matching
+      if self:is_delimiter(self.icursor.prev) then
+        break
+      end
+      self:left()
+    end
   end
 end
 
 --- Moves the cursor to the start of the next word.
 -- This function moves the cursor right until it reaches the end of the next word.
 -- Words are defined by non-delimiter characters.
-function UTF8EditLine:right_word()
-  while self.icursor ~= self.tail do
-    if self:is_delimiter(self.icursor) then
-      break
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:right_word(n)
+  for _ = 1, n or 1 do
+    while self.icursor ~= self.tail do
+      if self:is_delimiter(self.icursor) then
+        break
+      end
+      self:right()
     end
-    self:right()
-  end
-  while self.icursor ~= self.tail do
-    if not self:is_delimiter(self.icursor) then
-      break
+    while self.icursor ~= self.tail do
+      if not self:is_delimiter(self.icursor) then
+        break
+      end
+      self:right()
     end
-    self:right()
   end
 end
 
 --- Backspace until the start of the current word. If at the start, backspace to the start of the previous word.
 -- Words are defined by non-delimiter characters.
-function UTF8EditLine:backspace_word()
-  if self:is_delimiter(self.icursor.prev) then
-    self:backspace()
-  end
-  while self.icursor.prev ~= self.head do
-    -- non-pattern matching
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:backspace_word(n)
+  for _ = 1, n or 1 do
     if self:is_delimiter(self.icursor.prev) then
-      break
+      self:backspace()
     end
-    self:backspace()
+    while self.icursor.prev ~= self.head do
+      -- non-pattern matching
+      if self:is_delimiter(self.icursor.prev) then
+        break
+      end
+      self:backspace()
+    end
   end
 end
 
 --- Delete until the end of the current word.
 -- Words are defined by non-delimiter characters.
-function UTF8EditLine:delete_word()
-  while self.icursor ~= self.tail do
-    -- non-pattern matching
-    if self:is_delimiter(self.icursor) then
-      break
+-- @tparam[opt=1] number n the number of words to move left
+function UTF8EditLine:delete_word(n)
+  for _ = 1, n or 1 do
+    while self.icursor ~= self.tail do
+      -- non-pattern matching
+      if self:is_delimiter(self.icursor) then
+        break
+      end
+      self:delete()
     end
-    self:delete()
   end
 end
 
