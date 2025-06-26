@@ -50,6 +50,7 @@ local function is_delimiter(self, node)
 end
 
 
+
 --- Creates a new `utf8edit` instance. This method is invoked by calling on the class.
 -- The cursor position will be at the end of the string.
 -- @tparam[opt=""] string s the UTF8 string to parse
@@ -129,6 +130,7 @@ end
 
 --- Inserts a unicode codepoint at the current cursor position.
 -- @tparam number cp the codepoint to insert
+-- @return self (for chaining)
 function UTF8EditLine:insert_cp(cp)
   local node = { value = utf8.char(cp), next = self.icursor, prev = self.icursor.prev }
   self.icursor.prev.next = node
@@ -136,16 +138,19 @@ function UTF8EditLine:insert_cp(cp)
   self.ilen = self.ilen + 1
   self.olen = self.olen + width.utf8cwidth(cp)
   self.ocursor = self.ocursor + width.utf8cwidth(cp)
+  return self
 end
 
 
 
 --- Inserts a string at the current cursor position.
 -- @tparam string s the string to insert
+-- @return self (for chaining)
 function UTF8EditLine:insert(s)
   for _, cp in utf8.codes(s or "") do
     self:insert_cp(cp)
   end
+  return self
 end
 
 
@@ -153,9 +158,12 @@ end
 --- Deletes the character left of the current cursor position.
 -- If/once the cursor is at the start of the string, it does nothing.
 -- @tparam[opt=1] number n the number of characters to delete
+-- @return self (for chaining)
 function UTF8EditLine:backspace(n)
   for _ = 1, n or 1 do
-    if self.icursor.prev == self.head then return end
+    if self.icursor.prev == self.head then
+      return self
+    end
     local prev = self.icursor.prev.prev or self.head
     local next = self.icursor
     local c = self.icursor.prev.value
@@ -165,6 +173,7 @@ function UTF8EditLine:backspace(n)
     self.olen = self.olen - width.utf8cwidth(c)
     self.ocursor = self.ocursor - width.utf8cwidth(c)
   end
+  return self
 end
 
 
@@ -173,12 +182,16 @@ end
 -- This function moves the cursor left by `n` characters. It will not move the cursor
 -- past the start of the string (no error will be raised).
 -- @tparam[opt=1] number n the number of characters to move left
+-- @return self (for chaining)
 function UTF8EditLine:left(n)
   for _ = 1, n or 1 do
-    if self.icursor.prev == self.head then return end
+    if self.icursor.prev == self.head then
+      return self
+    end
     self.icursor = self.icursor.prev
     self.ocursor = self.ocursor - (self.icursor.value and width.utf8cwidth(self.icursor.value) or 1)
   end
+  return self
 end
 
 
@@ -187,12 +200,16 @@ end
 -- This function moves the cursor right by `n` characters. It will not move the cursor
 -- past the end of the string (no error will be raised).
 -- @tparam[opt=1] number n the number of characters to move right
+-- @return self (for chaining)
 function UTF8EditLine:right(n)
   for _ = 1, n or 1 do
-    if self.icursor == self.tail then return end
+    if self.icursor == self.tail then
+      return self
+    end
     self.ocursor = self.ocursor + (self.icursor.value and width.utf8cwidth(self.icursor.value) or 1)
     self.icursor = self.icursor.next
   end
+  return self
 end
 
 
@@ -200,28 +217,35 @@ end
 --- Deletes the character at the current cursor position.
 -- If/once the cursor is at the end of the string, it does nothing.
 -- @tparam[opt=1] number n the number of characters to delete
+-- @return self (for chaining)
 function UTF8EditLine:delete(n)
   for _ = 1, n or 1 do
-    if self.icursor == self.tail then return end
-    self:right()
-    self:backspace()
+    if self.icursor == self.tail then
+      return self
+    end
+    self:right():backspace()
   end
+  return self
 end
 
 
 
 --- Moves the cursor to the start of the string.
+-- @return self (for chaining)
 function UTF8EditLine:goto_home()
   self.icursor = self.head.next
   self.ocursor = 1
+  return self
 end
 
 
 
 --- Moves the cursor to the end of the string.
+-- @return self (for chaining)
 function UTF8EditLine:goto_end()
   self.icursor = self.tail
   self.ocursor = self.olen + 1
+  return self
 end
 
 
@@ -231,6 +255,7 @@ end
 -- Negative indexes are counted from the end backwards, so `-1` is the same as `goto_end`.
 -- If the index is out of bounds, it will move the cursor to the closest valid position.
 -- @tparam number pos the position (in characters) to move the cursor to (0-based index)
+-- @return self (for chaining)
 function UTF8EditLine:goto_index(pos)
   pos = utils.resolve_index(pos, self.ilen + 1, 1)
   if pos < 0 then
@@ -247,17 +272,19 @@ function UTF8EditLine:goto_index(pos)
   while head do
     if l == pos then
       self.icursor = head
-      return
+      return self
     end
     self.ocursor = self.ocursor + width.utf8cwidth(head.value or "")
     l = l + 1
     head = head.next
   end
+  return self
 end
 
 
 
 --- Clears the input.
+-- @return self (for chaining)
 function UTF8EditLine:clear()
   self.head.next = self.tail
   self.tail.prev = self.head
@@ -265,6 +292,7 @@ function UTF8EditLine:clear()
   self.ocursor = 1
   self.ilen = 0
   self.olen = 0
+  return self
 end
 
 
@@ -273,34 +301,40 @@ end
 -- This function clears the current input and inserts the new string at the end.
 -- The cursor will be at the end of the new string.
 -- @tparam string s the new string to insert
+-- @return self (for chaining)
 function UTF8EditLine:replace(s)
-  self:clear()
-  self:insert(s)
+  return self:clear():insert(s):goto_end()
 end
 
 
 
 --- Deletes all characters to the left of the current cursor position.
+-- @return self (for chaining)
 function UTF8EditLine:backspace_to_start()
   while self.icursor.prev ~= self.head do
     self:backspace()
   end
+  return self
 end
 
 
 
 --- Deletes all characters to the right of the current cursor position.
+-- @return self (for chaining)
 function UTF8EditLine:delete_to_end()
   while self.icursor ~= self.tail do
     self:delete()
   end
+  return self
 end
+
 
 
 --- Moves the cursor to the start of the current word. If already at start, moves to the start of the previous word.
 -- This function moves the cursor left until it reaches the start of the previous word.
 -- Words are defined by non-delimiter characters.
 -- @tparam[opt=1] number n the number of words to move left
+-- @return self (for chaining)
 function UTF8EditLine:left_word(n)
   for _ = 1, n or 1 do
     while self.icursor.prev ~= self.head do
@@ -316,12 +350,16 @@ function UTF8EditLine:left_word(n)
       self:left()
     end
   end
+  return self
 end
+
+
 
 --- Moves the cursor to the start of the next word.
 -- This function moves the cursor right until it reaches the end of the next word.
 -- Words are defined by non-delimiter characters.
 -- @tparam[opt=1] number n the number of words to move left
+-- @return self (for chaining)
 function UTF8EditLine:right_word(n)
   for _ = 1, n or 1 do
     while self.icursor ~= self.tail do
@@ -337,11 +375,15 @@ function UTF8EditLine:right_word(n)
       self:right()
     end
   end
+  return self
 end
+
+
 
 --- Backspace until the start of the current word. If at the start, backspace to the start of the previous word.
 -- Words are defined by non-delimiter characters.
 -- @tparam[opt=1] number n the number of words to move left
+-- @return self (for chaining)
 function UTF8EditLine:backspace_word(n)
   for _ = 1, n or 1 do
     while self.icursor.prev ~= self.head do
@@ -357,11 +399,15 @@ function UTF8EditLine:backspace_word(n)
       self:backspace()
     end
   end
+  return self
 end
+
+
 
 --- Delete until the end of the current word.
 -- Words are defined by non-delimiter characters.
 -- @tparam[opt=1] number n the number of words to move left
+-- @return self (for chaining)
 function UTF8EditLine:delete_word(n)
   for _ = 1, n or 1 do
     while self.icursor ~= self.tail do
@@ -377,6 +423,9 @@ function UTF8EditLine:delete_word(n)
       self:delete()
     end
   end
+  return self
 end
+
+
 
 return UTF8EditLine
