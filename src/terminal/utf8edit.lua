@@ -258,26 +258,7 @@ end
 -- @return self (for chaining)
 function UTF8EditLine:goto_index(pos)
   pos = utils.resolve_index(pos, self.ilen + 1, 1)
-  if pos < 0 then
-    return self:goto_home()
-  end
-
-  if pos >= self.ilen + 1 then
-    return self:goto_end()
-  end
-
-  local head = self.head.next
-  local l = 1
-  self.ocursor = 1
-  while head do
-    if l == pos then
-      self.icursor = head
-      return self
-    end
-    self.ocursor = self.ocursor + width.utf8cwidth(head.value or "")
-    l = l + 1
-    head = head.next
-  end
+  self:goto_home():right(pos - 1)
   return self
 end
 
