@@ -8,7 +8,7 @@ local t = require("terminal")
 local function main()
   -- clear the screen, and move cursor to top-left
   t.clear.screen()
-  t.cursor.position.stack.push(1,1)
+  t.cursor.position.push(1,1)
 
   -- push text attribues on the stack
   t.text.stack.push{

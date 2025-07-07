@@ -207,7 +207,7 @@ end
 function Select:run()
   -- Reserve space for rendering
   t.output.write(("\n"):rep(#self.choices + 1))
-  t.cursor.visible.stack.push(false)
+  t.cursor.visible.push(false)
 
   local idx, err = self:handleInput()
 
@@ -215,7 +215,7 @@ function Select:run()
     self:clear_widget()
   end
 
-  t.cursor.visible.stack.pop()
+  t.cursor.visible.pop()
 
   if not idx then
     return nil, err

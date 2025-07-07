@@ -48,65 +48,65 @@ describe("Cursor", function()
 
 
 
-  describe("visible.stack.apply_seq()", function()
+  describe("visible.apply_seq()", function()
 
     it("returns ANSI sequence for showing the cursor upon start", function()
-      assert.are.equal("\27[?25h", cursor.visible.stack.apply_seq())
+      assert.are.equal("\27[?25h", cursor.visible.apply_seq())
     end)
 
 
     it("returns ANSI sequence for showing/hiding the cursor", function()
-      cursor.visible.stack.push_seq(false)
-      assert.are.equal("\27[?25l", cursor.visible.stack.apply_seq())
-      cursor.visible.stack.push_seq(true)
-      assert.are.equal("\27[?25h", cursor.visible.stack.apply_seq())
+      cursor.visible.push_seq(false)
+      assert.are.equal("\27[?25l", cursor.visible.apply_seq())
+      cursor.visible.push_seq(true)
+      assert.are.equal("\27[?25h", cursor.visible.apply_seq())
     end)
 
   end)
 
 
 
-  describe("visible.stack.pushs()", function()
+  describe("visible.pushs()", function()
 
     it("returns ANSI sequence for hiding the cursor", function()
-      assert.are.equal("\27[?25l", cursor.visible.stack.push_seq(false))
+      assert.are.equal("\27[?25l", cursor.visible.push_seq(false))
     end)
 
 
     it("returns ANSI sequence for showing the cursor", function()
-      assert.are.equal("\27[?25h", cursor.visible.stack.push_seq(true))
+      assert.are.equal("\27[?25h", cursor.visible.push_seq(true))
     end)
 
   end)
 
 
 
-  describe("visible.stack.pops()", function()
+  describe("visible.pops()", function()
 
     it("returns ANSI sequence at the top of the stack", function()
-      cursor.visible.stack.push_seq(false)
-      cursor.visible.stack.push_seq(true)
-      assert.are.equal("\27[?25l", cursor.visible.stack.pop_seq())
-      assert.are.equal("\27[?25h", cursor.visible.stack.pop_seq())
+      cursor.visible.push_seq(false)
+      cursor.visible.push_seq(true)
+      assert.are.equal("\27[?25l", cursor.visible.pop_seq())
+      assert.are.equal("\27[?25h", cursor.visible.pop_seq())
     end)
 
 
     it("pops multiple items at once", function()
-      cursor.visible.stack.push_seq(false)
-      cursor.visible.stack.push_seq(true)
-      cursor.visible.stack.push_seq(true)
-      cursor.visible.stack.push_seq(true)
-      cursor.visible.stack.push_seq(true)
-      assert.are.equal("\27[?25l", cursor.visible.stack.pop_seq(4))
+      cursor.visible.push_seq(false)
+      cursor.visible.push_seq(true)
+      cursor.visible.push_seq(true)
+      cursor.visible.push_seq(true)
+      cursor.visible.push_seq(true)
+      assert.are.equal("\27[?25l", cursor.visible.pop_seq(4))
     end)
 
 
     it("over-popping ends with the last item", function()
-      cursor.visible.stack.push_seq(false)
-      cursor.visible.stack.push_seq(false)
-      cursor.visible.stack.push_seq(false)
-      cursor.visible.stack.push_seq(false)
-      assert.are.equal("\27[?25h", cursor.visible.stack.pop_seq(math.huge))
+      cursor.visible.push_seq(false)
+      cursor.visible.push_seq(false)
+      cursor.visible.push_seq(false)
+      cursor.visible.push_seq(false)
+      assert.are.equal("\27[?25h", cursor.visible.pop_seq(math.huge))
     end)
 
   end)
@@ -135,35 +135,35 @@ describe("Cursor", function()
 
 
 
-  describe("shape.stack.apply_seq()", function()
+  describe("shape.apply_seq()", function()
 
     it("returns ANSI sequence for resetting the cursor shape upon start", function()
-      assert.are.equal("\27[0 q", cursor.shape.stack.apply_seq())
+      assert.are.equal("\27[0 q", cursor.shape.apply_seq())
     end)
 
 
     it("returns ANSI sequence for setting the cursor shape", function()
-      cursor.shape.stack.push_seq("block")
-      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.stack.apply_seq())
-      cursor.shape.stack.push_seq("underline")
-      assert.are.equal(cursor.shape.set_seq("underline"), cursor.shape.stack.apply_seq())
+      cursor.shape.push_seq("block")
+      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.apply_seq())
+      cursor.shape.push_seq("underline")
+      assert.are.equal(cursor.shape.set_seq("underline"), cursor.shape.apply_seq())
     end)
 
   end)
 
 
 
-  describe("shape.stack.push_seq()", function()
+  describe("shape.push_seq()", function()
 
     it("returns ANSI sequence for setting the cursor shape", function()
-      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.stack.push_seq("block"))
-      assert.are.equal(cursor.shape.set_seq("underline"), cursor.shape.stack.push_seq("underline"))
+      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.push_seq("block"))
+      assert.are.equal(cursor.shape.set_seq("underline"), cursor.shape.push_seq("underline"))
     end)
 
 
     it("returns a descriptive error on a bad shape", function()
       assert.has.error(function()
-        cursor.shape.stack.push_seq(true)
+        cursor.shape.push_seq(true)
       end, 'Invalid cursor shape: "true". Expected one of: "bar", "bar_blink", "block", "block_blink", "underline", "underline_blink"')
     end)
 
@@ -171,31 +171,31 @@ describe("Cursor", function()
 
 
 
-  describe("shape.stack.pop_seq()", function()
+  describe("shape.pop_seq()", function()
 
     it("returns ANSI sequence at the top of the stack", function()
-      cursor.shape.stack.push_seq("block")
-      cursor.shape.stack.push_seq("underline")
-      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.stack.pop_seq())
+      cursor.shape.push_seq("block")
+      cursor.shape.push_seq("underline")
+      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.pop_seq())
     end)
 
 
     it("pops multiple items at once", function()
-      cursor.shape.stack.push_seq("block")
-      cursor.shape.stack.push_seq("underline")
-      cursor.shape.stack.push_seq("underline")
-      cursor.shape.stack.push_seq("underline")
-      cursor.shape.stack.push_seq("underline")
-      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.stack.pop_seq(4))
+      cursor.shape.push_seq("block")
+      cursor.shape.push_seq("underline")
+      cursor.shape.push_seq("underline")
+      cursor.shape.push_seq("underline")
+      cursor.shape.push_seq("underline")
+      assert.are.equal(cursor.shape.set_seq("block"), cursor.shape.pop_seq(4))
     end)
 
 
     it("over-popping ends with the last item", function()
-      cursor.shape.stack.push_seq("block")
-      cursor.shape.stack.push_seq("block")
-      cursor.shape.stack.push_seq("block")
-      cursor.shape.stack.push_seq("block")
-      assert.are.equal("\27[0 q", cursor.shape.stack.pop_seq(math.huge))
+      cursor.shape.push_seq("block")
+      cursor.shape.push_seq("block")
+      cursor.shape.push_seq("block")
+      cursor.shape.push_seq("block")
+      assert.are.equal("\27[0 q", cursor.shape.pop_seq(math.huge))
     end)
 
   end)
@@ -408,7 +408,7 @@ describe("Cursor", function()
 
 
 
-  describe("position.stack.push_seq()", function()
+  describe("position.push_seq()", function()
 
     local old_get
 
@@ -426,7 +426,7 @@ describe("Cursor", function()
       -- mock position.get to return fixed values
       cursor.position.get = function() return 2, 3 end
 
-      local seq = cursor.position.stack.push_seq(5, 10)
+      local seq = cursor.position.push_seq(5, 10)
       assert.are.equal(cursor.position.set_seq(5, 10), seq)
     end)
 
@@ -434,14 +434,14 @@ describe("Cursor", function()
     it("returns empty string when no position is provided", function()
       cursor.position.get = function() return 2, 3 end
 
-      assert.are.equal("", cursor.position.stack.push_seq())
+      assert.are.equal("", cursor.position.push_seq())
     end)
 
   end)
 
 
 
-  describe("position.stack.pop_seq()", function()
+  describe("position.pop_seq()", function()
 
     local old_get
 
@@ -460,12 +460,12 @@ describe("Cursor", function()
 
       cursor.position.get = function() return 2, 3 end
 
-      cursor.position.stack.push_seq() -- push current position (2,3)
+      cursor.position.push_seq() -- push current position (2,3)
       cursor.position.get = function() return 5, 10 end
-      cursor.position.stack.push_seq() -- push another position (5,10)
+      cursor.position.push_seq() -- push another position (5,10)
 
-      assert.are.equal(cursor.position.set_seq(5, 10), cursor.position.stack.pop_seq())
-      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.stack.pop_seq())
+      assert.are.equal(cursor.position.set_seq(5, 10), cursor.position.pop_seq())
+      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.pop_seq())
     end)
 
 
@@ -481,11 +481,11 @@ describe("Cursor", function()
 
       -- Push multiple positions
       for _ = 1, 5 do
-        cursor.position.stack.push_seq()
+        cursor.position.push_seq()
       end
 
       -- Pop 3 positions at once, should return sequence for position 2
-      assert.are.equal(cursor.position.set_seq(3, 3), cursor.position.stack.pop_seq(3))
+      assert.are.equal(cursor.position.set_seq(3, 3), cursor.position.pop_seq(3))
     end)
 
 
@@ -498,7 +498,7 @@ describe("Cursor", function()
       end
       cursor = require "terminal.cursor"
 
-      assert.are.equal("", cursor.position.stack.pop_seq())
+      assert.are.equal("", cursor.position.pop_seq())
     end)
 
 
@@ -506,11 +506,11 @@ describe("Cursor", function()
       -- mock position.get to return fixed values
       cursor.position.get = function() return 2, 3 end
 
-      cursor.position.stack.push_seq() -- push position
+      cursor.position.push_seq() -- push position
 
       -- Pop way more than we pushed
-      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.stack.pop_seq(1)) -- first pop works
-      assert.are.equal("", cursor.position.stack.pop_seq(100))                          -- over-popping
+      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.pop_seq(1)) -- first pop works
+      assert.are.equal("", cursor.position.pop_seq(100))                          -- over-popping
     end)
 
   end)
