@@ -102,6 +102,14 @@ local function right(node, width_cursor)
 end
 
 
+function UTF8EditLine:is_truncated_home()
+  return self.head ~= self.viewport.ihead
+end
+
+function UTF8EditLine:is_truncated_end()
+  return self.tail ~= self.viewport.itail
+end
+
 function UTF8EditLine:viewport_pos_col()
   local head = self.viewport.ihead.next
 

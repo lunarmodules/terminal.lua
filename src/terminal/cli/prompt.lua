@@ -22,6 +22,7 @@ local utils = require("terminal.utils")
 local width = require("terminal.text.width")
 local output = require("terminal.output")
 local UTF8EditLine = require("terminal.utf8edit")
+local Sequence = require("terminal.sequence")
 local utf8 = require("utf8") -- explicitly requires lua-utf8 for Lua < 5.3
 
 -- Key bindings
@@ -96,6 +97,22 @@ function Prompt:init(opts)
   self.prompt = opts.prompt or ""         -- the prompt to display
 end
 
+function Prompt:homeIndicator_seq()
+  return self.value:is_truncated_home() and Sequence(
+    function() return t.text.stack.push_seq { reverse = true } end,
+    "<",
+    t.text.stack.pop_seq
+  ) or " "
+end
+
+function Prompt:endIndicator_seq()
+  return self.value:is_truncated_end() and Sequence(
+    function() return t.text.stack.push_seq { reverse = true } end,
+    ">",
+    t.text.stack.pop_seq
+  ) or " "
+end
+
 --- Draw the whole thing: prompt and input value.
 -- This function writes the prompt and the current input value to the terminal.
 -- @return nothing
@@ -106,8 +123,7 @@ function Prompt:draw()
   t.cursor.position.column(1)
   -- write prompt & value
   output.write(tostring(self.prompt))
-  output.write(self.value:viewport_str())
-  output.write(t.clear.eol_seq())
+  self:drawInput()
   self:updateCursor()
   -- clear remainder of input size
   output.flush()
@@ -121,8 +137,13 @@ function Prompt:drawInput()
   t.cursor.visible.set(false)
   -- move to end of prompt
   t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
+  -- write home scroll indicator
+  output.write(self:homeIndicator_seq())
   -- write value
   output.write(self.value:viewport_str())
+  -- write end scroll indicator
+  output.write(self:endIndicator_seq())
+  -- clear till eol
   output.write(t.clear.eol_seq())
   self:updateCursor()
   -- clear remainder of input size
@@ -137,7 +158,7 @@ end
 function Prompt:updateCursor(column)
   t.cursor.visible.set(false)
   -- move to cursor position
-  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value:viewport_pos_col())
+  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value:viewport_pos_col() + 1)
   -- unhide the cursor
   t.cursor.visible.set(true)
 end
