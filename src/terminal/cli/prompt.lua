@@ -59,6 +59,7 @@ Prompt.keyname2actions = {
   -- ["ctrl_deelte ???"] -- TODO: same as above
 }
 
+-- TODO: deprecate, after viewport?
 Prompt.actions2redraw = utils.make_lookup("actions", {
   ["backspace"] = true,
   ["delete"] = true,
