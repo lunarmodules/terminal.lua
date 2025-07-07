@@ -33,4 +33,4 @@ This is handled by the `terminal.input` module. Specifically the `terminal.input
 To properly control the UI in a terminal, it is important to know how text is displayed on the terminal.
 The primary thing to know is the display width of characters.
 
-The `terminal.text.width` module provides functionality to test and report the width of characters and strings. The `terminal.size` function can be used to find the terminal size (in rows and columns), to see if the text to display fits the screen or will roll-over/scroll.
+The `terminal.text.width` module provides functionality to test and report the width of characters and strings, as does `terminal.preload_widths`. The `terminal.size` function can be used to find the terminal size (in rows and columns), to see if the text to display fits the screen or will roll-over/scroll.
