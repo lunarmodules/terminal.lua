@@ -39,8 +39,6 @@ end
 
 function UTF8EditLine:viewport_str()
   local head = self.viewport.ihead.next
-  -- print(tostring(head) .. '-> [] <-' .. tostring(self.viewport.itail))
-  -- print((head.value or '*') .. '->' .. self.viewport.itail.prev.value)
 
   local res = {}
   while head do
@@ -224,9 +222,6 @@ function UTF8EditLine:insert_cp(cp)
       self.viewport.itail = left(self.viewport.itail, w)
     end
   end
-  -- print(self:viewport_str())
-  -- print(tostring(self))
-  -- print('------')
   return self
 end
 
@@ -285,7 +280,6 @@ function UTF8EditLine:left(n)
     self.ocursor = self.ocursor - (self.icursor.value and width.utf8cwidth(self.icursor.value) or 1)
     if self.icursor == self.viewport.ihead then
       local w = width.utf8cwidth(self.icursor.value)
-      -- print(self.viewport.ihead.value, '->', self.viewport.itail.value)
       self.viewport.ihead = left(self.viewport.ihead, w)
       self.viewport.itail = left(self.viewport.itail, w)
     end
