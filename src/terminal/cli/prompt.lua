@@ -92,6 +92,7 @@ function Prompt:init(opts)
     value = opts.value,
     word_delimiters = opts.word_delimiters,
     position = opts.position,
+    viewport_width = opts.viewport_width
   })
   self.prompt = opts.prompt or ""         -- the prompt to display
   self.max_length = opts.max_length or 80 -- the maximum length of the input
@@ -107,7 +108,7 @@ function Prompt:draw()
   t.cursor.position.column(1)
   -- write prompt & value
   output.write(tostring(self.prompt))
-  output.write(tostring(self.value))
+  output.write(self.value:viewport_str())
   output.write(t.clear.eol_seq())
   self:updateCursor()
   -- clear remainder of input size
@@ -123,7 +124,7 @@ function Prompt:drawInput()
   -- move to end of prompt
   t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
   -- write value
-  output.write(tostring(self.value))
+  output.write(self.value:viewport_str())
   output.write(t.clear.eol_seq())
   self:updateCursor()
   -- clear remainder of input size
@@ -136,8 +137,9 @@ end
 -- the prompt plus the current input value cursor position.
 -- @return nothing
 function Prompt:updateCursor(column)
+  t.cursor.visible.set(false)
   -- move to cursor position
-  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value.ocursor)
+  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value:viewport_pos_col())
   -- unhide the cursor
   t.cursor.visible.set(true)
 end
@@ -160,17 +162,12 @@ function Prompt:handleInput()
       local action = Prompt.keyname2actions[keyname]
 
       if action then
-        local redraw = Prompt.actions2redraw[action]
         local handle_action = UTF8EditLine[action]
 
         if handle_action then
           handle_action(self.value)
         end
-        if redraw then
-          self:drawInput()
-        else
-          self:updateCursor()
-        end
+        self:drawInput()
       elseif keyname == keys.escape and self.cancellable then
         return "cancelled"
       elseif keyname == keys.enter then

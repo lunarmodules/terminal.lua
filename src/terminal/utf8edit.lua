@@ -37,6 +37,22 @@ function UTF8EditLine:__tostring()
   return table.concat(res)
 end
 
+function UTF8EditLine:viewport_str()
+  local head = self.viewport.ihead.next
+  -- print(tostring(head) .. '-> [] <-' .. tostring(self.viewport.itail))
+  -- print((head.value or '*') .. '->' .. self.viewport.itail.prev.value)
+
+  local res = {}
+  while head do
+    res[#res + 1] = head.value or ""
+    if head == self.viewport.itail then
+      break
+    end
+    head = head.next
+  end
+  return table.concat(res)
+end
+
 --- A list of word delimiters for word-wise navigation
 -- @string default_word_delimiters
 UTF8EditLine.default_word_delimiters = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]]
@@ -49,7 +65,58 @@ local function is_delimiter(self, node)
   return self.word_delimiters[char] == true
 end
 
+local function left(node, width_cursor)
+  -- wc, wvp
+  -- 1, 1 -> 1
+  -- 1, 2 -> 2
+  -- 2, 1 -> 2
+  -- 2, 2 -> 1
 
+  if node.prev then
+    node = node.prev
+    local width_node = node.value and width.utf8cwidth(node.value) or 1
+    if width_node ~= width_cursor then
+      if node.prev then
+        node = node.prev
+      end
+    end
+  end
+  return node
+end
+
+local function right(node, width_cursor)
+  -- wc, wvp
+  -- 1, 1 -> 1
+  -- 1, 2 -> 2
+  -- 2, 1 -> 2
+  -- 2, 2 -> 1
+
+  if node.next then
+    node = node.next
+    local width_node = node.value and width.utf8cwidth(node.value) or 1
+    if width_node ~= width_cursor then
+      if node.next then
+        node = node.next
+      end
+    end
+  end
+  return node
+end
+
+
+function UTF8EditLine:viewport_pos_col()
+  local head = self.viewport.ihead.next
+
+  local w = 0
+  while head do
+    w = w + (head.value and width.utf8swidth(head.value) or 1)
+    if head == self.icursor then
+      break
+    end
+    head = head.next
+  end
+  return w
+end
 
 --- Creates a new `utf8edit` instance. This method is invoked by calling on the class.
 -- The cursor position will be at the end of the string.
@@ -71,6 +138,14 @@ function UTF8EditLine:init(opts)
   if opts == nil or type(opts) == "string" then
     opts = { value = opts or ""}
   end
+
+
+  -- Initialize viewport position
+  self.viewport = {
+    width = opts.viewport_width or 30,
+    ihead = self.head,
+    itail = self.tail,
+  } -- prepare horizontall scrolling viewport
 
   self:insert(opts.value) -- inserts the value
 
@@ -138,6 +213,20 @@ function UTF8EditLine:insert_cp(cp)
   self.ilen = self.ilen + 1
   self.olen = self.olen + width.utf8cwidth(cp)
   self.ocursor = self.ocursor + width.utf8cwidth(cp)
+  local w = width.utf8cwidth(cp)
+  if self.olen >= self.viewport.width then
+    if self.icursor == self.viewport.itail then
+      self.viewport.ihead = right(self.viewport.ihead, w)
+    elseif self.icursor.prev == self.viewport.ihead then
+      self.viewport.ihead =  left(self.viewport.ihead, w)
+      self.viewport.itail = left(self.viewport.itail, w)
+    else
+      self.viewport.itail = left(self.viewport.itail, w)
+    end
+  end
+  -- print(self:viewport_str())
+  -- print(tostring(self))
+  -- print('------')
   return self
 end
 
@@ -170,8 +259,12 @@ function UTF8EditLine:backspace(n)
     prev.next = next
     next.prev = prev
     self.ilen = self.ilen - 1
-    self.olen = self.olen - width.utf8cwidth(c)
-    self.ocursor = self.ocursor - width.utf8cwidth(c)
+    local w = width.utf8cwidth(c)
+    self.olen = self.olen - w
+    self.ocursor = self.ocursor - w
+    if self.icursor ~= self.viewport.ihead then
+      self.viewport.itail = right(self.viewport.itail, w)
+    end
   end
   return self
 end
@@ -190,6 +283,12 @@ function UTF8EditLine:left(n)
     end
     self.icursor = self.icursor.prev
     self.ocursor = self.ocursor - (self.icursor.value and width.utf8cwidth(self.icursor.value) or 1)
+    if self.icursor == self.viewport.ihead then
+      local w = width.utf8cwidth(self.icursor.value)
+      -- print(self.viewport.ihead.value, '->', self.viewport.itail.value)
+      self.viewport.ihead = left(self.viewport.ihead, w)
+      self.viewport.itail = left(self.viewport.itail, w)
+    end
   end
   return self
 end
@@ -208,6 +307,11 @@ function UTF8EditLine:right(n)
     end
     self.ocursor = self.ocursor + (self.icursor.value and width.utf8cwidth(self.icursor.value) or 1)
     self.icursor = self.icursor.next
+    if self.icursor.prev == self.viewport.itail then
+      local w = width.utf8cwidth(self.icursor.prev.value)
+      self.viewport.ihead = right(self.viewport.ihead, w)
+      self.viewport.itail = right(self.viewport.itail, w)
+    end
   end
   return self
 end
@@ -235,6 +339,17 @@ end
 function UTF8EditLine:goto_home()
   self.icursor = self.head.next
   self.ocursor = 1
+  local curr = self.head
+  local w = 0
+  while curr do
+    w = w + (curr.value and width.utf8swidth(curr.value) or 1)
+    if w >= self.viewport.width then
+      break
+    end
+    curr = curr.next
+  end
+  self.viewport.ihead = self.head
+  self.viewport.itail = curr or self.tail
   return self
 end
 
@@ -245,6 +360,17 @@ end
 function UTF8EditLine:goto_end()
   self.icursor = self.tail
   self.ocursor = self.olen + 1
+  local curr = self.tail
+  local w = 0
+  while curr do
+    w = w + (curr.value and width.utf8swidth(curr.value) or 1)
+    if w >= self.viewport.width then
+      break
+    end
+    curr = curr.prev
+  end
+  self.viewport.ihead = curr or self.head.next
+  self.viewport.itail = self.tail
   return self
 end
 
@@ -273,6 +399,8 @@ function UTF8EditLine:clear()
   self.ocursor = 1
   self.ilen = 0
   self.olen = 0
+  self.viewport.ihead = self.head
+  self.viewport.itail = self.tail
   return self
 end
 
