@@ -11,7 +11,6 @@
 -- local prompt = Prompt {
 --     prompt = "Enter something: ",
 --     value = "Hello, 你-好 World 🚀!",
---     max_length = 62,
 --     overflow = "wrap" -- or "scroll"   -- TODO: implement
 --     -- cancellable = true, -- TODO: implement
 --     position = 2,
@@ -85,7 +84,6 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam[opt=""] string opts.prompt The prompt text to display.
 -- @tparam[opt=""] string opts.value The initial value of the prompt.
 -- @tparam[opt=len_char] number opts.position The initial cursor position (in char) of the input
--- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
   self.value = UTF8EditLine({
@@ -95,7 +93,6 @@ function Prompt:init(opts)
     viewport_width = opts.viewport_width
   })
   self.prompt = opts.prompt or ""         -- the prompt to display
-  self.max_length = opts.max_length or 80 -- the maximum length of the input
 end
 
 --- Draw the whole thing: prompt and input value.
@@ -175,7 +172,7 @@ function Prompt:handleInput()
         -- TODO: wait for luasystem's new readansi release
       elseif t.input.keymap.is_printable(key) == false then
         t.bell()
-      elseif self.value.ilen >= self.max_length or utf8.len(key) ~= 1 then
+      elseif utf8.len(key) ~= 1 then
         t.bell()
       else -- add the character at the current cursor
         self.value:insert(key)

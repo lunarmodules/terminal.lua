@@ -4,7 +4,6 @@ local Prompt = require("terminal.cli.prompt")
 local pr = Prompt {
   prompt = "Enter something: ",
   value = "Hello, 你-好 World 🚀!",
-  max_length = 62,
   position = 2,
   cancellable = true,
 }

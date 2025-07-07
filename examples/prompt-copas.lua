@@ -10,7 +10,6 @@ local terminal_opts = {
 local pr = Prompt {
   prompt = "Enter something: ",
   value = "Hello, 你-好 World 🚀!",
-  max_length = 62,
   position = 2,
   cancellable = true,
 }
