@@ -1081,4 +1081,102 @@ describe("Utf8editLine:", function()
 
   end)
 
+  describe("viewport", function()
+
+    it("initializes with a default viewport width", function()
+      local line = Utf8edit("hello world")
+      assert.are.equal(30, line.viewport.width)
+      assert.are.equal("hello world ", line:viewport_str())
+    end)
+
+
+    it("initializes with a custom viewport width", function()
+      local line = Utf8edit({ value = "hello world", viewport_width = 5 })
+      line:left(7)
+      assert.are.equal(5, line.viewport.width)
+      -- Initially, text should be visible as it's not overflowing yet
+      assert.are.equal("o wor", line:viewport_str())
+    end)
+
+
+    it("shows the full string when it fits within viewport", function()
+      local line = Utf8edit({ value = "hello", width = 10 })
+      assert.are.equal("hello ", line:viewport_str())
+    end)
+
+
+    it("adjusts viewport when cursor moves to the right beyond viewport", function()
+      local line = Utf8edit({ value = "abcdefghijklmnopqrstuvwxyz", width = 5 })
+      line:goto_home() -- Start at the beginning
+      assert.are.equal("abcde", line:viewport_str():sub(1, 5))
+
+      -- Move cursor past viewport right edge
+      line:right(10)
+      local viewport_text = line:viewport_str()
+      assert.is_true(viewport_text:find("k") ~= nil)
+    end)
+
+
+    it("adjusts viewport when cursor moves to the left beyond viewport", function()
+      local line = Utf8edit({ value = "abcdefghijklmnopqrstuvwxyz", width = 5 })
+      line:goto_end() -- Start at the end
+
+      -- Initial viewport should be near the end
+      local initial_viewport = line:viewport_str()
+      assert.is_true(initial_viewport:find("z") ~= nil)
+
+      -- Move cursor to the left beyond viewport
+      line:left(15)
+      local viewport_text = line:viewport_str()
+      assert.is_true(viewport_text:find("k") ~= nil)
+    end)
+
+
+    it("handles UTF-8 characters correctly in viewport", function()
+      local line = Utf8edit({ value = "你好世界abcdefghij", width = 10 })
+      -- Each Chinese character takes 2 columns
+      assert.is_true(line:viewport_str():find("你好") ~= nil)
+
+      line:goto_home():right(3) -- Move after "你好"
+      assert.is_true(line:viewport_str():find("世") ~= nil)
+    end)
+
+
+    it("updates viewport after edit operations", function()
+      local line = Utf8edit({ value = "abcdefghijklmnopqrstuvwxyz", width = 5 })
+      line:goto_index(15) -- Go to middle
+
+      -- Insert text at cursor
+      line:insert("**")
+      local viewport_text = line:viewport_str()
+      assert.is_true(viewport_text:find("*") ~= nil)
+
+      -- Delete text at cursor
+      line:backspace(3)
+      viewport_text = line:viewport_str()
+      assert.is_true(viewport_text:find("l") ~= nil)
+    end)
+
+
+    it("maintains viewport position during word navigation", function()
+      local line = Utf8edit({ value = "word1 word2 word3 word4 word5", width = 10 })
+      line:goto_home()
+
+      -- Initial viewport should show beginning
+      assert.is_true(line:viewport_str():find("word1") ~= nil)
+
+      -- Navigate by words
+      line:right_word(3) -- Should be at "word4"
+      local viewport_text = line:viewport_str()
+      assert.is_true(viewport_text:find("word4") ~= nil)
+    end)
+
+
+    it("handles empty string with viewport", function()
+      local line = Utf8edit({ value = "", width = 10 })
+      assert.are.equal(" ", line:viewport_str())
+    end)
+
+  end)
+
 end)
