@@ -11,7 +11,6 @@
 -- local prompt = Prompt {
 --     prompt = "Enter something: ",
 --     value = "Hello, 你-好 World 🚀!",
---     max_length = 62,
 --     overflow = "wrap" -- or "scroll"   -- TODO: implement
 --     -- cancellable = true, -- TODO: implement
 --     position = 2,
