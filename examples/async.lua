@@ -35,9 +35,12 @@ copas.addthread(function()
   t.output.print("Press 'q' to exit...")
 
   while not copas.exiting() do
-    local key = t.input.readansi(math.huge)
+    local key, keytype = t.input.readansi(math.huge)
     if key then
-      t.output.print("You pressed: " .. key:gsub("\027", "\\027"))
+      if keytype == "ctrl" then
+        key = ("\\%03d"):format(key:byte())
+      end
+      t.output.print("You pressed: " .. key:gsub("\027", "\\027"), keytype)
       if key == "q" then
         copas.exit()
       end

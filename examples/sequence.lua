@@ -1,5 +1,5 @@
 -- An example of using `sequence` to create a reusable sequence of terminal commands.
--- This example uses the `text.stack.pushs` and `text.stack.pops` functions to change the text color.
+-- This example uses the `text.stack.push_seq` and `text.stack.pop_seq` functions to change the text color.
 -- By using functions instead of strings the color change is only active during the
 -- execution of the sequence.
 
