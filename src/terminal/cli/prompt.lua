@@ -89,13 +89,13 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 function Prompt:init(opts)
   self.prompt = opts.prompt or ""         -- the prompt to display
   local _, columns = t.size()
-  local auto_width = columns - width.utf8swidth(self.prompt) - 3
+  local auto_width = columns - width.utf8swidth(self.prompt) - 2
   self.value = UTF8EditLine({
     value = opts.value,
     word_delimiters = opts.word_delimiters,
     position = opts.position,
     -- viewport_width = opts.viewport_width or auto_width
-    viewport_width = opts.viewport_width or 30
+    viewport_width = opts.viewport_width or auto_width
   })
 end
 
@@ -146,7 +146,10 @@ function Prompt:drawInput()
   -- write end scroll indicator
   output.write(self:endIndicator_seq())
   -- clear till eol
-  output.write(t.clear.eol_seq())
+  local _, c = t.size()
+  if width.utf8swidth(self.prompt) + width.utf8swidth(self.value:viewport_str()) + 2 < c then
+    output.write(t.clear.eol_seq())
+  end
   self:updateCursor()
   -- clear remainder of input size
   output.flush()
