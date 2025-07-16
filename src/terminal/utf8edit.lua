@@ -264,10 +264,6 @@ function UTF8EditLine:handle_overflow()
       self.viewport.tail = self.icursor.next
     end
     self:handle_overflow_tail()
-
-  else
-    print(self.icursor, self.viewport.tail)
-    print(self.icursor.value or "?", self.viewport.tail.value)
   end
 end
 
