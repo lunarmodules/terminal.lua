@@ -12,7 +12,9 @@ t.initwrap(function () -- on Windows: wrap for utf8 output
   local result, status = pr:run()
   if result then
     print("Result (string): '" .. result .. "'")
-    print("Result (bytes):", (result or ""):byte(1, -1))
+    print("Result (viewpr): '" .. pr.value:viewport_str() .. "'")
+    print("Result (width_): '" .. pr.value.olen .. "'")
+    print("Result (vwidth): '" .. pr.value.viewport.width .. "'")
   else
     print("Status: " .. (status or "nil"))
   end

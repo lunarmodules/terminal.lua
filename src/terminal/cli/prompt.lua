@@ -22,6 +22,7 @@ local utils = require("terminal.utils")
 local width = require("terminal.text.width")
 local output = require("terminal.output")
 local UTF8EditLine = require("terminal.utf8edit")
+local Sequence = require("terminal.sequence")
 local utf8 = require("utf8") -- explicitly requires lua-utf8 for Lua < 5.3
 
 -- Key bindings
@@ -84,16 +85,34 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam[opt=""] string opts.prompt The prompt text to display.
 -- @tparam[opt=""] string opts.value The initial value of the prompt.
 -- @tparam[opt=len_char] number opts.position The initial cursor position (in char) of the input
--- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
+  self.prompt = opts.prompt or ""         -- the prompt to display
+  local _, columns = t.size()
+  local auto_width = columns - width.utf8swidth(self.prompt) - 3
   self.value = UTF8EditLine({
     value = opts.value,
     word_delimiters = opts.word_delimiters,
     position = opts.position,
+    -- viewport_width = opts.viewport_width or auto_width
+    viewport_width = opts.viewport_width or 30
   })
-  self.prompt = opts.prompt or ""         -- the prompt to display
-  self.max_length = opts.max_length or 80 -- the maximum length of the input
+end
+
+function Prompt:homeIndicator_seq()
+  return self.value:is_truncated_home() and Sequence(
+    function() return t.text.stack.push_seq { reverse = true } end,
+    "<",
+    t.text.stack.pop_seq
+  ) or " "
+end
+
+function Prompt:endIndicator_seq()
+  return self.value:is_truncated_end() and Sequence(
+    function() return t.text.stack.push_seq { reverse = true } end,
+    ">",
+    t.text.stack.pop_seq
+  ) or " "
 end
 
 --- Draw the whole thing: prompt and input value.
@@ -106,8 +125,7 @@ function Prompt:draw()
   t.cursor.position.column(1)
   -- write prompt & value
   output.write(tostring(self.prompt))
-  output.write(tostring(self.value))
-  output.write(t.clear.eol_seq())
+  self:drawInput()
   self:updateCursor()
   -- clear remainder of input size
   output.flush()
@@ -121,8 +139,13 @@ function Prompt:drawInput()
   t.cursor.visible.set(false)
   -- move to end of prompt
   t.cursor.position.column(width.utf8swidth(self.prompt) + 1)
+  -- write home scroll indicator
+  output.write(self:homeIndicator_seq())
   -- write value
-  output.write(tostring(self.value))
+  output.write(self.value:viewport_str())
+  -- write end scroll indicator
+  output.write(self:endIndicator_seq())
+  -- clear till eol
   output.write(t.clear.eol_seq())
   self:updateCursor()
   -- clear remainder of input size
@@ -135,8 +158,9 @@ end
 -- the prompt plus the current input value cursor position.
 -- @return nothing
 function Prompt:updateCursor(column)
+  t.cursor.visible.set(false)
   -- move to cursor position
-  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value.ocursor)
+  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value:viewport_pos_col() + 1)
   -- unhide the cursor
   t.cursor.visible.set(true)
 end
@@ -159,17 +183,12 @@ function Prompt:handleInput()
       local action = Prompt.keyname2actions[keyname]
 
       if action then
-        local redraw = Prompt.actions2redraw[action]
         local handle_action = UTF8EditLine[action]
 
         if handle_action then
           handle_action(self.value)
         end
-        if redraw then
-          self:drawInput()
-        else
-          self:updateCursor()
-        end
+        self:drawInput()
       elseif keyname == keys.escape and self.cancellable then
         return "cancelled"
       elseif keyname == keys.enter then
@@ -177,7 +196,7 @@ function Prompt:handleInput()
         -- TODO: wait for luasystem's new readansi release
       elseif t.input.keymap.is_printable(key) == false then
         t.bell()
-      elseif self.value.ilen >= self.max_length or utf8.len(key) ~= 1 then
+      elseif utf8.len(key) ~= 1 then
         t.bell()
       else -- add the character at the current cursor
         self.value:insert(key)
