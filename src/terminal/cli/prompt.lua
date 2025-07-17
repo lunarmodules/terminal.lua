@@ -218,8 +218,16 @@ end
 function Prompt:run()
   local status
 
+  -- TODO: add this ansi sequence to a attributes module, maybe even in terminal?
+  -- turns autowrap off
+  t.output.write('\027[?7l')
+
   self:draw()
   status = self:handleInput()
+
+  -- restore autowrap
+  t.output.write('\027[?7h')
+
   t.output.print() -- move to new line (we're still on the 'press any key' line)
 
   if status == "returned" then
