@@ -149,17 +149,14 @@ function UTF8EditLine:viewport_str()
 end
 
 function UTF8EditLine:viewport_pos_col()
-  local head = self.viewport.head
+  local head = self.viewport.head.next
 
-  local w = 0
+  local w = 1
   while head do
-    w = w + (head.value and width.utf8swidth(head.value) or 0)
     if head == self.icursor then
-      if head == self.tail then
-        w = w + 1
-      end
       break
     end
+    w = w + (head.value and width.utf8swidth(head.value) or 0)
     head = head.next
   end
   return w
