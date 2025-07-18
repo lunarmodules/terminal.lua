@@ -130,20 +130,17 @@ function UTF8EditLine:len_col()
 end
 
 function UTF8EditLine:viewport_str()
-  local head = self.viewport.head
+  local head = self.viewport.head.next
   -- print(tostring(head) .. '-> [] <-' .. tostring(self.viewport.tail))
   -- print((head.value or '*') .. '->' .. self.viewport.tail.prev.value)
 
   local res = {}
-  while head do
-    if head == self.viewport.tail then
-      if head == self.tail then
-        res[#res+1] = " "
-      end
-      break
-    end
+  while head ~= self.viewport.tail do
     res[#res + 1] = head.value or ""
     head = head.next
+  end
+  if head == self.tail then
+    res[#res+1] = " "
   end
   return table.concat(res)
 end
@@ -193,19 +190,19 @@ end
 -- end
 
 function UTF8EditLine:is_truncated_home()
-  return self.head.next ~= self.viewport.head
-      and self.head ~= self.viewport.head
+  return self.head ~= self.viewport.head
 end
 
 function UTF8EditLine:is_truncated_end()
-  return self.tail.next ~= self.viewport.tail
-    and self.tail ~= self.viewport.tail
+  return self.tail ~= self.viewport.tail
 end
 
 function UTF8EditLine:prepare_viewport()
   -- If the text fits within the viewport width, just display all of it
-  if self.viewport.width <= 0 or
-    self.olen <= self.viewport.width then
+  if self.viewport.head == nil
+    or self.viewport.tail == nil
+    or self.viewport.width <= 0
+    or self.olen <= self.viewport.width then
 
     self.viewport.head = self.head
     self.viewport.tail = self.tail
@@ -215,14 +212,18 @@ function UTF8EditLine:prepare_viewport()
 end
 
 function UTF8EditLine:handle_overflow_head()
-  local node = self.viewport.head
+  if self:prepare_viewport() then
+    return
+  end
+
+  local node = self.viewport.head.next
   local w = 0
 
-  while node ~= self.tail and
-    w <= self.viewport.width do
+  while node ~= self.tail do
     w = w + (node.value and width.utf8cwidth(node.value) or 1)
-    if w <= self.viewport.width then
-      node = node.next
+    node = node.next
+    if w >= self.viewport.width then
+      break
     end
   end
 
@@ -230,18 +231,28 @@ function UTF8EditLine:handle_overflow_head()
 end
 
 function UTF8EditLine:handle_overflow_tail()
-  local node = self.viewport.tail
+  if self:prepare_viewport() then
+    return
+  end
+
+  local node
   local w = 0
 
-  while node ~= self.head and
-    w < self.viewport.width do
+  if self.viewport.tail == self.tail then
+    node = self.tail
+  else
+    node = self.viewport.tail.prev
+  end
+
+  while node ~= self.head do
     w = w + (node.value and width.utf8cwidth(node.value) or 1)
-    if w <= self.viewport.width then
-      node = node.prev
+    node = node.prev
+    if w >= self.viewport.width then
+      break
     end
   end
 
-  self.viewport.head = node.next
+  self.viewport.head = node
 end
 
 
@@ -271,7 +282,8 @@ function UTF8EditLine:resize_viewport(w)
     }
   end
   self.viewport.width = w
-  self:handle_overflow()
+  self:prepare_viewport()
+  self:handle_overflow_head()
 end
 
 --- Inserts a unicode codepoint at the current cursor position.
@@ -285,10 +297,11 @@ function UTF8EditLine:insert_cp(cp)
   self.olen = self.olen + width.utf8cwidth(cp)
   self.ocursor = self.ocursor + width.utf8cwidth(cp)
 
-  if self.icursor == self.viewport.tail.prev
-    or self.icursor == self.tail then
+  if self.icursor == self.viewport.tail then
     self.viewport.tail = self.icursor
-    self:handle_overflow()
+    self:handle_overflow_tail()
+  elseif self.icursor == self.viewport.tail.prev then
+    self:handle_overflow_tail()
   elseif self.icursor == self.viewport.head then
     self.viewport.head = self.icursor.prev
     self:handle_overflow_head()
@@ -334,7 +347,7 @@ function UTF8EditLine:backspace(n)
       self.viewport.head = self.head.next
       self:handle_overflow_head()
     else
-      self:handle_overflow()
+      self:handle_overflow_head()
     end
   end
   return self
@@ -354,7 +367,13 @@ function UTF8EditLine:left(n)
     end
     self.icursor = self.icursor.prev
     self.ocursor = self.ocursor - (self.icursor.value and width.utf8cwidth(self.icursor.value) or 1)
-    self:handle_overflow()
+
+    -- Cursor is before viewport
+    if self.icursor == self.viewport.head then
+      self.viewport.head = self.icursor.prev
+      self:handle_overflow_head()
+    end
+
   end
   return self
 end
@@ -373,7 +392,16 @@ function UTF8EditLine:right(n)
     end
     self.ocursor = self.ocursor + (self.icursor.value and width.utf8cwidth(self.icursor.value) or 1)
     self.icursor = self.icursor.next
-    self:handle_overflow()
+
+    -- Cursor is after viewport
+    if self.icursor == self.viewport.tail then
+      if self.icursor ~= self.tail then
+        self.viewport.tail = self.icursor.next
+      else
+        self.viewport.tail = self.tail
+      end
+      self:handle_overflow_tail()
+    end
   end
   return self
 end
@@ -402,8 +430,8 @@ function UTF8EditLine:goto_home()
   self.icursor = self.head.next
   self.ocursor = 1
 
-  self.viewport.head = self.icursor.next
-  self:handle_overflow()
+  self.viewport.head = self.head
+  self:handle_overflow_head()
   return self
 end
 
@@ -414,7 +442,9 @@ end
 function UTF8EditLine:goto_end()
   self.icursor = self.tail
   self.ocursor = self.olen + 1
-  self:handle_overflow()
+
+  self.viewport.tail = self.tail
+  self:handle_overflow_tail()
   return self
 end
 
@@ -443,7 +473,8 @@ function UTF8EditLine:clear()
   self.ocursor = 1
   self.ilen = 0
   self.olen = 0
-  self:handle_overflow()
+  self.viewport.head = self.head
+  self:handle_overflow_head()
   return self
 end
 
