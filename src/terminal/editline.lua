@@ -2,23 +2,24 @@
 --
 -- This class handles a UTF8 string with editing operations, cursor tracking, and width tracking.
 --
+-- *Example:*
+--
+--     local EditLine = require("terminal.editline")
+--     local line = EditLine("héllo界")
+--
+--     print(line)                                      -- Output: héllo界
+--     print("Characters:", line:len_char())            -- Output: Characters: 6
+--     print("Columns:", line:len_col())                -- Output: Columns: 7 (since '界' is width 2)
+--
+--     -- Move the cursor
+--     line:left(2)
+--     print("Cursor char position:", line:pos_char())  -- Output: 4
+--     print("Cursor column position:", line:pos_col()) -- Output: 4
+--
+--     -- Editing
+--     line:insert("!")
+--     print(line)                                      -- Output: héll!o界
 -- @classmod EditLine
--- @usage
--- local EditLine = require("terminal.editline")
--- local line = EditLine("héllo界")
---
--- print(line)                                      -- Output: héllo界
--- print("Characters:", line:len_char())            -- Output: Characters: 6
--- print("Columns:", line:len_col())                -- Output: Columns: 7 (since '界' is width 2)
---
--- -- Move the cursor
--- line:left(2)
--- print("Cursor char position:", line:pos_char())  -- Output: 4
--- print("Cursor column position:", line:pos_col()) -- Output: 4
---
--- -- Editing
--- line:insert("!")
--- print(line)                                      -- Output: héll!o界
 
 local width = require("terminal.text.width")
 local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 compatibility

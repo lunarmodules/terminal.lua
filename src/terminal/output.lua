@@ -2,11 +2,12 @@
 --
 -- *Note:* This module will be available from the main `terminal` module, without
 -- explicitly requiring it.
--- @usage
--- local terminal = require "terminal"
--- terminal.initialize()
 --
--- terminal.output.write("hello world")
+-- *Example:*
+--     local terminal = require "terminal"
+--     terminal.initialize()
+--
+--     terminal.output.write("hello world")
 -- @module terminal.output
 
 local M = {}
@@ -28,6 +29,7 @@ end
 --- Set the stream to operate on.
 -- This can be used to redirect output to a different stream.
 -- The default value at start is `io.stderr`.
+--
 -- Instead of calling this directly, it is probably better to use the
 -- `terminal.initialize` function.
 -- @tparam file filehandle the stream to operate on (`io.stderr` or `io.stdout`)

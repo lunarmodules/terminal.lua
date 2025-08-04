@@ -2,11 +2,11 @@
 -- Also enables querying the terminal. When inmplementing any
 -- other queries, check out `preread` and `read_query_answer` documentation.
 --
--- @usage
--- local terminal = require "terminal"
--- terminal.initialize()
+-- *Example:*
+--     local terminal = require "terminal"
+--     terminal.initialize()
 --
--- local char, typ, sequence = terminal.input.readansi(1)
+--     local char, typ, sequence = terminal.input.readansi(1)
 -- @module terminal.input
 
 local sys = require "system"
@@ -76,6 +76,7 @@ end
 -- @param typ the type of input
 -- @param part the partial of the input
 -- @return true
+-- @within Querying
 function M.push_input(seq, typ, part)
   kbend = kbend + 1
   kbbuffer[kbend] = pack(seq, typ, part)
@@ -98,6 +99,7 @@ end
 -- 4. call `read_query_answer` to read the terminal responses.
 --
 -- @return true if successful, nil and an error message if reading failed
+-- @within Querying
 function M.preread()
   while true do
     local seq, typ, part = M.sys_readansi(0, terminal._bsleep)
@@ -119,6 +121,7 @@ end
 -- @tparam string answer_pattern a pattern that matches the expected ANSI response sequence, and captures the data needed.
 -- @tparam[opt=1] number count the number of responses to read (in case multiple queries were sent)
 -- @treturn table an array with `count` entries. Each entry is another array with the captures from the answer pattern.
+-- @within Querying
 function M.read_query_answer(answer_pattern, count)
   count = count or 1
   -- read responses
@@ -161,6 +164,7 @@ end
 -- @tparam string query the ANSI sequence to be written to query the terminal
 -- @tparam string answer_pattern a pattern that matches the expected ANSI response sequence, and captures the data needed.
 -- @treturn table an array with the captures from the answer pattern.
+-- @within Querying
 function M.query(query, answer_pattern)
   M.preread()
   output.write(query)

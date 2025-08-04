@@ -2,10 +2,14 @@
 -- Check the examples below for usage.
 --
 -- **key-map**:
--- a `key-map` is a table that maps raw key-stroke input (from `readansi`) to key-names.
--- The raw input can be a control-character (bytes 0-31 + 127), or an ANSI escape sequence.
+-- a `key-map` is a table that maps raw key-stroke input (from `terminal.input.readansi`) to key-names.
+-- The raw input can be:
 --
--- note: a raw-key only maps to 1 name, even if the sequence is known under multiple names.
+-- - a single UTF-8 character (1 to 4 bytes)
+-- - a control-character (bytes 0-31 + 127)
+-- - an ANSI escape sequence.
+--
+-- A raw-key only maps to 1 name, even if the sequence is known under multiple names.
 -- For example, the raw key `"\013"` (carriage return) maps to the name `"ctrl_m"`. Though on
 -- Windows it is also know as keyname `"enter"` or `"return"`, it will not map to these names.
 --
@@ -15,27 +19,29 @@
 -- you can use these names in your code, instead of the raw key-name. For unknown keys,
 -- an error will be thrown, so you can catch typos in your code early.
 --
--- So in key-map; raw-key `"\013"` maps to `"ctrl_m"`
+-- So in **key-map**; raw-key `"\013"` maps to `"ctrl_m"`
 --
--- In `keys`; the keys `"ctrl_m"`, `"enter"`, and `"return"`, all map to the same key-name; `"ctrl_m"`.
+-- In **keys**`; the keys `"ctrl_m"`, `"enter"`, and `"return"`, all map to the same key-name; `"ctrl_m"`.
 --
 -- Check the source code for default keys and aliases. Custom maps can be created with
 -- `get_keymap` and `get_keys`.
--- @usage
--- local rawkey = "\013" -- carriage return
--- local keymap = terminal.input.keymap.default_key_map
--- local keys = terminal.input.keymap.default_keys
 --
--- local keyname = key_map[rawkey] --> "ctrl_m"
+-- *Example:*
+--     local rawkey = "\013" -- carriage return
+--     local keymap = terminal.input.keymap.default_key_map
+--     local keys = terminal.input.keymap.default_keys
 --
--- -- the following if statements are equivalent:
--- if keyname == "ctrl_m" then     -- uses magic strings, typos are lurking bugs!
--- if keyname == keys.ctrl_m then  -- uses the official name, prevents typos, hard to read
--- if keyname == keys.enter then   -- uses alias, easily readable, prevents typos
--- if keyname == keys.return then  -- uses alias, easily readable, prevents typos
+--     -- lookup the key-name from the raw inpout
+--     local keyname = key_map[rawkey] --> "ctrl_m"
 --
--- -- This will throw an error when running due to the typo:
--- if keyname == keys.retunr then  -- typo, will throw an error
+--     -- the following if statements are equivalent:
+--     if keyname == "ctrl_m" then        -- uses magic strings, typos are lurking bugs!
+--     if keyname == keys.ctrl_m then     -- uses the official name, prevents typos, hard to read
+--     if keyname == keys.enter then      -- uses alias, easily readable, prevents typos
+--     if keyname == keys["return"] then  -- uses alias, easily readable, prevents typos
+--
+--     -- This will throw an error when running due to the typo:
+--     if keyname == keys.retunr then  -- typo, will throw an error
 -- @module terminal.input.keymap
 
 local M = {}
@@ -260,7 +266,7 @@ end
 --- Returns a new key-map to map incoming raw key-strokes to a key-name.
 -- Generates a new key-map, containing the `default_key_map`, and the provided overrides.
 -- @tparam[opt] table overrides a table with key-value pairs to override the default key map.
--- The key should be the raw-key (character or sequence) as returned by `readansi`, the value
+-- The key should be the raw-key (character or sequence) as returned by `terminal.input.readansi`, the value
 -- should be the name of the key.
 -- @treturn table new key_map
 -- @usage
@@ -412,7 +418,7 @@ M.default_keys = M.get_keys(M.default_key_map)
 -- 0-31 and 127).
 --
 -- **Note**: Tab, Cr, and Lf, which are control characters, are considered non-printable by this function.
--- @tparam string keystroke the raw key-stroke as returned by `readansi`.
+-- @tparam string keystroke the raw key-stroke as returned by `terminal.input.readansi`.
 -- @treturn boolean `true` if the key is printable, `false` otherwise.
 function M.is_printable(keystroke)
   if keystroke:sub(1,1) == "\027" then

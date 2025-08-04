@@ -6,23 +6,25 @@
 -- to navigate through the options. The selected option is highlighted, and the
 -- user can confirm their choice by pressing Enter. Optionally the menu can also be
 -- cancelled by pressing `<esc>` or `<ctrl+c>`.
--- NOTE: you MUST `terminal.initialize()` before calling this widget's `:run()`
--- @classmod cli.Select
--- @usage
--- local menu = cli.Select{   -- invokes the 'init' method
---   prompt = "Select an option:",
---   choices = {
---     "Option 1",
---     "Option 2",
---     "Option 3"
---   },
---   default = 1,
---   cancellable = true
--- }
 --
--- local selected_index, selected_value = menu()  -- invokes the 'run' method
--- print("Selected index: " .. selected_index)
--- print("Selected value: " .. selected_value)
+-- NOTE: you MUST call `terminal.initialize` before calling this widget's `:run()` method.
+--
+-- *Usage:*
+--     local menu = cli.Select{
+--       prompt = "Select an option:",
+--       choices = {
+--         "Option 1",
+--         "Option 2",
+--         "Option 3"
+--       },
+--       default = 1,
+--       cancellable = true
+--     }
+--
+--     local selected_index, selected_value = menu()  -- invokes the 'run' method
+--     print("Selected index: " .. selected_index)
+--     print("Selected value: " .. selected_value)
+-- @classmod cli.Select
 
 local t = require("terminal")
 local Sequence = require("terminal.sequence")

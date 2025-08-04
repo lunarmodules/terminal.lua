@@ -5,18 +5,19 @@
 --
 -- Features: Prompt, UTF8 support, async input, (to be added: secrets, scrolling and wrapping)
 --
--- NOTE: you MUST `terminal.initialize()` before calling this widget's `:run()`
+-- NOTE: you MUST `terminal.initialize` before calling this widget's `:run()` method.
+--
+-- *Usage:*
+--     local prompt = Prompt {
+--         prompt = "Enter something: ",
+--         value = "Hello, 你-好 World 🚀!",
+--         max_length = 62,
+--         overflow = "wrap" -- or "scroll"   -- TODO: implement
+--         -- cancellable = true, -- TODO: implement
+--         position = 2,
+--     }
+--     local result, exitkey = pr:run()
 -- @classmod cli.Prompt
--- @usage
--- local prompt = Prompt {
---     prompt = "Enter something: ",
---     value = "Hello, 你-好 World 🚀!",
---     max_length = 62,
---     overflow = "wrap" -- or "scroll"   -- TODO: implement
---     -- cancellable = true, -- TODO: implement
---     position = 2,
--- }
--- local result, exitkey = pr:run()
 
 local t = require("terminal")
 local utils = require("terminal.utils")

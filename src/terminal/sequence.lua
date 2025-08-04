@@ -10,7 +10,7 @@
 -- - sequences can be nested inside other sequences
 -- - sequence length is tracked in field `n`, if not present `#sequence` is used (an empty sequence has no `n` field)
 --
--- Example:
+-- *Example:*
 --     local Seq = require "terminal.sequence"
 --
 --     local seq1 = Seq("hello", " ", "world")

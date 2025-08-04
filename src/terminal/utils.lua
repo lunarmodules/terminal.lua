@@ -229,8 +229,7 @@ end
 
 
 
---- Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
---- Preserves utf8.len()
+--- Like `string:sub`, returns the substring of the string from `i` to `j` inclusive, but operates on utf8 characters.
 -- @tparam string str the string to take the substring of
 -- @tparam number i the starting index of the substring
 -- @tparam number j the ending index of the substring
