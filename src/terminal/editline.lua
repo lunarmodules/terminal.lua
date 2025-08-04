@@ -52,11 +52,18 @@ end
 
 
 --- Create a new EditLine instance.
+-- Do not call this method directly, call on the class instead, see the example.
 -- @tparam[opt={}] table|string opts Options for the edit line, or a string value to initialize.
 -- @tparam[opt=""] string opts.value Initial value for the edit line.
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
--- @tparam[opt] number opts.position Initial cursor position (1-based index).
+-- @tparam[opt] number opts.position Initial cursor position (defaults to the end).
 -- @treturn EditLine A new EditLine instance.
+-- @usage
+-- local EditLine = require("terminal.editline")
+-- local line = EditLine {
+--   value = "Hello, world!",
+--   position = 1,
+-- }
 function EditLine:init(opts)
   if opts == nil or type(opts) == "string" then
     opts = { value = opts or "" }

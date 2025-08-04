@@ -20,7 +20,7 @@ Controlling the non-blocking input is done via the options passed to the
 # 2.2 Querying
 
 Querying the terminal is done by writing a command code, and then reading the response
-from the input buffer. However the data is appended to the STDIN buffer if it wasn't empty
+from the input buffer. However the requested data is appended to the STDIN buffer if it wasn't empty
 to begin with. This means that when reading, any data that is not the response needs
 to be buffered Lua side to be consumed later.
 
@@ -34,3 +34,5 @@ To properly control the UI in a terminal, it is important to know how text is di
 The primary thing to know is the display width of characters.
 
 The `terminal.text.width` module provides functionality to test and report the width of characters and strings, as does `terminal.preload_widths`. The `terminal.size` function can be used to find the terminal size (in rows and columns), to see if the text to display fits the screen or will roll-over/scroll.
+
+The `EditLine` class has advanced ways of handling width.

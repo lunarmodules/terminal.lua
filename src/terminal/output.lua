@@ -28,6 +28,8 @@ end
 --- Set the stream to operate on.
 -- This can be used to redirect output to a different stream.
 -- The default value at start is `io.stderr`.
+-- Instead of calling this directly, it is probably better to use the
+-- `terminal.initialize` function.
 -- @tparam file filehandle the stream to operate on (`io.stderr` or `io.stdout`)
 -- @return true
 function M.set_stream(filehandle)

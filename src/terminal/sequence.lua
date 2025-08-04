@@ -4,7 +4,7 @@
 -- value is used.
 -- This allows for dynamic use of the "stack" based functions.
 --
--- - calling on the object to instatiate it, passing the items as arguments
+-- - call on the class to instatiate it, passing the items as arguments
 -- - concatenating two sequences with the "+" operator returns a new one of the 2 combined
 -- - converting the sequence to a string will execute any functions and concatenate the results
 -- - sequences can be nested inside other sequences
@@ -14,7 +14,7 @@
 --     local Seq = require "terminal.sequence"
 --
 --     local seq1 = Seq("hello", " ", "world")
---     local seq2 = Seq("foo", function() return "---" end, "bar") -- functions as memebers
+--     local seq2 = Seq("foo", function() return "---" end, "bar") -- functions as members
 --     local seq3 = seq1 + seq2                                    -- concatenation of sequences
 --     local seq4 = Seq(seq1, " ", seq2)                           -- nested sequences
 --
