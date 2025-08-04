@@ -22,7 +22,7 @@ local t = require("terminal")
 local utils = require("terminal.utils")
 local width = require("terminal.text.width")
 local output = require("terminal.output")
-local UTF8EditLine = require("terminal.utf8edit")
+local EditLine = require("terminal.editline")
 local utf8 = require("utf8") -- explicitly requires lua-utf8 for Lua < 5.3
 
 -- Key bindings
@@ -88,7 +88,7 @@ Prompt.actions2redraw = utils.make_lookup("actions", {
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @treturn Prompt A new Prompt instance.
 function Prompt:init(opts)
-  self.value = UTF8EditLine({
+  self.value = EditLine({
     value = opts.value,
     word_delimiters = opts.word_delimiters,
     position = opts.position,
@@ -137,7 +137,7 @@ end
 -- @return nothing
 function Prompt:updateCursor(column)
   -- move to cursor position
-  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value.ocursor)
+  t.cursor.position.column(column or width.utf8swidth(self.prompt) + self.value:pos_col())
   -- unhide the cursor
   t.cursor.visible.set(true)
 end
@@ -161,7 +161,7 @@ function Prompt:handleInput()
 
       if action then
         local redraw = Prompt.actions2redraw[action]
-        local handle_action = UTF8EditLine[action]
+        local handle_action = EditLine[action]
 
         if handle_action then
           handle_action(self.value)
@@ -178,7 +178,7 @@ function Prompt:handleInput()
         -- TODO: wait for luasystem's new readansi release
       elseif t.input.keymap.is_printable(key) == false then
         t.bell()
-      elseif self.value.ilen >= self.max_length or utf8.len(key) ~= 1 then
+      elseif self.value:len_char() >= self.max_length or utf8.len(key) ~= 1 then
         t.bell()
       else -- add the character at the current cursor
         self.value:insert(key)
