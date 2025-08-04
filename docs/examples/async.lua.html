@@ -37,13 +37,12 @@
 <ul class="nowrap">
   <li><strong>async.lua</strong></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
-  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -74,8 +73,8 @@
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
-  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
@@ -131,9 +130,12 @@
   t.output.<span class="global">print</span>(<span class="string">"Press 'q' to exit..."</span>)
 
   <span class="keyword">while</span> <span class="keyword">not</span> copas.<span class="function-name">exiting</span>() <span class="keyword">do</span>
-    <span class="keyword">local</span> key = t.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
+    <span class="keyword">local</span> key, keytype = t.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
     <span class="keyword">if</span> key <span class="keyword">then</span>
-      t.output.<span class="global">print</span>(<span class="string">"You pressed: "</span> .. key:<span class="function-name">gsub</span>(<span class="string">"\027"</span>, <span class="string">"\\027"</span>))
+      <span class="keyword">if</span> keytype == <span class="string">"ctrl"</span> <span class="keyword">then</span>
+        key = (<span class="string">"\\%03d"</span>):<span class="function-name">format</span>(key:<span class="function-name">byte</span>())
+      <span class="keyword">end</span>
+      t.output.<span class="global">print</span>(<span class="string">"You pressed: "</span> .. key:<span class="function-name">gsub</span>(<span class="string">"\027"</span>, <span class="string">"\\027"</span>), keytype)
       <span class="keyword">if</span> key == <span class="string">"q"</span> <span class="keyword">then</span>
         copas.<span class="function-name">exit</span>()
       <span class="keyword">end</span>

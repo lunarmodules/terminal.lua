@@ -39,8 +39,8 @@
 
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
-  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
   <li><strong>cli.Prompt</strong></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
@@ -81,13 +81,12 @@
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
-  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -122,8 +121,12 @@ local result, exitkey = pr:run()
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#cli.prompt:draw">cli.prompt:draw (redraw)</a></td>
-	<td class="summary">Draw the prompt and input value.</td>
+	<td class="name" nowrap><a href="#cli.prompt:draw">cli.prompt:draw ()</a></td>
+	<td class="summary">Draw the whole thing: prompt and input value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cli.prompt:drawInput">cli.prompt:drawInput ()</a></td>
+	<td class="summary">Draw the input value where the prompt ends.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#cli.prompt:handleInput">cli.prompt:handleInput ()</a></td>
@@ -149,20 +152,33 @@ local result, exitkey = pr:run()
     <dl class="function">
     <dt>
     <a name = "cli.prompt:draw"></a>
-    <strong>cli.prompt:draw (redraw)</strong>
+    <strong>cli.prompt:draw ()</strong>
     </dt>
     <dd>
-    Draw the prompt and input value.
+    Draw the whole thing: prompt and input value.
  This function writes the prompt and the current input value to the terminal.
 
 
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">redraw</span>
-            <span class="types"><span class="type">boolean</span></span>
-         ????
-        </li>
-    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cli.prompt:drawInput"></a>
+    <strong>cli.prompt:drawInput ()</strong>
+    </dt>
+    <dd>
+    Draw the input value where the prompt ends.
+ This function writes input value to the terminal.
+
+
 
     <h3>Returns:</h3>
     <ol>
@@ -216,15 +232,15 @@ local result, exitkey = pr:run()
          The initial value of the prompt.
          (<em>default</em> "")
         </li>
+        <li><span class="parameter">position</span>
+            <span class="types"><span class="type">number</span></span>
+         The initial cursor position (in char) of the input
+         (<em>default</em> len_char)
+        </li>
         <li><span class="parameter">max_length</span>
             <span class="types"><span class="type">number</span></span>
          The maximum length of the input.
          (<em>default</em> 80)
-        </li>
-        <li><span class="parameter">drawn_before</span>
-            <span class="types"><span class="type">boolean</span></span>
-         If the prompt has been drawn before.
-         (<em>default</em> false)
         </li>
         </li></ul>
     </ul>

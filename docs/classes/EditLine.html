@@ -1,0 +1,894 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><strong>EditLine</strong></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>EditLine</code></h1>
+<p>UTF8 based EditLine class.</p>
+<p> This class handles a UTF8 string with editing operations, cursor tracking, and width tracking.</p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local EditLine = require(&quot;terminal.editline&quot;)
+local line = EditLine(&quot;héllo界&quot;)
+
+print(line)                                      -- Output: héllo界
+print(&quot;Characters:&quot;, line:len_char())            -- Output: Characters: 6
+print(&quot;Columns:&quot;, line:len_col())                -- Output: Columns: 7 (since &apos;界&apos; is width 2)
+
+-- Move the cursor
+line:left(2)
+print(&quot;Cursor char position:&quot;, line:pos_char())  -- Output: 4
+print(&quot;Cursor column position:&quot;, line:pos_col()) -- Output: 4
+
+-- Editing
+line:insert(&quot;!&quot;)
+print(line)                                      -- Output: héll!o界
+</pre>
+    </ul>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#editline:backspace">editline:backspace ([n=1])</a></td>
+	<td class="summary">Deletes the character left of the current cursor position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:backspace_to_start">editline:backspace_to_start ()</a></td>
+	<td class="summary">Deletes all characters to the left of the current cursor position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:backspace_word">editline:backspace_word ([n=1])</a></td>
+	<td class="summary">Backspace until the start of the current word.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:clear">editline:clear ()</a></td>
+	<td class="summary">Clears the input.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:delete">editline:delete ([n=1])</a></td>
+	<td class="summary">Deletes the character at the current cursor position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:delete_to_end">editline:delete_to_end ()</a></td>
+	<td class="summary">Deletes all characters to the right of the current cursor position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:delete_word">editline:delete_word ([n=1])</a></td>
+	<td class="summary">Delete until the end of the current word.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:format">editline:format ([opts])</a></td>
+	<td class="summary">Format the contents for display, over multiple lines if necessary.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:goto_end">editline:goto_end ()</a></td>
+	<td class="summary">Moves the cursor to the end of the string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:goto_home">editline:goto_home ()</a></td>
+	<td class="summary">Moves the cursor to the start of the string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:goto_index">editline:goto_index (pos)</a></td>
+	<td class="summary">Moves the cursor to the position given by the index.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:init">editline:init ([opts={}])</a></td>
+	<td class="summary">Create a new EditLine instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:insert">editline:insert (s)</a></td>
+	<td class="summary">Inserts a string at the current cursor position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:insert_cp">editline:insert_cp (cp)</a></td>
+	<td class="summary">Inserts a unicode codepoint at the current cursor position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:left">editline:left ([n=1])</a></td>
+	<td class="summary">Moves the cursor to the left.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:left_word">editline:left_word ([n=1])</a></td>
+	<td class="summary">Moves the cursor to the start of the current word.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:len_char">editline:len_char ()</a></td>
+	<td class="summary">Returns the current length (chars).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:len_col">editline:len_col ()</a></td>
+	<td class="summary">Returns the current length (columns).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:pos_char">editline:pos_char ()</a></td>
+	<td class="summary">Returns the current cursor position (chars).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:pos_col">editline:pos_col ()</a></td>
+	<td class="summary">Returns the current cursor position (columns).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:replace">editline:replace (s)</a></td>
+	<td class="summary">Replaces the current input with a new string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:right">editline:right ([n=1])</a></td>
+	<td class="summary">Moves the cursor to the right.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:right_word">editline:right_word ([n=1])</a></td>
+	<td class="summary">Moves the cursor to the start of the next word.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#editline:sub_char">editline:sub_char ([i=1[, j=-1]])</a></td>
+	<td class="summary">Returns a new Editline object being a substring.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "editline:backspace"></a>
+    <strong>editline:backspace ([n=1])</strong>
+    </dt>
+    <dd>
+    Deletes the character left of the current cursor position.
+ If/once the cursor is at the start of the string, it does nothing.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of characters to delete
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:backspace_to_start"></a>
+    <strong>editline:backspace_to_start ()</strong>
+    </dt>
+    <dd>
+    Deletes all characters to the left of the current cursor position.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:backspace_word"></a>
+    <strong>editline:backspace_word ([n=1])</strong>
+    </dt>
+    <dd>
+    Backspace until the start of the current word.  If at the start, backspace to the start of the previous word.
+ Words are defined by non-delimiter characters.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of words to move left
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:clear"></a>
+    <strong>editline:clear ()</strong>
+    </dt>
+    <dd>
+    Clears the input.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:delete"></a>
+    <strong>editline:delete ([n=1])</strong>
+    </dt>
+    <dd>
+    Deletes the character at the current cursor position.
+ If/once the cursor is at the end of the string, it does nothing.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of characters to delete
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:delete_to_end"></a>
+    <strong>editline:delete_to_end ()</strong>
+    </dt>
+    <dd>
+    Deletes all characters to the right of the current cursor position.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:delete_word"></a>
+    <strong>editline:delete_word ([n=1])</strong>
+    </dt>
+    <dd>
+    Delete until the end of the current word.
+ Words are defined by non-delimiter characters.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of words to move left
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:format"></a>
+    <strong>editline:format ([opts])</strong>
+    </dt>
+    <dd>
+    Format the contents for display, over multiple lines if necessary.
+ The return table contains an array of <code>Editline</code> objects.
+ Each entry will have its cursor position set at the end, except for the entry that
+ actually has the cursor which will have the cursor position at the same character
+ as the input position.
+ If padding is used, the cursor will be placed before any padding.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options for formatting.
+        <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The maximum width (in columns) of each line.
+         (<em>default</em> 80)
+        </li>
+        <li><span class="parameter">first_width</span>
+            <span class="types"><span class="type">number</span></span>
+         The width of the first line (in case of prompts/labels).
+         (<em>default</em> width)
+        </li>
+        <li><span class="parameter">wordwrap</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to wrap words that exceed the width.
+         (<em>default</em> true)
+        </li>
+        <li><span class="parameter">pad</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to pad the lines to the full width.
+         (<em>default</em> true)
+        </li>
+        <li><span class="parameter">pad_last</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to pad the last line.
+         (<em>default</em> pad)
+        </li>
+        <li><span class="parameter">no_new_cursor_line</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If true, no empty new line will be added if the last line exactly fits the width.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        A table containing the individual <code>Editline</code> objects.</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        the cursor position row</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        the cursor position column</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:goto_end"></a>
+    <strong>editline:goto_end ()</strong>
+    </dt>
+    <dd>
+    Moves the cursor to the end of the string.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:goto_home"></a>
+    <strong>editline:goto_home ()</strong>
+    </dt>
+    <dd>
+    Moves the cursor to the start of the string.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:goto_index"></a>
+    <strong>editline:goto_index (pos)</strong>
+    </dt>
+    <dd>
+    Moves the cursor to the position given by the index.
+ Cursor position indexes range from 1 to <code>len + 1</code>, where <code>len</code> is the length of the string in characters.
+ Negative indexes are counted from the end backwards, so <code>-1</code> is the same as <a href="../classes/EditLine.html#editline:goto_end">goto_end</a>.
+ If the index is out of bounds, it will move the cursor to the closest valid position.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pos</span>
+            <span class="types"><span class="type">number</span></span>
+         the position (in characters) to move the cursor to (0-based index)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:init"></a>
+    <strong>editline:init ([opts={}])</strong>
+    </dt>
+    <dd>
+    Create a new EditLine instance.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options for the edit line, or a string value to initialize.
+        <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Initial value for the edit line.
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">word_delimiters</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Word delimiters for word operations.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">position</span>
+            <span class="types"><span class="type">number</span></span>
+         Initial cursor position (1-based index).
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/EditLine.html#">EditLine</a></span>
+        A new EditLine instance.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:insert"></a>
+    <strong>editline:insert (s)</strong>
+    </dt>
+    <dd>
+    Inserts a string at the current cursor position.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to insert
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:insert_cp"></a>
+    <strong>editline:insert_cp (cp)</strong>
+    </dt>
+    <dd>
+    Inserts a unicode codepoint at the current cursor position.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cp</span>
+            <span class="types"><span class="type">number</span></span>
+         the codepoint to insert
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:left"></a>
+    <strong>editline:left ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor to the left.
+ This function moves the cursor left by <code>n</code> characters. It will not move the cursor
+ past the start of the string (no error will be raised).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of characters to move left
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:left_word"></a>
+    <strong>editline:left_word ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor to the start of the current word.  If already at start, moves to the start of the previous word.
+ This function moves the cursor left until it reaches the start of the previous word.
+ Words are defined by non-delimiter characters.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of words to move left
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:len_char"></a>
+    <strong>editline:len_char ()</strong>
+    </dt>
+    <dd>
+    Returns the current length (chars).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        the current length in UTF8 characters
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:len_col"></a>
+    <strong>editline:len_col ()</strong>
+    </dt>
+    <dd>
+    Returns the current length (columns).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        the current length in display columns
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:pos_char"></a>
+    <strong>editline:pos_char ()</strong>
+    </dt>
+    <dd>
+    Returns the current cursor position (chars).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        the current cursor position in UTF8 characters.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:pos_col"></a>
+    <strong>editline:pos_col ()</strong>
+    </dt>
+    <dd>
+    Returns the current cursor position (columns).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        the current cursor position in display columns
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:replace"></a>
+    <strong>editline:replace (s)</strong>
+    </dt>
+    <dd>
+    Replaces the current input with a new string.
+ This function clears the current input and inserts the new string at the end.
+ The cursor will be at the end of the new string.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the new string to insert
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:right"></a>
+    <strong>editline:right ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor to the right.
+ This function moves the cursor right by <code>n</code> characters. It will not move the cursor
+ past the end of the string (no error will be raised).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of characters to move right
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:right_word"></a>
+    <strong>editline:right_word ([n=1])</strong>
+    </dt>
+    <dd>
+    Moves the cursor to the start of the next word.
+ This function moves the cursor right until it reaches the start of the next word.
+ Words are defined by non-delimiter characters.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         the number of words to move left
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "editline:sub_char"></a>
+    <strong>editline:sub_char ([i=1[, j=-1]])</strong>
+    </dt>
+    <dd>
+    Returns a new Editline object being a substring.
+ This operates based on characters.
+ Negative indexes are counted from the end, so <code>-1</code> is the last character.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         Start index.
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         End index.
+         (<em>default</em> -1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/EditLine.html#">EditLine</a></span>
+        A new EditLine instance containing the substring.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
