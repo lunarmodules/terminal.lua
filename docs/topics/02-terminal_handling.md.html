@@ -68,8 +68,8 @@
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
-  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
@@ -77,13 +77,12 @@
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
-  <li><a href="../examples/readline_old.lua.html">readline_old.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -128,7 +127,7 @@ to be buffered Lua side to be consumed later.</p>
 <p>To properly control the UI in a terminal, it is important to know how text is displayed on the terminal.
 The primary thing to know is the display width of characters.</p>
 
-<p>The <a href="../modules/terminal.text.width.html#">terminal.text.width</a> module provides functionality to test and report the width of characters and strings. The <a href="../modules/terminal.html#size">terminal.size</a> function can be used to find the terminal size (in rows and columns), to see if the text to display fits the screen or will roll-over/scroll.</p>
+<p>The <a href="../modules/terminal.text.width.html#">terminal.text.width</a> module provides functionality to test and report the width of characters and strings, as does <a href="../modules/terminal.html#preload_widths">terminal.preload_widths</a>. The <a href="../modules/terminal.html#size">terminal.size</a> function can be used to find the terminal size (in rows and columns), to see if the text to display fits the screen or will roll-over/scroll.</p>
 
 
 </div> <!-- id="content" -->

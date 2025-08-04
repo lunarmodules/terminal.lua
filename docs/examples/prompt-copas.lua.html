@@ -37,13 +37,12 @@
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/copas.lua.html">copas.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><strong>prompt-copas.lua</strong></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
-  <li><strong>readline_old.lua</strong></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -74,8 +73,8 @@
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
-  <li><a href="../classes/Utf8edit.html">Utf8edit</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
 </ul>
@@ -92,9 +91,58 @@
 
 <div id="content">
 
-    <h2>readline_old.lua</h2>
+    <h2>prompt-copas.lua</h2>
 <pre>
-<span class="comment">-- empty</span></pre>
+<span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Prompt = <span class="global">require</span>(<span class="string">"terminal.cli.prompt"</span>)
+<span class="keyword">local</span> copas = <span class="global">require</span>(<span class="string">"copas"</span>)
+
+<span class="keyword">local</span> terminal_opts = {
+  sleep = copas.pause, <span class="comment">-- use copas pause for sleep to allow other coroutines to run
+</span>}
+
+
+<span class="keyword">local</span> pr = <span class="function-name">Prompt</span> {
+  prompt = <span class="string">"Enter something: "</span>,
+  value = <span class="string">"Hello, 你-好 World 🚀!"</span>,
+  max_length = <span class="number">62</span>,
+  position = <span class="number">2</span>,
+  cancellable = <span class="keyword">true</span>,
+}
+
+
+<span class="keyword">local</span> clock = copas.timer.<span class="function-name">new</span>{
+  delay = <span class="number">0.2</span>,
+  initial_delay = <span class="number">0</span>,
+  recurring = <span class="keyword">true</span>,
+  callback = <span class="keyword">function</span>()
+    <span class="keyword">local</span> time = <span class="global">os</span>.<span class="function-name">date</span>(<span class="string">"%H:%M:%S"</span>)
+    <span class="keyword">local</span> row = <span class="number">1</span>
+    <span class="keyword">local</span> _, cols = t.<span class="function-name">size</span>()
+    <span class="keyword">local</span> col = cols - #time - <span class="number">1</span>
+    t.cursor.position.<span class="function-name">backup</span>()
+    t.cursor.position.<span class="function-name">set</span>(row, col)
+    t.output.<span class="global">print</span>(time)
+    t.cursor.position.<span class="function-name">restore</span>()
+  <span class="keyword">end</span>,
+}
+
+
+copas.<span class="function-name">addthread</span>(<span class="keyword">function</span>()
+  <span class="global">print</span>(<span class="string">"Time is ticking in the top-right corner!"</span>)
+  <span class="keyword">local</span> result, status = pr:<span class="function-name">run</span>()
+  <span class="keyword">if</span> result <span class="keyword">then</span>
+    <span class="global">print</span>(<span class="string">"Result (string): '"</span> .. result .. <span class="string">"'"</span>)
+    <span class="global">print</span>(<span class="string">"Result (bytes):"</span>, (result <span class="keyword">or</span> <span class="string">""</span>):<span class="function-name">byte</span>(<span class="number">1</span>, -<span class="number">1</span>))
+  <span class="keyword">else</span>
+    <span class="global">print</span>(<span class="string">"Status: "</span> .. (status <span class="keyword">or</span> <span class="string">"nil"</span>))
+  <span class="keyword">end</span>
+
+  clock:<span class="function-name">cancel</span>() <span class="comment">-- stop the timer
+</span><span class="keyword">end</span>)
+
+
+t.<span class="function-name">initwrap</span>(copas.loop, terminal_opts)()</pre>
 
 
 </div> <!-- id="content" -->
