@@ -1,5 +1,5 @@
 --- Module for getting keyboard input.
--- Also enables querying the terminal. When inmplementing any
+-- Also enables querying the terminal. When implementing any
 -- other queries, check out `preread` and `read_query_answer` documentation.
 --
 -- *Example:*
@@ -40,7 +40,8 @@ M.sys_readansi = sys.readansi
 
 
 
---- Same as `sys.readansi`, but works with the internal buffer required by `terminal.lua`.
+--- Same as [`sys.readansi`](https://lunarmodules.github.io/luasystem/modules/system.html#readansi),
+-- but works with the internal buffer required by `terminal.lua`.
 -- This function will read from the internal buffer first, before calling `sys.readansi`. This is
 -- required because querying the terminal (e.g. getting cursor position) might read data
 -- from the keyboard buffer, which would be lost if not buffered. Hence this function

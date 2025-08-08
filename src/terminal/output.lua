@@ -44,6 +44,7 @@ end
 
 --- Writes to the stream.
 -- This is a safer write-function than the standard Lua one.
+-- It doesn't add add tabs between arguments, and it doesn't add a newline at the end (like `print` does).
 -- Differences from the standard Lua write function:
 --
 -- - parameters will be tostring-ed before writing
@@ -70,6 +71,7 @@ end
 
 --- Prints to the stream.
 -- A `print` compatible function that safely writes output to the stream.
+-- Arguments are separated by a tab character, and a newline is added at the end.
 -- @param ... the values to write
 function M.print(...)
   local args = pack(...)
