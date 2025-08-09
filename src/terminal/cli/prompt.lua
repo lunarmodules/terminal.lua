@@ -92,6 +92,14 @@ for _, action in pairs(Prompt.keyname2actions) do
 end
 
 
+
+-- Allow instance to be called directly
+function Prompt:__call()
+  return self:run()
+end
+
+
+
 --- Create a new Prompt instance.
 -- @tparam table opts Options for the prompt.
 -- @tparam[opt=""] string|EditLine opts.prompt The prompt text to display.
