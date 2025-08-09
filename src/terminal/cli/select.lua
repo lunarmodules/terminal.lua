@@ -53,14 +53,15 @@ local angle   = "└  "
 
 
 
---- Initialize Select.
--- This method is invoked by calling on the class.
+--- Create a new Select instance.
 -- @tparam table opts Options for the Select menu.
 -- @tparam table opts.choices List of choices (strings) to display.
 -- @tparam[opt=1] number opts.default Default choice index (1-based).
 -- @tparam[opt="Select an option:"] string opts.prompt Prompt message to display.
 -- @tparam[opt=false] boolean opts.cancellable Whether the menu can be cancelled (by pressing `<esc>` or `<ctrl+c>`).
 -- @tparam[opt=false] boolean opts.clear Whether to clear the widget from screen after completion.
+-- @treturn Prompt A new Select instance.
+-- @name cli.Select
 function Select:init(opts)
   assert(type(opts) == "table", "options must be a table")
   assert(type(opts.choices) == "table", "choices must be a table")

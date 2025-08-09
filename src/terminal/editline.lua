@@ -1,11 +1,14 @@
 --- UTF8 based EditLine class.
 --
--- This class handles a UTF8 string with editing operations, cursor tracking, and width tracking.
+-- This class handles a UTF8 string with editing, formatting (word-wrap), cursor tracking, and width tracking.
 --
 -- *Example:*
 --
 --     local EditLine = require("terminal.editline")
---     local line = EditLine("héllo界")
+--     local line = EditLine {
+--       value = "héllo界",
+--       position = 6,                                  -- cursor after 'o', on '界'
+--     }
 --
 --     print(line)                                      -- Output: héllo界
 --     print("Characters:", line:len_char())            -- Output: Characters: 6
@@ -18,7 +21,7 @@
 --
 --     -- Editing
 --     line:insert("!")
---     print(line)                                      -- Output: héll!o界
+--     print(line)                                      -- Output: hél!lo界
 -- @classmod EditLine
 
 local width = require("terminal.text.width")
