@@ -100,6 +100,7 @@ end
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
 -- @treturn Prompt A new Prompt instance.
+-- @name cli.Prompt
 function Prompt:init(opts)
   local value = opts.value or ""
   if getmetatable(value) ~= EditLine then
