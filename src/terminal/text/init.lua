@@ -1,5 +1,25 @@
 --- Terminal text module.
 -- Provides utilities to set text attributes in terminals.
+--
+-- The text attribute-sets conform to the following format:
+--     local attr = {
+--       fg         = nil, -- foreground color (string, or extended color number)
+--       fg_r       = nil, -- red value of foreground color
+--       fg_g       = nil, -- green value of foreground color
+--       fg_b       = nil, -- blue value of foreground color
+--       bg         = nil, -- background color (string, or extended color number)
+--       bg_r       = nil, -- red value of background color
+--       bg_g       = nil, -- green value of background color
+--       bg_b       = nil, -- blue value of background color
+--       brightness = nil, -- brightness level (see `brightness_seq` for details)
+--       underline  = nil, -- underline (boolean)
+--       blink      = nil, -- blink (boolean)
+--       reverse    = nil, -- reverse colors (boolean)
+--     }
+--
+-- The base colors strings (for `fg` and `bg`) are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, and `white`.
+--
+-- All elements are optional. If an element is omitted, it will be taken from the current top of the stack.
 -- @module terminal.text
 local M = {}
 package.loaded["terminal.text"] = M -- Register the module early to avoid circular dependencies
