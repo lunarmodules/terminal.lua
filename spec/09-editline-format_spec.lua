@@ -980,7 +980,7 @@ describe("EditLine:", function()
               'some test data|'
             },
             1,
-            15,
+            55,
           }, {testwrap({
             width = 60,
             first_width = 20,
