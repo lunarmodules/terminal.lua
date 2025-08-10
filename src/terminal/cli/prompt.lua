@@ -24,7 +24,9 @@ local utils = require("terminal.utils")
 local width = require("terminal.text.width")
 local output = require("terminal.output")
 local EditLine = require("terminal.editline")
+local Sequence = require("terminal.sequence")
 local utf8 = require("utf8") -- explicitly requires lua-utf8 for Lua < 5.3
+
 
 -- Key bindings
 local keys = t.input.keymap.get_keys()
@@ -107,6 +109,7 @@ end
 -- @tparam[opt] number opts.position The initial cursor position (in char) of the input (default at the end).
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
+-- @tparam[opt] table opts.text_attr Text attributes for the prompt (input value only).
 -- @treturn Prompt A new Prompt instance.
 -- @name cli.Prompt
 function Prompt:init(opts)
@@ -125,7 +128,9 @@ function Prompt:init(opts)
 
   self.value = value
   self.prompt = tostring(opts.prompt or "") -- the prompt to display
+  self.prompt_width = width.utf8swidth(self.prompt) -- the width of the prompt in characters
   self.max_length = opts.max_length or 80   -- the maximum length of the input
+  self.text_attr = opts.text_attr or {} -- text attributes for the input value
 
   if self.value:len_char() > self.max_length then
     -- truncate the value if it is too long, keep cursor position
@@ -133,48 +138,100 @@ function Prompt:init(opts)
     self.value = self.value:sub_char(1, self.max_length)
     self.value:goto_index(pos)
   end
+
+  self.dirty = true -- whether the prompt needs to be redrawn
+  -- cached data
+  self.screen_rows = 0 -- the number of rows in the terminal screen
+  self.screen_cols = 0 -- the number of columns in the terminal screen
+  self.current_lines = {} -- the current formatted lines of the prompt
+  self.cursor_row = 1 -- the row where the cursor is currently located
+  self.cursor_col = 1 -- the column where the cursor is currently located
 end
 
 
---- Draw the whole thing: prompt and input value.
--- This function writes the prompt and the current input value to the terminal.
+
+-- Checks if terminal was resized, and if so, marks the prompt as dirty.
+-- Will NOT update currently cached size!
+-- @return nothing
+function Prompt:check_resize()
+  local new_rows, new_cols = t.size()
+  if new_rows ~= self.screen_rows or new_cols ~= self.screen_cols then
+    self.dirty = true
+  end
+end
+
+
+
+-- updates cached data; terminal size, cursor pos, formatted lines.
+-- @return nothing
+function Prompt:renew_cached_data()
+  self.screen_rows, self.screen_cols = t.size()
+  self.current_lines, self.cursor_row, self.cursor_col = self.value:format {
+    width = self.screen_cols,
+    first_width = self.screen_cols - self.prompt_width,
+    wordwrap = false,
+    pad = true,
+    pad_last = false,
+    no_new_cursor_line = false,
+  }
+end
+
+
+
+-- Move the cursor to the top-left (relative movement).
+-- @treturn string sequence to move cursor
+function Prompt:move_cursor_to_top_seq()
+  return t.cursor.position.vertical_seq(1 - self.cursor_row) ..
+          t.cursor.position.column_seq(1)
+end
+
+
+
+-- Move cursor from top left to the current position (relative movement).
+-- @treturn string sequence to move cursor
+function Prompt:move_cursor_to_position_seq()
+  return t.cursor.position.vertical_seq(self.cursor_row - 1) ..
+          t.cursor.position.column_seq(self.cursor_col)
+end
+
+
+
+-- Draw the whole thing: prompt and input value.
+-- Moves the current cursor back to the top and writes the prompt and input value.
+-- Repositions the cursor at the proper place in the current input value.
 -- @return nothing
 function Prompt:draw()
-  output.write(
-    t.cursor.visible.set_seq(false),
-    t.cursor.position.column_seq(1),
-    self.prompt,
-    self.value,
-    t.clear.eol_seq()
+  self:check_resize()
+  if not self.dirty then
+    return -- nothing changed, no need to redraw
+  end
+
+  -- move cursor to top
+  local to_top_seq = self:move_cursor_to_top_seq() -- create BEFORE we renew cached data
+
+  self:renew_cached_data()
+
+  local l = Sequence(table.unpack(self.current_lines))
+  local s = Sequence(
+    to_top_seq,               -- move cursor to top
+    self.prompt,              -- prompt
+    function() return t.text.stack.push_seq(self.text_attr) end, -- push text attributes
+    l,                        -- all lines concatenated (we formatted using padding, so should properly wrap)
+    function()
+      if #self.current_lines > 1 and self.current_lines[#self.current_lines]:len_char() == 0 then
+        return "\n" -- last line is just for cursor (empty line), case not handled by the padding, insert newline
+      end
+      return ""
+    end,
+    t.text.stack.pop_seq,     -- pop text attributes
+    t.clear.eol_seq(),        -- clear the rest of the last line
+    t.cursor.position.column_seq(self.cursor_col),                      -- move cursor to proper column
+    t.cursor.position.up_seq(#self.current_lines - self.cursor_row - 1) -- move cursor to proper row
   )
-  self:updateCursor()
+
+  output.write(s)
 end
 
-
---- Draw the input value where the prompt ends.
--- This function writes input value to the terminal.
--- @return nothing
-function Prompt:drawInput()
-  output.write(
-    t.cursor.visible.set_seq(false),
-    t.cursor.position.column_seq(width.utf8swidth(self.prompt) + 1),
-    self.value,
-    t.clear.eol_seq()
-  )
-  self:updateCursor()
-end
-
-
--- Update the cursor position.
--- This function moves the cursor to the current position based on the prompt and input value.
--- @tparam number column The column to move the cursor to. If not provided, it defaults to the end of
--- the prompt plus the current input value cursor position.
--- @return nothing
-function Prompt:updateCursor(column)
-  column = column or (width.utf8swidth(self.prompt) + self.value:pos_col())
-  t.cursor.position.column(column)
-  t.cursor.visible.set(true)
-end
 
 
 --- Processes key input async
@@ -189,14 +246,10 @@ function Prompt:handleInput()
       local action = Prompt.keyname2actions[keyname]
 
       if action then
-        local redraw = Prompt.actions2redraw[action]
         local method = self.value[action] or nop
         method(self.value)
-
-        if redraw then
-          self:drawInput()
-        else
-          self:updateCursor()
+        if Prompt.actions2redraw[action] then
+          self.dirty = true -- redraw needed
         end
 
       elseif keyname == keys.escape and self.cancellable then
@@ -213,7 +266,15 @@ function Prompt:handleInput()
 
       else -- add the character at the current cursor
         self.value:insert(keyname)
-        self:drawInput()
+        self.dirty = true
+      end
+
+      -- update UI
+      if self.dirty then
+        self:draw()
+      else
+        -- just reposition cursor
+        output.write(self:move_cursor_to_top_seq(), self:move_cursor_to_position_seq())
       end
     end
   end
