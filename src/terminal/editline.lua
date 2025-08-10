@@ -612,7 +612,7 @@ do
         if l < first_width then
           -- cursor is on a first-line, on a regular position
           cur_line = 1
-          cur_col = l + 1
+          cur_col = l + 1 + (width - first_width)
         end
       else
         local l = lines[#lines]:len_col()
