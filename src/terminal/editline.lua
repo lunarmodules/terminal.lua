@@ -603,18 +603,40 @@ do
       target_size = width -- update target size after first-line
     end
 
-    -- add extra line holding cursor, if cursor is at the end of the last line at exact length
-    -- (so the cursor is beyond the width set, and is the only thing on the next line)
+    -- did we set the cursor position? (not set if the cursor is at the very end)
     if cur_line == nil then
-      if no_new_cursor_line then
-        -- no new line, so cursor is at the end of the last line, beyond the width
-        cur_line = #lines
-        cur_col = width + 1
+      -- if  the last line isn't at full length, then we have the cursor in a regular position
+      -- at the end of that line
+      if #lines == 1 then
+        local l = lines[1]:len_col()
+        if l < first_width then
+          -- cursor is on a first-line, on a regular position
+          cur_line = 1
+          cur_col = l + 1
+        end
       else
-        -- add an empty new line just to hold the cursor
-        cur_line = #lines + 1
-        lines[cur_line] = EditLine("")
-        cur_col = 1
+        local l = lines[#lines]:len_col()
+        if l < width then
+          -- cursor is on a second or later line, on a regular position
+          cur_line = #lines
+          cur_col = l + 1
+        end
+      end
+
+      -- wasn't on a regular position on the line, so past the end.
+      -- add extra line holding cursor, if cursor is at the end of the last line at exact length
+      -- (so the cursor is beyond the width set, and is the only thing on the next line)
+      if cur_line == nil then
+        if no_new_cursor_line then
+          -- no new line, so cursor is at the end of the last line, beyond the width
+          cur_line = #lines
+          cur_col = width + 1
+        else
+          -- add an empty new line just to hold the cursor
+          cur_line = #lines + 1
+          lines[cur_line] = EditLine("")
+          cur_col = 1
+        end
       end
     end
 
