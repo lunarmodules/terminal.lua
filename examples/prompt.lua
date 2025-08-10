@@ -5,8 +5,9 @@ local pr = Prompt {
   prompt = "Enter something: ",
   value = "Hello, 你-好 World 🚀!",
   max_length = 62,
-  position = 2,
+  -- position = 2,
   cancellable = true,
+  text_attr = { brightness = "high" },
 }
 
 t.initwrap(function () -- on Windows: wrap for utf8 output
