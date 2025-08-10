@@ -640,6 +640,43 @@ describe("EditLine:", function()
         end)
 
 
+        it("doesn't add new line if cursor is at the end of a non-oversized last line", function()
+          -- single line
+          line = EditLine("some test data"):goto_end()
+          assert.are.same({
+            {
+              'some test data|'
+            },
+            1,
+            15,
+          }, {testwrap({
+            width = 20,
+            first_width = 20,
+            wordwrap = false,
+            pad = false,
+            pad_last = false
+          })})
+
+          -- again with multiple lines
+          line = EditLine("sometestda"):goto_end()
+          assert.are.same({
+            {
+              'some|',
+              'test|',
+              'da|',
+            },
+            3,
+            3,
+          }, {testwrap({
+            width = 4,
+            first_width = 4,
+            wordwrap = false,
+            pad = false,
+            pad_last = false
+          })})
+        end)
+
+
         it("doesn't add the extra newline if set to do so", function()
           line = EditLine("sometestdata"):goto_end()
           assert.are.same({
@@ -932,6 +969,43 @@ describe("EditLine:", function()
             pad_last = false
           }))
 
+        end)
+
+
+        it("doesn't add new line if cursor is at the end of a non-oversized last line", function()
+          -- single line
+          line = EditLine("some test data"):goto_end()
+          assert.are.same({
+            {
+              'some test data|'
+            },
+            1,
+            15,
+          }, {testwrap({
+            width = 60,
+            first_width = 20,
+            wordwrap = true,
+            pad = false,
+            pad_last = false
+          })})
+
+          -- again with multiple lines
+          line = EditLine("somexx testxx data"):goto_end()
+          assert.are.same({
+            {
+              'somexx |',
+              'testxx |',
+              'data|',
+            },
+            3,
+            5,
+          }, {testwrap({
+            width = 8,
+            first_width = 8,
+            wordwrap = true,
+            pad = false,
+            pad_last = false
+          })})
         end)
 
 
