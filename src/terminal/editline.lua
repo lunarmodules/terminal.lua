@@ -624,7 +624,6 @@ do
         end
       else
         local l = lines[#lines]:len_col()
-        -- local l = lines[#lines]:len_col()
         if l < width then
           -- cursor is on a second or later line, on a regular position
           cur_line = #lines
