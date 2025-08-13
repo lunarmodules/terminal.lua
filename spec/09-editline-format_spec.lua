@@ -393,6 +393,21 @@ describe("EditLine:", function()
       end)
 
 
+      it("formats an empty string", function()
+        line = EditLine(""):goto_index(0)
+        local result, row, col = testwrap({
+          width = 60,
+          first_width = 60,
+          wordwrap = false,
+          pad = false,
+          pad_last = false
+        })
+        assert.are.same({"|"}, result)
+        assert.are.equal(1, row)
+        assert.are.equal(1, col)
+      end)
+
+
       it("formats a string with padding", function()
         assert.are.same({
           'Hello, this is a simple 🚀 test string to check the formatti|',
@@ -723,6 +738,21 @@ describe("EditLine:", function()
         line:insert("|")
         -- now line 2 of the formatted object must be found in the original 'tostringed' one
         assert(tostring(line):find(lines[2], 1, true), "expected cursor positions to match")
+      end)
+
+
+      it("formats an empty string", function()
+        line = EditLine(""):goto_index(0)
+        local result, row, col = testwrap({
+          width = 60,
+          first_width = 60,
+          wordwrap = true,
+          pad = false,
+          pad_last = false
+        })
+        assert.are.same({"|"}, result)
+        assert.are.equal(1, row)
+        assert.are.equal(1, col)
       end)
 
 

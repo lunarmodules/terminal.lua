@@ -578,7 +578,15 @@ do
     self:goto_home()
 
     local size = #self.chars
-    while self.cursor_idx < size do
+    if size == 0 then
+      -- empty line, special case
+      lines[1] = EditLine("")
+      line_cols[1] = 0
+      cur_line = 1
+      cur_col = width - first_width + 1
+    end
+
+    while self.cursor_idx <= size do
       local line, cols = wrapper(self, target_size)
 -- print("line:", "'"..tostring(line).."'", cols)
       lines[#lines + 1] = line
