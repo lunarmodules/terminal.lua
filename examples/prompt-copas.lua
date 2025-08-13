@@ -11,8 +11,10 @@ local pr = Prompt {
   prompt = "Enter something: ",
   value = "Hello, 你-好 World 🚀!",
   max_length = 62,
-  position = 2,
+  position = 10,
   cancellable = true,
+  text_attr = { brightness = "high" },
+  wordwrap = true,
 }
 
 
@@ -34,8 +36,9 @@ local clock = copas.timer.new{
 
 
 copas.addthread(function()
+  t.text.stack.push { brightness = "low" }
   print("Time is ticking in the top-right corner!")
-  local result, status = pr:run()
+  local result, status = pr()
   if result then
     print("Result (string): '" .. result .. "'")
     print("Result (bytes):", (result or ""):byte(1, -1))
