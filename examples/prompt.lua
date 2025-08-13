@@ -5,12 +5,14 @@ local pr = Prompt {
   prompt = "Enter something: ",
   value = "Hello, 你-好 World 🚀!",
   max_length = 62,
-  -- position = 2,
+  position = 10,
   cancellable = true,
   text_attr = { brightness = "high" },
+  wordwrap = true,
 }
 
 t.initwrap(function () -- on Windows: wrap for utf8 output
+  t.text.stack.push { brightness = "low" }
   local result, status = pr()
   if result then
     print("Result (string): '" .. result .. "'")

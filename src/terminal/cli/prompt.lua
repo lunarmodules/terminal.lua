@@ -5,7 +5,7 @@
 --
 -- Features: Prompt, UTF8 support, async input, (to be added: secrets, scrolling and wrapping)
 --
--- NOTE: you MUST `terminal.initialize` before calling this widget's `:run()` method.
+-- NOTE: you MUST call `terminal.initialize` before calling this widget's `:run()` method.
 --
 -- *Usage:*
 --     local prompt = Prompt {
@@ -110,6 +110,7 @@ end
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
 -- @tparam[opt] table opts.text_attr Text attributes for the prompt (input value only).
+-- @tparam[opt=false] boolean opts.wordwrap Whether to wordwrap the input value.
 -- @treturn Prompt A new Prompt instance.
 -- @name cli.Prompt
 function Prompt:init(opts)
@@ -131,6 +132,7 @@ function Prompt:init(opts)
   self.prompt_width = width.utf8swidth(self.prompt) -- the width of the prompt in characters
   self.max_length = opts.max_length or 80   -- the maximum length of the input
   self.text_attr = opts.text_attr or {} -- text attributes for the input value
+  self.wordwrap = not not opts.wordwrap -- whether to wordwrap the input value
 
   if self.value:len_char() > self.max_length then
     -- truncate the value if it is too long, keep cursor position
@@ -169,7 +171,7 @@ function Prompt:renew_cached_data()
   self.current_lines, self.cursor_row, self.cursor_col = self.value:format {
     width = self.screen_cols,
     first_width = self.screen_cols - self.prompt_width,
-    wordwrap = false,
+    wordwrap = self.wordwrap,
     pad = true,
     pad_last = false,
     no_new_cursor_line = false,
