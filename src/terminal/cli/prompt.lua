@@ -63,35 +63,8 @@ Prompt.keyname2actions = {
   ["ctrl_left"] = "left_word",
   ["ctrl_right"] = "right_word",
   -- ["ctrl_backspace ???"] = "backspace_word", -- TODO: if backspace is ctrl + h, how does ctrl + backspace work?
-  -- ["ctrl_deelte ???"] -- TODO: same as above
+  -- ["ctrl_delete ???"] -- TODO: same as above
 }
-
-Prompt.actions2redraw = utils.make_lookup("actions", {
-  ["backspace"] = true,
-  ["delete"] = true,
-  ["backspace_word"] = true,
-  ["backspace_to_start"] = true,
-  ["delete_word"] = true,
-  ["delete_to_end"] = true,
-  ["clear"] = true,
-  --
-  ["left"] = false,
-  ["left_word"] = false,
-  ["right_word"] = false,
-  ["right"] = false,
-  ["up"] = false,
-  ["down"] = false,
-  ["goto_home"] = false,
-  ["goto_end"] = false,
-})
-
-
--- inline completeness test, to help future self to keep the above tables in sync
-for _, action in pairs(Prompt.keyname2actions) do
-  if Prompt.actions2redraw[action] == nil then
-    error("Missing redraw action in 'actions2redraw' for: " .. action)
-  end
-end
 
 
 
@@ -141,25 +114,12 @@ function Prompt:init(opts)
     self.value:goto_index(pos)
   end
 
-  self.dirty = true -- whether the prompt needs to be redrawn
   -- cached data
   self.screen_rows = 0 -- the number of rows in the terminal screen
   self.screen_cols = 0 -- the number of columns in the terminal screen
   self.current_lines = {} -- the current formatted lines of the prompt
   self.cursor_row = 1 -- the row where the cursor is currently located
   self.cursor_col = 1 -- the column where the cursor is currently located
-end
-
-
-
--- Checks if terminal was resized, and if so, marks the prompt as dirty.
--- Will NOT update currently cached size!
--- @return nothing
-function Prompt:check_resize()
-  local new_rows, new_cols = t.size()
-  if new_rows ~= self.screen_rows or new_cols ~= self.screen_cols then
-    self.dirty = true
-  end
 end
 
 
@@ -189,25 +149,11 @@ end
 
 
 
--- Move cursor from top left to the current position (relative movement).
--- @treturn string sequence to move cursor
-function Prompt:move_cursor_to_position_seq()
-  return t.cursor.position.vertical_seq(self.cursor_row - 1) ..
-          t.cursor.position.column_seq(self.cursor_col)
-end
-
-
-
 -- Draw the whole thing: prompt and input value.
 -- Moves the current cursor back to the top and writes the prompt and input value.
 -- Repositions the cursor at the proper place in the current input value.
 -- @return nothing
 function Prompt:draw()
-  self:check_resize()
-  if not self.dirty then
-    return -- nothing changed, no need to redraw
-  end
-
   -- move cursor to top
   local to_top_seq = self:move_cursor_to_top_seq() -- create BEFORE we renew cached data
 
@@ -250,9 +196,6 @@ function Prompt:handleInput()
       if action then
         local method = self.value[action] or nop
         method(self.value)
-        if Prompt.actions2redraw[action] then
-          self.dirty = true -- redraw needed
-        end
 
       elseif keyname == keys.escape and self.cancellable then
         return "cancelled"
@@ -268,16 +211,10 @@ function Prompt:handleInput()
 
       else -- add the character at the current cursor
         self.value:insert(keyname)
-        self.dirty = true
       end
 
       -- update UI
-      if self.dirty then
-        self:draw()
-      else
-        -- just reposition cursor
-        output.write(self:move_cursor_to_top_seq(), self:move_cursor_to_position_seq())
-      end
+      self:draw()
     end
   end
 end
