@@ -35,7 +35,7 @@ local SINGLE_WIDTH = " "
 local DOUBLE_WIDTH = "  "
 
 --- Default word delimiters for EditLine.
-local WORD_DELIMITERS = [[/\()"'-.,:;<>~!@#$%^&*|+=[]{}~?│ ]] .. "\t"
+local WORD_DELIMITERS = [[/\)"'-.,:;<>~!@#$%^&*|+=]}~?│ ]] .. "\t"
 
 
 
