@@ -903,8 +903,8 @@ describe("EditLine:", function()
           line = EditLine("will go into a single line (not really)"):goto_index(pos)
           assert.are.same({
             'will go |',
-            '|into a single line (',
-            'not really)|',
+            '|into a single line ',
+            '(not really)|',
           }, testwrap({
             width = 20, -- other lines are longer
             first_width = 10,  -- cursor is one beyond last char, so length is one less
