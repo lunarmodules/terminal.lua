@@ -124,6 +124,31 @@ end
 
 
 
+-- -- local debug function
+-- -- @tparam number ln The line number to set the cursor to.
+-- -- @tparam string ... The values to print.
+-- local function dbg(ln, ...)
+--   t.cursor.position.backup()
+--   t.cursor.position.set(ln,1)
+--   print(...)
+--   t.cursor.position.restore()
+-- end
+
+-- -- local debug function
+-- -- @tparam number ln The line number to set the cursor to.
+-- -- @tparam string ... The values to print.
+-- local function ping()
+--   t.output.write(
+--     t.text.stack.push_seq { fg = "red", brightness = "high", blink = true },
+--     "*",
+--     t.text.stack.pop_seq(),
+--     t.cursor.position.left_seq()
+--   )
+--  t.input.readansi(math.huge) -- wait for any key
+-- end
+
+
+
 -- updates cached data; terminal size, cursor pos, formatted lines.
 -- @return nothing
 function Prompt:renew_cached_data()
@@ -140,41 +165,34 @@ end
 
 
 
--- Move the cursor to the top-left (relative movement).
--- @treturn string sequence to move cursor
-function Prompt:move_cursor_to_top_seq()
-  return t.cursor.position.vertical_seq(1 - self.cursor_row) ..
-          t.cursor.position.column_seq(1)
-end
-
-
-
 -- Draw the whole thing: prompt and input value.
 -- Moves the current cursor back to the top and writes the prompt and input value.
 -- Repositions the cursor at the proper place in the current input value.
 -- @return nothing
 function Prompt:draw()
   -- move cursor to top
-  local to_top_seq = self:move_cursor_to_top_seq() -- create BEFORE we renew cached data
+  local old_row = self.cursor_row
+  -- local old_col = self.cursor_col
 
   self:renew_cached_data()
 
-  local l = Sequence(table.unpack(self.current_lines))
   local s = Sequence(
-    to_top_seq,               -- move cursor to top
-    self.prompt,              -- prompt
-    function() return t.text.stack.push_seq(self.text_attr) end, -- push text attributes
-    l,                        -- all lines concatenated (we formatted using padding, so should properly wrap)
-    function()
-      if #self.current_lines > 1 and self.current_lines[#self.current_lines]:len_char() == 0 then
-        return "\n" -- last line is just for cursor (empty line), case not handled by the padding, insert newline
-      end
-      return ""
-    end,
-    t.text.stack.pop_seq,     -- pop text attributes
-    t.clear.eol_seq(),        -- clear the rest of the last line
-    t.cursor.position.column_seq(self.cursor_col),                      -- move cursor to proper column
-    t.cursor.position.up_seq(#self.current_lines - self.cursor_row - 1) -- move cursor to proper row
+    -- move cursor to top
+    t.cursor.position.column_seq(1),
+    t.cursor.position.up_seq(old_row - 1),
+
+    -- prompt
+    self.prompt,
+
+    -- current value in proper format
+    function() return t.text.stack.push_seq(self.text_attr) end,
+    Sequence(table.unpack(self.current_lines)), -- all lines concatenated (we formatted using padding, so should properly wrap)
+    t.text.stack.pop_seq,
+    t.clear.eol_seq(),        -- clear the remainder of the last line
+
+    -- move cursor into position
+    t.cursor.position.up_seq(#self.current_lines - self.cursor_row),
+    t.cursor.position.column_seq(self.cursor_col)
   )
 
   output.write(s)
@@ -218,6 +236,7 @@ function Prompt:handleInput()
     end
   end
 end
+
 
 
 --- Starts the prompt input loop.
