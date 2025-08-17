@@ -269,6 +269,10 @@ describe("Cursor", function()
       assert.are.equal("\27[1A", cursor.position.up_seq())
     end)
 
+    it("does nothing if 0", function()
+      assert.are.equal("", cursor.position.up_seq(0))
+    end)
+
   end)
 
 
@@ -282,6 +286,11 @@ describe("Cursor", function()
 
     it("defaults to 1 row", function()
       assert.are.equal("\27[1B", cursor.position.down_seq())
+    end)
+
+
+    it("does nothing if 0", function()
+      assert.are.equal("", cursor.position.down_seq(0))
     end)
 
   end)
@@ -319,6 +328,11 @@ describe("Cursor", function()
       assert.are.equal("\27[1D", cursor.position.left_seq())
     end)
 
+
+    it("does nothing if 0", function()
+      assert.are.equal("", cursor.position.left_seq(0))
+    end)
+
   end)
 
 
@@ -332,6 +346,11 @@ describe("Cursor", function()
 
     it("defaults to 1 column", function()
       assert.are.equal("\27[1C", cursor.position.right_seq())
+    end)
+
+
+    it("does nothing if 0", function()
+      assert.are.equal("", cursor.position.right_seq(0))
     end)
 
   end)

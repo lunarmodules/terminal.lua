@@ -118,18 +118,21 @@ end
 
 
 --- Creates an ansi sequence to move the cursor up without writing it to the terminal.
--- @tparam[opt=1] number n number of rows to move up
+-- @tparam[opt=1] number n number of rows to move up (0 does nothing)
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.up_seq(n)
   n = n or 1
+  if n == 0 then
+    return ""
+  end
   return "\27["..tostring(n).."A"
 end
 
 
 
 --- Moves the cursor up and writes it to the terminal.
--- @tparam[opt=1] number n number of rows to move up
+-- @tparam[opt=1] number n number of rows to move up (0 does nothing)
 -- @return true
 function M.up(n)
   output.write(M.up_seq(n))
@@ -139,18 +142,21 @@ end
 
 
 --- Creates an ansi sequence to move the cursor down without writing it to the terminal.
--- @tparam[opt=1] number n number of rows to move down
+-- @tparam[opt=1] number n number of rows to move down (0 does nothing)
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.down_seq(n)
   n = n or 1
+  if n == 0 then
+    return ""
+  end
   return "\27["..tostring(n).."B"
 end
 
 
 
 --- Moves the cursor down and writes it to the terminal.
--- @tparam[opt=1] number n number of rows to move down
+-- @tparam[opt=1] number n number of rows to move down (0 does nothing)
 -- @return true
 function M.down(n)
   output.write(M.down_seq(n))
@@ -184,18 +190,21 @@ end
 
 
 --- Creates an ansi sequence to move the cursor left without writing it to the terminal.
--- @tparam[opt=1] number n number of columns to move left
+-- @tparam[opt=1] number n number of columns to move left (0 does nothing)
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.left_seq(n)
   n = n or 1
+  if n == 0 then
+    return ""
+  end
   return "\27["..tostring(n).."D"
 end
 
 
 
 --- Moves the cursor left and writes it to the terminal.
--- @tparam[opt=1] number n number of columns to move left
+-- @tparam[opt=1] number n number of columns to move left (0 does nothing)
 -- @return true
 function M.left(n)
   output.write(M.left_seq(n))
@@ -205,18 +214,21 @@ end
 
 
 --- Creates an ansi sequence to move the cursor right without writing it to the terminal.
--- @tparam[opt=1] number n number of columns to move right
+-- @tparam[opt=1] number n number of columns to move right (0 does nothing)
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.right_seq(n)
   n = n or 1
+  if n == 0 then
+    return ""
+  end
   return "\27["..tostring(n).."C"
 end
 
 
 
 --- Moves the cursor right and writes it to the terminal.
--- @tparam[opt=1] number n number of columns to move right
+-- @tparam[opt=1] number n number of columns to move right (0 does nothing)
 -- @return true
 function M.right(n)
   output.write(M.right_seq(n))
