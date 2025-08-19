@@ -511,6 +511,38 @@ describe("EditLine:", function()
       end)
 
 
+      it("returns an error if width < 2", function()
+        assert.has.error(function()
+          testwrap({
+            width = 1,
+            first_width = 60,
+            wordwrap = false,
+            pad = true,
+            pad_last = false
+          })
+        end)
+      end)
+
+
+      it("returns no error if first_width < 2", function()
+        assert.are.same({
+          '| ',
+          'Hello, this is a simple 🚀 test string to check the formatti|',
+          'ng functionality of |the EditLine class. It features word wra',
+          'pping, padding, and cursor handling. The class supports both|',
+          ' single-width and double-width characters, ensuring correct |',
+          'column calculations 🚀.|',
+        }, testwrap({
+          width = 60,
+          first_width = 1,
+          wordwrap = false,
+          pad = true,
+          pad_last = false
+        }))
+      end)
+
+
+
 
       describe("cursor-position", function()
 
@@ -855,6 +887,37 @@ describe("EditLine:", function()
           wordwrap = true,
           pad = false,
           pad_last = true
+        }))
+      end)
+
+
+      it("returns an error if width < 2", function()
+        assert.has.error(function()
+          testwrap({
+            width = 1,
+            first_width = 60,
+            wordwrap = true,
+            pad = true,
+            pad_last = false
+          })
+        end)
+      end)
+
+
+      it("returns no error if first_width < 2", function()
+        assert.are.same({
+          '| ',
+          'Hello, this is a simple 🚀 test string to check the |        ',
+          'formatting functionality of |the EditLine class. It features ',
+          'word wrapping, padding, and cursor handling. The class |     ',
+          'supports both single-width and double-width characters, |    ',
+          'ensuring correct column calculations 🚀.|',
+        }, testwrap({
+          width = 60,
+          first_width = 1,
+          wordwrap = true,
+          pad = true,
+          pad_last = false
         }))
       end)
 
