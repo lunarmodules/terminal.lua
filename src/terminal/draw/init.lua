@@ -147,7 +147,7 @@ end
 --- Draws a box and writes it to the terminal.
 -- @tparam number height the height of the box in rows
 -- @tparam number width the width of the box in columns
--- @tparam table format the format for the box, see `boxs` for details.
+-- @tparam table format the format for the box, see `box_seq` for details.
 -- @tparam bool clear_flag whether to clear the box contents
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
