@@ -21,8 +21,10 @@ local text = require "terminal.text"
 -- @field copy Function to copy a box format, see `box_fmt.copy` for details
 M.box_fmt = utils.make_lookup("box-format", {
   single = {
-    h = "─",
-    v = "│",
+    t = "─",
+    b = "─",
+    l = "│",
+    r = "│",
     tl = "┌",
     tr = "┐",
     bl = "└",
@@ -31,8 +33,10 @@ M.box_fmt = utils.make_lookup("box-format", {
     post = "├",
   },
   double = {
-    h = "═",
-    v = "║",
+    t = "═",
+    b = "═",
+    l = "║",
+    r = "║",
     tl = "╔",
     tr = "╗",
     bl = "╚",
@@ -50,8 +54,10 @@ M.box_fmt = utils.make_lookup("box-format", {
   -- fmt.post = " " .. fmt.post
   copy = function(default)
     return {
-      h = default.h,
-      v = default.v,
+      t = default.t,
+      b = default.b,
+      l = default.l,
+      r = default.r,
       tl = default.tl,
       tr = default.tr,
       bl = default.bl,
@@ -87,8 +93,10 @@ end
 -- @tparam number height the height of the box in rows
 -- @tparam number width the width of the box in columns
 -- @tparam[opt] table format the format for the box (default is single line), with keys:
--- @tparam[opt=" "] string format.h the horizontal line character
--- @tparam[opt=""] string format.v the vertical line character
+-- @tparam[opt=" "] string format.t the top horizontal line character
+-- @tparam[opt=" "] string format.b the bottom horizontal line character
+-- @tparam[opt=""] string format.l the left vertical line character
+-- @tparam[opt=""] string format.r the right vertical line character
 -- @tparam[opt=""] string format.tl the top left corner character
 -- @tparam[opt=""] string format.tr the top right corner character
 -- @tparam[opt=""] string format.bl the bottom left corner character
@@ -102,22 +110,22 @@ end
 -- @within Sequences
 function M.box_seq(height, width, format, clear_flag, title, lastcolumn)
   format = format or M.box_fmt.single
-  local v_w = text.width.utf8swidth(format.v or "")
+  local v_w = text.width.utf8swidth(format.l or "")
   local tl_w = text.width.utf8swidth(format.tl or "")
   local tr_w = text.width.utf8swidth(format.tr or "")
   local bl_w = text.width.utf8swidth(format.bl or "")
   local br_w = text.width.utf8swidth(format.br or "")
-  local v_line_l = M.line.vertical_seq(height - 2, format.v)
-  local v_line_r = v_line_l
+  local v_line_l = M.line.vertical_seq(height - 2, format.l)
+  local v_line_r = M.line.vertical_seq(height - 2, format.r)
   if lastcolumn then
-    v_line_r = M.line.vertical_seq(height - 2, format.v, lastcolumn)
+    v_line_r = M.line.vertical_seq(height - 2, format.r, lastcolumn)
   end
   lastcolumn = lastcolumn and 1 or 0
 
   local r = {
     -- draw top
     format.tl or "",
-    M.line.title_seq(width - tl_w - tr_w, title, format.h or " ", format.pre or "", format.post or ""),
+    M.line.title_seq(width - tl_w - tr_w, title, format.t or " ", format.pre or "", format.post or ""),
     format.tr or "",
     -- position to draw right, and draw it
     cursor.position.move_seq(1, -v_w + lastcolumn),
@@ -128,7 +136,7 @@ function M.box_seq(height, width, format, clear_flag, title, lastcolumn)
     -- draw bottom
     cursor.position.move_seq(1, -1),
     format.bl or "",
-    M.line.horizontal_seq(width - bl_w - br_w, format.h or " "),
+    M.line.horizontal_seq(width - bl_w - br_w, format.b or " "),
     format.br or "",
     -- return to top left
     cursor.position.move_seq(-height + 1, -width + lastcolumn),
