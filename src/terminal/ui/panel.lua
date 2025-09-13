@@ -64,6 +64,7 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @tparam[opt] function opts.content Content callback function that takes (row, col, height, width) parameters.
 -- @tparam[opt] table opts.orientation Panel orientation: Panel.orientations.horizontal or Panel.orientations.vertical (for divided panels).
 -- @tparam[opt] table opts.children Array of exactly 2 child panels (for divided panels).
+-- @tparam[opt] string opts.name Optional name for the panel. Defaults to tostring(self) if not provided.
 -- @tparam[opt=1] number opts.min_height Minimum height constraint (content panels only).
 -- @tparam[opt=1] number opts.min_width Minimum width constraint (content panels only).
 -- @tparam[opt=math.huge] number opts.max_height Maximum height constraint (content panels only).
@@ -113,6 +114,9 @@ function Panel:init(opts)
     self._max_height = nil
     self._max_width = nil
   end
+
+  -- Panel name
+  self.name = opts.name or tostring(self)
 
   -- Calculated layout properties (set by calculate_layout)
   self.row = nil

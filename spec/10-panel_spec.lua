@@ -211,6 +211,52 @@ describe("terminal.ui.panel", function()
       end, "Split ratio must be between 0.0 and 1.0")
     end)
 
+
+    it("uses provided name for content panel", function()
+      local panel = Panel {
+        content = function() end,
+        name = "my-content-panel"
+      }
+
+      assert.are.equal("my-content-panel", panel.name)
+    end)
+
+
+    it("uses provided name for divided panel", function()
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel },
+        name = "my-divided-panel"
+      }
+
+      assert.are.equal("my-divided-panel", panel.name)
+    end)
+
+
+    it("defaults to tostring(self) when no name provided", function()
+      local panel = Panel { content = function() end }
+      local expected_name = tostring(panel)
+
+      assert.are.equal(expected_name, panel.name)
+    end)
+
+
+    it("defaults to tostring(self) for divided panel when no name provided", function()
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel }
+      }
+      local expected_name = tostring(panel)
+
+      assert.are.equal(expected_name, panel.name)
+    end)
+
   end)
 
 
