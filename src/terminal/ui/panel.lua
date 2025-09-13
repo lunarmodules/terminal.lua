@@ -118,6 +118,19 @@ function Panel:init(opts)
   -- Panel name
   self.name = opts.name or tostring(self)
 
+  --- Panels lookup table.
+  -- Provides access to child panels by name with recursive search and caching.
+  -- @field panels table lookup table for child panels by name.
+  -- @usage
+  --   local header = main_panel.panels.header -- Returns panel named "header"
+  --   local not_found = parent.panels.nonexistent -- Returns nil
+  self.panels = setmetatable({}, {
+    __index = function(panels, name)
+      panels[name] = self:get_panel(name)
+      return rawget(panels, name)
+    end
+  })
+
   -- Calculated layout properties (set by calculate_layout)
   self.row = nil
   self.col = nil

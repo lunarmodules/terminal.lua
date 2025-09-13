@@ -817,4 +817,136 @@ describe("terminal.ui.panel", function()
 
   end)
 
+
+  describe("panels property", function()
+
+    it("is empty for content panels", function()
+      local panel = Panel {
+        content = function() end,
+        name = "content-panel"
+      }
+
+      assert.are.same({}, panel.panels)
+    end)
+
+
+    it("lazy-loads child panels by name", function()
+      local left_panel = Panel {
+        content = function() end,
+        name = "left-panel"
+      }
+      local right_panel = Panel {
+        content = function() end,
+        name = "right-panel"
+      }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel },
+        name = "parent-panel"
+      }
+
+      -- Initially empty
+      assert.are.same({}, panel.panels)
+
+      -- Access left panel - should lazy-load
+      local found_left = panel.panels["left-panel"]
+      assert.are.equal(left_panel, found_left)
+
+      -- Access right panel - should lazy-load
+      local found_right = panel.panels["right-panel"]
+      assert.are.equal(right_panel, found_right)
+
+      -- Access non-existent panel - should return nil
+      local not_found = panel.panels["nonexistent"]
+      assert.is_nil(not_found)
+    end)
+
+
+    it("caches loaded panels", function()
+      local left_panel = Panel {
+        content = function() end,
+        name = "left-panel"
+      }
+      local right_panel = Panel {
+        content = function() end,
+        name = "right-panel"
+      }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel },
+        name = "parent-panel"
+      }
+
+      -- Access panel multiple times
+      local found1 = panel.panels["left-panel"]
+      local found2 = panel.panels["left-panel"]
+
+      assert.are.equal(left_panel, found1)
+      assert.are.equal(left_panel, found2)
+      assert.are.equal(found1, found2) -- Same reference
+    end)
+
+
+    it("works with nested panel structures", function()
+      local nested_left = Panel {
+        content = function() end,
+        name = "nested-left"
+      }
+      local nested_right = Panel {
+        content = function() end,
+        name = "nested-right"
+      }
+
+      local nested_panel = Panel {
+        orientation = Panel.orientations.vertical,
+        children = { nested_left, nested_right },
+        name = "nested-parent"
+      }
+
+      local right_panel = Panel {
+        content = function() end,
+        name = "right-panel"
+      }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { nested_panel, right_panel },
+        name = "root-panel"
+      }
+
+      -- Access nested panel (direct child)
+      local found_nested = panel.panels["nested-parent"]
+      assert.are.equal(nested_panel, found_nested)
+
+      -- Access leaf panel (direct child)
+      local found_right = panel.panels["right-panel"]
+      assert.are.equal(right_panel, found_right)
+
+      -- Access deeply nested panel (grandchild)
+      local found_nested_left = panel.panels["nested-left"]
+      assert.are.equal(nested_left, found_nested_left)
+
+      local found_nested_right = panel.panels["nested-right"]
+      assert.are.equal(nested_right, found_nested_right)
+
+      -- Access non-existent panel
+      local not_found = panel.panels["nonexistent"]
+      assert.is_nil(not_found)
+    end)
+
+
+    it("returns nil for content panels when accessing panels", function()
+      local panel = Panel {
+        content = function() end,
+        name = "content-panel"
+      }
+
+      local not_found = panel.panels["any-name"]
+      assert.is_nil(not_found)
+    end)
+
+  end)
+
 end)
