@@ -248,8 +248,6 @@ describe("terminal.ui.panel", function()
     end)
 
 
-
-
     it("calculates horizontal division layout", function()
       local left_panel = Panel { content = function() end }
       local right_panel = Panel { content = function() end }
@@ -400,8 +398,6 @@ describe("terminal.ui.panel", function()
       assert.are.equal(20, width)
       assert.are.equal(10, height)
     end)
-
-
 
   end)
 
