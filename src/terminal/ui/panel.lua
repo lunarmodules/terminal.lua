@@ -351,23 +351,27 @@ function Panel:update_constraints(constraints)
 end
 
 
---- Get all leaf panels (panels with content) in this panel tree.
--- @treturn table Array of all leaf panels.
-function Panel:get_leaf_panels()
-  local leaves = {}
+--- Find a panel by name in this panel tree.
+--- Searches in order: self, child 1, child 2.
+--- @tparam string name The name to search for.
+--- @treturn Panel|nil The first panel found with the given name, or nil if not found.
+function Panel:get_panel(name)
+  -- Check self first
+  if self.name == name then
+    return self
+  end
 
-  if self.content ~= nil then
-    table.insert(leaves, self)
-  else
+  -- If this is a divided panel, check children
+  if self.children then
     for _, child in ipairs(self.children) do
-      local child_leaves = child:get_leaf_panels()
-      for _, leaf in ipairs(child_leaves) do
-        table.insert(leaves, leaf)
+      local found = child:get_panel(name)
+      if found then
+        return found
       end
     end
   end
 
-  return leaves
+  return nil
 end
 
 

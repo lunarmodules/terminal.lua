@@ -700,57 +700,119 @@ describe("terminal.ui.panel", function()
 
 
 
-  describe("get_leaf_panels()", function()
+  describe("get_panel()", function()
 
-    it("returns self for content panel", function()
-      local panel = Panel { content = function() end }
+    it("returns self when name matches", function()
+      local panel = Panel {
+        content = function() end,
+        name = "test-panel"
+      }
 
-      local leaves = panel:get_leaf_panels()
+      local found = panel:get_panel("test-panel")
 
-      assert.are.equal(1, #leaves)
-      assert.are.equal(panel, leaves[1])
+      assert.are.equal(panel, found)
     end)
 
 
-    it("returns all content panels in divided panel", function()
-      local left_panel = Panel { content = function() end }
-      local right_panel = Panel { content = function() end }
+    it("returns nil when name does not match", function()
+      local panel = Panel {
+        content = function() end,
+        name = "test-panel"
+      }
+
+      local found = panel:get_panel("other-panel")
+
+      assert.is_nil(found)
+    end)
+
+
+    it("finds child panel by name in divided panel", function()
+      local left_panel = Panel {
+        content = function() end,
+        name = "left-panel"
+      }
+      local right_panel = Panel {
+        content = function() end,
+        name = "right-panel"
+      }
 
       local panel = Panel {
         orientation = Panel.orientations.horizontal,
-        children = { left_panel, right_panel }
+        children = { left_panel, right_panel },
+        name = "parent-panel"
       }
 
-      local leaves = panel:get_leaf_panels()
+      local found_left = panel:get_panel("left-panel")
+      local found_right = panel:get_panel("right-panel")
+      local found_parent = panel:get_panel("parent-panel")
 
-      assert.are.equal(2, #leaves)
-      assert.are.equal(left_panel, leaves[1])
-      assert.are.equal(right_panel, leaves[2])
+      assert.are.equal(left_panel, found_left)
+      assert.are.equal(right_panel, found_right)
+      assert.are.equal(panel, found_parent)
     end)
 
 
-    it("returns all content panels in nested structure", function()
-      local nested_left = Panel { content = function() end }
-      local nested_right = Panel { content = function() end }
+    it("finds panel in nested structure", function()
+      local nested_left = Panel {
+        content = function() end,
+        name = "nested-left"
+      }
+      local nested_right = Panel {
+        content = function() end,
+        name = "nested-right"
+      }
 
       local nested_panel = Panel {
         orientation = Panel.orientations.vertical,
-        children = { nested_left, nested_right }
+        children = { nested_left, nested_right },
+        name = "nested-parent"
       }
 
-      local right_panel = Panel { content = function() end }
+      local right_panel = Panel {
+        content = function() end,
+        name = "right-panel"
+      }
 
       local panel = Panel {
         orientation = Panel.orientations.horizontal,
-        children = { nested_panel, right_panel }
+        children = { nested_panel, right_panel },
+        name = "root-panel"
       }
 
-      local leaves = panel:get_leaf_panels()
+      local found_nested_left = panel:get_panel("nested-left")
+      local found_nested_right = panel:get_panel("nested-right")
+      local found_right = panel:get_panel("right-panel")
+      local found_nested_parent = panel:get_panel("nested-parent")
+      local found_root = panel:get_panel("root-panel")
 
-      assert.are.equal(3, #leaves)
-      assert.are.equal(nested_left, leaves[1])
-      assert.are.equal(nested_right, leaves[2])
-      assert.are.equal(right_panel, leaves[3])
+      assert.are.equal(nested_left, found_nested_left)
+      assert.are.equal(nested_right, found_nested_right)
+      assert.are.equal(right_panel, found_right)
+      assert.are.equal(nested_panel, found_nested_parent)
+      assert.are.equal(panel, found_root)
+    end)
+
+
+    it("returns first match when multiple panels have same name", function()
+      local left_panel = Panel {
+        content = function() end,
+        name = "duplicate-name"
+      }
+      local right_panel = Panel {
+        content = function() end,
+        name = "duplicate-name"
+      }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel },
+        name = "parent-panel"
+      }
+
+      local found = panel:get_panel("duplicate-name")
+
+      -- Should return the first child (left_panel) since we check children in order
+      assert.are.equal(left_panel, found)
     end)
 
   end)
