@@ -50,11 +50,10 @@ local draw = require("terminal.draw")
 local Panel = utils.class()
 
 -- Panel orientations
-local orientations = utils.make_lookup("orientation", {
-  horizontal = "HORIZONTAL",
-  vertical = "VERTICAL",
+Panel.orientations = utils.make_lookup("orientation", {
+  horizontal = "horizontal",
+  vertical = "vertical"
 })
-Panel.orientations = orientations
 
 -- Default size constraints
 local DEFAULT_MIN_SIZE = 1
@@ -287,22 +286,10 @@ function Panel:get_layout()
   }
 end
 
---- Check if this panel has content (is a leaf panel).
--- @treturn boolean True if this panel has content, false if it has children.
-function Panel:has_content()
-  return self.content ~= nil
-end
-
---- Check if this panel is divided (has children).
--- @treturn boolean True if this panel has children, false if it has content.
-function Panel:is_divided()
-  return self.children ~= nil
-end
-
---- Get the orientation of this panel.
--- @treturn table|nil The orientation (Panel.orientations.horizontal or Panel.orientations.vertical) or nil if not divided.
-function Panel:get_orientation()
-  return self.orientation
+--- Get the type of this panel.
+-- @return Returns "content" for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
+function Panel:get_type()
+  return self.orientation or "content"
 end
 
 --- Get the children of this panel.
@@ -384,7 +371,7 @@ end
 function Panel:get_leaf_panels()
   local leaves = {}
 
-  if self:has_content() then
+  if self.content ~= nil then
     table.insert(leaves, self)
   else
     for _, child in ipairs(self.children) do

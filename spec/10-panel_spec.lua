@@ -521,62 +521,12 @@ describe("terminal.ui.panel", function()
 
 
 
-  describe("has_content()", function()
+  describe("get_type()", function()
 
-    it("returns true for content panel", function()
+    it("returns 'content' for content panel", function()
       local panel = Panel { content = function() end }
 
-      assert.is_true(panel:has_content())
-    end)
-
-
-    it("returns false for divided panel", function()
-      local left_panel = Panel { content = function() end }
-      local right_panel = Panel { content = function() end }
-
-      local panel = Panel {
-        orientation = Panel.orientations.horizontal,
-        children = { left_panel, right_panel }
-      }
-
-      assert.is_false(panel:has_content())
-    end)
-
-  end)
-
-
-
-  describe("is_divided()", function()
-
-    it("returns false for content panel", function()
-      local panel = Panel { content = function() end }
-
-      assert.is_false(panel:is_divided())
-    end)
-
-
-    it("returns true for divided panel", function()
-      local left_panel = Panel { content = function() end }
-      local right_panel = Panel { content = function() end }
-
-      local panel = Panel {
-        orientation = Panel.orientations.horizontal,
-        children = { left_panel, right_panel }
-      }
-
-      assert.is_true(panel:is_divided())
-    end)
-
-  end)
-
-
-
-  describe("get_orientation()", function()
-
-    it("returns nil for content panel", function()
-      local panel = Panel { content = function() end }
-
-      assert.is_nil(panel:get_orientation())
+      assert.are.equal("content", panel:get_type())
     end)
 
 
@@ -597,11 +547,14 @@ describe("terminal.ui.panel", function()
         children = { top_panel, bottom_panel }
       }
 
-      assert.are.equal(Panel.orientations.horizontal, horizontal_panel:get_orientation())
-      assert.are.equal(Panel.orientations.vertical, vertical_panel:get_orientation())
+      assert.are.equal(Panel.orientations.horizontal, horizontal_panel:get_type())
+      assert.are.equal(Panel.orientations.vertical, vertical_panel:get_type())
     end)
 
   end)
+
+
+
 
 
 
