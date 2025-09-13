@@ -651,66 +651,6 @@ describe("terminal.ui.panel", function()
 
 
 
-  describe("find_panel()", function()
-
-    it("finds panel by predicate", function()
-      local left_panel = Panel { content = function() end }
-      local right_panel = Panel { content = function() end }
-
-      local panel = Panel {
-        orientation = Panel.orientations.horizontal,
-        children = { left_panel, right_panel }
-      }
-
-      local found = panel:find_panel(function(p)
-        return p == right_panel
-      end)
-
-      assert.are.equal(right_panel, found)
-    end)
-
-
-    it("returns nil when panel not found", function()
-      local left_panel = Panel { content = function() end }
-      local right_panel = Panel { content = function() end }
-
-      local panel = Panel {
-        orientation = Panel.orientations.horizontal,
-        children = { left_panel, right_panel }
-      }
-
-      local found = panel:find_panel(function(p)
-        return false
-      end)
-
-      assert.is_nil(found)
-    end)
-
-
-    it("finds nested panels", function()
-      local nested_left = Panel { content = function() end }
-      local nested_right = Panel { content = function() end }
-
-      local nested_panel = Panel {
-        orientation = Panel.orientations.vertical,
-        children = { nested_left, nested_right }
-      }
-
-      local right_panel = Panel { content = function() end }
-
-      local panel = Panel {
-        orientation = Panel.orientations.horizontal,
-        children = { nested_panel, right_panel }
-      }
-
-      local found = panel:find_panel(function(p)
-        return p == nested_right
-      end)
-
-      assert.are.equal(nested_right, found)
-    end)
-
-  end)
 
 
 

@@ -346,25 +346,6 @@ function Panel:update_constraints(constraints)
   end
 end
 
---- Find a panel by a predicate function.
--- @tparam function predicate Function that takes a panel and returns true if it matches.
--- @treturn Panel|nil The first matching panel or nil if not found.
-function Panel:find_panel(predicate)
-  if predicate(self) then
-    return self
-  end
-
-  if self.children then
-    for _, child in ipairs(self.children) do
-      local found = child:find_panel(predicate)
-      if found then
-        return found
-      end
-    end
-  end
-
-  return nil
-end
 
 --- Get all leaf panels (panels with content) in this panel tree.
 -- @treturn table Array of all leaf panels.
