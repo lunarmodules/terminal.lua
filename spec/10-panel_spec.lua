@@ -194,7 +194,7 @@ describe("terminal.ui.panel", function()
           orientation = "diagonal",
           children = { left_panel, right_panel }
         }
-      end, 'Invalid orientation: diagonal. Must be \'horizontal\' or \'vertical\'')
+      end, 'Invalid orientation: diagonal. Must be Panel.orientations.horizontal or Panel.orientations.vertical')
     end)
 
 
