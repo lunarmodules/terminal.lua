@@ -17,7 +17,7 @@ describe("terminal.ui.panel", function()
     it("creates a content panel with callback", function()
       local callback_called = false
       local panel = Panel {
-        content = function(row, col, height, width)
+        content = function(self, row, col, height, width)
           callback_called = true
         end
       }
@@ -28,7 +28,7 @@ describe("terminal.ui.panel", function()
       assert.is_nil(panel.orientation)
 
       -- Call the panel's content callback to test it
-      panel.content(1, 1, 10, 20)
+      panel:content(1, 1, 10, 20)
       assert.is_true(callback_called, "Content callback should have been called")
     end)
 
@@ -500,9 +500,9 @@ describe("terminal.ui.panel", function()
       local callback_args = {}
 
       local panel = Panel {
-        content = function(row, col, height, width)
+        content = function(self, row, col, height, width)
           callback_called = true
-          callback_args = { row, col, height, width }
+          callback_args = { self, row, col, height, width }
         end
       }
 
@@ -510,7 +510,9 @@ describe("terminal.ui.panel", function()
       panel:render()
 
       assert.is_true(callback_called)
-      assert.are.same({2, 3, 5, 10}, callback_args)
+      assert.are.equal(panel, callback_args[1])
+      callback_args[1] = nil
+      assert.are.same({nil, 2, 3, 5, 10}, callback_args)
     end)
 
 
@@ -519,13 +521,13 @@ describe("terminal.ui.panel", function()
       local right_callback_called = false
 
       local left_panel = Panel {
-        content = function(row, col, height, width)
+        content = function(self, row, col, height, width)
           left_callback_called = true
         end
       }
 
       local right_panel = Panel {
-        content = function(row, col, height, width)
+        content = function(self, row, col, height, width)
           right_callback_called = true
         end
       }

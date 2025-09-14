@@ -283,7 +283,7 @@ end
 function Panel:render()
   if self.content then
     -- Render content panel
-    self.content(self.row, self.col, self.height, self.width)
+    self:content(self.row, self.col, self.height, self.width)
   else
     -- Render child panels
     for _, child in ipairs(self.children) do
