@@ -283,7 +283,7 @@ end
 function Panel:render()
   if self.content then
     -- Render content panel
-    self.content(self.row, self.col, self.height, self.width)
+    self:content(self.row, self.col, self.height, self.width)
   else
     -- Render child panels
     for _, child in ipairs(self.children) do
@@ -406,7 +406,7 @@ end
 function Panel.content_border(callback, format, title)
   assert(type(callback) == "function", "callback must be a function (do not use colon notation)")
 
-  return function(row, col, height, width)
+  return function(self, row, col, height, width)
     local lastcol = col + width - 1
     local _, c = terminal.size()
     local lastcolumn = (lastcol >= c)
@@ -434,7 +434,7 @@ function Panel.content_border(callback, format, title)
       height = height - 1
     end
 
-    callback(row, col, height, width)
+    callback(self, row, col, height, width)
   end
 end
 
