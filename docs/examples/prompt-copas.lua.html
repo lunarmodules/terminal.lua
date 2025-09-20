@@ -40,9 +40,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><strong>prompt-copas.lua</strong></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -77,6 +79,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -106,8 +110,10 @@
   prompt = <span class="string">"Enter something: "</span>,
   value = <span class="string">"Hello, 你-好 World 🚀!"</span>,
   max_length = <span class="number">62</span>,
-  position = <span class="number">2</span>,
+  position = <span class="number">10</span>,
   cancellable = <span class="keyword">true</span>,
+  text_attr = { brightness = <span class="string">"high"</span> },
+  wordwrap = <span class="keyword">true</span>,
 }
 
 
@@ -129,8 +135,9 @@
 
 
 copas.<span class="function-name">addthread</span>(<span class="keyword">function</span>()
+  t.text.stack.<span class="function-name">push</span> { brightness = <span class="string">"low"</span> }
   <span class="global">print</span>(<span class="string">"Time is ticking in the top-right corner!"</span>)
-  <span class="keyword">local</span> result, status = pr:<span class="function-name">run</span>()
+  <span class="keyword">local</span> result, status = <span class="function-name">pr</span>()
   <span class="keyword">if</span> result <span class="keyword">then</span>
     <span class="global">print</span>(<span class="string">"Result (string): '"</span> .. result .. <span class="string">"'"</span>)
     <span class="global">print</span>(<span class="string">"Result (bytes):"</span>, (result <span class="keyword">or</span> <span class="string">""</span>):<span class="function-name">byte</span>(<span class="number">1</span>, -<span class="number">1</span>))

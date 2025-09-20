@@ -33,11 +33,19 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Functions">Functions</a></li>
-<li><a href="#Sequences">Sequences</a></li>
+<li><a href="#Methods">Methods</a></li>
 </ul>
 
 
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><strong>ui.Screen</strong></li>
+</ul>
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><a href="../modules/terminal.html">terminal</a></li>
@@ -47,7 +55,7 @@
   <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
   <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
-  <li><strong>terminal.cursor.visible</strong></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
   <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
@@ -62,15 +70,6 @@
   <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
-</ul>
-<h2>Classes</h2>
-<ul class="nowrap">
-  <li><a href="../classes/EditLine.html">EditLine</a></li>
-  <li><a href="../classes/Sequence.html">Sequence</a></li>
-  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
-  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -100,23 +99,24 @@
 
 <div id="content">
 
-<h1>Module <code>terminal.cursor.visible</code></h1>
-<p>Terminal cursor visibility module.</p>
-<p> Provides utilities for cursor visibility in terminals.</p>
+<h1>Class <code>ui.Screen</code></h1>
+<p>Screen class for full-screen terminal applications.</p>
+<p> Manages a full-screen layout with optional header and footer panels.</p>
 
 
-<h2><a href="#Functions">Functions</a></h2>
+<h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#set">set ([visible=true])</a></td>
-	<td class="summary">Shows or hides the cursor and writes it to the terminal.</td>
+	<td class="name" nowrap><a href="#ui.screen:calculate_layout">ui.screen:calculate_layout ()</a></td>
+	<td class="summary">Recalculate the screen layout using current terminal dimensions.</td>
 	</tr>
-</table>
-<h2><a href="#Sequences">Sequences</a></h2>
-<table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#set_seq">set_seq ([visible=true])</a></td>
-	<td class="summary">Returns the ansi sequence to show/hide the cursor without writing it to the terminal.</td>
+	<td class="name" nowrap><a href="#ui.screen:check_resize">ui.screen:check_resize ([update=false])</a></td>
+	<td class="summary">Check if the terminal has been resized and optionally update the layout.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.screen:init">ui.screen:init (opts)</a></td>
+	<td class="summary">Initialize a new Screen instance.</td>
 	</tr>
 </table>
 
@@ -124,63 +124,84 @@
 <br/>
 
 
-    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
 
     <dl class="function">
     <dt>
-    <a name = "set"></a>
-    <strong>set ([visible=true])</strong>
+    <a name = "ui.screen:calculate_layout"></a>
+    <strong>ui.screen:calculate_layout ()</strong>
     </dt>
     <dd>
-    Shows or hides the cursor and writes it to the terminal.
+    Recalculate the screen layout using current terminal dimensions.
+ Overrides <a href="../classes/ui.Panel.html#ui.panel:calculate_layout">ui.Panel:calculate_layout</a> to use full screen dimensions instead of specifying them.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.screen:check_resize"></a>
+    <strong>ui.screen:check_resize ([update=false])</strong>
+    </dt>
+    <dd>
+    Check if the terminal has been resized and optionally update the layout.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">visible</span>
+        <li><span class="parameter">update</span>
             <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-         (<em>default</em> true)
+         Whether to recalculate and redraw if resized
+         (<em>default</em> false)
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-        true
+           <span class="types"><span class="type">boolean</span></span>
+        True if the terminal was resized
     </ol>
 
 
 
 
 </dd>
-</dl>
-    <h2 class="section-header "><a name="Sequences"></a>Sequences</h2>
-
-    <dl class="function">
     <dt>
-    <a name = "set_seq"></a>
-    <strong>set_seq ([visible=true])</strong>
+    <a name = "ui.screen:init"></a>
+    <strong>ui.screen:init (opts)</strong>
     </dt>
     <dd>
-    Returns the ansi sequence to show/hide the cursor without writing it to the terminal.
+    Initialize a new Screen instance.
+ Do not call this method directly, call on the class instead.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">visible</span>
-            <span class="types"><span class="type">boolean</span></span>
-         true to show, false to hide
-         (<em>default</em> true)
+        <li><span class="parameter">opts</span> Configuration options (see <a href="../classes/ui.Panel.html#ui.panel:init">Panel:init</a> for inherited properties)
+        <ul>
+        <li><span class="parameter">header</span>
+            <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
+         Optional header panel (will be named "header")
         </li>
+        <li><span class="parameter">body</span>
+            <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
+         Required body panel (will be named "body")
+        </li>
+        <li><span class="parameter">footer</span>
+            <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
+         Optional footer panel (will be named "footer")
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Optional name for the screen
+        </li>
+        </li></ul>
     </ul>
 
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
-    </ol>
 
 
 

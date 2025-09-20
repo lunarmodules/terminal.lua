@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><strong>ui.Panel</strong></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.Panel</code></h1>
+<p>Panel system for terminal UI layouts.</p>
+<p>
+
+
+<p> This module provides a flexible panel system for creating terminal UI layouts.
+ Each panel can contain content or be divided into two child panels (horizontally or vertically).
+ Panels automatically recalculate their size and position based on parent constraints.</p>
+
+<p> Features:</p>
+
+<ul>
+    <li>Automatic layout calculation with size constraints</li>
+    <li>Horizontal and vertical panel division</li>
+    <li>Content callback system for rendering</li>
+    <li>Minimum and maximum size constraints</li>
+    <li>Dynamic resizing based on orientation</li>
+</ul>
+
+<p> <em>Usage:</em></p>
+
+
+<pre>
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="comment">-- Create a root panel with content
+</span><span class="keyword">local</span> root = <span class="function-name">Panel</span> {
+  content = <span class="keyword">function</span>(row, col, height, width)
+    <span class="comment">-- render content here
+</span>  <span class="keyword">end</span>
+}
+
+<span class="comment">-- Create a divided panel
+</span><span class="keyword">local</span> divided = <span class="function-name">Panel</span> {
+  orientation = Panel.orientations.horizontal, <span class="comment">-- or Panel.orientations.vertical
+</span>  children = {
+    <span class="function-name">Panel</span> { content = <span class="keyword">function</span>(self, r, c, h, w) <span class="comment">-- left/top panel
+</span>      <span class="comment">-- render left/top content
+</span>    <span class="keyword">end</span> },
+    <span class="function-name">Panel</span> { content = <span class="keyword">function</span>(self, r, c, h, w) <span class="comment">-- right/bottom panel
+</span>      <span class="comment">-- render right/bottom content
+</span>    <span class="keyword">end</span> }
+  }
+}
+
+<span class="comment">-- Calculate layout
+</span>root:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">24</span>, <span class="number">80</span>) <span class="comment">-- row, col, height, width
+</span>root:<span class="function-name">render</span>()
+</pre>
+
+</p>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#self.panels">self.panels</a></td>
+	<td class="summary">Panels lookup table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.orientations">ui.panel.orientations</a></td>
+	<td class="summary">Panel orientation constants table.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:calculate_layout">ui.panel:calculate_layout (parent_row, parent_col, parent_height, parent_width)</a></td>
+	<td class="summary">Calculate the layout for this panel and all its children.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:content_border">ui.panel:content_border (callback, format[, title])</a></td>
+	<td class="summary">Returns a new content callback that draws a border and optional title around your panel content.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_children">ui.panel:get_children ()</a></td>
+	<td class="summary">Get the children of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_max_height">ui.panel:get_max_height ()</a></td>
+	<td class="summary">Get the maximum height constraint of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_max_width">ui.panel:get_max_width ()</a></td>
+	<td class="summary">Get the maximum width constraint of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_min_height">ui.panel:get_min_height ()</a></td>
+	<td class="summary">Get the minimum height constraint of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_min_width">ui.panel:get_min_width ()</a></td>
+	<td class="summary">Get the minimum width constraint of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_panel">ui.panel:get_panel (name)</a></td>
+	<td class="summary">Find a panel by name in this panel tree.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_size">ui.panel:get_size ()</a></td>
+	<td class="summary">Get the current size of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_split_ratio">ui.panel:get_split_ratio ()</a></td>
+	<td class="summary">Get the split ratio of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:get_type">ui.panel:get_type ()</a></td>
+	<td class="summary">Get the type of this panel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:init">ui.panel:init (opts)</a></td>
+	<td class="summary">Create a new Panel instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:render">ui.panel:render ()</a></td>
+	<td class="summary">Render this panel and all its children.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:set_split_ratio">ui.panel:set_split_ratio (ratio)</a></td>
+	<td class="summary">Set the split ratio for divided panels.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "self.panels"></a>
+    <strong>self.panels</strong>
+    </dt>
+    <dd>
+    Panels lookup table.
+ Provides access to child panels by name with recursive search and caching.
+
+
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> header = main_panel.panels.header <span class="comment">-- Returns panel named "header"
+</span><span class="keyword">local</span> not_found = parent.panels.nonexistent <span class="comment">-- Returns nil</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.orientations"></a>
+    <strong>ui.panel.orientations</strong>
+    </dt>
+    <dd>
+    Panel orientation constants table.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel:calculate_layout"></a>
+    <strong>ui.panel:calculate_layout (parent_row, parent_col, parent_height, parent_width)</strong>
+    </dt>
+    <dd>
+    Calculate the layout for this panel and all its children.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">parent_row</span>
+            <span class="types"><span class="type">number</span></span>
+         Parent panel's starting row.
+        </li>
+        <li><span class="parameter">parent_col</span>
+            <span class="types"><span class="type">number</span></span>
+         Parent panel's starting column.
+        </li>
+        <li><span class="parameter">parent_height</span>
+            <span class="types"><span class="type">number</span></span>
+         Parent panel's height.
+        </li>
+        <li><span class="parameter">parent_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Parent panel's width.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:content_border"></a>
+    <strong>ui.panel:content_border (callback, format[, title])</strong>
+    </dt>
+    <dd>
+    Returns a new content callback that draws a border and optional title around your panel content.
+ This function wraps your original content callback, first drawing a box (border and title) using the given
+ box format and title, then calling your callback with the coordinates and size <em>inside</em> the border.</p>
+
+<p> The border is drawn using the specified box format (see <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a>). If any of the
+ box format's top, bottom, left, or right characters are empty strings, that side of the border is omitted
+ and the space becomes part of the <em>inner</em> area.</p>
+
+<p> The wrapped callback receives adjusted (row, col, height, width) arguments, so your content is always
+ drawn inside the border area.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">callback</span>
+            <span class="types"><span class="type">function</span></span>
+         The original content callback to wrap.
+        </li>
+        <li><span class="parameter">format</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The box format table (see <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a>).
+        </li>
+        <li><span class="parameter">title</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Optional title to display in the border.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">function</span></span>
+        A new callback that draws the border and then calls your original callback.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_children"></a>
+    <strong>ui.panel:get_children ()</strong>
+    </dt>
+    <dd>
+    Get the children of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a> or <span class="type">nil</span></span>
+        Array of child panels or nil if not divided.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_max_height"></a>
+    <strong>ui.panel:get_max_height ()</strong>
+    </dt>
+    <dd>
+    Get the maximum height constraint of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The maximum height.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_max_width"></a>
+    <strong>ui.panel:get_max_width ()</strong>
+    </dt>
+    <dd>
+    Get the maximum width constraint of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The maximum width.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_min_height"></a>
+    <strong>ui.panel:get_min_height ()</strong>
+    </dt>
+    <dd>
+    Get the minimum height constraint of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The minimum height.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_min_width"></a>
+    <strong>ui.panel:get_min_width ()</strong>
+    </dt>
+    <dd>
+    Get the minimum width constraint of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The minimum width.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_panel"></a>
+    <strong>ui.panel:get_panel (name)</strong>
+    </dt>
+    <dd>
+    Find a panel by name in this panel tree.
+ Searches in order: self, child 1, child 2.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The name to search for.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a> or <span class="type">nil</span></span>
+        The first panel found with the given name, or nil if not found.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_size"></a>
+    <strong>ui.panel:get_size ()</strong>
+    </dt>
+    <dd>
+    Get the current size of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The current height in rows.</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The current width in columns.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_split_ratio"></a>
+    <strong>ui.panel:get_split_ratio ()</strong>
+    </dt>
+    <dd>
+    Get the split ratio of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span> or <span class="type">nil</span></span>
+        The split ratio or nil if not divided.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:get_type"></a>
+    <strong>ui.panel:get_type ()</strong>
+    </dt>
+    <dd>
+    Get the type of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Returns "content" for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:init"></a>
+    <strong>ui.panel:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Panel instance.
+ Do not call this method directly, call on the class instead. See example.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options for the panel.
+        <ul>
+        <li><span class="parameter">content</span>
+            <span class="types"><span class="type">function</span></span>
+         Content callback function that takes (self, row, col, height, width) parameters.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">orientation</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Panel orientation: <code>Panel.orientations.horizontal</code> or <code>Panel.orientations.vertical</code> (for divided panels).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">children</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of exactly 2 child panels (for divided panels).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Optional name for the panel. Defaults to tostring(self) if not provided.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">min_height</span>
+            <span class="types"><span class="type">number</span></span>
+         Minimum height constraint (content panels only).
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">min_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Minimum width constraint (content panels only).
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">max_height</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum height constraint (content panels only).
+         (<em>default</em> math.huge)
+        </li>
+        <li><span class="parameter">max_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum width constraint (content panels only).
+         (<em>default</em> math.huge)
+        </li>
+        <li><span class="parameter">split_ratio</span>
+            <span class="types"><span class="type">number</span></span>
+         Ratio for dividing child panels (0.0 to 1.0).
+         (<em>default</em> 0.5)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
+        A new Panel instance.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+<span class="keyword">local</span> panel = <span class="function-name">Panel</span> {
+  content = <span class="keyword">function</span>(self, row, col, height, width)
+    <span class="comment">-- render content here
+</span>  <span class="keyword">end</span>
+}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel:render"></a>
+    <strong>ui.panel:render ()</strong>
+    </dt>
+    <dd>
+    Render this panel and all its children.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:set_split_ratio"></a>
+    <strong>ui.panel:set_split_ratio (ratio)</strong>
+    </dt>
+    <dd>
+    Set the split ratio for divided panels.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">ratio</span>
+            <span class="types"><span class="type">number</span></span>
+         The split ratio (0.0 to 1.0).
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><strong>panel.lua</strong></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>panel.lua</h2>
+<pre>
+<span class="comment">--- Example usage of the terminal.ui.panel module.
+</span><span class="comment">--
+</span><span class="comment">-- This example demonstrates how to create and use panels for terminal UI layouts.
+</span><span class="comment">-- It shows various panel configurations including content panels, divided panels,
+</span><span class="comment">-- and nested layouts.
+</span>
+<span class="keyword">local</span> terminal = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+
+
+<span class="comment">-- Helper function to draw content in a panel
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_content</span>(row, col, height, width, text, color)
+  color = color <span class="keyword">or</span> <span class="string">"white"</span>
+
+  <span class="comment">-- Center the text in the panel
+</span>  <span class="keyword">local</span> text_row = row + <span class="global">math</span>.<span class="function-name">floor</span>(height / <span class="number">2</span>)
+  <span class="keyword">local</span> text_col = col + <span class="global">math</span>.<span class="function-name">floor</span>((width - #text) / <span class="number">2</span>)
+
+  terminal.cursor.position.<span class="function-name">set</span>(text_row, text_col)
+  terminal.output.<span class="function-name">write</span>(terminal.text.stack.<span class="function-name">push_seq</span>({ fg = color }))
+  terminal.output.<span class="function-name">write</span>(text)
+  terminal.output.<span class="function-name">write</span>(terminal.text.stack.<span class="function-name">pop_seq</span>())
+<span class="keyword">end</span>
+
+
+
+<span class="comment">-- screen resized checker
+</span><span class="keyword">local</span> screen_resized <span class="keyword">do</span>
+
+  <span class="keyword">local</span> last_rows, last_cols = terminal.<span class="function-name">size</span>()
+
+  <span class="keyword">function</span> <span class="function-name">screen_resized</span>()
+    <span class="keyword">local</span> current_rows, current_cols = last_rows, last_cols
+    last_rows, last_cols = terminal.<span class="function-name">size</span>()
+    <span class="keyword">return</span> current_rows ~= last_rows <span class="keyword">or</span> current_cols ~= last_cols
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="comment">-- Helper function to create full-screen panel
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">create_fullscreen_panel</span>(content_func)
+  <span class="keyword">return</span> <span class="function-name">Panel</span> {
+    content = Panel.<span class="function-name">content_border</span>(content_func, terminal.draw.box_fmt.single, <span class="string">""</span>),
+  }
+<span class="keyword">end</span>
+
+
+
+<span class="comment">-- Example 1: Simple content panel
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">run_example_1</span>()
+  terminal.clear.<span class="function-name">screen</span>()
+  terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+  <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
+  <span class="keyword">local</span> simple_panel = <span class="function-name">create_fullscreen_panel</span>(<span class="keyword">function</span>(self, row, col, height, width)
+    terminal.cursor.position.<span class="function-name">set</span>(row + <span class="number">1</span>, col + <span class="number">1</span>)
+    terminal.draw.<span class="function-name">box</span>(height - <span class="number">2</span>, width - <span class="number">2</span>, terminal.draw.box_fmt.single, <span class="keyword">true</span>, <span class="string">"Simple Panel"</span>)
+    <span class="function-name">draw_content</span>(row + <span class="number">1</span>, col + <span class="number">1</span>, height - <span class="number">2</span>, width - <span class="number">2</span>, <span class="string">"Hello World! Press any key to continue..."</span>, <span class="string">"green"</span>)
+  <span class="keyword">end</span>)
+
+  simple_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+  simple_panel:<span class="function-name">render</span>()
+
+  <span class="keyword">while</span> <span class="keyword">not</span> terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="function-name">screen_resized</span>() <span class="keyword">then</span>
+      rows, cols = terminal.<span class="function-name">size</span>()
+      simple_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+      simple_panel:<span class="function-name">render</span>()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">-- Example 2: Horizontal division
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">run_example_2</span>()
+  terminal.clear.<span class="function-name">screen</span>()
+  terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+  <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
+  <span class="keyword">local</span> horizontal_panel = <span class="function-name">Panel</span> {
+    orientation = Panel.orientations.horizontal,
+    split_ratio = <span class="number">0.6</span>, <span class="comment">-- 60% left, 40% right
+</span>    children = {
+      <span class="function-name">Panel</span> {
+        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"60% - Press any key"</span>, <span class="string">"blue"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Left Panel"</span>),
+      },
+      <span class="function-name">Panel</span> {
+        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"40%"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Right Panel"</span>),
+      }
+    }
+  }
+
+  horizontal_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+  horizontal_panel:<span class="function-name">render</span>()
+
+  <span class="keyword">while</span> <span class="keyword">not</span> terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="function-name">screen_resized</span>() <span class="keyword">then</span>
+      rows, cols = terminal.<span class="function-name">size</span>()
+      horizontal_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+      horizontal_panel:<span class="function-name">render</span>()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">-- Example 3: Vertical division
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">run_example_3</span>()
+  terminal.clear.<span class="function-name">screen</span>()
+  terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+  <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
+  <span class="keyword">local</span> vertical_panel = <span class="function-name">Panel</span> {
+    orientation = Panel.orientations.vertical,
+    split_ratio = <span class="number">0.4</span>, <span class="comment">-- 40% top, 60% bottom
+</span>    children = {
+      <span class="function-name">Panel</span> {
+        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"40% - Press any key"</span>, <span class="string">"yellow"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Top Panel"</span>),
+      },
+      <span class="function-name">Panel</span> {
+        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"60%"</span>, <span class="string">"magenta"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Bottom Panel"</span>),
+      }
+    }
+  }
+
+  vertical_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+  vertical_panel:<span class="function-name">render</span>()
+
+  <span class="keyword">while</span> <span class="keyword">not</span> terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="function-name">screen_resized</span>() <span class="keyword">then</span>
+      rows, cols = terminal.<span class="function-name">size</span>()
+      vertical_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+      vertical_panel:<span class="function-name">render</span>()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">-- Example 4: Nested panels (complex layout)
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">run_example_4</span>()
+  terminal.clear.<span class="function-name">screen</span>()
+  terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+  <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
+  <span class="keyword">local</span> nested_panel = <span class="function-name">Panel</span> {
+    orientation = Panel.orientations.horizontal,
+    split_ratio = <span class="number">0.5</span>,
+    children = {
+      <span class="comment">-- Left side: vertical division
+</span>      <span class="function-name">Panel</span> {
+        orientation = Panel.orientations.vertical,
+        split_ratio = <span class="number">0.3</span>,
+        children = {
+          <span class="function-name">Panel</span> {
+            content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+              <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"30%"</span>, <span class="string">"cyan"</span>)
+            <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Top Left"</span>),
+          },
+          <span class="function-name">Panel</span> {
+            content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+              <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"70%"</span>, <span class="string">"green"</span>)
+            <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Bottom Left"</span>),
+          }
+        }
+      },
+      <span class="comment">-- Right side: simple content
+</span>      <span class="function-name">Panel</span> {
+        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"Full Right - Press any key"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Right Side"</span>),
+      }
+    }
+  }
+
+  nested_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+  nested_panel:<span class="function-name">render</span>()
+
+  <span class="keyword">while</span> <span class="keyword">not</span> terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="function-name">screen_resized</span>() <span class="keyword">then</span>
+      rows, cols = terminal.<span class="function-name">size</span>()
+      nested_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+      nested_panel:<span class="function-name">render</span>()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">-- Example 5: Dynamic resizing
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">run_example_5</span>()
+  terminal.clear.<span class="function-name">screen</span>()
+  terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+  <span class="keyword">local</span> resizable_panel = <span class="function-name">Panel</span> {
+    orientation = Panel.orientations.horizontal,
+    split_ratio = <span class="number">0.5</span>,
+    children = {
+      <span class="function-name">Panel</span> {
+        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"50%"</span>, <span class="string">"blue"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Panel A"</span>),
+      },
+      <span class="function-name">Panel</span> {
+        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"50% - Press any key"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Panel B"</span>),
+      }
+    }
+  }
+
+  <span class="comment">-- Show different split ratios
+</span>  <span class="keyword">for</span> ratio = <span class="number">0.2</span>, <span class="number">0.8</span>, <span class="number">0.2</span> <span class="keyword">do</span>
+    terminal.clear.<span class="function-name">screen</span>()
+    terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+    <span class="keyword">local</span> current_rows, current_cols = terminal.<span class="function-name">size</span>()
+    resizable_panel:<span class="function-name">set_split_ratio</span>(ratio)
+    resizable_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, current_rows, current_cols)
+    resizable_panel:<span class="function-name">render</span>()
+
+    terminal.cursor.position.<span class="function-name">set</span>(current_rows - <span class="number">1</span>, <span class="number">1</span>)
+    terminal.output.<span class="function-name">write</span>(<span class="string">"Split ratio: "</span> .. <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"%.1f"</span>, ratio) .. <span class="string">" - Press any key to continue..."</span>)
+  <span class="keyword">end</span>
+
+  <span class="keyword">while</span> <span class="keyword">not</span> terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="function-name">screen_resized</span>() <span class="keyword">then</span>
+      <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
+      resizable_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+      resizable_panel:<span class="function-name">render</span>()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">-- Example 6: Size constraints
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">run_example_6</span>()
+  terminal.clear.<span class="function-name">screen</span>()
+  terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+
+  <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
+  <span class="keyword">local</span> constrained_panel = <span class="function-name">Panel</span> {
+    orientation = Panel.orientations.horizontal,
+    children = {
+      <span class="function-name">Panel</span> {
+        min_width = <span class="global">math</span>.<span class="function-name">max</span>(<span class="number">15</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.3</span>)), <span class="comment">-- Minimum width constraint
+</span>        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"Min: "</span> .. <span class="global">math</span>.<span class="function-name">max</span>(<span class="number">15</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.3</span>)), <span class="string">"green"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Min Width"</span>),
+      },
+      <span class="function-name">Panel</span> {
+        max_width = <span class="global">math</span>.<span class="function-name">min</span>(<span class="number">20</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.7</span>)), <span class="comment">-- Maximum width constraint
+</span>        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
+          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"Max: "</span> .. <span class="global">math</span>.<span class="function-name">min</span>(<span class="number">20</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.7</span>)) .. <span class="string">" - Press any key"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Max Width"</span>),
+      }
+    }
+  }
+
+  constrained_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+  constrained_panel:<span class="function-name">render</span>()
+
+  <span class="keyword">while</span> <span class="keyword">not</span> terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="function-name">screen_resized</span>() <span class="keyword">then</span>
+      <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
+      constrained_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
+      constrained_panel:<span class="function-name">render</span>()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
+  <span class="function-name">run_example_1</span>()
+  <span class="function-name">run_example_2</span>()
+  <span class="function-name">run_example_3</span>()
+  <span class="function-name">run_example_4</span>()
+  <span class="function-name">run_example_5</span>()
+  <span class="function-name">run_example_6</span>()
+<span class="keyword">end</span>
+
+
+<span class="comment">-- Wrap main functionality in init+shutdown
+</span>main = terminal.<span class="function-name">initwrap</span>(main, {
+  displaybackup = <span class="keyword">true</span>,
+  filehandle = <span class="global">io</span>.stderr
+})
+
+
+<span class="function-name">main</span>()
+<span class="global">print</span>(<span class="string">"Panel examples completed!"</span>)</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

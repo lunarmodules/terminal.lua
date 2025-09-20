@@ -39,6 +39,8 @@
   <li><strong>Sequence</strong></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -80,9 +82,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -101,20 +105,20 @@
  This allows for dynamic use of the "stack" based functions.</p>
 
 <ul>
-    <li>calling on the object to instatiate it, passing the items as arguments</li>
+    <li>call on the class to instatiate it, passing the items as arguments</li>
     <li>concatenating two sequences with the "+" operator returns a new one of the 2 combined</li>
     <li>converting the sequence to a string will execute any functions and concatenate the results</li>
     <li>sequences can be nested inside other sequences</li>
     <li>sequence length is tracked in field <code>n</code>, if not present <code>#sequence</code> is used (an empty sequence has no <code>n</code> field)</li>
 </ul>
 
-<p> Example:</p>
+<p> <em>Example:</em></p>
 
 <pre>
 <span class="keyword">local</span> Seq = <span class="global">require</span> <span class="string">"terminal.sequence"</span>
 
 <span class="keyword">local</span> seq1 = <span class="function-name">Seq</span>(<span class="string">"hello"</span>, <span class="string">" "</span>, <span class="string">"world"</span>)
-<span class="keyword">local</span> seq2 = <span class="function-name">Seq</span>(<span class="string">"foo"</span>, <span class="keyword">function</span>() <span class="keyword">return</span> <span class="string">"---"</span> <span class="keyword">end</span>, <span class="string">"bar"</span>) <span class="comment">-- functions as memebers
+<span class="keyword">local</span> seq2 = <span class="function-name">Seq</span>(<span class="string">"foo"</span>, <span class="keyword">function</span>() <span class="keyword">return</span> <span class="string">"---"</span> <span class="keyword">end</span>, <span class="string">"bar"</span>) <span class="comment">-- functions as members
 </span><span class="keyword">local</span> seq3 = seq1 + seq2                                    <span class="comment">-- concatenation of sequences
 </span><span class="keyword">local</span> seq4 = <span class="function-name">Seq</span>(seq1, <span class="string">" "</span>, seq2)                           <span class="comment">-- nested sequences
 </span>

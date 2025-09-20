@@ -69,6 +69,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -85,9 +87,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -98,13 +102,21 @@
 
 <h1>Module <code>terminal.input.keymap</code></h1>
 <p>Module to map received input to key-names.</p>
+<p>
+
 <p> Check the examples below for usage.</p>
 
 <p> <strong>key-map</strong>:
- a <code>key-map</code> is a table that maps raw key-stroke input (from <code>readansi</code>) to key-names.
- The raw input can be a control-character (bytes 0-31 + 127), or an ANSI escape sequence.</p>
+ a <code>key-map</code> is a table that maps raw key-stroke input (from <a href="../modules/terminal.input.html#readansi">terminal.input.readansi</a>) to key-names.
+ The raw input can be:</p>
 
-<p> note: a raw-key only maps to 1 name, even if the sequence is known under multiple names.
+<ul>
+    <li>a single UTF-8 character (1 to 4 bytes)</li>
+    <li>a control-character (bytes 0-31 + 127)</li>
+    <li>an ANSI escape sequence.</li>
+</ul>
+
+<p> A raw-key only maps to 1 name, even if the sequence is known under multiple names.
  For example, the raw key <code>&quot;\013&quot;</code> (carriage return) maps to the name <code>&quot;ctrl_m&quot;</code>. Though on
  Windows it is also know as keyname <code>&quot;enter&quot;</code> or <code>&quot;return&quot;</code>, it will not map to these names.</p>
 
@@ -114,30 +126,34 @@
  you can use these names in your code, instead of the raw key-name. For unknown keys,
  an error will be thrown, so you can catch typos in your code early.</p>
 
-<p> So in key-map; raw-key <code>&quot;\013&quot;</code> maps to <code>&quot;ctrl_m&quot;</code></p>
+<p> So in <strong>key-map</strong>; raw-key <code>&quot;\013&quot;</code> maps to <code>&quot;ctrl_m&quot;</code></p>
 
-<p> In <code>keys</code>; the keys <code>&quot;ctrl_m&quot;</code>, <code>&quot;enter&quot;</code>, and <code>&quot;return&quot;</code>, all map to the same key-name; <code>&quot;ctrl_m&quot;</code>.</p>
+<p> In <strong>keys</strong><code>; the keys </code>"ctrl_m"<code>, </code>"enter"<code>, and </code>"return"<code>, all map to the same key-name; </code>"ctrl_m"`.</p>
 
 <p> Check the source code for default keys and aliases. Custom maps can be created with
  <a href="../modules/terminal.input.keymap.html#get_keymap">get_keymap</a> and <a href="../modules/terminal.input.keymap.html#get_keys">get_keys</a>.</p>
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example">local rawkey = &quot;\013&quot; -- carriage return
-local keymap = terminal.input.keymap.default_key_map
-local keys = terminal.input.keymap.default_keys
 
-local keyname = key_map[rawkey] --&gt; &quot;ctrl_m&quot;
+<p> <em>Example:</em></p>
 
--- the following if statements are equivalent:
-if keyname == &quot;ctrl_m&quot; then     -- uses magic strings, typos are lurking bugs!
-if keyname == keys.ctrl_m then  -- uses the official name, prevents typos, hard to read
-if keyname == keys.enter then   -- uses alias, easily readable, prevents typos
-if keyname == keys.return then  -- uses alias, easily readable, prevents typos
+<pre>
+<span class="keyword">local</span> rawkey = <span class="string">"\013"</span> <span class="comment">-- carriage return
+</span><span class="keyword">local</span> keymap = terminal.input.keymap.default_key_map
+<span class="keyword">local</span> keys = terminal.input.keymap.default_keys
 
--- This will throw an error when running due to the typo:
-if keyname == keys.retunr then  -- typo, will throw an error
+<span class="comment">-- lookup the key-name from the raw inpout
+</span><span class="keyword">local</span> keyname = key_map[rawkey] <span class="comment">--&gt; "ctrl_m"
+</span>
+<span class="comment">-- the following if statements are equivalent:
+</span><span class="keyword">if</span> keyname == <span class="string">"ctrl_m"</span> <span class="keyword">then</span>        <span class="comment">-- uses magic strings, typos are lurking bugs!
+</span><span class="keyword">if</span> keyname == keys.ctrl_m <span class="keyword">then</span>     <span class="comment">-- uses the official name, prevents typos, hard to read
+</span><span class="keyword">if</span> keyname == keys.enter <span class="keyword">then</span>      <span class="comment">-- uses alias, easily readable, prevents typos
+</span><span class="keyword">if</span> keyname == keys[<span class="string">"return"</span>] <span class="keyword">then</span>  <span class="comment">-- uses alias, easily readable, prevents typos
+</span>
+<span class="comment">-- This will throw an error when running due to the typo:
+</span><span class="keyword">if</span> keyname == keys.retunr <span class="keyword">then</span>  <span class="comment">-- typo, will throw an error</span>
 </pre>
-    </ul>
+
+</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
@@ -192,7 +208,7 @@ if keyname == keys.retunr then  -- typo, will throw an error
         <li><span class="parameter">overrides</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          a table with key-value pairs to override the default key map.
- The key should be the raw-key (character or sequence) as returned by <code>readansi</code>, the value
+ The key should be the raw-key (character or sequence) as returned by <a href="../modules/terminal.input.html#readansi">terminal.input.readansi</a>, the value
  should be the name of the key.
          (<em>optional</em>)
         </li>
@@ -297,7 +313,7 @@ if keyname == keys.retunr then  -- typo, will throw an error
     <ul>
         <li><span class="parameter">keystroke</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the raw key-stroke as returned by <code>readansi</code>.
+         the raw key-stroke as returned by <a href="../modules/terminal.input.html#readansi">terminal.input.readansi</a>.
         </li>
     </ul>
 

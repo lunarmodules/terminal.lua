@@ -68,6 +68,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -84,9 +86,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -97,16 +101,22 @@
 
 <h1>Module <code>terminal.output</code></h1>
 <p>Module for writing output.</p>
+<p>
+
+
 <p> <em>Note:</em> This module will be available from the main <a href="../modules/terminal.html#">terminal</a> module, without
  explicitly requiring it.</p>
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example">local terminal = require &quot;terminal&quot;
-terminal.initialize()
 
-terminal.output.write(&quot;hello world&quot;)
+<p> <em>Example:</em></p>
+
+<pre>
+<span class="keyword">local</span> terminal = <span class="global">require</span> <span class="string">"terminal"</span>
+terminal.<span class="function-name">initialize</span>()
+
+terminal.output.<span class="function-name">write</span>(<span class="string">"hello world"</span>)
 </pre>
-    </ul>
+
+</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
@@ -162,6 +172,7 @@ terminal.output.write(&quot;hello world&quot;)
     <dd>
     Prints to the stream.
  A <a href="../modules/terminal.output.html#print">print</a> compatible function that safely writes output to the stream.
+ Arguments are separated by a tab character, and a newline is added at the end.
 
 
     <h3>Parameters:</h3>
@@ -183,7 +194,10 @@ terminal.output.write(&quot;hello world&quot;)
     <dd>
     Set the stream to operate on.
  This can be used to redirect output to a different stream.
- The default value at start is <a href="https://www.lua.org/manual/5.4/manual.html#pdf-io.stderr">io.stderr</a>.
+ The default value at start is <a href="https://www.lua.org/manual/5.4/manual.html#pdf-io.stderr">io.stderr</a>.</p>
+
+<p> Instead of calling this directly, it is probably better to use the
+ <a href="../modules/terminal.html#initialize">terminal.initialize</a> function.
 
 
     <h3>Parameters:</h3>
@@ -212,6 +226,7 @@ terminal.output.write(&quot;hello world&quot;)
 
 <p>Writes to the stream.
  This is a safer write-function than the standard Lua one.
+ It doesn't add add tabs between arguments, and it doesn't add a newline at the end (like <a href="../modules/terminal.output.html#print">print</a> does).
  Differences from the standard Lua write function:</p>
 
 <ul>

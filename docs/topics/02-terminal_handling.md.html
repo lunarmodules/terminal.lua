@@ -72,6 +72,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Examples</h2>
 <ul class="nowrap">
@@ -80,9 +82,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -114,7 +118,7 @@ The library assumes it will not block, or only very briefly.</p>
 <h1>2.2 Querying</h1>
 
 <p>Querying the terminal is done by writing a command code, and then reading the response
-from the input buffer. However the data is appended to the STDIN buffer if it wasn't empty
+from the input buffer. However the requested data is appended to the STDIN buffer if it wasn't empty
 to begin with. This means that when reading, any data that is not the response needs
 to be buffered Lua side to be consumed later.</p>
 
@@ -128,6 +132,8 @@ to be buffered Lua side to be consumed later.</p>
 The primary thing to know is the display width of characters.</p>
 
 <p>The <a href="../modules/terminal.text.width.html#">terminal.text.width</a> module provides functionality to test and report the width of characters and strings, as does <a href="../modules/terminal.html#preload_widths">terminal.preload_widths</a>. The <a href="../modules/terminal.html#size">terminal.size</a> function can be used to find the terminal size (in rows and columns), to see if the text to display fits the screen or will roll-over/scroll.</p>
+
+<p>The <a href="../classes/EditLine.html#">EditLine</a> class has advanced ways of handling width.</p>
 
 
 </div> <!-- id="content" -->

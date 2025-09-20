@@ -34,6 +34,7 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
+<li><a href="#Querying">Querying</a></li>
 </ul>
 
 
@@ -68,6 +69,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -84,9 +87,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -97,19 +102,36 @@
 
 <h1>Module <code>terminal.input</code></h1>
 <p>Module for getting keyboard input.</p>
-<p> Also enables querying the terminal. When inmplementing any
- other queries, check out <a href="../modules/terminal.input.html#preread">preread</a> and <a href="../modules/terminal.input.html#read_query_answer">read_query_answer</a> documentation.</p>
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example">local terminal = require &quot;terminal&quot;
-terminal.initialize()
+<p>
 
-local char, typ, sequence = terminal.input.readansi(1)
+<p> Also enables querying the terminal. When implementing any
+ other queries, check out <a href="../modules/terminal.input.html#preread">preread</a> and <a href="../modules/terminal.input.html#read_query_answer">read_query_answer</a> documentation.</p>
+
+<p> <em>Example:</em></p>
+
+<pre>
+<span class="keyword">local</span> terminal = <span class="global">require</span> <span class="string">"terminal"</span>
+terminal.<span class="function-name">initialize</span>()
+
+<span class="keyword">local</span> char, typ, sequence = terminal.input.<span class="function-name">readansi</span>(<span class="number">1</span>)
 </pre>
-    </ul>
+
+</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#readansi">readansi (timeout[, fsleep])</a></td>
+	<td class="summary">Same as <a href="https://lunarmodules.github.io/luasystem/modules/system.html#readansi"><code>sys.readansi</code></a>,
+ but works with the internal buffer required by <code>terminal.lua</code>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#sys_readansi">sys_readansi ()</a></td>
+	<td class="summary">The original readansi function from LuaSystem.</td>
+	</tr>
+</table>
+<h2><a href="#Querying">Querying</a></h2>
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#preread">preread ()</a></td>
@@ -127,14 +149,6 @@ local char, typ, sequence = terminal.input.readansi(1)
 	<td class="name" nowrap><a href="#read_query_answer">read_query_answer (answer_pattern[, count=1])</a></td>
 	<td class="summary">Reads the answer to a query from the terminal.</td>
 	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#readansi">readansi (timeout[, fsleep])</a></td>
-	<td class="summary">Same as <code>sys.readansi</code>, but works with the internal buffer required by <code>terminal.lua</code>.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#sys_readansi">sys_readansi ()</a></td>
-	<td class="summary">The original readansi function from LuaSystem.</td>
-	</tr>
 </table>
 
 <br/>
@@ -142,6 +156,57 @@ local char, typ, sequence = terminal.input.readansi(1)
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "readansi"></a>
+    <strong>readansi (timeout[, fsleep])</strong>
+    </dt>
+    <dd>
+    Same as <a href="https://lunarmodules.github.io/luasystem/modules/system.html#readansi"><code>sys.readansi</code></a>,
+ but works with the internal buffer required by <code>terminal.lua</code>.
+ This function will read from the internal buffer first, before calling <code>sys.readansi</code>. This is
+ required because querying the terminal (e.g. getting cursor position) might read data
+ from the keyboard buffer, which would be lost if not buffered. Hence this function
+ must be used instead of <code>sys.readansi</code>, to ensure the previously read buffer is
+ consumed first.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">timeout</span>
+            <span class="types"><span class="type">number</span></span>
+         the timeout in seconds
+        </li>
+        <li><span class="parameter">fsleep</span>
+            <span class="types"><span class="type">function</span></span>
+         the sleep function to use (default: the sleep function
+ set by <code>initialize</code>)
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "sys_readansi"></a>
+    <strong>sys_readansi ()</strong>
+    </dt>
+    <dd>
+    The original readansi function from LuaSystem.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Querying"></a>Querying</h2>
 
     <dl class="function">
     <dt>
@@ -273,52 +338,6 @@ local char, typ, sequence = terminal.input.readansi(1)
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
         an array with <code>count</code> entries. Each entry is another array with the captures from the answer pattern.
     </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "readansi"></a>
-    <strong>readansi (timeout[, fsleep])</strong>
-    </dt>
-    <dd>
-    Same as <code>sys.readansi</code>, but works with the internal buffer required by <code>terminal.lua</code>.
- This function will read from the internal buffer first, before calling <code>sys.readansi</code>. This is
- required because querying the terminal (e.g. getting cursor position) might read data
- from the keyboard buffer, which would be lost if not buffered. Hence this function
- must be used instead of <code>sys.readansi</code>, to ensure the previously read buffer is
- consumed first.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">timeout</span>
-            <span class="types"><span class="type">number</span></span>
-         the timeout in seconds
-        </li>
-        <li><span class="parameter">fsleep</span>
-            <span class="types"><span class="type">function</span></span>
-         the sleep function to use (default: the sleep function
- set by <code>initialize</code>)
-         (<em>optional</em>)
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "sys_readansi"></a>
-    <strong>sys_readansi ()</strong>
-    </dt>
-    <dd>
-    The original readansi function from LuaSystem.
-
-
-
 
 
 

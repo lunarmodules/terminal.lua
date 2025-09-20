@@ -69,6 +69,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -85,9 +87,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -280,7 +284,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of rows to move down
+         number of rows to move down (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>
@@ -375,7 +379,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of columns to move left
+         number of columns to move left (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>
@@ -468,7 +472,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of columns to move right
+         number of columns to move right (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>
@@ -555,7 +559,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of rows to move up
+         number of rows to move up (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>
@@ -661,7 +665,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of rows to move down
+         number of rows to move down (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>
@@ -717,7 +721,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of columns to move left
+         number of columns to move left (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>
@@ -819,7 +823,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of columns to move right
+         number of columns to move right (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>
@@ -908,7 +912,7 @@
     <ul>
         <li><span class="parameter">n</span>
             <span class="types"><span class="type">number</span></span>
-         number of rows to move up
+         number of rows to move up (0 does nothing)
          (<em>default</em> 1)
         </li>
     </ul>

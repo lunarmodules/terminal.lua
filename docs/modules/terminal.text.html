@@ -69,6 +69,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -85,9 +87,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -99,6 +103,29 @@
 <h1>Module <code>terminal.text</code></h1>
 <p>Terminal text module.</p>
 <p> Provides utilities to set text attributes in terminals.</p>
+
+<p> The text attribute-sets conform to the following format:</p>
+
+<pre>
+<span class="keyword">local</span> attr = {
+  fg         = <span class="keyword">nil</span>, <span class="comment">-- foreground color (string, or extended color number)
+</span>  fg_r       = <span class="keyword">nil</span>, <span class="comment">-- red value of foreground color
+</span>  fg_g       = <span class="keyword">nil</span>, <span class="comment">-- green value of foreground color
+</span>  fg_b       = <span class="keyword">nil</span>, <span class="comment">-- blue value of foreground color
+</span>  bg         = <span class="keyword">nil</span>, <span class="comment">-- background color (string, or extended color number)
+</span>  bg_r       = <span class="keyword">nil</span>, <span class="comment">-- red value of background color
+</span>  bg_g       = <span class="keyword">nil</span>, <span class="comment">-- green value of background color
+</span>  bg_b       = <span class="keyword">nil</span>, <span class="comment">-- blue value of background color
+</span>  brightness = <span class="keyword">nil</span>, <span class="comment">-- brightness level (see <a href="../modules/terminal.text.html#brightness_seq">brightness_seq</a> for details)
+</span>  underline  = <span class="keyword">nil</span>, <span class="comment">-- underline (boolean)
+</span>  blink      = <span class="keyword">nil</span>, <span class="comment">-- blink (boolean)
+</span>  reverse    = <span class="keyword">nil</span>, <span class="comment">-- reverse colors (boolean)
+</span>}
+</pre>
+
+<p> The base colors strings (for <code>fg</code> and <code>bg</code>) are: <code>black</code>, <code>red</code>, <code>green</code>, <code>yellow</code>, <code>blue</code>, <code>magenta</code>, <code>cyan</code>, and <code>white</code>.</p>
+
+<p> All elements are optional. If an element is omitted, it will be taken from the current top of the stack.</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>

@@ -68,6 +68,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -84,9 +86,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -126,8 +130,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
-	<td class="summary">Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
- Preserves utf8.len()</td>
+	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.</td>
 	</tr>
 </table>
 
@@ -359,8 +362,7 @@
     <strong>utf8sub (str, i, j)</strong>
     </dt>
     <dd>
-    Like string:sub(), Returns the substring of the string that starts from i and go until j inclusive, but operators on utf8 characters
- Preserves utf8.len()
+    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.
 
 
     <h3>Parameters:</h3>

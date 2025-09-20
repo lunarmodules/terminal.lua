@@ -43,6 +43,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -84,9 +86,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -97,26 +101,36 @@
 
 <h1>Class <code>EditLine</code></h1>
 <p>UTF8 based EditLine class.</p>
-<p> This class handles a UTF8 string with editing operations, cursor tracking, and width tracking.</p>
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example">local EditLine = require(&quot;terminal.editline&quot;)
-local line = EditLine(&quot;héllo界&quot;)
+<p>
 
-print(line)                                      -- Output: héllo界
-print(&quot;Characters:&quot;, line:len_char())            -- Output: Characters: 6
-print(&quot;Columns:&quot;, line:len_col())                -- Output: Columns: 7 (since &apos;界&apos; is width 2)
 
--- Move the cursor
-line:left(2)
-print(&quot;Cursor char position:&quot;, line:pos_char())  -- Output: 4
-print(&quot;Cursor column position:&quot;, line:pos_col()) -- Output: 4
+<p> This class handles a UTF8 string with editing, formatting (word-wrap), cursor tracking, and width tracking.</p>
 
--- Editing
-line:insert(&quot;!&quot;)
-print(line)                                      -- Output: héll!o界
+<p> <em>Example:</em></p>
+
+
+<pre>
+<span class="keyword">local</span> EditLine = <span class="global">require</span>(<span class="string">"terminal.editline"</span>)
+<span class="keyword">local</span> line = <span class="function-name">EditLine</span> {
+  value = <span class="string">"héllo界"</span>,
+  position = <span class="number">6</span>,                                  <span class="comment">-- cursor after 'o', on '界'
+</span>}
+
+<span class="global">print</span>(line)                                      <span class="comment">-- Output: héllo界
+</span><span class="global">print</span>(<span class="string">"Characters:"</span>, line:<span class="function-name">len_char</span>())            <span class="comment">-- Output: Characters: 6
+</span><span class="global">print</span>(<span class="string">"Columns:"</span>, line:<span class="function-name">len_col</span>())                <span class="comment">-- Output: Columns: 7 (since '界' is width 2)
+</span>
+<span class="comment">-- Move the cursor
+</span>line:<span class="function-name">left</span>(<span class="number">2</span>)
+<span class="global">print</span>(<span class="string">"Cursor char position:"</span>, line:<span class="function-name">pos_char</span>())  <span class="comment">-- Output: 4
+</span><span class="global">print</span>(<span class="string">"Cursor column position:"</span>, line:<span class="function-name">pos_col</span>()) <span class="comment">-- Output: 4
+</span>
+<span class="comment">-- Editing
+</span>line:<span class="function-name">insert</span>(<span class="string">"!"</span>)
+<span class="global">print</span>(line)                                      <span class="comment">-- Output: hél!lo界</span>
 </pre>
-    </ul>
+
+</p>
 
 
 <h2><a href="#Methods">Methods</a></h2>
@@ -535,6 +549,7 @@ print(line)                                      -- Output: héll!o界
     </dt>
     <dd>
     Create a new EditLine instance.
+ Do not call this method directly, call on the class instead, see the example.
 
 
     <h3>Parameters:</h3>
@@ -553,7 +568,7 @@ print(line)                                      -- Output: héll!o界
         </li>
         <li><span class="parameter">position</span>
             <span class="types"><span class="type">number</span></span>
-         Initial cursor position (1-based index).
+         Initial cursor position (defaults to the end).
          (<em>optional</em>)
         </li>
         </li></ul>
@@ -568,6 +583,14 @@ print(line)                                      -- Output: héll!o界
 
 
 
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> EditLine = <span class="global">require</span>(<span class="string">"terminal.editline"</span>)
+<span class="keyword">local</span> line = <span class="function-name">EditLine</span> {
+  value = <span class="string">"Hello, world!"</span>,
+  position = <span class="number">1</span>,
+}</pre>
+    </ul>
 
 </dd>
     <dt>

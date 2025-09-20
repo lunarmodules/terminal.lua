@@ -33,6 +33,7 @@
 
 <h2>Contents</h2>
 <ul>
+<li><a href="#Functions">Functions</a></li>
 <li><a href="#Methods">Methods</a></li>
 </ul>
 
@@ -43,6 +44,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><strong>cli.Select</strong></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -84,9 +87,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -97,33 +102,47 @@
 
 <h1>Class <code>cli.Select</code></h1>
 <p>A single-choice interactive menu widget for CLI tools.</p>
+<p>
+
+
 <p> This module provides a simple way to create a menu with a list of choices,
  allowing the user to navigate and select an option using keyboard input.
  The menu is displayed in the terminal, and the user can use the arrow keys
  to navigate through the options. The selected option is highlighted, and the
  user can confirm their choice by pressing Enter. Optionally the menu can also be
- cancelled by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>.
- NOTE: you MUST <code>terminal.initialize()</code> before calling this widget's <code>:run()</code></p>
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example">local menu = cli.Select{   -- invokes the &apos;init&apos; method
-  prompt = &quot;Select an option:&quot;,
+ cancelled by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>.</p>
+
+<p> NOTE: you MUST call <a href="../modules/terminal.html#initialize">terminal.initialize</a> before calling this widget's <code>:run()</code> method.</p>
+
+<p> <em>Usage:</em></p>
+
+<pre>
+<span class="keyword">local</span> menu = cli.<span class="function-name">Select</span>{
+  prompt = <span class="string">"Select an option:"</span>,
   choices = {
-    &quot;Option 1&quot;,
-    &quot;Option 2&quot;,
-    &quot;Option 3&quot;
+    <span class="string">"Option 1"</span>,
+    <span class="string">"Option 2"</span>,
+    <span class="string">"Option 3"</span>
   },
-  default = 1,
-  cancellable = true
+  default = <span class="number">1</span>,
+  cancellable = <span class="keyword">true</span>
 }
 
-local selected_index, selected_value = menu()  -- invokes the &apos;run&apos; method
-print(&quot;Selected index: &quot; .. selected_index)
-print(&quot;Selected value: &quot; .. selected_value)
+<span class="keyword">local</span> selected_index, selected_value = <span class="function-name">menu</span>()  <span class="comment">-- invokes the 'run' method
+</span><span class="global">print</span>(<span class="string">"Selected index: "</span> .. selected_index)
+<span class="global">print</span>(<span class="string">"Selected value: "</span> .. selected_value)
 </pre>
-    </ul>
+
+</p>
 
 
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cli.Select">cli.Select (opts)</a></td>
+	<td class="summary">Create a new Select instance.</td>
+	</tr>
+</table>
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
@@ -135,10 +154,6 @@ print(&quot;Selected value: &quot; .. selected_value)
 	<td class="summary">Returns the display height in rows.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#cli.select:init">cli.select:init (opts)</a></td>
-	<td class="summary">Initialize Select.</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#cli.select:run">cli.select:run ()</a></td>
 	<td class="summary">Executes the widget.</td>
 	</tr>
@@ -148,6 +163,60 @@ print(&quot;Selected value: &quot; .. selected_value)
 <br/>
 
 
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cli.Select"></a>
+    <strong>cli.Select (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Select instance.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options for the Select menu.
+        <ul>
+        <li><span class="parameter">choices</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         List of choices (strings) to display.
+        </li>
+        <li><span class="parameter">default</span>
+            <span class="types"><span class="type">number</span></span>
+         Default choice index (1-based).
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">prompt</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Prompt message to display.
+         (<em>default</em> "Select an option:")
+        </li>
+        <li><span class="parameter">cancellable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether the menu can be cancelled (by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>).
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">clear</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to clear the widget from screen after completion.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/cli.Prompt.html">Prompt</a></span>
+        A new Select instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
     <h2 class="section-header "><a name="Methods"></a>Methods</h2>
 
     <dl class="function">
@@ -182,51 +251,6 @@ print(&quot;Selected value: &quot; .. selected_value)
            <span class="types"><span class="type">number</span></span>
         The height of the menu in rows.
     </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "cli.select:init"></a>
-    <strong>cli.select:init (opts)</strong>
-    </dt>
-    <dd>
-    Initialize Select.
- This method is invoked by calling on the class.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">opts</span> Options for the Select menu.
-        <ul>
-        <li><span class="parameter">choices</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         List of choices (strings) to display.
-        </li>
-        <li><span class="parameter">default</span>
-            <span class="types"><span class="type">number</span></span>
-         Default choice index (1-based).
-         (<em>default</em> 1)
-        </li>
-        <li><span class="parameter">prompt</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         Prompt message to display.
-         (<em>default</em> "Select an option:")
-        </li>
-        <li><span class="parameter">cancellable</span>
-            <span class="types"><span class="type">boolean</span></span>
-         Whether the menu can be cancelled (by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>).
-         (<em>default</em> false)
-        </li>
-        <li><span class="parameter">clear</span>
-            <span class="types"><span class="type">boolean</span></span>
-         Whether to clear the widget from screen after completion.
-         (<em>default</em> false)
-        </li>
-        </li></ul>
-    </ul>
-
 
 
 

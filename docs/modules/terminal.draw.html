@@ -70,6 +70,8 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -86,9 +88,11 @@
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
 </ul>
@@ -123,7 +127,7 @@
 <h2><a href="#Sequences">Sequences</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#box_seq">box_seq (height, width[, format[, clear_flag=" "[, title=""[, lastcolumn=""]]]])</a></td>
+	<td class="name" nowrap><a href="#box_seq">box_seq (height, width[, format[, clear_flag=" "[, title=" "[, lastcolumn=""]]]])</a></td>
 	<td class="summary">Creates a sequence to draw a box, without writing it to the terminal.</td>
 	</tr>
 </table>
@@ -155,7 +159,7 @@
         </li>
         <li><span class="parameter">format</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         the format for the box, see <code>boxs</code> for details.
+         the format for the box, see <a href="../modules/terminal.draw.html#box_seq">box_seq</a> for details.
         </li>
         <li><span class="parameter">clear_flag</span>
             <span class="types"><span class="type">bool</span></span>
@@ -253,7 +257,7 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
     <dl class="function">
     <dt>
     <a name = "box_seq"></a>
-    <strong>box_seq (height, width[, format[, clear_flag=" "[, title=""[, lastcolumn=""]]]])</strong>
+    <strong>box_seq (height, width[, format[, clear_flag=" "[, title=" "[, lastcolumn=""]]]])</strong>
     </dt>
     <dd>
     Creates a sequence to draw a box, without writing it to the terminal.
@@ -273,14 +277,24 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
         </li>
         <li><span class="parameter">format</span> the format for the box (default is single line), with keys:
         <ul>
-        <li><span class="parameter">h</span>
+        <li><span class="parameter">t</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the horizontal line character
+         the top horizontal line character
          (<em>default</em> " ")
         </li>
-        <li><span class="parameter">v</span>
+        <li><span class="parameter">b</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the vertical line character
+         the bottom horizontal line character
+         (<em>default</em> " ")
+        </li>
+        <li><span class="parameter">l</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the left vertical line character
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">r</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the right vertical line character
          (<em>default</em> "")
         </li>
         <li><span class="parameter">tl</span>
