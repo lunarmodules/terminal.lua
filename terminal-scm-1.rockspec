@@ -60,6 +60,7 @@ build = {
     ["terminal.cli.select"] = "src/terminal/cli/select.lua",
     ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
     ["terminal.ui.panel"] = "src/terminal/ui/panel.lua",
+    ["terminal.ui.screen"] = "src/terminal/ui/screen.lua",
   },
 
   copy_directories = {
