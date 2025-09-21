@@ -398,14 +398,22 @@ end
 -- drawn inside the border area.
 --
 -- @tparam function callback The original content callback to wrap.
--- @tparam table format The box format table (see `terminal.draw.box_fmt`).
--- @tparam[opt] table attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
--- @tparam[opt] string title Optional title to display in the border.
--- @tparam[opt="right"] string truncation_type The type of title-truncation to apply, either "left", "right", or "drop".
--- @tparam[opt] table title_attr Table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`.
+-- @tparam table border Table containing border configuration:
+--   @tparam table border.format The box format table (see `terminal.draw.box_fmt`).
+--   @tparam[opt] table border.attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
+--   @tparam[opt] string border.title Optional title to display in the border.
+--   @tparam[opt="right"] string border.truncation_type The type of title-truncation to apply, either "left", "right", or "drop".
+--   @tparam[opt] table border.title_attr Table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`.
 -- @treturn function A new callback that draws the border and then calls your original callback.
-function Panel.content_border(callback, format, attr, title, truncation_type, title_attr)
+function Panel.content_border(callback, border)
   assert(type(callback) == "function", "callback must be a function (do not use colon notation)")
+  assert(type(border) == "table", "border must be a table")
+
+  local format = border.format
+  local attr = border.attr
+  local title = border.title
+  local truncation_type = border.truncation_type or "right"
+  local title_attr = border.title_attr
 
   return function(self, row, col, height, width)
     local lastcol = col + width - 1
