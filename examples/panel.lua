@@ -42,7 +42,10 @@ end
 -- Helper function to create full-screen panel
 local function create_fullscreen_panel(content_func)
   return Panel {
-    content = Panel.content_border(content_func, terminal.draw.box_fmt.single, nil, ""),
+    content = Panel.content_border(content_func, {
+      format = terminal.draw.box_fmt.single,
+      title = ""
+    }),
   }
 end
 
@@ -86,12 +89,20 @@ local function run_example_2()
       Panel {
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "60% - Press any key", "blue")
-        end, terminal.draw.box_fmt.double, { fg = "blue" }, "Left Panel"),
+        end, {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = "blue" },
+          title = "Left Panel"
+        }),
       },
       Panel {
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "40%", "red")
-        end, terminal.draw.box_fmt.double, { fg = "red" }, "Right Panel"),
+        end, {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = "red" },
+          title = "Right Panel"
+        }),
       }
     }
   }
@@ -122,12 +133,20 @@ local function run_example_3()
       Panel {
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "40% - Press any key", "yellow")
-        end, terminal.draw.box_fmt.single, { fg = "yellow" }, "Top Panel"),
+        end, {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = "yellow" },
+          title = "Top Panel"
+        }),
       },
       Panel {
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "60%", "magenta")
-        end, terminal.draw.box_fmt.single, { fg = "magenta" }, "Bottom Panel"),
+        end, {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = "magenta" },
+          title = "Bottom Panel"
+        }),
       }
     }
   }
@@ -163,12 +182,20 @@ local function run_example_4()
           Panel {
             content = Panel.content_border(function(self, row, col, height, width)
               draw_content(row, col, height, width, "30%", "cyan")
-            end, terminal.draw.box_fmt.single, { fg = "cyan" }, "Top Left"),
+            end, {
+              format = terminal.draw.box_fmt.single,
+              attr = { fg = "cyan" },
+              title = "Top Left"
+            }),
           },
           Panel {
             content = Panel.content_border(function(self, row, col, height, width)
               draw_content(row, col, height, width, "70%", "green")
-            end, terminal.draw.box_fmt.single, { fg = "green" }, "Bottom Left"),
+            end, {
+              format = terminal.draw.box_fmt.single,
+              attr = { fg = "green" },
+              title = "Bottom Left"
+            }),
           }
         }
       },
@@ -176,7 +203,11 @@ local function run_example_4()
       Panel {
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "Full Right - Press any key", "red")
-        end, terminal.draw.box_fmt.double, { fg = "red" }, "Right Side"),
+        end, {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = "red" },
+          title = "Right Side"
+        }),
       }
     }
   }
@@ -206,12 +237,20 @@ local function run_example_5()
       Panel {
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "50%", "blue")
-        end, terminal.draw.box_fmt.single, { fg = "blue" }, "Panel A"),
+        end, {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = "blue" },
+          title = "Panel A"
+        }),
       },
       Panel {
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "50% - Press any key", "red")
-        end, terminal.draw.box_fmt.single, { fg = "red" }, "Panel B"),
+        end, {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = "red" },
+          title = "Panel B"
+        }),
       }
     }
   }
@@ -253,13 +292,21 @@ local function run_example_6()
         min_width = math.max(15, math.floor(cols * 0.3)), -- Minimum width constraint
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "Min: " .. math.max(15, math.floor(cols * 0.3)), "green")
-        end, terminal.draw.box_fmt.double, { fg = "green" }, "Min Width"),
+        end, {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = "green" },
+          title = "Min Width"
+        }),
       },
       Panel {
         max_width = math.min(20, math.floor(cols * 0.7)), -- Maximum width constraint
         content = Panel.content_border(function(self, row, col, height, width)
           draw_content(row, col, height, width, "Max: " .. math.min(20, math.floor(cols * 0.7)) .. " - Press any key", "red")
-        end, terminal.draw.box_fmt.double, { fg = "red" }, "Max Width"),
+        end, {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = "red" },
+          title = "Max Width"
+        }),
       }
     }
   }
