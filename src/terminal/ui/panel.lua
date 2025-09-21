@@ -46,6 +46,7 @@ local terminal = require("terminal")
 local cursor = require("terminal.cursor")
 local utils = require("terminal.utils")
 local draw = require("terminal.draw")
+local text = require("terminal.text")
 
 local Panel = utils.class()
 
@@ -398,9 +399,12 @@ end
 --
 -- @tparam function callback The original content callback to wrap.
 -- @tparam table format The box format table (see `terminal.draw.box_fmt`).
+-- @tparam[opt] table attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
 -- @tparam[opt] string title Optional title to display in the border.
+-- @tparam[opt="right"] string truncation_type The type of title-truncation to apply, either "left", "right", or "drop".
+-- @tparam[opt] table title_attr Table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`.
 -- @treturn function A new callback that draws the border and then calls your original callback.
-function Panel.content_border(callback, format, title)
+function Panel.content_border(callback, format, attr, title, truncation_type, title_attr)
   assert(type(callback) == "function", "callback must be a function (do not use colon notation)")
 
   return function(self, row, col, height, width)
@@ -410,9 +414,16 @@ function Panel.content_border(callback, format, title)
 
     cursor.position.backup()
     cursor.position.set(row, col)
-    draw.box(height, width, format, true, title, lastcolumn)
+    if attr then
+      text.stack.push(attr)
+    end
+    draw.box(height, width, format, true, title, lastcolumn, truncation_type, title_attr)
+    if attr then
+      text.stack.pop()
+    end
     cursor.position.restore()
 
+    -- adjust the coordinates and size for the inner content
     if format.t ~= "" then
       row = row + 1
       height = height - 1
