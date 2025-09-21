@@ -1,5 +1,6 @@
 --- Screen class for full-screen terminal applications.
 -- Manages a full-screen layout with optional header and footer panels.
+-- Derives from `ui.Panel`.
 -- @classmod ui.Screen
 
 local utils = require("terminal.utils")
