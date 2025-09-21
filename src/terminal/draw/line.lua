@@ -5,6 +5,7 @@
 local M = {}
 package.loaded["terminal.draw.line"] = M -- Push in `package.loaded` to avoid circular dependencies
 
+local Sequence = require "terminal.sequence"
 local output = require "terminal.output"
 local cursor = require "terminal.cursor"
 local text = require "terminal.text"
@@ -127,9 +128,10 @@ end
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
 -- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `title_fmt` for details
--- @treturn string ansi sequence to write to the terminal
+-- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
+-- @treturn Sequence|string The sequence to write to the terminal
 -- @within Sequences
-function M.title_seq(width, title, char, pre, post, type)
+function M.title_seq(width, title, char, pre, post, type, title_attr)
   if title == nil or title == "" then
     return M.horizontal_seq(width, char)
   end
@@ -144,12 +146,23 @@ function M.title_seq(width, title, char, pre, post, type)
   if title_w == 0 then
     return M.horizontal_seq(width, char)
   end
-  title = pre .. title .. post
-  title_w = title_w + pre_w + post_w
+  title_w = title_w + pre_w + post_w -- width including prefix and postfix
 
   local left = math.floor((width - title_w) / 2)
   local right = width - left - title_w
-  return M.horizontal_seq(left, char) .. title .. M.horizontal_seq(right, char)
+  if not title_attr then
+    return M.horizontal_seq(left, char) .. pre .. title .. post .. M.horizontal_seq(right, char)
+  else
+    return Sequence(
+      M.horizontal_seq(left, char),
+      pre,
+      function() return text.stack.push_seq(title_attr) end,
+      title,
+      text.stack.pop_seq,
+      post,
+      M.horizontal_seq(right, char)
+    )
+  end
 end
 
 
@@ -163,9 +176,10 @@ end
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
 -- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `title_fmt` for details
+-- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
 -- @return true
-function M.title(title, width, char, pre, post, type)
-  output.write(M.title_seq(title, width, char, pre, post, type))
+function M.title(title, width, char, pre, post, type, title_attr)
+  output.write(M.title_seq(title, width, char, pre, post, type, title_attr))
   return true
 end
 
