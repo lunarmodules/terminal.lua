@@ -6,8 +6,10 @@ local M = {}
 package.loaded["terminal.draw"] = M -- Push in `package.loaded` to avoid circular dependencies
 M.line = require "terminal.draw.line"
 
+local Sequence = require "terminal.sequence"
 local output = require "terminal.output"
 local cursor = require "terminal.cursor"
+local unpack = unpack or table.unpack
 local clear = require "terminal.clear"
 local utils = require "terminal.utils"
 local text = require "terminal.text"
@@ -107,9 +109,10 @@ end
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @tparam[opt="right"] string type the type of title-truncation to apply, either "left", "right", or "drop", see `draw.line.title_fmt` for details
--- @treturn string ansi sequence to write to the terminal
+-- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
+-- @treturn Sequence The sequence to write to the terminal
 -- @within Sequences
-function M.box_seq(height, width, format, clear_flag, title, lastcolumn, type)
+function M.box_seq(height, width, format, clear_flag, title, lastcolumn, type, title_attr)
   format = format or M.box_fmt.single
   local v_w = text.width.utf8swidth(format.l or "")
   local tl_w = text.width.utf8swidth(format.tl or "")
@@ -126,7 +129,7 @@ function M.box_seq(height, width, format, clear_flag, title, lastcolumn, type)
   local r = {
     -- draw top
     format.tl or "",
-    M.line.title_seq(width - tl_w - tr_w, title, format.t or " ", format.pre or "", format.post or "", type),
+    M.line.title_seq(width - tl_w - tr_w, title, format.t or " ", format.pre or "", format.post or "", type, title_attr),
     format.tr or "",
     -- position to draw right, and draw it
     cursor.position.move_seq(1, -v_w + lastcolumn),
@@ -148,7 +151,7 @@ function M.box_seq(height, width, format, clear_flag, title, lastcolumn, type)
     r[l+2] = clear.box_seq(height - 2, width - 2 * v_w)
     r[l+3] = cursor.position.move_seq(-1, -v_w)
   end
-  return table.concat(r)
+  return Sequence(unpack(r))
 end
 
 
@@ -161,9 +164,10 @@ end
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
 -- @tparam[opt="right"] string type the type of title-truncation to apply, either "left", "right", or "drop", see `draw.line.title_fmt` for details
+-- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
 -- @return true
-function M.box(height, width, format, clear_flag, title, lastcolumn, type)
-  output.write(M.box_seq(height, width, format, clear_flag, title, lastcolumn, type))
+function M.box(height, width, format, clear_flag, title, lastcolumn, type, title_attr)
+  output.write(M.box_seq(height, width, format, clear_flag, title, lastcolumn, type, title_attr))
   return true
 end
 

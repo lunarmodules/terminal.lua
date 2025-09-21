@@ -5,6 +5,7 @@
 -- that the entire string is written.
 
 local t = require("terminal")
+local Sequence = require("terminal.sequence")
 
 
 
@@ -32,7 +33,7 @@ local main do
 
 
   main = function()
-    local o = {}
+    local o = Sequence()
     -- clear the screen, and draw the test screen
     o[#o+1] = t.clear.screen_seq()
     testscreen(o)
@@ -41,7 +42,8 @@ local main do
     local edge = 2
     local r,c = t.size()
     o[#o+1] = t.cursor.position.set_seq(edge+1, edge+1)
-    o[#o+1] = t.draw.box_seq(r - 2*edge, c - 2*edge, t.draw.box_fmt.double, true, "test screen")
+    o[#o+1] = t.draw.box_seq(r - 2*edge, c - 2*edge, t.draw.box_fmt.double, true,
+              "test screen", nil, nil, { fg = "green", bg = "black", brightness = 3 })
 
     -- move cursor inside the box
     o[#o+1] = t.cursor.position.move_seq(1, 1)
@@ -55,7 +57,7 @@ local main do
     o[#o+1] = "press any key, or wait 5 seconds..."
 
     -- write the whole thing at once
-    assert(t.output.write(table.concat(o)))
+    assert(t.output.write(o))
 
     -- wait for user input, or timeout after 5 seconds
     t.input.readansi(5)
