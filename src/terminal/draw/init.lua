@@ -106,9 +106,10 @@ end
 -- @tparam[opt=false] bool clear_flag whether to clear the box contents
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
+-- @tparam[opt="right"] string type the type of title-truncation to apply, either "left", "right", or "drop", see `draw.line.title_fmt` for details
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
-function M.box_seq(height, width, format, clear_flag, title, lastcolumn)
+function M.box_seq(height, width, format, clear_flag, title, lastcolumn, type)
   format = format or M.box_fmt.single
   local v_w = text.width.utf8swidth(format.l or "")
   local tl_w = text.width.utf8swidth(format.tl or "")
@@ -125,7 +126,7 @@ function M.box_seq(height, width, format, clear_flag, title, lastcolumn)
   local r = {
     -- draw top
     format.tl or "",
-    M.line.title_seq(width - tl_w - tr_w, title, format.t or " ", format.pre or "", format.post or ""),
+    M.line.title_seq(width - tl_w - tr_w, title, format.t or " ", format.pre or "", format.post or "", type),
     format.tr or "",
     -- position to draw right, and draw it
     cursor.position.move_seq(1, -v_w + lastcolumn),
@@ -159,9 +160,10 @@ end
 -- @tparam bool clear_flag whether to clear the box contents
 -- @tparam[opt=""] string title the title to draw
 -- @tparam[opt=false] boolean lastcolumn whether to draw the last column of the terminal
+-- @tparam[opt="right"] string type the type of title-truncation to apply, either "left", "right", or "drop", see `draw.line.title_fmt` for details
 -- @return true
-function M.box(height, width, format, clear_flag, title, lastcolumn)
-  output.write(M.box_seq(height, width, format, clear_flag, title, lastcolumn))
+function M.box(height, width, format, clear_flag, title, lastcolumn, type)
+  output.write(M.box_seq(height, width, format, clear_flag, title, lastcolumn, type))
   return true
 end
 

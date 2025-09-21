@@ -74,7 +74,6 @@ end
 --- Formats a title for display in a title line.
 -- Shortens it if necessary, adds ellipsis if necessary. "left" means truncate from the left,
 -- "right" means truncate from the right, "drop" means drop the entire thing all at once.
---
 -- @tparam number width the available width for the title in columns
 -- @tparam[opt=""] string title the title to format
 -- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop"
@@ -120,14 +119,14 @@ end
 
 
 --- Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.
--- Line is drawn left to right. If the width is too small for the title, the title is truncated with "trailing `"..."`.
+-- Line is drawn left to right. If the width is too small for the title, the title is truncated.
 -- If less than 4 characters are available for the title, the title is omitted alltogether.
 -- @tparam number width the total width of the line in columns
 -- @tparam[opt=""] string title the title to draw (if empty or nil, only the line is drawn)
 -- @tparam[opt="─"] string char the line-character to use
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
--- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop"
+-- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `title_fmt` for details
 -- @treturn string ansi sequence to write to the terminal
 -- @within Sequences
 function M.title_seq(width, title, char, pre, post, type)
@@ -163,9 +162,10 @@ end
 -- @tparam[opt="─"] string char the line-character to use
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
+-- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `title_fmt` for details
 -- @return true
-function M.title(title, width, char, pre, post)
-  output.write(M.title_seq(title, width, char, pre, post))
+function M.title(title, width, char, pre, post, type)
+  output.write(M.title_seq(title, width, char, pre, post, type))
   return true
 end
 
