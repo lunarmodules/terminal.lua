@@ -59,8 +59,8 @@ build = {
     ["terminal.text.width"] = "src/terminal/text/width.lua",
     ["terminal.cli.select"] = "src/terminal/cli/select.lua",
     ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
-    ["terminal.ui.panel"] = "src/terminal/ui/panel.lua",
-    ["terminal.ui.screen"] = "src/terminal/ui/screen.lua",
+    ["terminal.ui.panel.init"] = "src/terminal/ui/panel/init.lua",
+    ["terminal.ui.panel.screen"] = "src/terminal/ui/panel/screen.lua",
   },
 
   copy_directories = {
