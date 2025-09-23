@@ -61,6 +61,7 @@ build = {
     ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
     ["terminal.ui.panel.init"] = "src/terminal/ui/panel/init.lua",
     ["terminal.ui.panel.screen"] = "src/terminal/ui/panel/screen.lua",
+    ["terminal.ui.panel.bar"] = "src/terminal/ui/panel/bar.lua",
   },
 
   copy_directories = {

@@ -10,7 +10,7 @@ describe("terminal.ui.screen", function()
   local terminal
 
   before_each(function()
-    Screen = require("terminal.ui.screen")
+    Screen = require("terminal.ui.panel.screen")
     Panel = require("terminal.ui.panel")
     terminal = require("terminal")
   end)
