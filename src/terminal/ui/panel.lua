@@ -73,13 +73,23 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @tparam[opt=math.huge] number opts.max_height Maximum height constraint (content panels only).
 -- @tparam[opt=math.huge] number opts.max_width Maximum width constraint (content panels only).
 -- @tparam[opt=0.5] number opts.split_ratio Ratio for dividing child panels (0.0 to 1.0).
+-- @tparam[opt] table opts.border Border configuration for content panels, with the following properties:
+-- @tparam table border.format The box format table (see `terminal.draw.box_fmt`).
+-- @tparam[opt] table border.attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
+-- @tparam[opt] string border.title Optional title to display in the border.
+-- @tparam[opt="right"] string border.truncation_type The type of title-truncation to apply, either "left", "right", or "drop".
+-- @tparam[opt] table border.title_attr Table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`.
 -- @treturn Panel A new Panel instance.
 -- @usage
 --   local Panel = require("terminal.ui.panel")
 --   local panel = Panel {
 --     content = function(self, row, col, height, width)
 --       -- render content here
---     end
+--     end,
+--     border = {
+--       format = terminal.draw.box_fmt.single,
+--       title = "My Panel"
+--     }
 --   }
 function Panel:init(opts)
   opts = opts or {}
@@ -96,6 +106,13 @@ function Panel:init(opts)
     self.content = opts.content
     self.orientation = nil
     self.children = nil
+
+    -- Border configuration for content panels
+    self.border = opts.border
+    if self.border then
+      assert(type(self.border) == "table", "border must be a table")
+      assert(self.border.format, "border.format is required when border is specified")
+    end
   else
     -- Divided panel
     assert(#opts.children == 2, "Divided panel must have exactly 2 children")
@@ -307,8 +324,8 @@ end
 -- @return nothing
 function Panel:render()
   if self.content then
-    -- Render content panel
-    self:content(self.row, self.col, self.height, self.width)
+    -- Render content panel with optional border
+    self:content(self:_draw_border(self.row, self.col, self.height, self.width))
   else
     -- Render child panels
     for _, child in ipairs(self.children) do
@@ -386,72 +403,63 @@ function Panel:get_panel(name)
 end
 
 
---- Returns a new content callback that draws a border and optional title around your panel content.
--- This function wraps your original content callback, first drawing a box (border and title) using the given
--- box format and title, then calling your callback with the coordinates and size *inside* the border.
---
--- The border is drawn using the specified box format (see `terminal.draw.box_fmt`). If any of the
--- box format's top, bottom, left, or right characters are empty strings, that side of the border is omitted
--- and the space becomes part of the *inner* area.
---
--- The wrapped callback receives adjusted (row, col, height, width) arguments, so your content is always
--- drawn inside the border area.
---
--- @tparam function callback The original content callback to wrap.
--- @tparam table border Table containing border configuration:
---   @tparam table border.format The box format table (see `terminal.draw.box_fmt`).
---   @tparam[opt] table border.attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
---   @tparam[opt] string border.title Optional title to display in the border.
---   @tparam[opt="right"] string border.truncation_type The type of title-truncation to apply, either "left", "right", or "drop".
---   @tparam[opt] table border.title_attr Table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`.
--- @treturn function A new callback that draws the border and then calls your original callback.
-function Panel.content_border(callback, border)
-  assert(type(callback) == "function", "callback must be a function (do not use colon notation)")
-  assert(type(border) == "table", "border must be a table")
-
-  local format = border.format
-  local attr = border.attr
-  local title = border.title
-  local truncation_type = border.truncation_type or "right"
-  local title_attr = border.title_attr
-
-  return function(self, row, col, height, width)
-    local lastcol = col + width - 1
-    local _, c = terminal.size()
-    local lastcolumn = (lastcol >= c)
-
-    cursor.position.backup()
-    cursor.position.set(row, col)
-    if attr then
-      text.stack.push(attr)
-    end
-    draw.box(height, width, format, true, title, lastcolumn, truncation_type, title_attr)
-    if attr then
-      text.stack.pop()
-    end
-    cursor.position.restore()
-
-    -- adjust the coordinates and size for the inner content
-    if format.t ~= "" then
-      row = row + 1
-      height = height - 1
-    end
-
-    if format.l ~= "" then
-      col = col + 1
-      width = width - 1
-    end
-
-    if format.r ~= "" then
-      width = width - 1
-    end
-
-    if format.b ~= "" then
-      height = height - 1
-    end
-
-    callback(self, row, col, height, width)
+-- Private method to draw a border around panel content.
+-- @tparam number row Starting row position.
+-- @tparam number col Starting column position.
+-- @tparam number height Panel height.
+-- @tparam number width Panel width.
+-- @treturn number Adjusted row for inner content.
+-- @treturn number Adjusted col for inner content.
+-- @treturn number Adjusted height for inner content.
+-- @treturn number Adjusted width for inner content.
+function Panel:_draw_border(row, col, height, width)
+  if not self.border then
+    return row, col, height, width
   end
+
+  local format = self.border.format
+  local attr = self.border.attr
+  local title = self.border.title
+  local truncation_type = self.border.truncation_type or "right"
+  local title_attr = self.border.title_attr
+
+  local lastcol = col + width - 1
+  local _, c = terminal.size()
+  local lastcolumn = (lastcol >= c)
+
+  cursor.position.backup()
+  cursor.position.set(row, col)
+  if attr then
+    text.stack.push(attr)
+  end
+  draw.box(height, width, format, true, title, lastcolumn, truncation_type, title_attr)
+  if attr then
+    text.stack.pop()
+  end
+  cursor.position.restore()
+
+  -- adjust the coordinates and size for the inner content
+  if format.t ~= "" then
+    row = row + 1
+    height = height - 1
+  end
+
+  if format.l ~= "" then
+    col = col + 1
+    width = width - 1
+  end
+
+  if format.r ~= "" then
+    width = width - 1
+  end
+
+  if format.b ~= "" then
+    height = height - 1
+  end
+
+  return row, col, height, width
 end
+
+
 
 return Panel
