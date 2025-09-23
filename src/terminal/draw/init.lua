@@ -92,6 +92,7 @@ end
 --- Creates a sequence to draw a box, without writing it to the terminal.
 -- The box is drawn starting from the top-left corner at the current cursor position,
 -- after drawing the cursor will be in the same position.
+-- The left, right, top, bottom characters can be empty strings(eg. ""), to not draw them.
 -- @tparam number height the height of the box in rows
 -- @tparam number width the width of the box in columns
 -- @tparam[opt] table format the format for the box (default is single line), with keys:
@@ -114,42 +115,71 @@ end
 -- @within Sequences
 function M.box_seq(height, width, format, clear_flag, title, lastcolumn, type, title_attr)
   format = format or M.box_fmt.single
-  local v_w = text.width.utf8swidth(format.l or "")
+  local vl_w = text.width.utf8swidth(format.l or "")
+  local vr_w = text.width.utf8swidth(format.r or "")
   local tl_w = text.width.utf8swidth(format.tl or "")
   local tr_w = text.width.utf8swidth(format.tr or "")
   local bl_w = text.width.utf8swidth(format.bl or "")
   local br_w = text.width.utf8swidth(format.br or "")
-  local v_line_l = M.line.vertical_seq(height - 2, format.l)
-  local v_line_r = M.line.vertical_seq(height - 2, format.r)
-  if lastcolumn then
-    v_line_r = M.line.vertical_seq(height - 2, format.r, lastcolumn)
+  -- get a vertical line, or if empty, just move cursor
+  local v_line_l
+  if format.l ~= "" then
+    v_line_l = M.line.vertical_seq(height - 2, format.l)
+  else
+    v_line_l = cursor.position.move_seq(height - 3, vl_w)
   end
+
+  -- get a vertical line, or if empty, just move cursor
+  local v_line_r
+  if format.r ~= "" then
+    v_line_r = M.line.vertical_seq(height - 2, format.r, lastcolumn)
+  else
+    v_line_r = cursor.position.move_seq(height - 3, vr_w)
+  end
+
+  -- get a horizontal line, or if empty, just move cursor
+  local h_line_t
+  if format.t ~= "" then
+    h_line_t = M.line.title_seq(width - tl_w - tr_w, title, format.t or " ",
+                format.pre or "", format.post or "", type, title_attr)
+  else
+    h_line_t = cursor.position.move_seq(0, width - tl_w - tr_w)
+  end
+
+  -- get a horizontal line, or if empty, just move cursor
+  local h_line_b
+  if format.b ~= "" then
+    h_line_b = M.line.horizontal_seq(width - bl_w - br_w, format.b)
+  else
+    h_line_b = cursor.position.move_seq(0, width - bl_w - br_w)
+  end
+
   lastcolumn = lastcolumn and 1 or 0
 
   local r = {
     -- draw top
     format.tl or "",
-    M.line.title_seq(width - tl_w - tr_w, title, format.t or " ", format.pre or "", format.post or "", type, title_attr),
+    h_line_t,
     format.tr or "",
     -- position to draw right, and draw it
-    cursor.position.move_seq(1, -v_w + lastcolumn),
+    cursor.position.move_seq(1, -vr_w + lastcolumn),
     v_line_r,
     -- position back to top left, and draw left
     cursor.position.move_seq(-height + 3, -width + lastcolumn),
     v_line_l,
     -- draw bottom
-    cursor.position.move_seq(1, -1),
+    cursor.position.move_seq(1, -vl_w),
     format.bl or "",
-    M.line.horizontal_seq(width - bl_w - br_w, format.b or " "),
+    h_line_b,
     format.br or "",
     -- return to top left
     cursor.position.move_seq(-height + 1, -width + lastcolumn),
   }
   if clear_flag then
     local l = #r
-    r[l+1] = cursor.position.move_seq(1, v_w)
-    r[l+2] = clear.box_seq(height - 2, width - 2 * v_w)
-    r[l+3] = cursor.position.move_seq(-1, -v_w)
+    r[l+1] = cursor.position.move_seq(1, vl_w)
+    r[l+2] = clear.box_seq(height - 2, width - vl_w - vr_w)
+    r[l+3] = cursor.position.move_seq(-1, -vl_w)
   end
   return Sequence(unpack(r))
 end
