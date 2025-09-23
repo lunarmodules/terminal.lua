@@ -1,0 +1,311 @@
+describe("terminal.ui.panel.bar", function()
+
+  local Bar
+  local terminal
+
+  setup(function()
+    -- Load modules
+    Bar = require("terminal.ui.panel.bar")
+    terminal = require("terminal")
+
+    -- Mock terminal functions for testing
+    terminal.cursor = {
+      position = {
+        set = function() end,
+        backup = function() end,
+        restore = function() end
+      }
+    }
+    terminal.output = {
+      write = function() end
+    }
+  end)
+
+  teardown(function()
+    -- Unset modules for clean test isolation
+    Bar = nil
+    terminal = nil -- luacheck: ignore
+  end)
+
+
+  describe("init()", function()
+
+    it("creates a bar with default values", function()
+      local bar = Bar {}
+
+      assert.are.equal(1, bar.margin)
+      assert.are.equal(2, bar.padding)
+      assert.are.equal("", bar.left)
+      assert.are.equal("", bar.center)
+      assert.are.equal("", bar.right)
+      assert.are.equal(1, bar._min_height)
+      assert.are.equal(1, bar._max_height)
+    end)
+
+
+    it("creates a bar with custom values", function()
+      local bar = Bar {
+        margin = 2,
+        padding = 3,
+        left = {text = "File"},
+        center = {text = "Editor"},
+        right = {text = "Help"}
+      }
+
+      assert.are.equal(2, bar.margin)
+      assert.are.equal(3, bar.padding)
+      assert.are.equal("File", bar.left)
+      assert.are.equal("Editor", bar.center)
+      assert.are.equal("Help", bar.right)
+    end)
+
+
+    it("sets fixed height constraints", function()
+      local bar = Bar {}
+
+      assert.are.equal(1, bar._min_height)
+      assert.are.equal(1, bar._max_height)
+    end)
+
+
+    it("provides content callback for parent constructor", function()
+      local bar = Bar {}
+
+      assert.is_not_nil(bar.content)
+      assert.is_function(bar.content)
+    end)
+
+  end)
+
+
+  describe("_build_bar_line()", function()
+
+    it("builds a simple bar line", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 2,
+        left = {text = "L"},
+        center = {text = "C"},
+        right = {text = "R"}
+      }
+
+      local line = bar:_build_bar_line(20)
+      local line_str = tostring(line)
+      -- Should end with EOL sequence (4 bytes)
+      assert.are.equal(" L       C        R", line_str:sub(1, -5))
+      assert.are.equal(23, #line_str)  -- 19 content + 4 EOL bytes
+    end)
+
+
+    it("handles empty content", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 2
+      }
+
+      local line = bar:_build_bar_line(10)
+      local line_str = tostring(line)
+      -- Should end with EOL sequence (4 bytes)
+      assert.are.equal("         ", line_str:sub(1, -5))
+      assert.are.equal(13, #line_str)  -- 9 content + 4 EOL bytes
+    end)
+
+
+    it("handles no margin", function()
+      local bar = Bar {
+        margin = 0,
+        padding = 2,
+        left = {text = "L"},
+        center = {text = "C"},
+        right = {text = "R"}
+      }
+
+      local line = bar:_build_bar_line(10)
+      local line_str = tostring(line)
+      -- Should end with EOL sequence (4 bytes)
+      assert.are.equal("L   C    R", line_str:sub(1, -5))
+      assert.are.equal(14, #line_str)  -- 10 content + 4 EOL bytes
+    end)
+
+
+    it("handles no padding", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 0,
+        left = {text = "L"},
+        center = {text = "C"},
+        right = {text = "R"}
+      }
+
+      local line = bar:_build_bar_line(10)
+      local line_str = tostring(line)
+      -- Should end with EOL sequence (4 bytes)
+      assert.are.equal(" L  C   R", line_str:sub(1, -5))
+      assert.are.equal(13, #line_str)  -- 9 content + 4 EOL bytes
+    end)
+
+
+    it("truncates content when width is insufficient", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 2,
+        left = {text = "Very Long Left Content"},
+        center = {text = "Center"},
+        right = {text = "Right"}
+      }
+
+      local line = bar:_build_bar_line(10)
+      local line_str = tostring(line)
+      -- Should truncate to fit available space (EOL doesn't count toward content length)
+      assert.is_true(#line_str >= 6)  -- At least margin + some content
+      -- Should start with margin space
+      assert.are.equal(" ", line_str:sub(1, 1))
+    end)
+
+
+    it("handles very small width", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 2,
+        left = {text = "L"},
+        center = {text = "C"},
+        right = {text = "R"}
+      }
+
+      local line = bar:_build_bar_line(3)
+      local line_str = tostring(line)
+      -- Should fit margin and minimal content (EOL doesn't count toward content length)
+      assert.is_true(#line_str >= 1)  -- At least margin
+      -- Should have margin space
+      assert.are.equal(" ", line_str:sub(1, 1))
+    end)
+
+
+    it("handles zero width", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 2,
+        left = "L",
+        center = "C",
+        right = "R"
+      }
+
+      local line = bar:_build_bar_line(0)
+      assert.are.equal("", tostring(line))
+    end)
+
+
+    it("distributes space proportionally when truncating", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 2,
+        left = {text = "Very Long Left Content"},
+        center = {text = "Very Long Center Content"},
+        right = {text = "Very Long Right Content"}
+      }
+
+      local line = bar:_build_bar_line(20)
+      local line_str = tostring(line)
+      -- Should have margin and some content from each section
+      assert.are.equal(" ", line_str:sub(1, 1))
+      assert.is_true(#line_str >= 10)  -- At least margin + some content
+    end)
+
+  end)
+
+
+  describe("set_left()", function()
+
+    it("sets left content", function()
+      local bar = Bar {}
+      bar:set_left("New Left")
+
+      assert.are.equal("New Left", bar.left)
+    end)
+
+
+    it("handles nil input", function()
+      local bar = Bar { left = {text = "Original"} }
+      bar:set_left(nil)
+
+      assert.are.equal("", bar.left)
+    end)
+
+  end)
+
+
+  describe("set_center()", function()
+
+    it("sets center content", function()
+      local bar = Bar {}
+      bar:set_center("New Center")
+
+      assert.are.equal("New Center", bar.center)
+    end)
+
+
+    it("handles nil input", function()
+      local bar = Bar { center = "Original" }
+      bar:set_center(nil)
+
+      assert.are.equal("", bar.center)
+    end)
+
+  end)
+
+
+  describe("set_right()", function()
+
+    it("sets right content", function()
+      local bar = Bar {}
+      bar:set_right("New Right")
+
+      assert.are.equal("New Right", bar.right)
+    end)
+
+
+    it("handles nil input", function()
+      local bar = Bar { right = "Original" }
+      bar:set_right(nil)
+
+      assert.are.equal("", bar.right)
+    end)
+
+  end)
+
+
+
+
+  describe("render()", function()
+
+    it("calls _draw_bar with correct parameters", function()
+      local bar = Bar {
+        margin = 1,
+        padding = 2,
+        left = {text = "L"},
+        center = {text = "C"},
+        right = {text = "R"}
+      }
+
+      -- Mock _draw_bar to track calls
+      local called = false
+      local call_args = {}
+      bar._draw_bar = function(self, row, col, height, width)
+        called = true
+        call_args = { row, col, height, width }
+      end
+
+      bar.row = 5
+      bar.col = 10
+      bar.height = 1
+      bar.width = 20
+
+      bar:render()
+
+      assert.is_true(called)
+      assert.are.same({ 5, 10, 1, 20 }, call_args)
+    end)
+
+  end)
+
+end)

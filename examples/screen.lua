@@ -1,52 +1,61 @@
 #!/usr/bin/env lua
 
---- Screen example demonstrating full-screen terminal applications.
+--- Screen example demonstrating full-screen terminal applications with Bar class.
 --
 -- This example shows how to create and use Screen instances for
--- full-screen terminal applications with header, body, and footer.
+-- full-screen terminal applications with Bar-based header and footer,
+-- showcasing the Bar class features including sub-table structure,
+-- individual text attributes, truncation types, and styling options.
 
 local t = require("terminal")
 
 local function main()
   local Screen = require("terminal.ui.panel.screen")
   local Panel = require("terminal.ui.panel")
+  local Bar = require("terminal.ui.panel.bar")
 
-  -- Create header panel
-  local header = Panel {
-    min_height = 1,
-    max_height = 1,
-    content = function(self, row, col, height, width)
-      t.cursor.position.backup()
-      t.cursor.position.set(row, col)
-      t.text.stack.push{
-        fg = "white",
-        bg = "blue",
-        brightness = "bright",
-      }
-      t.output.write(" Hello white on blue World! ")
-      t.clear.eol()
-      t.text.stack.pop()
-      t.cursor.position.restore()
-    end
+  -- Create header bar with multiple features
+  local header = Bar {
+    margin = 1,
+    padding = 3,
+    left = {
+      text = "File",
+      type = "left",
+      attr = { fg = "cyan", brightness = "bright" }
+    },
+    center = {
+      text = "Terminal Editor",
+      type = "right",
+      attr = { fg = "yellow", brightness = "bright", underline = true }
+    },
+    right = {
+      text = "Help",
+      type = "drop",
+      attr = { fg = "green", brightness = "bright" }
+    },
+    attr = { bg = "blue" }
   }
 
-  -- Create footer panel
-  local footer = Panel {
-    min_height = 1,
-    max_height = 1,
-    content = function(self, row, col, height, width)
-      t.cursor.position.backup()
-      t.cursor.position.set(row, col)
-      t.text.stack.push{
-        fg = "white",
-        bg = "blue",
-        brightness = "dim",
-      }
-      t.output.write(" Press 'q' to quit, or resize screen to redraw")
-      t.clear.eol()
-      t.text.stack.pop()
-      t.cursor.position.restore()
-    end
+  -- Create footer bar with different styling
+  local footer = Bar {
+    margin = 0,
+    padding = 2,
+    left = {
+      text = "Status: Ready",
+      type = "left",
+      attr = { fg = "white", brightness = "dim" }
+    },
+    center = {
+      text = "Press 'q' to quit",
+      type = "right",
+      attr = { fg = "white", brightness = "bright" }
+    },
+    right = {
+      text = "Resize to redraw",
+      type = "drop",
+      attr = { fg = "white", brightness = "dim" }
+    },
+    attr = { bg = "blue", brightness = "dim" }
   }
 
   -- Create body panel
