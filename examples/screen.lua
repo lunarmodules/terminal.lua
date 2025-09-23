@@ -8,7 +8,7 @@
 local t = require("terminal")
 
 local function main()
-  local Screen = require("terminal.ui.screen")
+  local Screen = require("terminal.ui.panel.screen")
   local Panel = require("terminal.ui.panel")
 
   -- Create header panel

@@ -1,7 +1,7 @@
 --- Screen class for full-screen terminal applications.
 -- Manages a full-screen layout with optional header and footer panels.
 -- Derives from `ui.Panel`.
--- @classmod ui.Screen
+-- @classmod ui.panel.Screen
 
 local utils = require("terminal.utils")
 local Panel = require("terminal.ui.panel")
@@ -12,9 +12,9 @@ local Screen = utils.class(Panel)
 --- Initialize a new Screen instance.
 -- Do not call this method directly, call on the class instead.
 -- @tparam table opts Configuration options (see `Panel:init` for inherited properties)
--- @tparam Panel opts.header Optional header panel (will be named "header")
--- @tparam Panel opts.body Required body panel (will be named "body")
--- @tparam Panel opts.footer Optional footer panel (will be named "footer")
+-- @tparam Panel opts.header Optional header panel (will be (re)named "header")
+-- @tparam Panel opts.body Required body panel (will be (re)named "body")
+-- @tparam Panel opts.footer Optional footer panel (will be (re)named "footer")
 -- @tparam string opts.name Optional name for the screen
 function Screen:init(opts)
   opts = opts or {}
