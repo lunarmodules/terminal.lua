@@ -75,6 +75,20 @@ describe("terminal.ui.panel.bar", function()
       assert.is_function(bar.content)
     end)
 
+
+    it("sets auto_render property", function()
+      local bar = Bar { auto_render = true }
+
+      assert.is_true(bar.auto_render)
+    end)
+
+
+    it("defaults auto_render to false", function()
+      local bar = Bar {}
+
+      assert.is_false(bar.auto_render)
+    end)
+
   end)
 
 
@@ -269,6 +283,80 @@ describe("terminal.ui.panel.bar", function()
       bar:set_right(nil)
 
       assert.are.equal("", bar.right)
+    end)
+
+  end)
+
+
+  describe("auto_render", function()
+
+    it("triggers render when auto_render is true and set_left is called", function()
+      local bar = Bar { auto_render = true }
+      local render_called = false
+      bar.render = function() render_called = true end
+
+      bar:set_left("New Left")
+
+      assert.is_true(render_called)
+    end)
+
+
+    it("triggers render when auto_render is true and set_center is called", function()
+      local bar = Bar { auto_render = true }
+      local render_called = false
+      bar.render = function() render_called = true end
+
+      bar:set_center("New Center")
+
+      assert.is_true(render_called)
+    end)
+
+
+    it("triggers render when auto_render is true and set_right is called", function()
+      local bar = Bar { auto_render = true }
+      local render_called = false
+      bar.render = function() render_called = true end
+
+      bar:set_right("New Right")
+
+      assert.is_true(render_called)
+    end)
+
+
+    it("does not trigger render when auto_render is false", function()
+      local bar = Bar { auto_render = false }
+      local render_called = false
+      bar.render = function() render_called = true end
+
+      bar:set_left("New Left")
+      bar:set_center("New Center")
+      bar:set_right("New Right")
+
+      assert.is_false(render_called)
+    end)
+
+
+    it("does not update or render when value has not changed", function()
+      local bar = Bar { auto_render = true, left = {text = "Original"} }
+      local render_called = false
+      bar.render = function() render_called = true end
+
+      bar:set_left("Original") -- same value
+
+      assert.are.equal("Original", bar.left)
+      assert.is_false(render_called)
+    end)
+
+
+    it("does not update or render when setting nil to empty string", function()
+      local bar = Bar { auto_render = true, left = {text = ""} }
+      local render_called = false
+      bar.render = function() render_called = true end
+
+      bar:set_left(nil) -- nil becomes ""
+
+      assert.are.equal("", bar.left)
+      assert.is_false(render_called)
     end)
 
   end)

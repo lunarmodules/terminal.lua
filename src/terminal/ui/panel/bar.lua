@@ -35,6 +35,7 @@ local Bar = utils.class(Panel)
 -- @tparam[opt] string opts.right.text Right section content.
 -- @tparam[opt="right"] string opts.right.type Truncation type for right section ("left", "right", or "drop").
 -- @tparam[opt] table opts.right.attr Text attributes for right section content.
+-- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when text content changes.
 -- @treturn Bar A new Bar instance.
 -- @usage
 --   local Bar = require("terminal.ui.panel.bar")
@@ -72,6 +73,7 @@ function Bar:init(opts)
   local center_config = opts.center or {}
   local right_config = opts.right or {}
   local attr = opts.attr
+  local auto_render = not not opts.auto_render -- force to boolean
 
   -- Extract component configurations
   local left = left_config.text or ""
@@ -91,6 +93,7 @@ function Bar:init(opts)
   opts.center = nil
   opts.right = nil
   opts.attr = nil
+  opts.auto_render = nil
 
   -- Provide content callback for parent constructor
   opts.content = function(self, row, col, height, width)
@@ -110,9 +113,11 @@ function Bar:init(opts)
   self.right_type = right_type
   self.right_attr = right_attr
   self.attr = attr
+  self.auto_render = false -- set to false initially to prevent render during initialization
   self:set_left(left)
   self:set_center(center)
   self:set_right(right)
+  self.auto_render = auto_render -- set actual value after initialization
 end
 
 -- Private method to draw the bar content.
@@ -122,10 +127,12 @@ end
 -- @tparam number width Panel width.
 -- @return nothing
 function Bar:_draw_bar(row, col, height, width)
-  local line = self:_build_bar_line(width)
-
-  terminal.cursor.position.set(row, col)
-  terminal.output.write(line)
+  terminal.output.write(
+    terminal.cursor.position.backup_seq(),
+    terminal.cursor.position.set_seq(row, col),
+    self:_build_bar_line(width),
+    terminal.cursor.position.restore_seq()
+  )
 end
 
 -- Private method to build the bar line sequence.
@@ -203,21 +210,45 @@ end
 -- @tparam string content The left section content.
 -- @return nothing
 function Bar:set_left(content)
-  self.left = content or ""
+  content = content or ""
+  if self.left == content then
+    return
+  end
+
+  self.left = content
+  if self.auto_render then
+    self:render()
+  end
 end
 
 --- Set the center section content.
 -- @tparam string content The center section content.
 -- @return nothing
 function Bar:set_center(content)
-  self.center = content or ""
+  content = content or ""
+  if self.center == content then
+    return
+  end
+
+  self.center = content
+  if self.auto_render then
+    self:render()
+  end
 end
 
 --- Set the right section content.
 -- @tparam string content The right section content.
 -- @return nothing
 function Bar:set_right(content)
-  self.right = content or ""
+  content = content or ""
+  if self.right == content then
+    return
+  end
+
+  self.right = content
+  if self.auto_render then
+    self:render()
+  end
 end
 
 
