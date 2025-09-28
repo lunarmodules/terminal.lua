@@ -4,11 +4,6 @@
 -- structured format with left, center, and right sections separated by configurable
 -- spacing. The bar uses margin and padding parameters to control spacing, and supports
 -- text attributes for styling individual sections or the entire bar.
---
--- The line format is: [margin][left][padding][center][padding][right][margin]
--- where padding is distributed to fill the available space, and content can be
--- truncated using different strategies (left, right, or drop).
---
 -- @classmod ui.panel.Bar
 
 local Panel = require("terminal.ui.panel.init")
@@ -22,9 +17,12 @@ local Bar = utils.class(Panel)
 
 
 --- Create a new Bar instance.
+-- A bar is a single line `panel` with left, center, and right (text) sections.
 -- @tparam table opts Options for the bar.
 -- @tparam[opt=1] number opts.margin Number of spaces from left and right edges.
 -- @tparam[opt=2] number opts.padding Minimum number of spaces between each section.
+-- @tparam[opt] string opts.name Name for the bar-panel. Defaults to `tostring(self)` if not provided.
+-- @tparam[opt] table opts.attr Text attributes for the entire bar.
 -- @tparam[opt] table opts.left Left section configuration.
 -- @tparam[opt] string opts.left.text Left section content.
 -- @tparam[opt="right"] string opts.left.type Truncation type for left section ("left", "right", or "drop").
@@ -37,8 +35,6 @@ local Bar = utils.class(Panel)
 -- @tparam[opt] string opts.right.text Right section content.
 -- @tparam[opt="right"] string opts.right.type Truncation type for right section ("left", "right", or "drop").
 -- @tparam[opt] table opts.right.attr Text attributes for right section content.
--- @tparam[opt] table opts.attr Text attributes for the entire bar.
--- @tparam[opt] string opts.name Optional name for the bar. Defaults to tostring(self) if not provided.
 -- @treturn Bar A new Bar instance.
 -- @usage
 --   local Bar = require("terminal.ui.panel.bar")

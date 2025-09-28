@@ -1,5 +1,5 @@
 --- Screen class for full-screen terminal applications.
--- Manages a full-screen layout with optional header and footer panels.
+-- Manages a full-screen layout with optional header and footer panels (see `ui.panel.Bar`).
 -- Derives from `ui.Panel`.
 -- @classmod ui.panel.Screen
 
@@ -16,6 +16,7 @@ local Screen = utils.class(Panel)
 -- @tparam Panel opts.body Required body panel (will be (re)named "body")
 -- @tparam Panel opts.footer Optional footer panel (will be (re)named "footer")
 -- @tparam string opts.name Optional name for the screen
+-- @see ui.panel.Bar
 function Screen:init(opts)
   opts = opts or {}
 
