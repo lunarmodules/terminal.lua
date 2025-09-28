@@ -12,6 +12,8 @@
 -- - Minimum and maximum size constraints
 -- - Dynamic resizing based on orientation
 --
+-- The typical usage starts with a `ui.panel.Screen` instance as the root panel.
+--
 -- *Usage:*
 --
 --     local Panel = require("terminal.ui.panel")
