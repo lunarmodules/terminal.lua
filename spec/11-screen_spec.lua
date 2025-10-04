@@ -414,7 +414,9 @@ describe("terminal.ui.screen", function()
       local original_clear = terminal.clear
 
       terminal.size = function() return 25, 80 end
-      terminal.clear = function() end
+      terminal.clear = {
+        box = function() end
+      }
 
       -- Test that the screen can be recalculated and rendered
       screen:calculate_layout()
