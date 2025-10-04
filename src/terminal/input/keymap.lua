@@ -28,7 +28,7 @@
 --
 -- *Example:*
 --     local rawkey = "\013" -- carriage return
---     local keymap = terminal.input.keymap.default_key_map
+--     local key_map = terminal.input.keymap.default_key_map
 --     local keys = terminal.input.keymap.default_keys
 --
 --     -- lookup the key-name from the raw inpout
