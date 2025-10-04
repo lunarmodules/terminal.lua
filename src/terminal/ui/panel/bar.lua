@@ -102,6 +102,7 @@ function Bar:init(opts)
 
   -- Call parent constructor
   Panel.init(self, opts)
+  self.clear_content = false
 
   -- Set bar-specific properties after parent constructor
   self.margin = margin

@@ -67,6 +67,7 @@ local DEFAULT_MAX_SIZE = math.huge
 -- Do not call this method directly, call on the class instead. See example.
 -- @tparam table opts Options for the panel.
 -- @tparam[opt] function opts.content Content callback function that takes (self, row, col, height, width) parameters.
+-- @tparam[opt=true] boolean opts.clear_content Whether to clear the content area before rendering.
 -- @tparam[opt] table opts.orientation Panel orientation: `Panel.orientations.horizontal` or `Panel.orientations.vertical` (for divided panels).
 -- @tparam[opt] table opts.children Array of exactly 2 child panels (for divided panels).
 -- @tparam[opt] string opts.name Optional name for the panel. Defaults to tostring(self) if not provided.
@@ -106,6 +107,7 @@ function Panel:init(opts)
   -- Content panel
   if has_content then
     self.content = opts.content
+    self.clear_content = opts.clear_content ~= false
     self.orientation = nil
     self.children = nil
 
@@ -416,6 +418,13 @@ end
 -- @treturn number Adjusted width for inner content.
 function Panel:_draw_border(row, col, height, width)
   if not self.border then
+    -- No border, but still clear content if requested
+    if self.clear_content then
+      cursor.position.backup()
+      terminal.cursor.position.set(row, col)
+      terminal.clear.box(height, width)
+      cursor.position.restore()
+    end
     return row, col, height, width
   end
 
@@ -434,7 +443,7 @@ function Panel:_draw_border(row, col, height, width)
   if attr then
     text.stack.push(attr)
   end
-  draw.box(height, width, format, true, title, lastcolumn, truncation_type, title_attr)
+  draw.box(height, width, format, self.clear_content, title, lastcolumn, truncation_type, title_attr)
   if attr then
     text.stack.pop()
   end
@@ -461,7 +470,6 @@ function Panel:_draw_border(row, col, height, width)
 
   return row, col, height, width
 end
-
 
 
 return Panel
