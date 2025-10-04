@@ -528,6 +528,20 @@ describe("terminal.ui.panel", function()
 
   describe("render()", function()
 
+    local terminal, old_size
+    before_each(function()
+      terminal = require("terminal")
+      old_size = terminal.size
+      terminal.size = function() return 24, 80 end
+    end)
+
+    after_each(function()
+      terminal.size = old_size
+      terminal = nil
+      old_size = nil
+    end)
+
+
     it("calls content callback for content panel", function()
       local callback_called = false
       local callback_args = {}
