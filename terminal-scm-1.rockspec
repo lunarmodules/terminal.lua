@@ -62,6 +62,7 @@ build = {
     ["terminal.ui.panel.init"] = "src/terminal/ui/panel/init.lua",
     ["terminal.ui.panel.screen"] = "src/terminal/ui/panel/screen.lua",
     ["terminal.ui.panel.bar"] = "src/terminal/ui/panel/bar.lua",
+    ["terminal.ui.panel.text_panel"] = "src/terminal/ui/panel/text_panel.lua",
   },
 
   copy_directories = {
