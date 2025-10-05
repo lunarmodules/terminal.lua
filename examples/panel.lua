@@ -9,9 +9,11 @@ local Panel = require("terminal.ui.panel")
 
 
 
--- Helper function to draw content in a panel
-local function draw_content(row, col, height, width, text, color)
+local function draw_content(self, text, color)
   color = color or "white"
+
+  local row, col = self.inner_row, self.inner_col
+  local height, width = self.inner_height, self.inner_width
 
   -- Center the text in the panel
   local text_row = row + math.floor(height / 2)
@@ -58,8 +60,8 @@ local function run_example_1()
   terminal.cursor.position.set(1, 1)
 
   local rows, cols = terminal.size()
-  local simple_panel = create_fullscreen_panel(function(self, row, col, height, width)
-    draw_content(row, col, height, width, "Hello World! Press any key to continue...", "green")
+  local simple_panel = create_fullscreen_panel(function(self)
+    draw_content(self, "Hello World! Press any key to continue...", "green")
   end)
 
   simple_panel:calculate_layout(1, 1, rows, cols)
@@ -86,8 +88,8 @@ local function run_example_2()
     split_ratio = 0.6, -- 60% left, 40% right
     children = {
       Panel {
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "60% - Press any key", "blue")
+        content = function(self)
+          draw_content(self, "60% - Press any key", "blue")
         end,
         border = {
           format = terminal.draw.box_fmt.double,
@@ -96,8 +98,8 @@ local function run_example_2()
         },
       },
       Panel {
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "40%", "red")
+        content = function(self)
+          draw_content(self, "40%", "red")
         end,
         border = {
           format = terminal.draw.box_fmt.double,
@@ -132,8 +134,8 @@ local function run_example_3()
     split_ratio = 0.4, -- 40% top, 60% bottom
     children = {
       Panel {
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "40% - Press any key", "yellow")
+        content = function(self)
+          draw_content(self, "40% - Press any key", "yellow")
         end,
         border = {
           format = terminal.draw.box_fmt.single,
@@ -142,8 +144,8 @@ local function run_example_3()
         },
       },
       Panel {
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "60%", "magenta")
+        content = function(self)
+          draw_content(self, "60%", "magenta")
         end,
         border = {
           format = terminal.draw.box_fmt.single,
@@ -201,8 +203,8 @@ local function run_example_4()
         split_ratio = 0.3,
         children = {
           Panel {
-            content = function(self, row, col, height, width)
-              draw_content(row, col, height, width, "30%", "cyan")
+            content = function(self)
+              draw_content(self, "30%", "cyan")
             end,
             border = {
               format = fmt_top_left,
@@ -211,8 +213,8 @@ local function run_example_4()
             },
           },
           Panel {
-            content = function(self, row, col, height, width)
-              draw_content(row, col, height, width, "70%", "green")
+            content = function(self)
+              draw_content(self, "70%", "green")
             end,
             border = {
               format = fmt_bottom_left,
@@ -224,8 +226,8 @@ local function run_example_4()
       },
       -- Right side: simple content
       Panel {
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "Full Right - Press any key", "red")
+        content = function(self)
+          draw_content(self, "Full Right - Press any key", "red")
         end,
         border = {
           format = fmt_right,
@@ -259,8 +261,8 @@ local function run_example_5()
     split_ratio = 0.5,
     children = {
       Panel {
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "50%", "blue")
+        content = function(self)
+          draw_content(self, "50%", "blue")
         end,
         border = {
           format = terminal.draw.box_fmt.single,
@@ -269,8 +271,8 @@ local function run_example_5()
         },
       },
       Panel {
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "50% - Press any key", "red")
+        content = function(self)
+          draw_content(self, "50% - Press any key", "red")
         end,
         border = {
           format = terminal.draw.box_fmt.single,
@@ -316,8 +318,8 @@ local function run_example_6()
     children = {
       Panel {
         min_width = math.max(15, math.floor(cols * 0.3)), -- Minimum width constraint
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "Min: " .. math.max(15, math.floor(cols * 0.3)), "green")
+        content = function(self)
+          draw_content(self, "Min: " .. math.max(15, math.floor(cols * 0.3)), "green")
         end,
         border = {
           format = terminal.draw.box_fmt.double,
@@ -327,8 +329,8 @@ local function run_example_6()
       },
       Panel {
         max_width = math.min(20, math.floor(cols * 0.7)), -- Maximum width constraint
-        content = function(self, row, col, height, width)
-          draw_content(row, col, height, width, "Max: " .. math.min(20, math.floor(cols * 0.7)) .. " - Press any key", "red")
+        content = function(self)
+          draw_content(self, "Max: " .. math.min(20, math.floor(cols * 0.7)) .. " - Press any key", "red")
         end,
         border = {
           format = terminal.draw.box_fmt.double,

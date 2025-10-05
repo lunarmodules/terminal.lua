@@ -26,7 +26,7 @@ describe("terminal.ui.screen", function()
 
     it("creates a screen with body panel only", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -50,19 +50,19 @@ describe("terminal.ui.screen", function()
 
     it("creates a screen with header, body, and footer", function()
       local header = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Header content
         end
       }
 
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Body content
         end
       }
 
       local footer = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Footer content
         end
       }
@@ -91,13 +91,13 @@ describe("terminal.ui.screen", function()
 
     it("creates a screen with header and body only", function()
       local header = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Header content
         end
       }
 
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Body content
         end
       }
@@ -120,13 +120,13 @@ describe("terminal.ui.screen", function()
 
     it("creates a screen with body and footer only", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Body content
         end
       }
 
       local footer = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Footer content
         end
       }
@@ -170,7 +170,7 @@ describe("terminal.ui.screen", function()
 
     it("accepts custom name", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -186,19 +186,19 @@ describe("terminal.ui.screen", function()
 
     it("allows access to panels by name", function()
       local header = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Header content
         end
       }
 
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Body content
         end
       }
 
       local footer = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Footer content
         end
       }
