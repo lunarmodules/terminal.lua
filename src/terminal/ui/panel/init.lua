@@ -372,6 +372,9 @@ function Panel:render()
   if self.content then
     -- Render content panel with optional border
     self:draw_border()
+    if self.clear_content then
+      self:clear()
+    end
     self:content(self.inner_row, self.inner_col, self.inner_height, self.inner_width)
   else
     -- Render child panels
@@ -464,15 +467,11 @@ end
 --- Draw the border around panel content.
 -- @return nothing
 function Panel:draw_border()
-  local row, col, height, width = self.row, self.col, self.height, self.width
-
   if not self.border then
-    -- No border, but still clear content if requested
-    if self.clear_content then
-      self:clear()
-    end
     return
   end
+
+  local row, col, height, width = self.row, self.col, self.height, self.width
 
   local format = self.border.format
   local attr = self.border.attr
@@ -489,7 +488,7 @@ function Panel:draw_border()
   if attr then
     text.stack.push(attr)
   end
-  draw.box(height, width, format, self.clear_content, title, lastcolumn, truncation_type, title_attr)
+  draw.box(height, width, format, false, title, lastcolumn, truncation_type, title_attr)
   if attr then
     text.stack.pop()
   end
