@@ -124,7 +124,7 @@ local function main()
       screen:get_panel("body"):add_line(random_line)
     elseif key == "c" then
       -- Clear content
-      screen:get_panel("body"):clear()
+      screen:get_panel("body"):clear_lines()
     elseif key == "s" then
       -- Reset to sample text
       screen:get_panel("body"):set_lines(sample_text)

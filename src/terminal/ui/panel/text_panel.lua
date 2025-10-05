@@ -1,12 +1,12 @@
 --- Text Panel class for displaying scrollable text content.
--- @classmod terminal.ui.panel.text_panel
--- @extends terminal.ui.panel
+-- Derives from `ui.Panel`.
+-- @classmod ui.panel.Text_panel
+
 
 local Panel = require("terminal.ui.panel.init")
 local terminal = require("terminal")
 local utils = require("terminal.utils")
 local text = require("terminal.text")
-local draw = require("terminal.draw")
 local Sequence = require("terminal.sequence")
 
 local TextPanel = utils.class(Panel)
@@ -44,8 +44,8 @@ function TextPanel:init(opts)
   opts.text_attr = nil
 
   -- Provide content callback for parent constructor
-  opts.content = function(self, row, col, height, width)
-    self:_draw_text(row, col, height, width)
+  opts.content = function(self)
+    self:_draw_text()
   end
 
   -- Call parent constructor
@@ -58,19 +58,9 @@ function TextPanel:init(opts)
   self.text_attr = text_attr
 end
 
---- Private method to draw the text content.
--- @tparam number row Starting row position.
--- @tparam number col Starting column position.
--- @tparam number height Panel height.
--- @tparam number width Panel width.
+-- Private method to draw the text content.
 -- @return nothing
-function TextPanel:_draw_text(row, col, height, width)
-  -- Guard against nil dimensions (can happen during testing or before layout calculation)
-  if not height or not width then
-    return
-  end
-
-  -- Build sequence with all output
+function TextPanel:_draw_text()
   local seq = Sequence()
   seq[1] = terminal.cursor.position.backup_seq()
   local n = 2
@@ -83,16 +73,16 @@ function TextPanel:_draw_text(row, col, height, width)
 
   -- Add each visible line to the sequence
   local start_line = self.position
-  local end_line = math.min(start_line + height - 1, #self.lines)
+  local end_line = math.min(start_line + self.inner_height - 1, #self.lines)
   for i = start_line, end_line do
     local line_text = self.lines[i] or ""
-    local line_row = row + (i - start_line)
+    local line_row = self.inner_row + (i - start_line)
 
     -- Truncate line if too long
-    local display_text = self:_truncate_line(line_text, width)
+    local display_text = self:_truncate_line(line_text, self.inner_width)
 
     -- Add cursor positioning and text to sequence
-    seq[n] = terminal.cursor.position.set_seq(line_row, col)
+    seq[n] = terminal.cursor.position.set_seq(line_row, self.inner_col)
     seq[n+1] = display_text
     n = n + 2
   end
@@ -109,7 +99,7 @@ function TextPanel:_draw_text(row, col, height, width)
   terminal.output.write(seq)
 end
 
---- Private method to truncate a line to fit the available width.
+-- Private method to truncate a line to fit the available width.x
 -- @tparam string line The line text to truncate.
 -- @tparam number max_width Maximum width in display columns.
 -- @treturn string The truncated line.
@@ -190,7 +180,7 @@ end
 
 --- Clear all text content.
 -- @return nothing
-function TextPanel:clear()
+function TextPanel:clear_lines()
   self.lines = {}
   self.position = 1
   self:render()
