@@ -4,8 +4,10 @@
 
 
 local M = {}
+package.loaded["terminal.utils"] = M -- Register the module early to avoid circular dependencies
 
 local utf8 = require("utf8") -- explicit, since 5.1 en 5.2 don't have it by default
+local width  -- forward declaration, 'required' later to prevent loops
 
 
 -- Converts table-keys to a string for error messages.
@@ -234,6 +236,11 @@ end
 -- @tparam number i the starting index of the substring
 -- @tparam number j the ending index of the substring
 -- @treturn string the substring
+-- @usage
+-- -- UTF-8 double-width characters (Chinese, etc.)
+-- utf8sub("你好", 1, 2)       -- "你好"
+-- utf8sub("你好", 1, 1)       -- "你"
+-- utf8sub("你好世界", 2, 3)    -- "好世"
 function M.utf8sub(str, i, j)
   local n = utf8.len(str)
   if #str == n then -- fast path, no utf8 codes
@@ -257,4 +264,91 @@ end
 
 
 
+--- Like `string:sub`, returns the substring of the string from `i` to `j` inclusive, but operates on display columns.
+-- It uses `text.width.utf8cwidth` to determine the width of each character.
+-- @tparam string str the string to take the substring of
+-- @tparam number i the starting column of the substring (can't be negative!)
+-- @tparam number j the ending column of the substring (can't be negative!)
+-- @tparam[opt=false] boolean no_pad whether to pad the substring with spaces
+-- if the first or last column contains half of a double-width character
+-- @treturn string the substring
+-- @usage
+-- -- UTF-8 double-width characters (2 columns each)
+-- utf8sub_pos("你好世界", 3, 6)  -- "好世" (columns 3-6)
+-- utf8sub_pos("你好世界", 2, 7)  -- " 好世 " (columns 2-7 with padding for half of double-width chars)
+-- utf8sub_pos("你好世界", 2, 7, true)  -- "好世" (columns 2-7, no_pad == true)
+function M.utf8sub_col(str, i, j, no_pad)
+  i = i or 1
+  j = j or math.huge
+  assert(i >= 1, "Starting column must be positive")
+  assert(j >= 1, "Ending column must be positive")
+  if j < i then
+    return ""
+  end
+
+  local first_byte = nil  -- position where column i starts
+  local prefix = ""       -- prefix string; either "" or " " in case of padding
+  local last_byte = nil   -- position where column j ends
+  local postfix = ""      -- postfix string; either "" or " " in case of padding
+  local current_width = 0
+
+  if i == 1 then
+    first_byte = 1
+  end
+  if j == math.huge then
+    last_byte = #str
+  end
+
+  -- print("str:", str)
+  -- print("byte-length:", #str)
+
+  for byte_pos, codepoint in utf8.codes(str) do
+    -- print("byte_pos:", byte_pos, "char:", utf8.char(codepoint))
+    local char_width = width.utf8cwidth(codepoint)
+    -- print("char_width:", char_width)
+    local new_width = current_width + char_width
+    -- print("current_width:", current_width)
+
+    if not first_byte then
+      if current_width + 1 == i then  -- exact match
+        first_byte = byte_pos
+
+      elseif new_width == i then   -- start pos is 2nd col of double-width char
+        prefix = no_pad and "" or " "
+        first_byte = byte_pos + #utf8.char(codepoint)   -- first byte of next utf8 char
+      end
+
+      -- print("first_byte:", first_byte)
+    end
+
+    if first_byte then
+      if new_width == j then      -- exact match
+        last_byte = byte_pos + #utf8.char(codepoint) - 1
+        break
+
+      elseif new_width > j then   -- end pos is 1st col of double-width char
+        postfix = no_pad and "" or " "
+        last_byte = byte_pos - 1   -- last byte of previous utf8 char
+        break
+      end
+    end
+
+    current_width = new_width
+  end
+
+  if not first_byte then
+    return ""         -- start column is beyond the string
+  end
+
+  if not last_byte then
+    last_byte = #str  -- Ending column is beyond the string
+  end
+
+  -- print("prefix:", prefix, "first_byte:", first_byte, "last_byte:", last_byte, "postfix:", postfix)
+  return prefix .. str:sub(first_byte, last_byte) .. postfix
+end
+
+
+
+width = require("terminal.text.width") -- load only now, to prevent loops
 return M
