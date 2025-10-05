@@ -371,7 +371,7 @@ end
 function Panel:render()
   if self.content then
     -- Render content panel with optional border
-    self:_draw_border()
+    self:draw_border()
     self:content(self.inner_row, self.inner_col, self.inner_height, self.inner_width)
   else
     -- Render child panels
@@ -461,12 +461,9 @@ end
 
 
 
---- Private method to draw a border around panel content.
--- @tparam number row Starting row position.
--- @tparam number col Starting column position.
--- @tparam number height Panel height.
--- @tparam number width Panel width.
-function Panel:_draw_border()
+--- Draw the border around panel content.
+-- @return nothing
+function Panel:draw_border()
   local row, col, height, width = self.row, self.col, self.height, self.width
 
   if not self.border then
