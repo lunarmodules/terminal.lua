@@ -96,8 +96,8 @@ function Bar:init(opts)
   opts.auto_render = nil
 
   -- Provide content callback for parent constructor
-  opts.content = function(self, row, col, height, width)
-    self:_draw_bar(row, col, height, width)
+  opts.content = function(self)
+    self:_draw_bar()
   end
 
   -- Call parent constructor
@@ -122,16 +122,12 @@ function Bar:init(opts)
 end
 
 -- Private method to draw the bar content.
--- @tparam number row Starting row position.
--- @tparam number col Starting column position.
--- @tparam number height Panel height (should be 1).
--- @tparam number width Panel width.
 -- @return nothing
-function Bar:_draw_bar(row, col, height, width)
+function Bar:_draw_bar()
   terminal.output.write(
     terminal.cursor.position.backup_seq(),
-    terminal.cursor.position.set_seq(row, col),
-    self:_build_bar_line(width),
+    terminal.cursor.position.set_seq(self.inner_row, self.inner_col),
+    self:_build_bar_line(self.inner_width),
     terminal.cursor.position.restore_seq()
   )
 end

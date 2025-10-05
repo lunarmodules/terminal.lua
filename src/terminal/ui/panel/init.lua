@@ -375,7 +375,7 @@ function Panel:render()
     if self.clear_content then
       self:clear()
     end
-    self:content(self.inner_row, self.inner_col, self.inner_height, self.inner_width)
+    self:content()
   else
     -- Render child panels
     for _, child in ipairs(self.children) do

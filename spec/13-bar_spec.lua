@@ -381,9 +381,9 @@ describe("terminal.ui.panel.bar", function()
       -- Mock _draw_bar to track calls
       local called = false
       local call_args = {}
-      bar._draw_bar = function(self, row, col, height, width)
+      bar._draw_bar = function(self)
         called = true
-        call_args = { row, col, height, width }
+        call_args = { self.inner_row, self.inner_col, self.inner_height, self.inner_width }
       end
 
       bar.row = 5
