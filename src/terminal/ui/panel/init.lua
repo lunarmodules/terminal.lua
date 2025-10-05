@@ -167,6 +167,10 @@ function Panel:init(opts)
   self.col = nil
   self.height = nil
   self.width = nil
+  self.inner_row = nil
+  self.inner_col = nil
+  self.inner_height = nil
+  self.inner_width = nil
 end
 
 --- Calculate the layout for this panel and all its children.
@@ -200,11 +204,49 @@ function Panel:calculate_layout(parent_row, parent_col, parent_height, parent_wi
   self.height = calculated_height
   self.width = calculated_width
 
+  -- Calculate inner content area (accounting for border)
+  self:_calculate_inner_area()
+
   -- If this is a divided panel, calculate children layouts
   if self.children then
     self:_calculate_children_layout()
   end
 end
+
+
+-- Private method to calculate inner content area coordinates.
+-- @return nothing
+function Panel:_calculate_inner_area()
+  local row, col, height, width = self.row, self.col, self.height, self.width
+
+  if self.border then
+    local format = self.border.format
+
+    if format.t ~= "" then
+      row = row + 1
+      height = height - 1
+    end
+
+    if format.l ~= "" then
+      col = col + 1
+      width = width - 1
+    end
+
+    if format.r ~= "" then
+      width = width - 1
+    end
+
+    if format.b ~= "" then
+      height = height - 1
+    end
+  end
+
+  self.inner_row = row
+  self.inner_col = col
+  self.inner_height = height
+  self.inner_width = width
+end
+
 
 -- Derive size constraints from children (internal method).
 -- @return nothing
@@ -329,7 +371,8 @@ end
 function Panel:render()
   if self.content then
     -- Render content panel with optional border
-    self:content(self:_draw_border(self.row, self.col, self.height, self.width))
+    self:_draw_border()
+    self:content(self.inner_row, self.inner_col, self.inner_height, self.inner_width)
   else
     -- Render child panels
     for _, child in ipairs(self.children) do
@@ -407,25 +450,31 @@ function Panel:get_panel(name)
 end
 
 
--- Private method to draw a border around panel content.
+--- Clears the panel content (inner area).
+-- @return nothing
+function Panel:clear()
+  cursor.position.backup()
+  terminal.cursor.position.set(self.inner_row, self.inner_col)
+  terminal.clear.box(self.inner_height, self.inner_width)
+  cursor.position.restore()
+end
+
+
+
+--- Private method to draw a border around panel content.
 -- @tparam number row Starting row position.
 -- @tparam number col Starting column position.
 -- @tparam number height Panel height.
 -- @tparam number width Panel width.
--- @treturn number Adjusted row for inner content.
--- @treturn number Adjusted col for inner content.
--- @treturn number Adjusted height for inner content.
--- @treturn number Adjusted width for inner content.
-function Panel:_draw_border(row, col, height, width)
+function Panel:_draw_border()
+  local row, col, height, width = self.row, self.col, self.height, self.width
+
   if not self.border then
     -- No border, but still clear content if requested
     if self.clear_content then
-      cursor.position.backup()
-      terminal.cursor.position.set(row, col)
-      terminal.clear.box(height, width)
-      cursor.position.restore()
+      self:clear()
     end
-    return row, col, height, width
+    return
   end
 
   local format = self.border.format
@@ -448,27 +497,6 @@ function Panel:_draw_border(row, col, height, width)
     text.stack.pop()
   end
   cursor.position.restore()
-
-  -- adjust the coordinates and size for the inner content
-  if format.t ~= "" then
-    row = row + 1
-    height = height - 1
-  end
-
-  if format.l ~= "" then
-    col = col + 1
-    width = width - 1
-  end
-
-  if format.r ~= "" then
-    width = width - 1
-  end
-
-  if format.b ~= "" then
-    height = height - 1
-  end
-
-  return row, col, height, width
 end
 
 
