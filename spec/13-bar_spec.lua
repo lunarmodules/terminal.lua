@@ -13,7 +13,10 @@ describe("terminal.ui.panel.bar", function()
       position = {
         set = function() end,
         backup = function() end,
-        restore = function() end
+        restore = function() end,
+        left_seq = function() return "" end,
+        down_seq = function() return "" end,
+        up_seq = function() return "" end
       }
     }
     terminal.output = {
@@ -387,7 +390,10 @@ describe("terminal.ui.panel.bar", function()
       bar.col = 10
       bar.height = 1
       bar.width = 20
-
+      bar.inner_row = 5
+      bar.inner_col = 10
+      bar.inner_height = 1
+      bar.inner_width = 20
       bar:render()
 
       assert.is_true(called)

@@ -59,9 +59,7 @@ local function run_example_1()
 
   local rows, cols = terminal.size()
   local simple_panel = create_fullscreen_panel(function(self, row, col, height, width)
-    terminal.cursor.position.set(row + 1, col + 1)
-    terminal.draw.box(height - 2, width - 2, terminal.draw.box_fmt.single, true, "Simple Panel")
-    draw_content(row + 1, col + 1, height - 2, width - 2, "Hello World! Press any key to continue...", "green")
+    draw_content(row, col, height, width, "Hello World! Press any key to continue...", "green")
   end)
 
   simple_panel:calculate_layout(1, 1, rows, cols)
