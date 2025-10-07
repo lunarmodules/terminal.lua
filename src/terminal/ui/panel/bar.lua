@@ -4,6 +4,9 @@
 -- structured format with left, center, and right sections separated by configurable
 -- spacing. The bar uses margin and padding parameters to control spacing, and supports
 -- text attributes for styling individual sections or the entire bar.
+--
+-- The typical use case is a header or footer bar for full-screen UI applications.
+-- See `ui.panel.Screen` for an example.
 -- @classmod ui.panel.Bar
 
 local Panel = require("terminal.ui.panel.init")
