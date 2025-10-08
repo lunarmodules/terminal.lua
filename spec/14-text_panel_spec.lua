@@ -1,7 +1,8 @@
-local TextPanel = require("terminal.ui.panel.text_panel")
-local terminal = require("terminal")
-
 describe("terminal.ui.panel.text_panel", function()
+
+  local TextPanel
+  local terminal
+  local text
 
   setup(function()
     TextPanel = require("terminal.ui.panel.text_panel")
@@ -217,7 +218,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("does not render if position unchanged", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
-      local render_called = false
+      local render_called
       panel.render = function() render_called = true end
 
       panel:go_to(3) -- At last line

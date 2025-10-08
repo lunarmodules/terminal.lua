@@ -130,10 +130,8 @@ local function main()
       screen:get_panel("body"):set_lines(sample_text)
     end
 
-    -- Check for resize
-    if screen:check_resize(true) then
-      -- Screen was resized and redrawn
-    end
+    -- Check for resize, and redraw if needed
+    screen:check_resize(true)
   end
 end
 
