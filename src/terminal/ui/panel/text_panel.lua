@@ -140,8 +140,12 @@ end
 -- @return nothing
 function TextPanel:go_to(position)
   position = math.max(1, position)
-  -- position = math.min(position, math.max(1, #self.lines - self.inner_height + 1))
-  position = math.min(position, math.max(1, #self.lines))
+  position = math.min(position, math.max(1, #self.lines - (self.inner_height or 1) + 1))
+  -- position = math.min(position, math.max(1, #self.lines))
+
+    -- Use inner_height if available, otherwise fall back to total lines
+    -- local max_position = self.inner_height and (#self.lines - self.inner_height + 1) or #self.lines
+    -- position = math.min(position, math.max(1, max_position))
 
   if self.position ~= position then
     self.position = position
