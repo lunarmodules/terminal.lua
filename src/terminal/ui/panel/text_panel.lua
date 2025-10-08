@@ -19,6 +19,7 @@ local TextPanel = utils.class(Panel)
 -- @tparam[opt=1] number opts.scroll_step Number of lines to scroll at a time.
 -- @tparam[opt=1] number opts.initial_position Initial scroll position (1-based line number).
 -- @tparam[opt] table opts.text_attr Text attributes to apply to all displayed text.
+-- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when content changes.
 -- @treturn TextPanel A new TextPanel instance.
 -- @usage
 --   local TextPanel = require("terminal.ui.panel.text_panel")
@@ -38,12 +39,14 @@ function TextPanel:init(opts)
   local scroll_step = opts.scroll_step or 1
   local initial_position = opts.initial_position or 1
   local text_attr = opts.text_attr
+  local auto_render = not not opts.auto_render -- force to boolean
 
   -- Remove text panel specific options from opts to avoid conflicts with Panel
   opts.lines = nil
   opts.scroll_step = nil
   opts.initial_position = nil
   opts.text_attr = nil
+  opts.auto_render = nil
 
   -- Provide content callback for parent constructor
   opts.content = function(self)
@@ -58,6 +61,9 @@ function TextPanel:init(opts)
   self.scroll_step = scroll_step
   self.position = initial_position
   self.text_attr = text_attr
+  self.auto_render = false -- set to false initially to prevent render during initialization
+  -- TODO: initialize lines by calling the setter here
+  self.auto_render = auto_render -- set actual value after initialization
 end
 
 
@@ -139,7 +145,9 @@ function TextPanel:go_to(position)
 
   if self.position ~= position then
     self.position = position
-    self:render()
+    if self.auto_render then
+      self:render()
+    end
   end
 end
 
@@ -183,7 +191,9 @@ end
 function TextPanel:set_lines(lines)
   self.lines = lines or {}
   self.position = 1  -- Reset to top
-  self:render()
+  if self.auto_render then
+    self:render()
+  end
 end
 
 
@@ -193,7 +203,9 @@ end
 -- @return nothing
 function TextPanel:add_line(line)
   table.insert(self.lines, line or "")
-  self:render()
+  if self.auto_render then
+    self:render()
+  end
 end
 
 
@@ -203,7 +215,9 @@ end
 function TextPanel:clear_lines()
   self.lines = {}
   self.position = 1
-  self:render()
+  if self.auto_render then
+    self:render()
+  end
 end
 
 

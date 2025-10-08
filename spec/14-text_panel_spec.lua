@@ -138,7 +138,7 @@ describe("terminal.ui.panel.text_panel", function()
 
 
     it("does not render if position unchanged", function()
-      local panel = TextPanel { lines = {"a", "b", "c"} }
+      local panel = TextPanel { lines = {"a", "b", "c"}, auto_render = true }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
       local render_called = false
       panel.render = function() render_called = true end
@@ -324,6 +324,86 @@ describe("terminal.ui.panel.text_panel", function()
 
       assert.are.same({}, panel.lines)
       assert.are.equal(1, panel.position)
+    end)
+
+  end)
+
+
+  describe("auto_render", function()
+
+    it("defaults to false", function()
+      local panel = TextPanel { lines = {"a", "b", "c"} }
+
+      assert.is_false(panel.auto_render)
+    end)
+
+
+    it("can be set to true", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, auto_render = true }
+
+      assert.is_true(panel.auto_render)
+    end)
+
+
+    it("can be set to false explicitly", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, auto_render = false }
+
+      assert.is_false(panel.auto_render)
+    end)
+
+
+    it("renders automatically when auto_render is true", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, auto_render = true }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
+      local render_called = false
+      panel.render = function() render_called = true end
+
+      panel:go_to(2)
+      assert.is_true(render_called)
+    end)
+
+
+    it("does not render automatically when auto_render is false", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, auto_render = false }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
+      local render_called = false
+      panel.render = function() render_called = true end
+
+      panel:go_to(2)
+      assert.is_false(render_called)
+    end)
+
+
+    it("renders automatically on set_lines when auto_render is true", function()
+      local panel = TextPanel { lines = {"a", "b"}, auto_render = true }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
+      local render_called = false
+      panel.render = function() render_called = true end
+
+      panel:set_lines({"x", "y", "z"})
+      assert.is_true(render_called)
+    end)
+
+
+    it("renders automatically on add_line when auto_render is true", function()
+      local panel = TextPanel { lines = {"a", "b"}, auto_render = true }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
+      local render_called = false
+      panel.render = function() render_called = true end
+
+      panel:add_line("c")
+      assert.is_true(render_called)
+    end)
+
+
+    it("renders automatically on clear_lines when auto_render is true", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, auto_render = true }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
+      local render_called = false
+      panel.render = function() render_called = true end
+
+      panel:clear_lines()
+      assert.is_true(render_called)
     end)
 
   end)
