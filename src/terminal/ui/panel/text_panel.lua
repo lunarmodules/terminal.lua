@@ -9,7 +9,9 @@ local utils = require("terminal.utils")
 local text = require("terminal.text")
 local Sequence = require("terminal.sequence")
 
+
 local TextPanel = utils.class(Panel)
+
 
 --- Create a new TextPanel instance.
 -- @tparam table opts Options for the text panel.
@@ -58,6 +60,8 @@ function TextPanel:init(opts)
   self.text_attr = text_attr
 end
 
+
+
 -- Private method to draw the text content.
 -- @return nothing
 function TextPanel:_draw_text()
@@ -99,36 +103,38 @@ function TextPanel:_draw_text()
   terminal.output.write(seq)
 end
 
+
+
 -- Private method to truncate a line to fit the available width.x
 -- @tparam string line The line text to truncate.
 -- @tparam number max_width Maximum width in display columns.
 -- @treturn string The truncated line.
 function TextPanel:_truncate_line(line, max_width)
-  if not line or line == "" then
-    return ""
-  end
+  line = line or ""
 
-  -- Use text.width to get display width
-  local display_width = text.width.utf8swidth(line)
+  local cols = text.width.utf8swidth(line)
 
-  if display_width <= max_width then
+  if cols == max_width then
     return line
   end
 
-  -- Truncate character by character until it fits
-  local truncated = line
-  while text.width.utf8swidth(truncated) > max_width and #truncated > 0 do
-    truncated = truncated:sub(1, -2)
+  if cols > max_width then   -- truncate too long a line
+    line = utils.utf8sub_col(line, 1, max_width)
+    return line
   end
 
-  return truncated
+  -- pad too short a line with spaces
+  return line .. string.rep(" ", max_width - cols)
 end
+
+
 
 --- Go to a specific line position.
 -- @tparam number position The line position to go to (1-based).
 -- @return nothing
 function TextPanel:go_to(position)
   position = math.max(1, position)
+  -- position = math.min(position, math.max(1, #self.lines - self.inner_height + 1))
   position = math.min(position, math.max(1, #self.lines))
 
   if self.position ~= position then
@@ -137,11 +143,15 @@ function TextPanel:go_to(position)
   end
 end
 
+
+
 --- Scroll up by scroll_step lines.
 -- @return nothing
 function TextPanel:scroll_up()
   self:go_to(self.position - self.scroll_step)
 end
+
+
 
 --- Scroll down by scroll_step lines.
 -- @return nothing
@@ -149,17 +159,23 @@ function TextPanel:scroll_down()
   self:go_to(self.position + self.scroll_step)
 end
 
+
+
 --- Get the current scroll position.
 -- @treturn number The current line position (1-based).
 function TextPanel:get_position()
   return self.position
 end
 
+
+
 --- Get the total number of lines.
 -- @treturn number The total number of lines.
 function TextPanel:get_line_count()
   return #self.lines
 end
+
+
 
 --- Set new text lines.
 -- @tparam table lines Array of text lines.
@@ -170,6 +186,8 @@ function TextPanel:set_lines(lines)
   self:render()
 end
 
+
+
 --- Add a line to the text content.
 -- @tparam string line The line to add.
 -- @return nothing
@@ -178,6 +196,8 @@ function TextPanel:add_line(line)
   self:render()
 end
 
+
+
 --- Clear all text content.
 -- @return nothing
 function TextPanel:clear_lines()
@@ -185,5 +205,7 @@ function TextPanel:clear_lines()
   self.position = 1
   self:render()
 end
+
+
 
 return TextPanel

@@ -26,6 +26,11 @@ describe("terminal.ui.panel.text_panel", function()
         pop_seq = function() return "pop_seq" end
       }
     }
+    terminal.clear = {
+      box = function(row, col, height, width) end,
+      box_seq = function(row, col, height, width) return "clear_seq" end,
+      eol_seq = function() return "eol_seq" end
+    }
   end)
 
 
@@ -72,27 +77,27 @@ describe("terminal.ui.panel.text_panel", function()
 
   describe("_truncate_line()", function()
 
-    it("returns empty string for nil input", function()
+    it("returns padded string for nil input", function()
       local panel = TextPanel {}
       local result = panel:_truncate_line(nil, 10)
 
-      assert.are.equal("", result)
+      assert.are.equal("          ", result) -- 10 spaces
     end)
 
 
-    it("returns empty string for empty input", function()
+    it("returns padded string for empty input", function()
       local panel = TextPanel {}
       local result = panel:_truncate_line("", 10)
 
-      assert.are.equal("", result)
+      assert.are.equal("          ", result) -- 10 spaces
     end)
 
 
-    it("returns original line if it fits", function()
+    it("returns padded line if it fits", function()
       local panel = TextPanel {}
       local result = panel:_truncate_line("short", 10)
 
-      assert.are.equal("short", result)
+      assert.are.equal("short     ", result) -- "short" + 5 spaces
     end)
 
 
@@ -111,6 +116,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("goes to specified position", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"} }
+      panel:calculate_layout(1, 1, 5, 10) -- row, col, height, width
 
       panel:go_to(3)
 
@@ -120,6 +126,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("clamps position to valid range", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:go_to(0)
       assert.are.equal(1, panel.position)
@@ -131,6 +138,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("does not render if position unchanged", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
       local render_called = false
       panel.render = function() render_called = true end
 
@@ -149,6 +157,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("scrolls up by scroll_step", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"}, scroll_step = 2 }
+      panel:calculate_layout(1, 1, 5, 10) -- row, col, height, width
 
       panel:go_to(5)
       panel:scroll_up()
@@ -159,6 +168,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("does not scroll below 1", function()
       local panel = TextPanel { lines = {"a", "b", "c"}, scroll_step = 5 }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:go_to(2)
       panel:scroll_up()
@@ -169,6 +179,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("does not render if position unchanged", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
       local render_called = false
       panel.render = function() render_called = true end
 
@@ -183,6 +194,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("scrolls down by scroll_step", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"}, scroll_step = 2 }
+      panel:calculate_layout(1, 1, 5, 10) -- row, col, height, width
 
       panel:go_to(1)
       panel:scroll_down()
@@ -193,6 +205,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("does not scroll beyond last line", function()
       local panel = TextPanel { lines = {"a", "b", "c"}, scroll_step = 5 }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:go_to(2)
       panel:scroll_down()
@@ -203,6 +216,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("does not render if position unchanged", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
       local render_called = false
       panel.render = function() render_called = true end
 
@@ -219,6 +233,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("returns current position", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:go_to(2)
 
@@ -250,6 +265,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("sets new lines and resets position", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:go_to(3)
       panel:set_lines({"x", "y"})
@@ -261,6 +277,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("handles nil input", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:set_lines(nil)
 
@@ -275,6 +292,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("adds line to end", function()
       local panel = TextPanel { lines = {"a", "b"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:add_line("c")
 
@@ -284,6 +302,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("handles nil input", function()
       local panel = TextPanel { lines = {"a", "b"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:add_line(nil)
 
@@ -293,13 +312,14 @@ describe("terminal.ui.panel.text_panel", function()
   end)
 
 
-  describe("clear()", function()
+  describe("clear_lines()", function()
 
     it("clears all lines and resets position", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
       panel:go_to(3)
-      panel:clear()
+      panel:clear_lines()
 
       assert.are.same({}, panel.lines)
       assert.are.equal(1, panel.position)
