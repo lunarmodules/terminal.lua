@@ -57,12 +57,12 @@ function TextPanel:init(opts)
   Panel.init(self, opts)
 
   -- Set text panel specific properties
-  self.lines = lines
   self.scroll_step = scroll_step
-  self.position = initial_position
   self.text_attr = text_attr
+
   self.auto_render = false -- set to false initially to prevent render during initialization
-  -- TODO: initialize lines by calling the setter here
+  self:set_lines(lines)
+  self:go_to(initial_position)
   self.auto_render = auto_render -- set actual value after initialization
 end
 
