@@ -61,6 +61,7 @@ function TextPanel:init(opts)
   self.text_attr = text_attr
 
   self.auto_render = false -- set to false initially to prevent render during initialization
+  self.formatted_lines = nil
   self:set_lines(lines)
   self:go_to(initial_position)
   self.auto_render = auto_render -- set actual value after initialization
@@ -81,19 +82,19 @@ function TextPanel:_draw_text()
     n = n + 1
   end
 
+  -- Ensure formatted lines are available
+  if not self.formatted_lines then
+    self:_rebuild_formatted_lines()
+  end
+
   -- Add each visible line to the sequence
   local start_line = self.position
-  local end_line = math.min(start_line + self.inner_height - 1, #self.lines)
+  local end_line = math.min(start_line + self.inner_height - 1, #self.formatted_lines)
   for i = start_line, end_line do
-    local line_text = self.lines[i] or ""
     local line_row = self.inner_row + (i - start_line)
-
-    -- Format line to fit width
-    local display_text = self:format_line(line_text, self.inner_width)
-
     -- Add cursor positioning and text to sequence
     seq[n] = terminal.cursor.position.set_seq(line_row, self.inner_col)
-    seq[n+1] = display_text
+    seq[n+1] = self.formatted_lines[i]
     n = n + 2
   end
 
@@ -134,13 +135,36 @@ function TextPanel:format_line(line, max_width)
 end
 
 
+-- Internal: rebuild formatted_lines from source lines for current width
+function TextPanel:_rebuild_formatted_lines()
+  local width = self.inner_width
+  local out = {}
+  for i = 1, #self.lines do
+    local src = self.lines[i] or ""
+    out[i] = self:format_line(src, width)
+  end
+  self.formatted_lines = out
+
+  -- ensure the position is valid since number of lines might have changed, but
+  -- we don't want to render in the middle of this process
+  local auto_render = self.auto_render
+  self.auto_render = false
+  self:go_to(self.position)
+  self.auto_render = auto_render
+end
+
+
 
 --- Go to a specific line position.
 -- @tparam number position The line position to go to (1-based).
 -- @return nothing
 function TextPanel:go_to(position)
   position = math.max(1, position)
-  position = math.min(position, math.max(1, #self.lines - (self.inner_height or 1) + 1))
+  -- Use formatted_lines length when available to clamp viewport start
+  local visible_height = (self.inner_height or 1)
+  -- TODO: if formatted_lines is still nil here, should we build it? instead of falling back to "lines"
+  local total_lines = (self.formatted_lines and #self.formatted_lines) or #self.lines
+  position = math.min(position, math.max(1, total_lines - visible_height + 1))
 
   if self.position ~= position then
     self.position = position
@@ -148,6 +172,13 @@ function TextPanel:go_to(position)
       self:render()
     end
   end
+end
+
+
+-- Rebuild formatted lines when layout changes width
+function TextPanel:calculate_layout(parent_row, parent_col, parent_height, parent_width)
+  Panel.calculate_layout(self, parent_row, parent_col, parent_height, parent_width)
+  self.formatted_lines = nil  -- TODO: only do this when parent_width has changed
 end
 
 
@@ -189,6 +220,7 @@ end
 -- @return nothing
 function TextPanel:set_lines(lines)
   self.lines = lines or {}
+  self.formatted_lines = nil
   self.position = 1  -- Reset to top
   if self.auto_render then
     self:render()
@@ -202,6 +234,7 @@ end
 -- @return nothing
 function TextPanel:add_line(line)
   table.insert(self.lines, line or "")
+  self.formatted_lines = nil  -- TODO: only format and add the new line to the formatted_lines
   if self.auto_render then
     self:render()
   end
@@ -213,6 +246,7 @@ end
 -- @return nothing
 function TextPanel:clear_lines()
   self.lines = {}
+  self.formatted_lines = nil
   self.position = 1
   if self.auto_render then
     self:render()
