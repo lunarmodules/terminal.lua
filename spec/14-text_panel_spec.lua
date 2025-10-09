@@ -76,11 +76,11 @@ describe("terminal.ui.panel.text_panel", function()
   end)
 
 
-  describe("_truncate_line()", function()
+  describe("format_line()", function()
 
     it("returns padded string for nil input", function()
       local panel = TextPanel {}
-      local result = panel:_truncate_line(nil, 10)
+      local result = panel:format_line(nil, 10)
 
       assert.are.equal("          ", result) -- 10 spaces
     end)
@@ -88,7 +88,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("returns padded string for empty input", function()
       local panel = TextPanel {}
-      local result = panel:_truncate_line("", 10)
+      local result = panel:format_line("", 10)
 
       assert.are.equal("          ", result) -- 10 spaces
     end)
@@ -96,7 +96,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("returns padded line if it fits", function()
       local panel = TextPanel {}
-      local result = panel:_truncate_line("short", 10)
+      local result = panel:format_line("short", 10)
 
       assert.are.equal("short     ", result) -- "short" + 5 spaces
     end)
@@ -104,7 +104,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("truncates line if too long", function()
       local panel = TextPanel {}
-      local result = panel:_truncate_line("very long line", 5)
+      local result = panel:format_line("very long line", 5)
 
       assert.is_true(text.width.utf8swidth(result) <= 5)
       assert.are.equal("very ", result)

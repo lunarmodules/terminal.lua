@@ -88,8 +88,8 @@ function TextPanel:_draw_text()
     local line_text = self.lines[i] or ""
     local line_row = self.inner_row + (i - start_line)
 
-    -- Truncate line if too long
-    local display_text = self:_truncate_line(line_text, self.inner_width)
+    -- Format line to fit width
+    local display_text = self:format_line(line_text, self.inner_width)
 
     -- Add cursor positioning and text to sequence
     seq[n] = terminal.cursor.position.set_seq(line_row, self.inner_col)
@@ -111,11 +111,11 @@ end
 
 
 
--- Private method to truncate a line to fit the available width.x
--- @tparam string line The line text to truncate.
+--- Method to format a line to fit the available width.
+-- @tparam string line The line text to format.
 -- @tparam number max_width Maximum width in display columns.
--- @treturn string The truncated line.
-function TextPanel:_truncate_line(line, max_width)
+-- @treturn string The formatted line.
+function TextPanel:format_line(line, max_width)
   line = line or ""
 
   local cols = text.width.utf8swidth(line)
@@ -141,11 +141,6 @@ end
 function TextPanel:go_to(position)
   position = math.max(1, position)
   position = math.min(position, math.max(1, #self.lines - (self.inner_height or 1) + 1))
-  -- position = math.min(position, math.max(1, #self.lines))
-
-    -- Use inner_height if available, otherwise fall back to total lines
-    -- local max_position = self.inner_height and (#self.lines - self.inner_height + 1) or #self.lines
-    -- position = math.min(position, math.max(1, max_position))
 
   if self.position ~= position then
     self.position = position
