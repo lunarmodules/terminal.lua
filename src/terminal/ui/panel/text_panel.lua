@@ -139,9 +139,8 @@ end
 function TextPanel:_rebuild_formatted_lines()
   local width = self.inner_width
   local out = {}
-  for i = 1, #self.lines do
-    local src = self.lines[i] or ""
-    out[i] = self:format_line(src, width)
+  for i, line in ipairs(self.lines) do
+    out[i] = self:format_line(line, width)
   end
   self.formatted_lines = out
 
@@ -178,7 +177,15 @@ end
 -- Rebuild formatted lines when layout changes width
 function TextPanel:calculate_layout(parent_row, parent_col, parent_height, parent_width)
   Panel.calculate_layout(self, parent_row, parent_col, parent_height, parent_width)
-  self.formatted_lines = nil  -- TODO: only do this when parent_width has changed
+
+  -- Only rebuild if formatted_lines exists and width has changed
+  local l1 = (self.formatted_lines or {})[1]
+  if l1 then
+    local old_width = text.width.utf8swidth(l1)
+    if old_width ~= self.inner_width then
+      self.formatted_lines = nil
+    end
+  end
 end
 
 
