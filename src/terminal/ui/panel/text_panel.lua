@@ -20,6 +20,7 @@ local TextPanel = utils.class(Panel)
 -- @tparam[opt=1] number opts.initial_position Initial scroll position (1-based line number).
 -- @tparam[opt] table opts.text_attr Text attributes to apply to all displayed text.
 -- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when content changes.
+-- @tparam[opt] number opts.max_lines Maximum number of lines to keep (older lines are removed when exceeded).
 -- @treturn TextPanel A new TextPanel instance.
 -- @usage
 --   local TextPanel = require("terminal.ui.panel.text_panel")
@@ -40,6 +41,7 @@ function TextPanel:init(opts)
   local initial_position = opts.initial_position or 1
   local text_attr = opts.text_attr
   local auto_render = not not opts.auto_render -- force to boolean
+  local max_lines = opts.max_lines
 
   -- Remove text panel specific options from opts to avoid conflicts with Panel
   opts.lines = nil
@@ -47,6 +49,7 @@ function TextPanel:init(opts)
   opts.initial_position = nil
   opts.text_attr = nil
   opts.auto_render = nil
+  opts.max_lines = nil
 
   -- Provide content callback for parent constructor
   opts.content = function(self)
@@ -59,6 +62,7 @@ function TextPanel:init(opts)
   -- Set text panel specific properties
   self.scroll_step = scroll_step
   self.text_attr = text_attr
+  self.max_lines = max_lines
 
   self.auto_render = false -- set to false initially to prevent render during initialization
   self.formatted_lines = nil
@@ -271,6 +275,10 @@ end
 -- @tparam table lines Array of text lines.
 -- @return nothing
 function TextPanel:set_lines(lines)
+  if self.max_lines and #lines > self.max_lines then
+    error("max_lines is set and number of lines is greater than max_lines")
+  end
+
   self.lines = lines or {}
   self.formatted_lines = nil
   self.position = 1  -- Reset to top
@@ -287,6 +295,24 @@ end
 function TextPanel:add_line(line)
   table.insert(self.lines, line or "")
 
+  -- Enforce max_lines limit if set
+  local must_redraw = false
+  while self.max_lines and #self.lines > self.max_lines do
+    local drop_line = table.remove(self.lines, 1)
+    if self.formatted_lines then
+      -- how many formatted lines do we drop from this 1 input line?
+      local drop_lines = #self:format_line(drop_line, self.inner_width)
+      for i = 1, drop_lines do
+        table.remove(self.formatted_lines, 1)
+      end
+      self.position = self.position - drop_lines
+      if self.position < 1 then
+        self.position = 1
+        must_redraw = true
+      end
+    end
+  end
+
   local width = self.inner_width
   local formatted_lines = self.formatted_lines
 
@@ -299,7 +325,7 @@ function TextPanel:add_line(line)
     if self.auto_render then
       -- only write the new lines if they are inside the viewport
       local lastline_displayed = self.position + self.inner_height - 1
-      if lastline_displayed > old_line_count then
+      if must_redraw or lastline_displayed > old_line_count then
         self:render()
       end
     end

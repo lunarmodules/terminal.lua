@@ -485,4 +485,86 @@ describe("terminal.ui.panel.text_panel", function()
 
   end)
 
+
+  describe("max_lines", function()
+
+    it("has no limit when max_lines is not set", function()
+      local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 3, 10)
+
+      panel:add_line("d")
+      panel:add_line("e")
+      panel:add_line("f")
+
+      assert.are.equal(6, #panel.lines)
+      assert.are.equal(6, panel:get_line_count())
+    end)
+
+
+    it("enforces max_lines limit by removing old lines", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, max_lines = 3 }
+      panel:calculate_layout(1, 1, 3, 10)
+
+      panel:add_line("d") -- Should remove "a", keeping ["b", "c", "d"]
+
+      assert.are.equal(3, #panel.lines)
+      assert.are.equal("b", panel.lines[1])
+      assert.are.equal("c", panel.lines[2])
+      assert.are.equal("d", panel.lines[3])
+    end)
+
+
+    it("adjusts position when lines are removed", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, max_lines = 3 }
+      panel:calculate_layout(1, 1, 3, 10)
+      panel:go_to(2) -- Position at line 2
+
+      panel:add_line("d") -- Should remove "a", position becomes 1
+
+      assert.are.equal(1, panel:get_position())
+    end)
+
+
+    it("clamps position to 1 when it would go below", function()
+      local panel = TextPanel { lines = {"a", "b" }, max_lines = 2 }
+      panel:calculate_layout(1, 1, 3, 10)
+      panel:go_to(1) -- Position at line 1
+
+      panel:add_line("c") -- Should remove "a", position stays at 1
+
+      assert.are.equal(1, panel:get_position())
+      assert.are.equal(2, #panel.lines)
+    end)
+
+
+    it("handles multiple lines exceeding max_lines", function()
+      local panel = TextPanel { lines = {"a", "b"}, max_lines = 3 }
+      panel:calculate_layout(1, 1, 3, 10)
+
+      panel:add_line("c")
+      panel:add_line("d")
+      panel:add_line("e") -- Should remove "a" and "b", keeping ["c", "d", "e"]
+
+      assert.are.equal(3, #panel.lines)
+      assert.are.equal("c", panel.lines[1])
+      assert.are.equal("d", panel.lines[2])
+      assert.are.equal("e", panel.lines[3])
+    end)
+
+
+    it("updates formatted_lines when lines are removed", function()
+      local panel = TextPanel { lines = {"a", "b", "c"}, max_lines = 3 }
+      panel:calculate_layout(1, 1, 3, 10)
+
+      -- Ensure formatted_lines is built
+      panel:get_line_count()
+      assert.is_not_nil(panel.formatted_lines)
+
+      panel:add_line("d") -- Should remove "a" and rebuild formatted_lines
+
+      assert.are.same({"b         ", "c         ", "d         "}, panel.formatted_lines)
+    end)
+
+  end)
+
 end)
