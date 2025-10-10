@@ -463,7 +463,8 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("renders automatically on add_line when auto_render is true", function()
       local panel = TextPanel { lines = {"a", "b"}, auto_render = true }
-      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
+      panel:calculate_layout(1, 1, 5, 10) -- row, col, height, width (height 5 to ensure new line is visible)
+      panel:go_to(1) -- Ensure we're at the top to see the new line
       local render_called = false
       panel.render = function() render_called = true end
 

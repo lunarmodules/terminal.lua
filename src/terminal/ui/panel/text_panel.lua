@@ -286,9 +286,23 @@ end
 -- @return nothing
 function TextPanel:add_line(line)
   table.insert(self.lines, line or "")
-  self.formatted_lines = nil  -- TODO: only format and add the new line to the formatted_lines
-  if self.auto_render then
-    self:render()
+
+  local width = self.inner_width
+  local formatted_lines = self.formatted_lines
+
+  if width and formatted_lines then
+    local old_line_count = #formatted_lines
+    for _, formatted_line in ipairs(self:format_line(line, width)) do
+      table.insert(formatted_lines, formatted_line)
+    end
+
+    if self.auto_render then
+      -- only write the new lines if they are inside the viewport
+      local lastline_displayed = self.position + self.inner_height - 1
+      if lastline_displayed > old_line_count then
+        self:render()
+      end
+    end
   end
 end
 
