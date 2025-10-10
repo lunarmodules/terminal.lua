@@ -230,6 +230,80 @@ describe("terminal.ui.panel.text_panel", function()
   end)
 
 
+  describe("page_up()", function()
+
+    it("scrolls up by page size", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
+      panel:go_to(5) -- Start at position 5
+
+      panel:page_up()
+      assert.are.equal(2, panel:get_position()) -- 5 - 3 = 2
+    end)
+
+
+    it("does not scroll below 1", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
+      panel:go_to(2) -- Start at position 2
+
+      panel:page_up()
+      assert.are.equal(1, panel:get_position()) -- Clamped to 1
+    end)
+
+
+    it("does not render if position unchanged", function()
+      local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 2, 10) -- row, col, height, width (2 lines visible)
+      local render_called
+      panel.render = function() render_called = true end
+
+      panel:go_to(1) -- At position 1
+      render_called = false -- Reset after go_to call
+      panel:page_up()
+      assert.is_false(render_called)
+    end)
+
+  end)
+
+
+  describe("page_down()", function()
+
+    it("scrolls down by page size", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
+      panel:go_to(2) -- Start at position 2
+
+      panel:page_down()
+      assert.are.equal(5, panel:get_position()) -- 2 + 3 = 5
+    end)
+
+
+    it("does not scroll beyond last line", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e"} }
+      panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
+      panel:go_to(3) -- Start at position 3 (max for 5 lines with height 3)
+
+      panel:page_down()
+      assert.are.equal(3, panel:get_position()) -- Clamped to max position
+    end)
+
+
+    it("does not render if position unchanged", function()
+      local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 2, 10) -- row, col, height, width (2 lines visible)
+      local render_called
+      panel.render = function() render_called = true end
+
+      panel:go_to(2) -- At max position for 3 lines with height 2
+      render_called = false -- Reset after go_to call
+      panel:page_down()
+      assert.is_false(render_called)
+    end)
+
+  end)
+
+
   describe("get_position()", function()
 
     it("returns current position", function()

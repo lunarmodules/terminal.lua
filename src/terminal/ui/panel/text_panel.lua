@@ -225,6 +225,28 @@ end
 
 
 
+--- Scroll up by one page (inner_height lines).
+-- @return nothing
+function TextPanel:page_up()
+  if not self.inner_height then
+    return
+  end
+  self:go_to(self.position - self.inner_height)
+end
+
+
+
+--- Scroll down by one page (inner_height lines).
+-- @return nothing
+function TextPanel:page_down()
+  if not self.inner_height then
+    return
+  end
+  self:go_to(self.position + self.inner_height)
+end
+
+
+
 --- Get the current scroll position.
 -- @treturn number The current line position (1-based).
 function TextPanel:get_position()

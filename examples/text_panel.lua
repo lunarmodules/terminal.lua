@@ -91,7 +91,7 @@ local screen = Screen {
       attr = { fg = "magenta", brightness = "bright" }
     },
     center = {
-      text = "g/G: top/bottom",
+      text = "pgup/pgdn: page, g/G: top/bottom",
       attr = { fg = "yellow", brightness = "bright" }
     },
     right = {
@@ -120,6 +120,10 @@ local function main()
       screen:get_panel("body"):scroll_down()
     elseif key == "k" or keyname == keys.up then
       screen:get_panel("body"):scroll_up()
+    elseif keyname == keys.pageup then
+      screen:get_panel("body"):page_up()
+    elseif keyname == keys.pagedown then
+      screen:get_panel("body"):page_down()
     elseif key == "g" then
       screen:get_panel("body"):go_to(1)
     elseif key == "G" then
