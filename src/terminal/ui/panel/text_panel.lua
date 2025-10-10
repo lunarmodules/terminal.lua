@@ -72,6 +72,11 @@ end
 -- Private method to draw the text content.
 -- @return nothing
 function TextPanel:_draw_text()
+  -- Ensure formatted lines are available
+  if not self.formatted_lines then
+    self:_rebuild_formatted_lines()
+  end
+
   local seq = Sequence()
   seq[1] = terminal.cursor.position.backup_seq()
   local n = 2
@@ -80,11 +85,6 @@ function TextPanel:_draw_text()
   if self.text_attr then
     seq[n] = terminal.text.stack.push_seq(self.text_attr)
     n = n + 1
-  end
-
-  -- Ensure formatted lines are available
-  if not self.formatted_lines then
-    self:_rebuild_formatted_lines()
   end
 
   -- Add each visible line to the sequence
@@ -137,6 +137,7 @@ end
 
 -- Internal: rebuild formatted_lines from source lines for current width
 function TextPanel:_rebuild_formatted_lines()
+  assert(self.inner_width, "inner_width is not set, cannot rebuild formatted_lines, call calculate_layout first")
   local width = self.inner_width
   local out = {}
   for i, line in ipairs(self.lines) do
@@ -158,18 +159,33 @@ end
 -- @tparam number position The line position to go to (1-based).
 -- @return nothing
 function TextPanel:go_to(position)
-  position = math.max(1, position)
-  -- Use formatted_lines length when available to clamp viewport start
-  local visible_height = (self.inner_height or 1)
-  -- TODO: if formatted_lines is still nil here, should we build it? instead of falling back to "lines"
-  local total_lines = (self.formatted_lines and #self.formatted_lines) or #self.lines
-  position = math.min(position, math.max(1, total_lines - visible_height + 1))
+  if not self.inner_width then
+    -- there is no inner-width set, so we cannot calculate the position,
+    -- since any wrapping lines can be 1 or more lines, hence unknown total size.
+    -- Just accept position, when reformatting lines in rebuild_formatted_lines we
+    -- will call go_to again, and by then we can validate the position.
+    -- So for now just accept the value set.
+    self.position = position -- there is no width, so auto_render is irrelevant here (see below)
+    return
+  end
 
-  if self.position ~= position then
+  local old_position = self.position
+
+  if not self.formatted_lines then
+    -- width is known, but we haven't formatted yet. Just format
+    -- since formatting will call go_to again with auto-render disabled, so
+    -- we do need the auto_render check afterwards.
     self.position = position
-    if self.auto_render then
-      self:render()
-    end
+    self:_rebuild_formatted_lines() -- this will update position within bounds-check
+  else
+    -- we have the formatted lines, do bounds check before setting position
+    position = math.max(1, position)
+    position = math.min(position, math.max(1, #self.formatted_lines - self.inner_height + 1))
+    self.position = position
+  end
+
+  if self.auto_render and self.position ~= old_position then
+    self:render()
   end
 end
 
@@ -217,7 +233,11 @@ end
 --- Get the total number of lines.
 -- @treturn number The total number of lines.
 function TextPanel:get_line_count()
-  return #self.lines
+  if not self.formatted_lines then
+    self:_rebuild_formatted_lines()
+  end
+
+  return #self.formatted_lines
 end
 
 

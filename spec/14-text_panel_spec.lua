@@ -248,6 +248,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("returns number of lines", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d"} }
+      panel:calculate_layout(1, 1, 10, 20)
 
       assert.are.equal(4, panel:get_line_count())
     end)
@@ -255,6 +256,7 @@ describe("terminal.ui.panel.text_panel", function()
 
     it("returns 0 for empty lines", function()
       local panel = TextPanel { lines = {} }
+      panel:calculate_layout(1, 1, 10, 20)
 
       assert.are.equal(0, panel:get_line_count())
     end)

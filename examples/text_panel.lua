@@ -24,6 +24,9 @@ local sample_text = {
   "• Use 'k' or ↑ arrow to scroll up",
   "• Use 'g' to go to top",
   "• Use 'G' to go to bottom",
+  "• Use 'r' to add a random line",
+  "• Use 'c' to clear content",
+  "• Use 's' to reset to this sample text",
   "• Use 'q' to quit",
   "",
   "The TextPanel class inherits from Panel and provides:",
@@ -73,12 +76,15 @@ local screen = Screen {
     },
     attr = { bg = "blue" }
   },
+
   body = TextPanel {
     lines = sample_text,
-    scroll_step = 3,
+    scroll_step = 1,
     text_attr = { fg = "white", brightness = "bright" },
-    border = { format = terminal.draw.box_fmt.single }
+    border = { format = terminal.draw.box_fmt.single },
+    auto_render = true,
   },
+
   footer = Bar {
     left = {
       text = "j/k or ↑/↓: scroll",
