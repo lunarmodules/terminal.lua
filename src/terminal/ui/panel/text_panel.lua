@@ -113,25 +113,26 @@ end
 
 
 --- Method to format a line to fit the available width.
+-- Returned lines must be padded with spaces to prevent having to clear lines.
 -- @tparam string line The line text to format.
 -- @tparam number max_width Maximum width in display columns.
--- @treturn string The formatted line.
+-- @treturn table Array of formatted lines
 function TextPanel:format_line(line, max_width)
   line = line or ""
 
   local cols = text.width.utf8swidth(line)
 
   if cols == max_width then
-    return line
+    return {line}
   end
 
   if cols > max_width then   -- truncate too long a line
     line = utils.utf8sub_col(line, 1, max_width)
-    return line
+    return {line}
   end
 
   -- pad too short a line with spaces
-  return line .. string.rep(" ", max_width - cols)
+  return {line .. string.rep(" ", max_width - cols)}
 end
 
 
@@ -141,7 +142,9 @@ function TextPanel:_rebuild_formatted_lines()
   local width = self.inner_width
   local out = {}
   for i, line in ipairs(self.lines) do
-    out[i] = self:format_line(line, width)
+    for _, formatted_line in ipairs(self:format_line(line, width)) do
+      table.insert(out, formatted_line)
+    end
   end
   self.formatted_lines = out
 

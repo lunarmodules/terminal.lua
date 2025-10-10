@@ -82,7 +82,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel {}
       local result = panel:format_line(nil, 10)
 
-      assert.are.equal("          ", result) -- 10 spaces
+      assert.are.equal("          ", result[1]) -- 10 spaces
     end)
 
 
@@ -90,7 +90,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel {}
       local result = panel:format_line("", 10)
 
-      assert.are.equal("          ", result) -- 10 spaces
+      assert.are.equal("          ", result[1]) -- 10 spaces
     end)
 
 
@@ -98,7 +98,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel {}
       local result = panel:format_line("short", 10)
 
-      assert.are.equal("short     ", result) -- "short" + 5 spaces
+      assert.are.equal("short     ", result[1]) -- "short" + 5 spaces
     end)
 
 
@@ -106,8 +106,8 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel {}
       local result = panel:format_line("very long line", 5)
 
-      assert.is_true(text.width.utf8swidth(result) <= 5)
-      assert.are.equal("very ", result)
+      assert.is_true(text.width.utf8swidth(result[1]) <= 5)
+      assert.are.equal("very ", result[1])
     end)
 
   end)
