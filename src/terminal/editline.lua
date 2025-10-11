@@ -69,8 +69,12 @@ end
 --   position = 1,
 -- }
 function EditLine:init(opts)
-  if opts == nil or type(opts) == "string" then
-    opts = { value = opts or "" }
+  opts = opts or {}
+  if type(opts) == "string" then
+    opts = { value = opts }
+  end
+  if not opts.value then
+    opts.value = ""
   end
 
   self.chars = {}   -- array of utf8 characters (strings)
@@ -651,6 +655,7 @@ do
           -- add an empty new line just to hold the cursor
           cur_line = #lines + 1
           lines[cur_line] = EditLine("")
+          line_cols[cur_line] = 0  -- Set width for the empty cursor line
           cur_col = 1
         end
       end
