@@ -18,7 +18,7 @@
 --
 -- - Dynamic line addition and removal
 -- - Automatic line rotation with `max_lines` option
--- - Text truncation and padding with UTF-8 support
+-- - Text truncation/wrapping/word-wrapping and padding with UTF-8 support
 -- - Automatic re-rendering with `auto_render` option
 --
 -- **Usage Examples**
@@ -47,6 +47,7 @@ local terminal = require("terminal")
 local utils = require("terminal.utils")
 local text = require("terminal.text")
 local Sequence = require("terminal.sequence")
+local EditLine = require("terminal.editline")
 
 
 local TextPanel = utils.class(Panel)
@@ -192,8 +193,22 @@ end
 -- @tparam number max_width Maximum width in display columns.
 -- @treturn table Array of formatted lines
 function TextPanel:format_line_wrap(line, max_width)
-  -- TODO: Implement line wrapping
-  return self:format_line_truncate(line, max_width)
+  local line = line or ""
+
+  local el = EditLine(line)
+  local lines = el:format {
+    width = max_width,
+    wordwrap = false,
+    pad = true,
+    no_new_cursor_line = true,
+  }
+
+  -- force string results
+  for i, line in ipairs(lines) do
+    lines[i] = tostring(line)
+  end
+
+  return lines
 end
 
 
@@ -202,8 +217,20 @@ end
 -- @tparam number max_width Maximum width in display columns.
 -- @treturn table Array of formatted lines
 function TextPanel:format_line_wordwrap(line, max_width)
-  -- TODO: Implement word wrapping
-  return self:format_line_truncate(line, max_width)
+  local el = EditLine(line)
+  local lines = el:format {
+    width = max_width,
+    wordwrap = true,
+    pad = true,
+    no_new_cursor_line = true,
+  }
+
+  -- force string results
+  for i, line in ipairs(lines) do
+    lines[i] = tostring(line)
+  end
+
+  return lines
 end
 
 
