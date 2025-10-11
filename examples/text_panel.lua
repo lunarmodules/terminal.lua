@@ -27,6 +27,7 @@ local sample_text = {
   "• Use 'r' to add a random line",
   "• Use 'c' to clear content",
   "• Use 's' to reset to this sample text",
+  "• Use 'f' to swicth line-formatters; trunc, wrap, word-wrap",
   "• Use 'q' to quit",
   "",
   "The TextPanel class inherits from Panel and provides:",
@@ -102,6 +103,13 @@ local screen = Screen {
   }
 }
 
+local formatters = {
+  TextPanel.format_line_truncate,
+  TextPanel.format_line_wrap,
+  TextPanel.format_line_wordwrap,
+}
+local current_formatter = 1
+
 -- Main event loop
 local function main()
   local keymap = terminal.input.keymap.default_key_map
@@ -128,6 +136,9 @@ local function main()
       screen:get_panel("body"):set_position(1)
     elseif key == "G" then
       screen:get_panel("body"):set_position(math.huge)
+    elseif key == "f" then
+      current_formatter = current_formatter % #formatters + 1
+      screen:get_panel("body"):set_line_formatter(formatters[current_formatter])
     elseif key == "r" then
       -- Add a random line
       local random_line = "Random line " .. math.random(1000) .. " added at " .. os.date("%H:%M:%S")
