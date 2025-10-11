@@ -39,7 +39,7 @@
 --          auto_render = true
 --        }
 --        log_panel:add_line("New log entry")
--- @classmod ui.panel.Text_panel
+-- @classmod ui.panel.Text
 
 
 local Panel = require("terminal.ui.panel.init")
@@ -64,7 +64,7 @@ local TextPanel = utils.class(Panel)
 -- exceeded upon a call to `add_line`).
 -- @treturn TextPanel A new TextPanel instance.
 -- @usage
---   local TextPanel = require("terminal.ui.panel.text_panel")
+--   local TextPanel = require("terminal.ui.panel.text")
 --   local panel = TextPanel {
 --     lines = {"Line 1", "Line 2", "Line 3"},
 --     scroll_step = 2,

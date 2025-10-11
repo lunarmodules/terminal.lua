@@ -1,11 +1,11 @@
-describe("terminal.ui.panel.text_panel", function()
+describe("terminal.ui.panel.text", function()
 
   local TextPanel
   local terminal
   local text
 
   setup(function()
-    TextPanel = require("terminal.ui.panel.text_panel")
+    TextPanel = require("terminal.ui.panel.text")
     terminal = require("terminal")
     text = require("terminal.text")
 
