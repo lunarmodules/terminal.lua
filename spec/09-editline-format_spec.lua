@@ -1121,6 +1121,111 @@ describe("EditLine:", function()
 
     end)
 
+
+    describe("exact width handling", function()
+
+      it("handles line that exactly matches width with wordwrap", function()
+        line = EditLine("1234567890"):goto_end()
+        local lines = testwrap({
+          width = 10,
+          first_width = 10,
+          wordwrap = true,
+          pad = true,
+          pad_last = true
+        })
+
+        assert.are.same({
+          '1234567890|',
+          '|          ', -- cursor line for exact width
+        }, lines)
+      end)
+
+
+      it("handles line that exactly matches width without wordwrap", function()
+        line = EditLine("1234567890"):goto_end()
+        local lines = testwrap({
+          width = 10,
+          first_width = 10,
+          wordwrap = false,
+          pad = true,
+          pad_last = true
+        })
+
+        assert.are.same({
+          '1234567890|',
+          '|          ', -- cursor line for exact width
+        }, lines)
+      end)
+
+
+      it("handles empty line with exact width", function()
+        line = EditLine(""):goto_end()
+        local lines = testwrap({
+          width = 10,
+          first_width = 10,
+          wordwrap = true,
+          pad = true,
+          pad_last = true
+        })
+
+        assert.are.same({
+          '|          ', -- cursor at beginning, then 10 spaces
+        }, lines)
+      end)
+
+
+      it("handles line that exactly matches width with wordwrap (no new cursor line)", function()
+        line = EditLine("1234567890"):goto_end()
+        local lines = testwrap({
+          width = 10,
+          first_width = 10,
+          wordwrap = true,
+          pad = true,
+          pad_last = true,
+          no_new_cursor_line = true
+        })
+
+        assert.are.same({
+          '1234567890|',
+        }, lines)
+      end)
+
+
+      it("handles line that exactly matches width without wordwrap (no new cursor line)", function()
+        line = EditLine("1234567890"):goto_end()
+        local lines = testwrap({
+          width = 10,
+          first_width = 10,
+          wordwrap = false,
+          pad = true,
+          pad_last = true,
+          no_new_cursor_line = true
+        })
+
+        assert.are.same({
+          '1234567890|',
+        }, lines)
+      end)
+
+
+      it("handles empty line with exact width (no new cursor line)", function()
+        line = EditLine(""):goto_end()
+        local lines = testwrap({
+          width = 10,
+          first_width = 10,
+          wordwrap = true,
+          pad = true,
+          pad_last = true,
+          no_new_cursor_line = true
+        })
+
+        assert.are.same({
+          '|          ', -- cursor at beginning, then 10 spaces
+        }, lines)
+      end)
+
+    end)
+
   end)
 
 end)
