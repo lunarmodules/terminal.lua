@@ -62,6 +62,8 @@ local TextPanel = utils.class(Panel)
 -- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when content changes.
 -- @tparam[opt] number opts.max_lines Maximum number of lines to keep (older lines are removed when
 -- exceeded upon a call to `add_line`).
+-- @tparam[opt] function opts.line_formatter Line formatter function to use (defaults to format_line_truncate).
+-- see `set_line_formatter` for more details.
 -- @treturn TextPanel A new TextPanel instance.
 -- @usage
 --   local TextPanel = require("terminal.ui.panel.text")
@@ -84,6 +86,7 @@ function TextPanel:init(opts)
   local text_attr = opts.text_attr
   local auto_render = not not opts.auto_render -- force to boolean
   local max_lines = opts.max_lines
+  local line_formatter = opts.line_formatter or self.format_line_truncate
 
   -- Remove text panel specific options from opts to avoid conflicts with Panel
   opts.lines = nil
@@ -92,6 +95,7 @@ function TextPanel:init(opts)
   opts.text_attr = nil
   opts.auto_render = nil
   opts.max_lines = nil
+  opts.line_formatter = nil
 
   -- Provide content callback for parent constructor
   opts.content = function(self)
@@ -105,6 +109,7 @@ function TextPanel:init(opts)
   self.scroll_step = scroll_step
   self.text_attr = text_attr
   self.max_lines = max_lines
+  self.line_formatter = line_formatter
 
   self.auto_render = false -- set to false initially to prevent render during initialization
   self.formatted_lines = nil
@@ -158,12 +163,12 @@ end
 
 
 
---- Method to format a line to fit the available width.
+--- Format a line by truncating/padding it to fit the available width.
 -- Returned lines must be padded with spaces to prevent having to clear lines.
 -- @tparam string line The line text to format.
 -- @tparam number max_width Maximum width in display columns.
 -- @treturn table Array of formatted lines
-function TextPanel:format_line(line, max_width)
+function TextPanel:format_line_truncate(line, max_width)
   line = line or ""
 
   local cols = text.width.utf8swidth(line)
@@ -182,13 +187,33 @@ function TextPanel:format_line(line, max_width)
 end
 
 
+--- Format a line by wrapping it to fit the available width.
+-- @tparam string line The line text to format.
+-- @tparam number max_width Maximum width in display columns.
+-- @treturn table Array of formatted lines
+function TextPanel:format_line_wrap(line, max_width)
+  -- TODO: Implement line wrapping
+  return self:format_line_truncate(line, max_width)
+end
+
+
+--- Format a line by word-wrapping it to fit the available width.
+-- @tparam string line The line text to format.
+-- @tparam number max_width Maximum width in display columns.
+-- @treturn table Array of formatted lines
+function TextPanel:format_line_wordwrap(line, max_width)
+  -- TODO: Implement word wrapping
+  return self:format_line_truncate(line, max_width)
+end
+
+
 -- Internal: rebuild formatted_lines from source lines for current width
 function TextPanel:_rebuild_formatted_lines()
   assert(self.inner_width, "inner_width is not set, cannot rebuild formatted_lines, call calculate_layout first")
   local width = self.inner_width
   local out = {}
   for i, line in ipairs(self.lines) do
-    for _, formatted_line in ipairs(self:format_line(line, width)) do
+    for _, formatted_line in ipairs(self:line_formatter(line, width)) do
       table.insert(out, formatted_line)
     end
   end
@@ -345,7 +370,7 @@ function TextPanel:add_line(line)
     if self.formatted_lines then
       -- how many formatted lines do we drop from this 1 input line?
       -- format line again to find out how many lines it would take up
-      local drop_lines = #self:format_line(drop_line, self.inner_width)
+      local drop_lines = #self:line_formatter(drop_line, self.inner_width)
       for i = 1, drop_lines do
         table.remove(self.formatted_lines, 1)
       end
@@ -362,7 +387,7 @@ function TextPanel:add_line(line)
 
   if width and formatted_lines then
     local old_line_count = #formatted_lines
-    for _, formatted_line in ipairs(self:format_line(line, width)) do
+    for _, formatted_line in ipairs(self:line_formatter(line, width)) do
       table.insert(formatted_lines, formatted_line)
     end
 
@@ -376,6 +401,30 @@ function TextPanel:add_line(line)
   end
 end
 
+
+--- Set the line formatter function.
+-- Must conform to the `line_formatter` function signature;
+-- `array_formatted_lines = function(text_panel_instance, line, max_width)`.
+-- The formatted lines must be full width, padded with spaces where necessary, to ensure
+-- that any previous content is overwritten.
+--
+-- This class comes with 3 formatters:
+--
+-- - `TextPanel.format_line_truncate` - truncates long lines (default)
+-- - `TextPanel.format_line_wrap` - wraps lines to fit the available width
+-- - `TextPanel.format_line_wordwrap` - word-wraps lines to fit the available width
+-- @tparam function formatter_func The formatter function to use.
+-- @return nothing
+-- @see TextPanel:format_line_truncate for an example implementation
+function TextPanel:set_line_formatter(formatter_func)
+  if self.line_formatter ~= formatter_func then
+    self.line_formatter = formatter_func
+    self.formatted_lines = nil
+    if self.auto_render then
+      self:render()
+    end
+  end
+end
 
 
 --- Clear all text content.

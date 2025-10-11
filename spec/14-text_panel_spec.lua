@@ -76,11 +76,11 @@ describe("terminal.ui.panel.text", function()
   end)
 
 
-  describe("format_line()", function()
+  describe("format_line_truncate()", function()
 
     it("returns padded string for nil input", function()
       local panel = TextPanel {}
-      local result = panel:format_line(nil, 10)
+      local result = panel:format_line_truncate(nil, 10)
 
       assert.are.equal("          ", result[1]) -- 10 spaces
     end)
@@ -88,7 +88,7 @@ describe("terminal.ui.panel.text", function()
 
     it("returns padded string for empty input", function()
       local panel = TextPanel {}
-      local result = panel:format_line("", 10)
+      local result = panel:format_line_truncate("", 10)
 
       assert.are.equal("          ", result[1]) -- 10 spaces
     end)
@@ -96,7 +96,7 @@ describe("terminal.ui.panel.text", function()
 
     it("returns padded line if it fits", function()
       local panel = TextPanel {}
-      local result = panel:format_line("short", 10)
+      local result = panel:format_line_truncate("short", 10)
 
       assert.are.equal("short     ", result[1]) -- "short" + 5 spaces
     end)
@@ -104,7 +104,7 @@ describe("terminal.ui.panel.text", function()
 
     it("truncates line if too long", function()
       local panel = TextPanel {}
-      local result = panel:format_line("very long line", 5)
+      local result = panel:format_line_truncate("very long line", 5)
 
       assert.is_true(text.width.utf8swidth(result[1]) <= 5)
       assert.are.equal("very ", result[1])
@@ -481,6 +481,87 @@ describe("terminal.ui.panel.text", function()
 
       panel:clear_lines()
       assert.is_true(render_called)
+    end)
+
+  end)
+
+
+  describe("line formatter system", function()
+
+    it("uses format_line_truncate by default", function()
+      local panel = TextPanel {}
+      assert.are.equal(panel.format_line_truncate, panel.line_formatter)
+    end)
+
+
+    it("can be set via constructor", function()
+      local panel = TextPanel {}
+      local custom_formatter = panel.format_line_wrap
+      local panel2 = TextPanel { line_formatter = custom_formatter }
+      assert.are.equal(custom_formatter, panel2.line_formatter)
+    end)
+
+
+    it("set_line_formatter changes formatter and resets formatted_lines", function()
+      local panel = TextPanel { lines = {"test"}, auto_render = false }
+      panel:calculate_layout(1, 1, 10, 20)
+
+      -- Trigger formatted_lines build by calling _draw_text
+      panel:_draw_text()
+      assert.is_not_nil(panel.formatted_lines)
+
+      -- change formatter
+      panel:set_line_formatter(panel.format_line_wrap)
+
+      -- formatter should be changed and formatted_lines reset
+      assert.are.equal(panel.format_line_wrap, panel.line_formatter)
+      assert.is_nil(panel.formatted_lines)
+    end)
+
+
+    it("set_line_formatter triggers auto_render when enabled", function()
+      local panel = TextPanel { lines = {"test"}, auto_render = true }
+      panel:calculate_layout(1, 1, 10, 20)
+
+      -- Mock render to track calls
+      local render_calls = 0
+      panel.render = function() render_calls = render_calls + 1 end
+
+      panel:set_line_formatter(panel.format_line_wrap)
+
+      assert.are.equal(1, render_calls)
+    end)
+
+
+    it("set_line_formatter does not trigger auto_render when disabled", function()
+      local panel = TextPanel { lines = {"test"}, auto_render = false }
+      panel:calculate_layout(1, 1, 10, 20)
+
+      -- Mock render to track calls
+      local render_calls = 0
+      panel.render = function() render_calls = render_calls + 1 end
+
+      panel:set_line_formatter(panel.format_line_wrap)
+
+      assert.are.equal(0, render_calls)
+    end)
+
+
+    it("format_line_wrap placeholder works", function()
+      local panel = TextPanel {}
+      local result = panel:format_line_wrap("test", 10)
+
+      -- Should fall back to truncate behavior
+      assert.are.equal("test      ", result[1])
+    end)
+
+
+    it("format_line_wordwrap placeholder works", function()
+      local panel = TextPanel {}
+      local result = panel:format_line_wordwrap("test", 10)
+
+      -- Should fall back to truncate behavior
+      assert.are.equal("test      ", result[1])
     end)
 
   end)
