@@ -338,6 +338,124 @@ describe("terminal.ui.panel.text", function()
   end)
 
 
+  describe("get_source_line_index()", function()
+
+    it("returns correct source line index for simple truncation", function()
+      local panel = TextPanel { lines = {"line1", "line2", "line3"} }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count() -- Ensure formatted_lines and line_refs are built
+
+      -- With truncation formatter, each source line maps to one formatted line
+      assert.are.equal(1, panel:get_source_line_index(1))
+      assert.are.equal(2, panel:get_source_line_index(2))
+      assert.are.equal(3, panel:get_source_line_index(3))
+    end)
+
+
+    it("returns nil for out of bounds display line index", function()
+      local panel = TextPanel { lines = {"line1", "line2"} }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count() -- Ensure formatted_lines and line_refs are built
+
+      assert.is_nil(panel:get_source_line_index(0))
+      assert.is_nil(panel:get_source_line_index(3))
+      assert.is_nil(panel:get_source_line_index(-1))
+    end)
+
+
+    it("returns nil for empty panel", function()
+      local panel = TextPanel { lines = {} }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count() -- Ensure formatted_lines and line_refs are built
+
+      assert.is_nil(panel:get_source_line_index(1))
+    end)
+
+
+    it("handles wordwrap formatter correctly", function()
+      local panel = TextPanel {
+        lines = {"short", "very long line that will wrap", "another short"},
+        line_formatter = TextPanel.format_line_wordwrap
+      }
+      panel:calculate_layout(1, 1, 15, 15) -- width = 15
+      panel:get_line_count() -- Ensure formatted_lines and line_refs are built
+
+      -- First line: "short" -> 1 formatted line
+      assert.are.equal(1, panel:get_source_line_index(1))
+
+      -- Second line: "very long line that will wrap" -> multiple formatted lines
+      assert.are.equal(2, panel:get_source_line_index(2))
+      assert.are.equal(2, panel:get_source_line_index(3))
+
+      -- Third line: "another short" -> 1 formatted line
+      assert.are.equal(3, panel:get_source_line_index(4))
+
+      -- ensure it was the last one
+      assert.is_nil(panel:get_source_line_index(5))
+    end)
+
+
+    it("maintains correct mapping after add_line with max_lines", function()
+      local panel = TextPanel {
+        lines = {"a", "b", "c"},
+        line_formatter = TextPanel.format_line_wordwrap,
+        max_lines = 3
+      }
+      panel:calculate_layout(1, 1, 15, 15)
+      panel:get_line_count() -- Ensure formatted_lines and line_refs are built
+
+      -- Initial mapping
+      assert.are.equal(1, panel:get_source_line_index(1))
+      assert.are.equal(2, panel:get_source_line_index(2))
+      assert.are.equal(3, panel:get_source_line_index(3))
+      assert.is_nil(panel:get_source_line_index(4))
+
+      -- Add 2 formatted lines - should remove "a" and shift references
+      panel:add_line("more than 15 so wraps")
+      panel:get_line_count() -- Ensure formatted_lines and line_refs are built
+
+      -- New mapping: ["b", "c", "more than 15 so wraps"] -> source lines [1, 2, 3]
+      -- so we have 4 formatted lines now, but only 3 source lines
+      assert.are.equal(1, panel:get_source_line_index(1))
+      assert.are.equal(2, panel:get_source_line_index(2))
+      assert.are.equal(3, panel:get_source_line_index(3))
+      assert.are.equal(3, panel:get_source_line_index(4))
+      assert.is_nil(panel:get_source_line_index(5))
+
+      -- rotate the wrapped line out and validate the mapping
+      panel:add_line("d")
+      panel:add_line("e")
+      panel:add_line("f")
+      panel:get_line_count()
+
+      assert.are.equal(1, panel:get_source_line_index(1))
+      assert.are.equal(2, panel:get_source_line_index(2))
+      assert.are.equal(3, panel:get_source_line_index(3))
+      assert.is_nil(panel:get_source_line_index(4))
+    end)
+
+
+    it("handles set_lines correctly", function()
+      local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count() -- Ensure formatted_lines and line_refs are built
+
+      -- Change to new lines
+      panel:set_lines({"x", "y", "z", "w"})
+      panel:get_line_count() -- Rebuild formatted_lines and line_refs after set_lines
+
+      -- New mapping should be 1:1 for truncation
+      assert.are.equal(1, panel:get_source_line_index(1))
+      assert.are.equal(2, panel:get_source_line_index(2))
+      assert.are.equal(3, panel:get_source_line_index(3))
+      assert.are.equal(4, panel:get_source_line_index(4))
+      assert.is_nil(panel:get_source_line_index(5))
+    end)
+
+  end)
+
+
+
   describe("set_lines()", function()
 
     it("sets new lines and resets position", function()
