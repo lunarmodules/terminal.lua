@@ -1,0 +1,394 @@
+--- TextPanel class for displaying and navigating scrollable text content.
+--
+-- The TextPanel provides a powerful interface for displaying text content that doesn't fit on a single screen
+-- with efficient scrolling, navigation, and content management capabilities. It's designed
+-- for applications that need to display logs, documentation, or any scrollable text content.
+--
+-- **Key Features**
+--
+-- - Inherits from `Panel` class, so it supports all the features of the `Panel` class.
+--
+-- Navigation & Scrolling:
+--
+-- - Line-by-line scrolling with configurable step size
+-- - Page-based navigation (scroll by viewport height)
+-- - Direct positioning to any line or "go to bottom"
+--
+-- Content Management:
+--
+-- - Dynamic line addition and removal
+-- - Automatic line rotation with `max_lines` option
+-- - Text truncation and padding with UTF-8 support
+-- - Automatic re-rendering with `auto_render` option
+--
+-- **Usage Examples**
+--
+-- Basic text display:
+--
+--        local panel = TextPanel {
+--          lines = {"Line 1", "Line 2", "Line 3"},
+--          scroll_step = 1,
+--          auto_render = true
+--        }
+--
+-- Log viewer with line limits:
+--
+--        local log_panel = TextPanel {
+--          max_lines = 200,  -- Keep only last 200 lines
+--          text_attr = { fg = "green" },
+--          auto_render = true
+--        }
+--        log_panel:add_line("New log entry")
+-- @classmod ui.panel.Text
+
+
+local Panel = require("terminal.ui.panel.init")
+local terminal = require("terminal")
+local utils = require("terminal.utils")
+local text = require("terminal.text")
+local Sequence = require("terminal.sequence")
+
+
+local TextPanel = utils.class(Panel)
+
+
+--- Create a new TextPanel instance.
+-- Do not call this method directly, call on the class instead.
+-- @tparam table opts Configuration options (see `Panel:init` for inherited properties)
+-- @tparam[opt] table opts.lines Array of text lines to display.
+-- @tparam[opt=1] number opts.scroll_step Number of lines to scroll at a time.
+-- @tparam[opt=1] number opts.initial_position Initial scroll position (1-based line number).
+-- @tparam[opt] table opts.text_attr Text attributes to apply to all displayed text.
+-- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when content changes.
+-- @tparam[opt] number opts.max_lines Maximum number of lines to keep (older lines are removed when
+-- exceeded upon a call to `add_line`).
+-- @treturn TextPanel A new TextPanel instance.
+-- @usage
+--   local TextPanel = require("terminal.ui.panel.text")
+--   local panel = TextPanel {
+--     lines = {"Line 1", "Line 2", "Line 3"},
+--     scroll_step = 2,
+--     initial_position = 1,
+--     text_attr = { fg = "green", brightness = "bright" }
+--   }
+--   panel:set_position(5)  -- Go to line 5
+--   panel:scroll_down()  -- Scroll down by scroll_step
+-- @within Constructor
+function TextPanel:init(opts)
+  opts = opts or {}
+
+  -- Extract text panel specific options
+  local lines = opts.lines or {}
+  local scroll_step = opts.scroll_step or 1
+  local initial_position = opts.initial_position or 1
+  local text_attr = opts.text_attr
+  local auto_render = not not opts.auto_render -- force to boolean
+  local max_lines = opts.max_lines
+
+  -- Remove text panel specific options from opts to avoid conflicts with Panel
+  opts.lines = nil
+  opts.scroll_step = nil
+  opts.initial_position = nil
+  opts.text_attr = nil
+  opts.auto_render = nil
+  opts.max_lines = nil
+
+  -- Provide content callback for parent constructor
+  opts.content = function(self)
+    self:_draw_text()
+  end
+
+  -- Call parent constructor
+  Panel.init(self, opts)
+
+  -- Set text panel specific properties
+  self.scroll_step = scroll_step
+  self.text_attr = text_attr
+  self.max_lines = max_lines
+
+  self.auto_render = false -- set to false initially to prevent render during initialization
+  self.formatted_lines = nil
+  self:set_lines(lines)
+  self:set_position(initial_position)
+  self.auto_render = auto_render -- set actual value after initialization
+end
+
+
+
+-- Private method to draw the text content.
+-- @return nothing
+function TextPanel:_draw_text()
+  -- Ensure formatted lines are available
+  if not self.formatted_lines then
+    self:_rebuild_formatted_lines()
+  end
+
+  local seq = Sequence()
+  seq[1] = terminal.cursor.position.backup_seq()
+  local n = 2
+
+  -- Add text attributes if specified
+  if self.text_attr then
+    seq[n] = terminal.text.stack.push_seq(self.text_attr)
+    n = n + 1
+  end
+
+  -- Add each visible line to the sequence
+  local start_line = self.position
+  local end_line = math.min(start_line + self.inner_height - 1, #self.formatted_lines)
+  for i = start_line, end_line do
+    local line_row = self.inner_row + (i - start_line)
+    -- Add cursor positioning and text to sequence
+    seq[n] = terminal.cursor.position.set_seq(line_row, self.inner_col)
+    seq[n+1] = self.formatted_lines[i]
+    n = n + 2
+  end
+
+  -- Pop text attributes if they were pushed
+  if self.text_attr then
+    seq[n] = terminal.text.stack.pop_seq()
+    n = n + 1
+  end
+
+  seq[n] = terminal.cursor.position.restore_seq()
+
+  -- Write everything at once
+  terminal.output.write(seq)
+end
+
+
+
+--- Method to format a line to fit the available width.
+-- Returned lines must be padded with spaces to prevent having to clear lines.
+-- @tparam string line The line text to format.
+-- @tparam number max_width Maximum width in display columns.
+-- @treturn table Array of formatted lines
+function TextPanel:format_line(line, max_width)
+  line = line or ""
+
+  local cols = text.width.utf8swidth(line)
+
+  if cols == max_width then
+    return {line}
+  end
+
+  if cols > max_width then   -- truncate too long a line
+    line = utils.utf8sub_col(line, 1, max_width)
+    return {line}
+  end
+
+  -- pad too short a line with spaces
+  return {line .. string.rep(" ", max_width - cols)}
+end
+
+
+-- Internal: rebuild formatted_lines from source lines for current width
+function TextPanel:_rebuild_formatted_lines()
+  assert(self.inner_width, "inner_width is not set, cannot rebuild formatted_lines, call calculate_layout first")
+  local width = self.inner_width
+  local out = {}
+  for i, line in ipairs(self.lines) do
+    for _, formatted_line in ipairs(self:format_line(line, width)) do
+      table.insert(out, formatted_line)
+    end
+  end
+  self.formatted_lines = out
+
+  -- ensure the position is valid since number of lines might have changed, but
+  -- we don't want to render in the middle of this process
+  local auto_render = self.auto_render
+  self.auto_render = false
+  self:set_position(self.position)
+  self.auto_render = auto_render
+end
+
+
+
+--- Set the viewport position to a specific line.
+-- If the position is out of bounds, it will be corrected to be within bounds.
+-- @tparam number position The line position to go to (1-based).
+-- @return nothing
+function TextPanel:set_position(position)
+  if not self.inner_width then
+    -- there is no inner-width set, so we cannot calculate the position,
+    -- since any wrapping lines can be 1 or more lines, hence unknown total size.
+    -- Just accept position, when reformatting lines in rebuild_formatted_lines we
+    -- will call set_position again, and by then we can validate the position.
+    -- So for now just accept the value set.
+    self.position = position -- there is no width, so auto_render is irrelevant here (see below)
+    return
+  end
+
+  local old_position = self.position
+
+  if not self.formatted_lines then
+    -- width is known, but we haven't formatted yet. Just format
+    -- since formatting will call set_position again with auto-render disabled, so
+    -- we do need the auto_render check afterwards.
+    self.position = position
+    self:_rebuild_formatted_lines() -- this will update position within bounds-check
+  else
+    -- we have the formatted lines, do bounds check before setting position
+    position = math.max(1, position)
+    position = math.min(position, math.max(1, #self.formatted_lines - self.inner_height + 1))
+    self.position = position
+  end
+
+  if self.auto_render and self.position ~= old_position then
+    self:render()
+  end
+end
+
+
+-- Rebuild formatted lines when layout changes width
+function TextPanel:calculate_layout(parent_row, parent_col, parent_height, parent_width)
+  Panel.calculate_layout(self, parent_row, parent_col, parent_height, parent_width)
+
+  -- Only rebuild if formatted_lines exists and width has changed
+  local l1 = (self.formatted_lines or {})[1]
+  if l1 then
+    local old_width = text.width.utf8swidth(l1)
+    if old_width ~= self.inner_width then
+      self.formatted_lines = nil
+    end
+  end
+end
+
+
+
+--- Scroll up by scroll_step lines.
+-- @return nothing
+function TextPanel:scroll_up()
+  self:set_position(self.position - self.scroll_step)
+end
+
+
+
+--- Scroll down by scroll_step lines.
+-- @return nothing
+function TextPanel:scroll_down()
+  self:set_position(self.position + self.scroll_step)
+end
+
+
+
+--- Scroll up by one page (inner_height lines).
+-- @return nothing
+function TextPanel:page_up()
+  if not self.inner_height then
+    return
+  end
+  self:set_position(self.position - self.inner_height)
+end
+
+
+
+--- Scroll down by one page (inner_height lines).
+-- @return nothing
+function TextPanel:page_down()
+  if not self.inner_height then
+    return
+  end
+  self:set_position(self.position + self.inner_height)
+end
+
+
+
+--- Get the current scroll position.
+-- @treturn number The current line position (1-based).
+function TextPanel:get_position()
+  return self.position
+end
+
+
+
+--- Get the total number of lines.
+-- @treturn number The total number of lines.
+function TextPanel:get_line_count()
+  if not self.formatted_lines then
+    self:_rebuild_formatted_lines()
+  end
+
+  return #self.formatted_lines
+end
+
+
+
+--- Set new text lines.
+-- @tparam table lines Array of text lines.
+-- @return nothing
+function TextPanel:set_lines(lines)
+  if self.max_lines and #lines > self.max_lines then
+    error("max_lines is set and number of lines is greater than max_lines")
+  end
+
+  self.lines = lines or {}
+  self.formatted_lines = nil
+  self.position = 1  -- Reset to top
+  if self.auto_render then
+    self:render()
+  end
+end
+
+
+
+--- Add a line to the text content.
+-- @tparam string line The line to add.
+-- @return nothing
+function TextPanel:add_line(line)
+  table.insert(self.lines, line or "")
+
+  -- Enforce max_lines limit if set
+  local must_redraw = false
+  while self.max_lines and #self.lines > self.max_lines do
+    local drop_line = table.remove(self.lines, 1)
+    if self.formatted_lines then
+      -- how many formatted lines do we drop from this 1 input line?
+      -- format line again to find out how many lines it would take up
+      local drop_lines = #self:format_line(drop_line, self.inner_width)
+      for i = 1, drop_lines do
+        table.remove(self.formatted_lines, 1)
+      end
+      self.position = self.position - drop_lines
+      if self.position < 1 then
+        self.position = 1
+        must_redraw = true
+      end
+    end
+  end
+
+  local width = self.inner_width
+  local formatted_lines = self.formatted_lines
+
+  if width and formatted_lines then
+    local old_line_count = #formatted_lines
+    for _, formatted_line in ipairs(self:format_line(line, width)) do
+      table.insert(formatted_lines, formatted_line)
+    end
+
+    if self.auto_render then
+      -- only write the new lines if they are inside the viewport
+      local lastline_displayed = self.position + self.inner_height - 1
+      if must_redraw or lastline_displayed > old_line_count then
+        self:render()
+      end
+    end
+  end
+end
+
+
+
+--- Clear all text content.
+-- @return nothing
+function TextPanel:clear_lines()
+  self.lines = {}
+  self.formatted_lines = nil
+  self.position = 1
+  if self.auto_render then
+    self:render()
+  end
+end
+
+
+
+return TextPanel
