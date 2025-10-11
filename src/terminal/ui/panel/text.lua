@@ -111,6 +111,7 @@ function TextPanel:init(opts)
   self.text_attr = text_attr
   self.max_lines = max_lines
   self.line_formatter = line_formatter
+  self.line_refs = {} -- key = formatted-line index, value = source line index
 
   self.auto_render = false -- set to false initially to prevent render during initialization
   self.formatted_lines = nil
@@ -239,12 +240,15 @@ function TextPanel:_rebuild_formatted_lines()
   assert(self.inner_width, "inner_width is not set, cannot rebuild formatted_lines, call calculate_layout first")
   local width = self.inner_width
   local out = {}
+  local line_refs = {}
   for i, line in ipairs(self.lines) do
     for _, formatted_line in ipairs(self:line_formatter(line, width)) do
       table.insert(out, formatted_line)
+      table.insert(line_refs, i)
     end
   end
   self.formatted_lines = out
+  self.line_refs = line_refs
 
   -- ensure the position is valid since number of lines might have changed, but
   -- we don't want to render in the middle of this process
@@ -354,6 +358,15 @@ end
 
 
 
+--- Get the source-line index from the display-line index.
+-- @tparam number display_line_index The display-line index to get the source-line index for.
+-- @treturn number The source-line index, or nil if the display-line index is out of bounds.
+function TextPanel:get_source_line_index(display_line_index)
+  return self.line_refs[display_line_index]
+end
+
+
+
 --- Get the total number of lines.
 -- @treturn number The total number of lines.
 function TextPanel:get_line_count()
@@ -392,14 +405,17 @@ function TextPanel:add_line(line)
 
   -- Enforce max_lines limit if set
   local must_redraw = false
+  local lines_dropped = 0
   while self.max_lines and #self.lines > self.max_lines do
     local drop_line = table.remove(self.lines, 1)
+    lines_dropped = lines_dropped + 1
     if self.formatted_lines then
       -- how many formatted lines do we drop from this 1 input line?
       -- format line again to find out how many lines it would take up
       local drop_lines = #self:line_formatter(drop_line, self.inner_width)
       for i = 1, drop_lines do
         table.remove(self.formatted_lines, 1)
+        table.remove(self.line_refs, 1)
       end
       self.position = self.position - drop_lines
       if self.position < 1 then
@@ -409,13 +425,21 @@ function TextPanel:add_line(line)
     end
   end
 
+  if lines_dropped > 0 then
+    for i, ref in ipairs(self.line_refs) do
+      self.line_refs[i] = ref - lines_dropped
+    end
+  end
+
   local width = self.inner_width
   local formatted_lines = self.formatted_lines
+  local ref = #self.lines
 
   if width and formatted_lines then
     local old_line_count = #formatted_lines
     for _, formatted_line in ipairs(self:line_formatter(line, width)) do
       table.insert(formatted_lines, formatted_line)
+      table.insert(self.line_refs, ref)
     end
 
     if self.auto_render then
