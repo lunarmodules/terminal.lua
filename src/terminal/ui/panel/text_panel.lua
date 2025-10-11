@@ -1,5 +1,44 @@
---- Text Panel class for displaying scrollable text content.
--- Derives from `ui.Panel`.
+--- TextPanel class for displaying and navigating scrollable text content.
+--
+-- The TextPanel provides a powerful interface for displaying text content that doesn't fit on a single screen
+-- with efficient scrolling, navigation, and content management capabilities. It's designed
+-- for applications that need to display logs, documentation, or any scrollable text content.
+--
+-- **Key Features**
+--
+-- - Inherits from `Panel` class, so it supports all the features of the `Panel` class.
+--
+-- Navigation & Scrolling:
+--
+-- - Line-by-line scrolling with configurable step size
+-- - Page-based navigation (scroll by viewport height)
+-- - Direct positioning to any line or "go to bottom"
+--
+-- Content Management:
+--
+-- - Dynamic line addition and removal
+-- - Automatic line rotation with `max_lines` option
+-- - Text truncation and padding with UTF-8 support
+-- - Automatic re-rendering with `auto_render` option
+--
+-- **Usage Examples**
+--
+-- Basic text display:
+--
+--        local panel = TextPanel {
+--          lines = {"Line 1", "Line 2", "Line 3"},
+--          scroll_step = 1,
+--          auto_render = true
+--        }
+--
+-- Log viewer with line limits:
+--
+--        local log_panel = TextPanel {
+--          max_lines = 200,  -- Keep only last 200 lines
+--          text_attr = { fg = "green" },
+--          auto_render = true
+--        }
+--        log_panel:add_line("New log entry")
 -- @classmod ui.panel.Text_panel
 
 
@@ -14,13 +53,15 @@ local TextPanel = utils.class(Panel)
 
 
 --- Create a new TextPanel instance.
--- @tparam table opts Options for the text panel.
+-- Do not call this method directly, call on the class instead.
+-- @tparam table opts Configuration options (see `Panel:init` for inherited properties)
 -- @tparam[opt] table opts.lines Array of text lines to display.
 -- @tparam[opt=1] number opts.scroll_step Number of lines to scroll at a time.
 -- @tparam[opt=1] number opts.initial_position Initial scroll position (1-based line number).
 -- @tparam[opt] table opts.text_attr Text attributes to apply to all displayed text.
 -- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when content changes.
--- @tparam[opt] number opts.max_lines Maximum number of lines to keep (older lines are removed when exceeded).
+-- @tparam[opt] number opts.max_lines Maximum number of lines to keep (older lines are removed when
+-- exceeded upon a call to `add_line`).
 -- @treturn TextPanel A new TextPanel instance.
 -- @usage
 --   local TextPanel = require("terminal.ui.panel.text_panel")
@@ -32,6 +73,7 @@ local TextPanel = utils.class(Panel)
 --   }
 --   panel:set_position(5)  -- Go to line 5
 --   panel:scroll_down()  -- Scroll down by scroll_step
+-- @within Constructor
 function TextPanel:init(opts)
   opts = opts or {}
 

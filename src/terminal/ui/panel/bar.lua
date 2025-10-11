@@ -21,7 +21,8 @@ local Bar = utils.class(Panel)
 
 --- Create a new Bar instance.
 -- A bar is a single line `panel` with left, center, and right (text) sections.
--- @tparam table opts Options for the bar.
+-- Do not call this method directly, call on the class instead.
+-- @tparam table opts Configuration options (see `Panel:init` for inherited properties)
 -- @tparam[opt=1] number opts.margin Number of spaces from left and right edges.
 -- @tparam[opt=2] number opts.padding Minimum number of spaces between each section.
 -- @tparam[opt] string opts.name Name for the bar-panel. Defaults to `tostring(self)` if not provided.
