@@ -113,13 +113,13 @@ describe("terminal.ui.panel.text_panel", function()
   end)
 
 
-  describe("go_to()", function()
+  describe("set_position()", function()
 
     it("goes to specified position", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
 
-      panel:go_to(3)
+      panel:set_position(3)
 
       assert.are.equal(3, panel.position)
     end)
@@ -129,10 +129,10 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
       panel:calculate_layout(1, 1, 2, 10) -- row, col, height, width (2 lines visible)
 
-      panel:go_to(0)
+      panel:set_position(0)
       assert.are.equal(1, panel.position)
 
-      panel:go_to(10)
+      panel:set_position(10)
       assert.are.equal(2, panel.position) -- max position is 3-2+1=2
     end)
 
@@ -143,11 +143,11 @@ describe("terminal.ui.panel.text_panel", function()
       local render_called = false
       panel.render = function() render_called = true end
 
-      panel:go_to(2) -- Change position first
+      panel:set_position(2) -- Change position first
       assert.is_true(render_called)
 
       render_called = false
-      panel:go_to(2) -- Same position
+      panel:set_position(2) -- Same position
       assert.is_false(render_called)
     end)
 
@@ -160,7 +160,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"}, scroll_step = 2 }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
 
-      panel:go_to(3) -- max position for 5 lines with height 3
+      panel:set_position(3) -- max position for 5 lines with height 3
       panel:scroll_up()
 
       assert.are.equal(1, panel.position)
@@ -171,7 +171,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c"}, scroll_step = 5 }
       panel:calculate_layout(1, 1, 2, 10) -- row, col, height, width (2 lines visible)
 
-      panel:go_to(2) -- max position for 3 lines with height 2
+      panel:set_position(2) -- max position for 3 lines with height 2
       panel:scroll_up()
 
       assert.are.equal(1, panel.position)
@@ -197,7 +197,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"}, scroll_step = 2 }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
 
-      panel:go_to(1)
+      panel:set_position(1)
       panel:scroll_down()
 
       assert.are.equal(3, panel.position) -- max position for 5 lines with height 3
@@ -208,7 +208,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c"}, scroll_step = 5 }
       panel:calculate_layout(1, 1, 2, 10) -- row, col, height, width (2 lines visible)
 
-      panel:go_to(2) -- max position for 3 lines with height 2
+      panel:set_position(2) -- max position for 3 lines with height 2
       panel:scroll_down()
 
       assert.are.equal(2, panel.position) -- already at max position
@@ -221,7 +221,7 @@ describe("terminal.ui.panel.text_panel", function()
       local render_called
       panel.render = function() render_called = true end
 
-      panel:go_to(2) -- At max position for 3 lines with height 2
+      panel:set_position(2) -- At max position for 3 lines with height 2
       render_called = false -- Reset after go_to call
       panel:scroll_down()
       assert.is_false(render_called)
@@ -235,7 +235,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("scrolls up by page size", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
-      panel:go_to(5) -- Start at position 5
+      panel:set_position(5) -- Start at position 5
 
       panel:page_up()
       assert.are.equal(2, panel:get_position()) -- 5 - 3 = 2
@@ -245,7 +245,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("does not scroll below 1", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
-      panel:go_to(2) -- Start at position 2
+      panel:set_position(2) -- Start at position 2
 
       panel:page_up()
       assert.are.equal(1, panel:get_position()) -- Clamped to 1
@@ -258,7 +258,7 @@ describe("terminal.ui.panel.text_panel", function()
       local render_called
       panel.render = function() render_called = true end
 
-      panel:go_to(1) -- At position 1
+      panel:set_position(1) -- At position 1
       render_called = false -- Reset after go_to call
       panel:page_up()
       assert.is_false(render_called)
@@ -272,7 +272,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("scrolls down by page size", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
-      panel:go_to(2) -- Start at position 2
+      panel:set_position(2) -- Start at position 2
 
       panel:page_down()
       assert.are.equal(5, panel:get_position()) -- 2 + 3 = 5
@@ -282,7 +282,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("does not scroll beyond last line", function()
       local panel = TextPanel { lines = {"a", "b", "c", "d", "e"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width (3 lines visible)
-      panel:go_to(3) -- Start at position 3 (max for 5 lines with height 3)
+      panel:set_position(3) -- Start at position 3 (max for 5 lines with height 3)
 
       panel:page_down()
       assert.are.equal(3, panel:get_position()) -- Clamped to max position
@@ -295,7 +295,7 @@ describe("terminal.ui.panel.text_panel", function()
       local render_called
       panel.render = function() render_called = true end
 
-      panel:go_to(2) -- At max position for 3 lines with height 2
+      panel:set_position(2) -- At max position for 3 lines with height 2
       render_called = false -- Reset after go_to call
       panel:page_down()
       assert.is_false(render_called)
@@ -310,7 +310,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
       panel:calculate_layout(1, 1, 2, 10) -- row, col, height, width (2 lines visible)
 
-      panel:go_to(2) -- max position for 3 lines with height 2
+      panel:set_position(2) -- max position for 3 lines with height 2
 
       assert.are.equal(2, panel:get_position())
     end)
@@ -344,7 +344,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
-      panel:go_to(3)
+      panel:set_position(3)
       panel:set_lines({"x", "y"})
 
       assert.are.same({"x", "y"}, panel.lines)
@@ -395,7 +395,7 @@ describe("terminal.ui.panel.text_panel", function()
       local panel = TextPanel { lines = {"a", "b", "c"} }
       panel:calculate_layout(1, 1, 3, 10) -- row, col, height, width
 
-      panel:go_to(3)
+      panel:set_position(3)
       panel:clear_lines()
 
       assert.are.same({}, panel.lines)
@@ -434,7 +434,7 @@ describe("terminal.ui.panel.text_panel", function()
       local render_called = false
       panel.render = function() render_called = true end
 
-      panel:go_to(2) -- max position for 3 lines with height 2
+      panel:set_position(2) -- max position for 3 lines with height 2
       assert.is_true(render_called)
     end)
 
@@ -445,7 +445,7 @@ describe("terminal.ui.panel.text_panel", function()
       local render_called = false
       panel.render = function() render_called = true end
 
-      panel:go_to(2)
+      panel:set_position(2)
       assert.is_false(render_called)
     end)
 
@@ -464,7 +464,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("renders automatically on add_line when auto_render is true", function()
       local panel = TextPanel { lines = {"a", "b"}, auto_render = true }
       panel:calculate_layout(1, 1, 5, 10) -- row, col, height, width (height 5 to ensure new line is visible)
-      panel:go_to(1) -- Ensure we're at the top to see the new line
+      panel:set_position(1) -- Ensure we're at the top to see the new line
       local render_called = false
       panel.render = function() render_called = true end
 
@@ -517,7 +517,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("adjusts position when lines are removed", function()
       local panel = TextPanel { lines = {"a", "b", "c"}, max_lines = 3 }
       panel:calculate_layout(1, 1, 3, 10)
-      panel:go_to(2) -- Position at line 2
+      panel:set_position(2) -- Position at line 2
 
       panel:add_line("d") -- Should remove "a", position becomes 1
 
@@ -528,7 +528,7 @@ describe("terminal.ui.panel.text_panel", function()
     it("clamps position to 1 when it would go below", function()
       local panel = TextPanel { lines = {"a", "b" }, max_lines = 2 }
       panel:calculate_layout(1, 1, 3, 10)
-      panel:go_to(1) -- Position at line 1
+      panel:set_position(1) -- Position at line 1
 
       panel:add_line("c") -- Should remove "a", position stays at 1
 

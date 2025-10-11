@@ -16,7 +16,7 @@ local sample_text = {
   "• Text truncation for lines that are too long",
   "• Scrollable viewport when content exceeds panel height",
   "• Configurable scroll step size",
-  "• Methods for navigation: go_to(), scroll_up(), scroll_down()",
+  "• Methods for navigation: set_position(), scroll_up(), scroll_down()",
   "• Dynamic content management: set_lines(), add_line(), clear()",
   "",
   "Navigation:",
@@ -125,9 +125,9 @@ local function main()
     elseif keyname == keys.pagedown then
       screen:get_panel("body"):page_down()
     elseif key == "g" then
-      screen:get_panel("body"):go_to(1)
+      screen:get_panel("body"):set_position(1)
     elseif key == "G" then
-      screen:get_panel("body"):go_to(screen:get_panel("body"):get_line_count())
+      screen:get_panel("body"):set_position(math.huge)
     elseif key == "r" then
       -- Add a random line
       local random_line = "Random line " .. math.random(1000) .. " added at " .. os.date("%H:%M:%S")

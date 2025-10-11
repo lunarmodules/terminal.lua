@@ -67,7 +67,7 @@ function TextPanel:init(opts)
   self.auto_render = false -- set to false initially to prevent render during initialization
   self.formatted_lines = nil
   self:set_lines(lines)
-  self:go_to(initial_position)
+  self:set_position(initial_position)
   self.auto_render = auto_render -- set actual value after initialization
 end
 
@@ -156,21 +156,22 @@ function TextPanel:_rebuild_formatted_lines()
   -- we don't want to render in the middle of this process
   local auto_render = self.auto_render
   self.auto_render = false
-  self:go_to(self.position)
+  self:set_position(self.position)
   self.auto_render = auto_render
 end
 
 
 
---- Go to a specific line position.
+--- Set the viewport position to a specific line.
+-- If the position is out of bounds, it will be corrected to be within bounds.
 -- @tparam number position The line position to go to (1-based).
 -- @return nothing
-function TextPanel:go_to(position)
+function TextPanel:set_position(position)
   if not self.inner_width then
     -- there is no inner-width set, so we cannot calculate the position,
     -- since any wrapping lines can be 1 or more lines, hence unknown total size.
     -- Just accept position, when reformatting lines in rebuild_formatted_lines we
-    -- will call go_to again, and by then we can validate the position.
+    -- will call set_position again, and by then we can validate the position.
     -- So for now just accept the value set.
     self.position = position -- there is no width, so auto_render is irrelevant here (see below)
     return
@@ -216,7 +217,7 @@ end
 --- Scroll up by scroll_step lines.
 -- @return nothing
 function TextPanel:scroll_up()
-  self:go_to(self.position - self.scroll_step)
+  self:set_position(self.position - self.scroll_step)
 end
 
 
@@ -224,7 +225,7 @@ end
 --- Scroll down by scroll_step lines.
 -- @return nothing
 function TextPanel:scroll_down()
-  self:go_to(self.position + self.scroll_step)
+  self:set_position(self.position + self.scroll_step)
 end
 
 
@@ -235,7 +236,7 @@ function TextPanel:page_up()
   if not self.inner_height then
     return
   end
-  self:go_to(self.position - self.inner_height)
+  self:set_position(self.position - self.inner_height)
 end
 
 
@@ -246,7 +247,7 @@ function TextPanel:page_down()
   if not self.inner_height then
     return
   end
-  self:go_to(self.position + self.inner_height)
+  self:set_position(self.position + self.inner_height)
 end
 
 
@@ -301,6 +302,7 @@ function TextPanel:add_line(line)
     local drop_line = table.remove(self.lines, 1)
     if self.formatted_lines then
       -- how many formatted lines do we drop from this 1 input line?
+      -- format line again to find out how many lines it would take up
       local drop_lines = #self:format_line(drop_line, self.inner_width)
       for i = 1, drop_lines do
         table.remove(self.formatted_lines, 1)
