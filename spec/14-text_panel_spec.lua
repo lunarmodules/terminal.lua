@@ -222,7 +222,7 @@ describe("terminal.ui.panel.text_panel", function()
       panel.render = function() render_called = true end
 
       panel:set_position(2) -- At max position for 3 lines with height 2
-      render_called = false -- Reset after go_to call
+      render_called = false -- Reset after set_position call
       panel:scroll_down()
       assert.is_false(render_called)
     end)
@@ -259,7 +259,7 @@ describe("terminal.ui.panel.text_panel", function()
       panel.render = function() render_called = true end
 
       panel:set_position(1) -- At position 1
-      render_called = false -- Reset after go_to call
+      render_called = false -- Reset after set_position call
       panel:page_up()
       assert.is_false(render_called)
     end)
@@ -296,7 +296,7 @@ describe("terminal.ui.panel.text_panel", function()
       panel.render = function() render_called = true end
 
       panel:set_position(2) -- At max position for 3 lines with height 2
-      render_called = false -- Reset after go_to call
+      render_called = false -- Reset after set_position call
       panel:page_down()
       assert.is_false(render_called)
     end)

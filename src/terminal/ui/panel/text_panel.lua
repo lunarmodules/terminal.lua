@@ -30,7 +30,7 @@ local TextPanel = utils.class(Panel)
 --     initial_position = 1,
 --     text_attr = { fg = "green", brightness = "bright" }
 --   }
---   panel:go_to(5)  -- Go to line 5
+--   panel:set_position(5)  -- Go to line 5
 --   panel:scroll_down()  -- Scroll down by scroll_step
 function TextPanel:init(opts)
   opts = opts or {}
@@ -181,7 +181,7 @@ function TextPanel:set_position(position)
 
   if not self.formatted_lines then
     -- width is known, but we haven't formatted yet. Just format
-    -- since formatting will call go_to again with auto-render disabled, so
+    -- since formatting will call set_position again with auto-render disabled, so
     -- we do need the auto_render check afterwards.
     self.position = position
     self:_rebuild_formatted_lines() -- this will update position within bounds-check
