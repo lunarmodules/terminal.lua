@@ -13,6 +13,7 @@
 -- - Line-by-line scrolling with configurable step size
 -- - Page-based navigation (scroll by viewport height)
 -- - Direct positioning to any line or "go to bottom"
+-- - Highlighting a line for selection
 --
 -- Content Management:
 --
@@ -66,6 +67,8 @@ local TextPanel = utils.class(Panel)
 -- exceeded upon a call to `add_line`).
 -- @tparam[opt] function opts.line_formatter Line formatter function to use (defaults to format_line_truncate).
 -- see `set_line_formatter` for more details.
+-- @tparam[opt] number opts.highlight Source line index to highlight (1-based).
+-- @tparam[opt] table opts.highlight_attr Text attributes for highlighted lines (defaults to { reverse = true }).
 -- @treturn TextPanel A new TextPanel instance.
 -- @usage
 --   local TextPanel = require("terminal.ui.panel.text")
@@ -73,7 +76,9 @@ local TextPanel = utils.class(Panel)
 --     lines = {"Line 1", "Line 2", "Line 3"},
 --     scroll_step = 2,
 --     initial_position = 1,
---     text_attr = { fg = "green", brightness = "bright" }
+--     text_attr = { fg = "green", brightness = "bright" },
+--     highlight = 2,
+--     highlight_attr = { fg = "red", bg = "yellow" },
 --   }
 --   panel:set_position(5)  -- Go to line 5
 --   panel:scroll_down()  -- Scroll down by scroll_step
@@ -88,6 +93,8 @@ function TextPanel:init(opts)
   local auto_render = not not opts.auto_render -- force to boolean
   local max_lines = opts.max_lines
   local line_formatter = opts.line_formatter or self.format_line_truncate
+  local highlight = opts.highlight
+  local highlight_attr = opts.highlight_attr or { reverse = true }
 
   -- Remove text panel specific options from opts to avoid conflicts with Panel
   opts.lines = nil
@@ -97,6 +104,8 @@ function TextPanel:init(opts)
   opts.auto_render = nil
   opts.max_lines = nil
   opts.line_formatter = nil
+  opts.highlight = nil
+  opts.highlight_attr = nil
 
   -- Provide content callback for parent constructor
   opts.content = function(self)
@@ -111,12 +120,14 @@ function TextPanel:init(opts)
   self.text_attr = text_attr
   self.max_lines = max_lines
   self.line_formatter = line_formatter
+  self.highlight_attr = highlight_attr
   self.line_refs = {} -- key = formatted-line index, value = source line index
 
   self.auto_render = false -- set to false initially to prevent render during initialization
   self.formatted_lines = nil
   self:set_lines(lines)
   self:set_position(initial_position)
+  self:set_highlight(highlight)
   self.auto_render = auto_render -- set actual value after initialization
 end
 
@@ -145,10 +156,27 @@ function TextPanel:_draw_text()
   local end_line = math.min(start_line + self.inner_height - 1, #self.formatted_lines)
   for i = start_line, end_line do
     local line_row = self.inner_row + (i - start_line)
-    -- Add cursor positioning and text to sequence
+    local is_highlighted = self.highlight and self.highlight == self.line_refs[i]
+
+    -- Add cursor positioning to sequence
     seq[n] = terminal.cursor.position.set_seq(line_row, self.inner_col)
-    seq[n+1] = self.formatted_lines[i]
-    n = n + 2
+    n = n + 1
+
+    -- Add highlight attributes if this line should be highlighted
+    if is_highlighted then
+      seq[n] = terminal.text.stack.push_seq(self.highlight_attr)
+      n = n + 1
+    end
+
+    -- Add the text content
+    seq[n] = self.formatted_lines[i]
+    n = n + 1
+
+    -- Pop highlight attributes if they were pushed
+    if is_highlighted then
+      seq[n] = terminal.text.stack.pop_seq()
+      n = n + 1
+    end
   end
 
   -- Pop text attributes if they were pushed
@@ -380,6 +408,7 @@ end
 
 
 --- Set new text lines.
+-- This will reset position to 1, and clear highlighting.
 -- @tparam table lines Array of text lines.
 -- @return nothing
 function TextPanel:set_lines(lines)
@@ -388,6 +417,7 @@ function TextPanel:set_lines(lines)
   end
 
   self.lines = lines or {}
+  self.highlight = nil
   self.formatted_lines = nil
   self.position = 1  -- Reset to top
   if self.auto_render then
@@ -405,10 +435,10 @@ function TextPanel:add_line(line)
 
   -- Enforce max_lines limit if set
   local must_redraw = false
-  local lines_dropped = 0
+  local source_lines_dropped = 0
   while self.max_lines and #self.lines > self.max_lines do
     local drop_line = table.remove(self.lines, 1)
-    lines_dropped = lines_dropped + 1
+    source_lines_dropped = source_lines_dropped + 1
     if self.formatted_lines then
       -- how many formatted lines do we drop from this 1 input line?
       -- format line again to find out how many lines it would take up
@@ -425,9 +455,17 @@ function TextPanel:add_line(line)
     end
   end
 
-  if lines_dropped > 0 then
+  -- Adjust highlight index when lines are removed from the beginning
+  if self.highlight then
+    self.highlight = self.highlight - source_lines_dropped
+    if self.highlight < 1 then
+      self.highlight = 1
+    end
+  end
+
+  if source_lines_dropped > 0 then
     for i, ref in ipairs(self.line_refs) do
-      self.line_refs[i] = ref - lines_dropped
+      self.line_refs[i] = ref - source_lines_dropped
     end
   end
 
@@ -475,6 +513,39 @@ function TextPanel:set_line_formatter(formatter_func)
     end
   end
 end
+
+
+
+--- Set the highlight for a specific source line.
+-- @tparam number|nil source_line_idx The source line index to highlight, or nil to remove highlight.
+-- @return nothing
+function TextPanel:set_highlight(source_line_idx)
+  -- TODO: add a "jump-to" parameter to move the highlighted line into the viewport
+
+  -- Validate source_line_idx
+  if source_line_idx then
+    if source_line_idx < 1 or source_line_idx > #self.lines then
+      source_line_idx = nil -- Out of bounds, remove highlight
+    end
+  end
+
+  if self.highlight ~= source_line_idx then
+    self.highlight = source_line_idx
+    if self.auto_render then
+      -- TODO: rewrite only what is visible, no need to rerender everything
+      self:render()
+    end
+  end
+end
+
+
+
+--- Get the highlighted source line index.
+-- @treturn number|nil The highlighted source line index, or nil if no highlight is set.
+function TextPanel:get_highlight()
+  return self.highlight
+end
+
 
 
 --- Clear all text content.
