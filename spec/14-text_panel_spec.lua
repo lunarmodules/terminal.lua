@@ -455,6 +455,189 @@ describe("terminal.ui.panel.text", function()
   end)
 
 
+  describe("highlight functionality", function()
+
+    it("initializes with no highlight by default", function()
+      local panel = TextPanel { lines = {"line1", "line2", "line3"} }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      assert.is_nil(panel.highlight)
+      assert.are.same({ inverse = true }, panel.highlight_attr)
+    end)
+
+
+    it("can set highlight via constructor", function()
+      local panel = TextPanel {
+        lines = {"line1", "line2", "line3"},
+        highlight = 2,
+        highlight_attr = { fg = "red", bg = "yellow" }
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      assert.are.equal(2, panel.highlight)
+      assert.are.same({ fg = "red", bg = "yellow" }, panel.highlight_attr)
+    end)
+
+
+    it("set_highlight sets highlight correctly", function()
+      local panel = TextPanel { lines = {"line1", "line2", "line3"} }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      panel:set_highlight(2)
+      assert.are.equal(2, panel.highlight)
+    end)
+
+
+    it("set_highlight removes highlight when set to nil", function()
+      local panel = TextPanel {
+        lines = {"line1", "line2", "line3"},
+        highlight = 2
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      panel:set_highlight(nil)
+      assert.is_nil(panel.highlight)
+    end)
+
+
+    it("set_highlight removes highlight when source_line_idx is out of bounds", function()
+      local panel = TextPanel { lines = {"line1", "line2", "line3"} }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      -- Test negative index
+      panel:set_highlight(-1)
+      assert.is_nil(panel.highlight)
+
+      -- Test zero index
+      panel:set_highlight(0)
+      assert.is_nil(panel.highlight)
+
+      -- Test index beyond bounds
+      panel:set_highlight(4)
+      assert.is_nil(panel.highlight)
+    end)
+
+
+    it("set_highlight triggers auto_render when enabled", function()
+      local panel = TextPanel {
+        lines = {"line1", "line2", "line3"},
+        auto_render = true
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      -- Mock render method to track calls
+      local render_called = false
+      panel.render = function() render_called = true end
+
+      panel:set_highlight(2)
+      assert.is_true(render_called)
+    end)
+
+
+    it("set_highlight does not trigger auto_render when disabled", function()
+      local panel = TextPanel {
+        lines = {"line1", "line2", "line3"},
+        auto_render = false
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      -- Mock render method to track calls
+      local render_called = false
+      panel.render = function() render_called = true end
+
+      panel:set_highlight(2)
+      assert.is_false(render_called)
+    end)
+
+
+    it("highlight works with wordwrap formatter", function()
+      local panel = TextPanel {
+        lines = {"short", "very long line that will wrap to multiple lines", "another short"},
+        line_formatter = TextPanel.format_line_wordwrap,
+        highlight = 2
+      }
+      panel:calculate_layout(1, 1, 15, 15)
+      panel:get_line_count()
+
+      -- The second source line should be highlighted
+      assert.are.equal(2, panel.highlight)
+
+      -- Check that all formatted lines from source line 2 are marked for highlighting
+      local highlighted_lines = 0
+      for i = 1, #panel.formatted_lines do
+        local source_line_idx = panel:get_source_line_index(i)
+        if source_line_idx == 2 then
+          highlighted_lines = highlighted_lines + 1
+        end
+      end
+      assert.is_true(highlighted_lines > 1) -- Should have multiple lines from wrapping
+    end)
+
+
+    it("highlight persists after add_line with max_lines", function()
+      local panel = TextPanel {
+        lines = {"a", "b", "c"},
+        max_lines = 3,
+        highlight = 2
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      -- Add line "d" - should remove "a" and shift references
+      panel:add_line("d")
+
+      -- Highlight should now point to source line 1 (which was originally "b")
+      assert.are.equal(1, panel.highlight)
+
+      -- Verify the mapping is correct
+      assert.are.equal(1, panel:get_source_line_index(1)) -- Display line 1 -> Source line 1
+    end)
+
+
+    it("highlight is pinned to 1 when highlighted line is removed by max_lines", function()
+      local panel = TextPanel {
+        lines = {"a", "b"},
+        max_lines = 2,
+        highlight = 1
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+
+      -- Add line "c" - should remove "a" (the highlighted line)
+      panel:add_line("c")
+
+      -- Highlight should be pinned to 1
+      assert.are.equal(1, panel.highlight)
+    end)
+
+
+    it("highlight resets with set_lines", function()
+      local panel = TextPanel {
+        lines = {"a", "b", "c"},
+        highlight = 2
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:get_line_count()
+      assert.are.equal(2, panel.highlight)
+
+      -- Change to new lines
+      panel:set_lines({"x", "y", "z", "w"})
+      panel:get_line_count()
+
+      -- Highlight should be cleared
+      assert.is_nil(panel.highlight)
+    end)
+
+  end)
+
+
 
   describe("set_lines()", function()
 

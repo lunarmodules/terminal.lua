@@ -22,6 +22,7 @@ local sample_text = {
   "Navigation:",
   "• Use 'j' or ↓ arrow to scroll down",
   "• Use 'k' or ↑ arrow to scroll up",
+  "• Use '[' and ']' to move the highlight",
   "• Use 'g' to go to top",
   "• Use 'G' to go to bottom",
   "• Use 'r' to add a random line",
@@ -82,6 +83,7 @@ local screen = Screen {
     lines = sample_text,
     scroll_step = 1,
     text_attr = { fg = "white", brightness = "bright" },
+    --highlight_attr = { fg = "red", brightness = "bright" },
     border = { format = terminal.draw.box_fmt.single },
     auto_render = true,
   },
@@ -132,6 +134,10 @@ local function main()
       screen:get_panel("body"):page_up()
     elseif keyname == keys.pagedown then
       screen:get_panel("body"):page_down()
+    elseif key == "[" then
+      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 2) - 1)
+    elseif key == "]" then
+      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 0) + 1)
     elseif key == "g" then
       screen:get_panel("body"):set_position(1)
     elseif key == "G" then
