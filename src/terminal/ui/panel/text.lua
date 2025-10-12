@@ -518,10 +518,9 @@ end
 
 --- Set the highlight for a specific source line.
 -- @tparam number|nil source_line_idx The source line index to highlight, or nil to remove highlight.
+-- @tparam[opt=false] boolean jump Whether to adjust viewport to show the highlighted line.
 -- @return nothing
-function TextPanel:set_highlight(source_line_idx)
-  -- TODO: add a "jump-to" parameter to move the highlighted line into the viewport
-
+function TextPanel:set_highlight(source_line_idx, jump)
   -- Validate source_line_idx
   if source_line_idx then
     if source_line_idx < 1 or source_line_idx > #self.lines then
@@ -531,11 +530,76 @@ function TextPanel:set_highlight(source_line_idx)
 
   if self.highlight ~= source_line_idx then
     self.highlight = source_line_idx
+
+    -- Adjust viewport if jump is requested and we have a valid highlight
+    if jump and source_line_idx and self.inner_height then
+      self:_jump_to_highlight()
+    end
+
     if self.auto_render then
       -- TODO: rewrite only what is visible, no need to rerender everything
       self:render()
     end
   end
+end
+
+
+
+--- Private method to adjust viewport to show the highlighted line.
+-- @return nothing
+function TextPanel:_jump_to_highlight()
+  if not self.highlight or not self.inner_height then
+    return
+  end
+
+  -- Ensure formatted_lines are available
+  if not self.formatted_lines then
+    self:_rebuild_formatted_lines()
+  end
+
+  -- Find the first and last formatted line indices for the highlighted source line
+  local first_formatted_line = nil
+  local last_formatted_line = nil
+
+  for i = 1, #self.formatted_lines do
+    if self.line_refs[i] == self.highlight then
+      if not first_formatted_line then
+        first_formatted_line = i
+      end
+      last_formatted_line = i
+    end
+  end
+
+  if not first_formatted_line then
+    return -- Highlighted line not found in formatted lines
+  end
+
+  -- Calculate the current viewport bounds
+  local current_start = self.position
+  local current_end = current_start + self.inner_height - 1
+
+  -- Check if the highlighted line is already fully visible
+  if first_formatted_line >= current_start and last_formatted_line <= current_end then
+    return -- Already fully visible, no need to adjust
+  end
+
+  -- Determine the best position to show the highlighted line
+  local new_position
+
+  if first_formatted_line < current_start then
+    -- Highlighted line is above viewport, position it at the top
+    new_position = first_formatted_line
+  else
+    -- Highlighted line is below viewport, position it at the bottom
+    new_position = last_formatted_line - self.inner_height + 1
+  end
+
+  -- Ensure the new position is valid
+  local max_position = math.max(1, #self.formatted_lines - self.inner_height + 1)
+  new_position = math.max(1, math.min(new_position, max_position))
+
+  -- Update the position
+  self.position = new_position
 end
 
 

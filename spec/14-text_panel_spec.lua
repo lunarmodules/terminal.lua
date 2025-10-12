@@ -463,7 +463,7 @@ describe("terminal.ui.panel.text", function()
       panel:get_line_count()
 
       assert.is_nil(panel.highlight)
-      assert.are.same({ inverse = true }, panel.highlight_attr)
+      assert.are.same({ reverse = true }, panel.highlight_attr)
     end)
 
 
@@ -633,6 +633,152 @@ describe("terminal.ui.panel.text", function()
 
       -- Highlight should be cleared
       assert.is_nil(panel.highlight)
+    end)
+
+
+    it("set_highlight with jump=true adjusts viewport when highlighted line is above viewport", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
+      panel:calculate_layout(1, 1, 5, 20) -- height = 5
+      panel:get_line_count()
+
+      -- Set position to show lines 6-10
+      panel:set_position(6)
+      assert.are.equal(6, panel.position)
+
+      -- Highlight line 2 (above viewport) with jump=true
+      panel:set_highlight(2, true)
+
+      -- Viewport should jump to show line 2 at the top
+      assert.are.equal(2, panel.position)
+      assert.are.equal(2, panel.highlight)
+    end)
+
+
+    it("set_highlight with jump=true adjusts viewport when highlighted line is below viewport", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
+      panel:calculate_layout(1, 1, 5, 20) -- height = 5
+      panel:get_line_count()
+
+      -- Set position to show lines 1-5
+      panel:set_position(1)
+      assert.are.equal(1, panel.position)
+
+      -- Highlight line 8 (below viewport) with jump=true
+      panel:set_highlight(8, true)
+
+      -- Viewport should jump to show line 8 at the bottom
+      assert.are.equal(4, panel.position) -- 8 - 5 + 1 = 4
+      assert.are.equal(8, panel.highlight)
+    end)
+
+
+    it("set_highlight with jump=true does not adjust viewport when highlighted line is already visible", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
+      panel:calculate_layout(1, 1, 5, 20) -- height = 5
+      panel:get_line_count()
+
+      -- Set position to show lines 3-7
+      panel:set_position(3)
+      assert.are.equal(3, panel.position)
+
+      -- Highlight line 5 (already visible) with jump=true
+      panel:set_highlight(5, true)
+
+      -- Viewport should not change
+      assert.are.equal(3, panel.position)
+      assert.are.equal(5, panel.highlight)
+    end)
+
+
+    it("set_highlight with jump=true handles wrapped lines below viewport correctly", function()
+      local panel = TextPanel {
+        lines = {"a", "b", "c", "d", "e", "this wraps to 3 lines at width 15", "f", "g", "h", "i", "j"},
+        line_formatter = TextPanel.format_line_wordwrap
+      }
+      panel:calculate_layout(1, 1, 5, 15) -- height = 5, width = 15
+      panel:get_line_count()
+
+      -- Set position to show earlier lines
+      panel:set_position(1)
+
+      -- Highlight line 6 (which wraps to multiple formatted lines) with jump=true
+      panel:set_highlight(6, true)
+
+      -- Viewport should adjust to show all wrapped lines of the highlighted source line
+      assert.are.equal(6, panel.highlight)
+      -- The position should be adjusted to show all formatted lines of source line 6
+      assert.is.equal(4, panel.position) -- show "d", "e", and 3 wrapped lines, total 5 lines
+    end)
+
+
+    it("set_highlight with jump=true handles wrapped lines above viewport correctly", function()
+      local panel = TextPanel {
+        lines = {"a", "b", "c", "d", "e", "this wraps to 3 lines at width 15", "f", "g", "h", "i", "j"},
+        line_formatter = TextPanel.format_line_wordwrap
+      }
+      panel:calculate_layout(1, 1, 5, 15) -- height = 5, width = 15
+      panel:get_line_count()
+
+      -- Set position to show later lines; f - j
+      panel:set_position(9)
+
+      -- Highlight line 6 (which wraps to multiple formatted lines) with jump=true
+      panel:set_highlight(6, true)
+
+      -- Viewport should adjust to show all wrapped lines of the highlighted source line
+      assert.are.equal(6, panel.highlight)
+      -- The position should be adjusted to show all formatted lines of source line 6
+      assert.is.equal(6, panel.position) -- show 3 wrapped lines, "f", and "g"; total 5 lines
+    end)
+
+
+    it("set_highlight with jump=false does not adjust viewport", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
+      panel:calculate_layout(1, 1, 5, 20) -- height = 5
+      panel:get_line_count()
+
+      -- Set position to show lines 6-10
+      panel:set_position(6)
+      assert.are.equal(6, panel.position)
+
+      -- Highlight line 2 (above viewport) with jump=false
+      panel:set_highlight(2, false)
+
+      -- Viewport should not change
+      assert.are.equal(6, panel.position)
+      assert.are.equal(2, panel.highlight)
+    end)
+
+
+    it("set_highlight with jump parameter defaults to false", function()
+      local panel = TextPanel { lines = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"} }
+      panel:calculate_layout(1, 1, 5, 20) -- height = 5
+      panel:get_line_count()
+
+      -- Set position to show lines 6-10
+      panel:set_position(6)
+      assert.are.equal(6, panel.position)
+
+      -- Highlight line 2 (above viewport) without jump parameter
+      panel:set_highlight(2)
+
+      -- Viewport should not change (jump defaults to false)
+      assert.are.equal(6, panel.position)
+      assert.are.equal(2, panel.highlight)
+    end)
+
+
+    it("set_highlight with jump=true handles edge cases", function()
+      local panel = TextPanel { lines = {"a", "b", "c"} }
+      panel:calculate_layout(1, 1, 5, 20) -- height = 5 (larger than content)
+      panel:get_line_count()
+
+      -- Highlight line 1 with jump=true
+      panel:set_highlight(1, true)
+
+      -- Should work without errors
+      assert.are.equal(1, panel.position)
+      assert.are.equal(1, panel.highlight)
     end)
 
   end)
