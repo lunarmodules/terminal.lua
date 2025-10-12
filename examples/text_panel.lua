@@ -135,9 +135,9 @@ local function main()
     elseif keyname == keys.pagedown then
       screen:get_panel("body"):page_down()
     elseif key == "[" then
-      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 2) - 1)
+      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 2) - 1, true)
     elseif key == "]" then
-      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 0) + 1)
+      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 0) + 1, true)
     elseif key == "g" then
       screen:get_panel("body"):set_position(1)
     elseif key == "G" then
