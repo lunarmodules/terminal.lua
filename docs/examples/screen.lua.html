@@ -47,6 +47,7 @@
   <li><strong>screen.lua</strong></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -80,7 +81,9 @@
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -99,53 +102,62 @@
 <pre>
 #!/usr/bin/env lua
 
-<span class="comment">--- Screen example demonstrating full-screen terminal applications.
+<span class="comment">--- Screen example demonstrating full-screen terminal applications with Bar class.
 </span><span class="comment">--
 </span><span class="comment">-- This example shows how to create and use Screen instances for
-</span><span class="comment">-- full-screen terminal applications with header, body, and footer.
+</span><span class="comment">-- full-screen terminal applications with Bar-based header and footer,
+</span><span class="comment">-- showcasing the Bar class features including sub-table structure,
+</span><span class="comment">-- individual text attributes, truncation types, and styling options.
 </span>
 <span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
 
 <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
-  <span class="keyword">local</span> Screen = <span class="global">require</span>(<span class="string">"terminal.ui.screen"</span>)
+  <span class="keyword">local</span> Screen = <span class="global">require</span>(<span class="string">"terminal.ui.panel.screen"</span>)
   <span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+  <span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"terminal.ui.panel.bar"</span>)
 
-  <span class="comment">-- Create header panel
-</span>  <span class="keyword">local</span> header = <span class="function-name">Panel</span> {
-    min_height = <span class="number">1</span>,
-    max_height = <span class="number">1</span>,
-    content = <span class="keyword">function</span>(self, row, col, height, width)
-      t.cursor.position.<span class="function-name">backup</span>()
-      t.cursor.position.<span class="function-name">set</span>(row, col)
-      t.text.stack.<span class="function-name">push</span>{
-        fg = <span class="string">"white"</span>,
-        bg = <span class="string">"blue"</span>,
-        brightness = <span class="string">"bright"</span>,
-      }
-      t.output.<span class="function-name">write</span>(<span class="string">" Hello white on blue World! "</span>)
-      t.clear.<span class="function-name">eol</span>()
-      t.text.stack.<span class="function-name">pop</span>()
-      t.cursor.position.<span class="function-name">restore</span>()
-    <span class="keyword">end</span>
+  <span class="comment">-- Create header bar with multiple features
+</span>  <span class="keyword">local</span> header = <span class="function-name">Bar</span> {
+    margin = <span class="number">1</span>,
+    padding = <span class="number">3</span>,
+    left = {
+      text = <span class="string">"File"</span>,
+      <span class="global">type</span> = <span class="string">"left"</span>,
+      attr = { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    center = {
+      text = <span class="string">"Terminal Editor"</span>,
+      <span class="global">type</span> = <span class="string">"right"</span>,
+      attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span>, underline = <span class="keyword">true</span> }
+    },
+    right = {
+      text = <span class="string">"Help"</span>,
+      <span class="global">type</span> = <span class="string">"drop"</span>,
+      attr = { fg = <span class="string">"green"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    attr = { bg = <span class="string">"blue"</span> }
   }
 
-  <span class="comment">-- Create footer panel
-</span>  <span class="keyword">local</span> footer = <span class="function-name">Panel</span> {
-    min_height = <span class="number">1</span>,
-    max_height = <span class="number">1</span>,
-    content = <span class="keyword">function</span>(self, row, col, height, width)
-      t.cursor.position.<span class="function-name">backup</span>()
-      t.cursor.position.<span class="function-name">set</span>(row, col)
-      t.text.stack.<span class="function-name">push</span>{
-        fg = <span class="string">"white"</span>,
-        bg = <span class="string">"blue"</span>,
-        brightness = <span class="string">"dim"</span>,
-      }
-      t.output.<span class="function-name">write</span>(<span class="string">" Press 'q' to quit, or resize screen to redraw"</span>)
-      t.clear.<span class="function-name">eol</span>()
-      t.text.stack.<span class="function-name">pop</span>()
-      t.cursor.position.<span class="function-name">restore</span>()
-    <span class="keyword">end</span>
+  <span class="comment">-- Create footer bar with different styling
+</span>  <span class="keyword">local</span> footer = <span class="function-name">Bar</span> {
+    margin = <span class="number">0</span>,
+    padding = <span class="number">2</span>,
+    left = {
+      text = <span class="string">"Status: Ready"</span>,
+      <span class="global">type</span> = <span class="string">"left"</span>,
+      attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"dim"</span> }
+    },
+    center = {
+      text = <span class="string">"Press 'q' to quit"</span>,
+      <span class="global">type</span> = <span class="string">"right"</span>,
+      attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    right = {
+      text = <span class="string">"Resize to redraw"</span>,
+      <span class="global">type</span> = <span class="string">"drop"</span>,
+      attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"dim"</span> }
+    },
+    attr = { bg = <span class="string">"blue"</span>, brightness = <span class="string">"dim"</span> }
   }
 
   <span class="comment">-- Create body panel

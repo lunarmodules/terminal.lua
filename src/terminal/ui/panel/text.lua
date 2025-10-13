@@ -545,7 +545,7 @@ end
 
 
 
---- Private method to adjust viewport to show the highlighted line.
+-- Private method to adjust viewport to show the highlighted line.
 -- @return nothing
 function TextPanel:_jump_to_highlight()
   if not self.highlight or not self.inner_height then

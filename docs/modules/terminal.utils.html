@@ -69,7 +69,9 @@
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -93,6 +95,7 @@
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
 
 </div>
@@ -131,6 +134,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
 	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8sub_col">utf8sub_col (str, i, j[, no_pad=false])</a></td>
+	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.</td>
 	</tr>
 </table>
 
@@ -390,6 +397,62 @@
 
 
 
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- UTF-8 double-width characters (Chinese, etc.)
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">2</span>)       <span class="comment">-- "你好"
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">1</span>)       <span class="comment">-- "你"
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">3</span>)    <span class="comment">-- "好世"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "utf8sub_col"></a>
+    <strong>utf8sub_col (str, i, j[, no_pad=false])</strong>
+    </dt>
+    <dd>
+    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.
+ It uses <a href="../modules/terminal.text.width.html#utf8cwidth">text.width.utf8cwidth</a> to determine the width of each character.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to take the substring of
+        </li>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         the starting column of the substring (can't be negative!)
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         the ending column of the substring (can't be negative!)
+        </li>
+        <li><span class="parameter">no_pad</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to pad the substring with spaces
+ if the first or last column contains half of a double-width character
+         (<em>default</em> false)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the substring
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- UTF-8 double-width characters (2 columns each)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">3</span>, <span class="number">6</span>)  <span class="comment">-- "好世" (columns 3-6)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>)  <span class="comment">-- " 好世 " (columns 2-7 with padding for half of double-width chars)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>, <span class="keyword">true</span>)  <span class="comment">-- "好世" (columns 2-7, no_pad == true)</span></pre>
+    </ul>
 
 </dd>
 </dl>

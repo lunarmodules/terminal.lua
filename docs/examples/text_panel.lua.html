@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><strong>text_panel.lua</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>text_panel.lua</h2>
+<pre>
+#!/usr/bin/env lua
+
+<span class="comment">-- TextPanel example demonstrating scrollable text display
+</span>
+<span class="keyword">local</span> TextPanel = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.text"</span>)
+<span class="keyword">local</span> Screen = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.screen"</span>)
+<span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.bar"</span>)
+<span class="keyword">local</span> terminal = <span class="global">require</span>(<span class="string">"terminal"</span>)
+
+<span class="comment">-- Create some sample text content
+</span><span class="keyword">local</span> sample_text = {
+  <span class="string">"Welcome to the TextPanel example!"</span>,
+  <span class="string">""</span>,
+  <span class="string">"This panel displays scrollable text content with the following features:"</span>,
+  <span class="string">""</span>,
+  <span class="string">"• Text truncation for lines that are too long"</span>,
+  <span class="string">"• Scrollable viewport when content exceeds panel height"</span>,
+  <span class="string">"• Configurable scroll step size"</span>,
+  <span class="string">"• Methods for navigation: set_position(), scroll_up(), scroll_down()"</span>,
+  <span class="string">"• Dynamic content management: set_lines(), add_line(), clear()"</span>,
+  <span class="string">""</span>,
+  <span class="string">"Navigation:"</span>,
+  <span class="string">"• Use 'j' or ↓ arrow to scroll down"</span>,
+  <span class="string">"• Use 'k' or ↑ arrow to scroll up"</span>,
+  <span class="string">"• Use '[' and ']' to move the highlight"</span>,
+  <span class="string">"• Use 'g' to go to top"</span>,
+  <span class="string">"• Use 'G' to go to bottom"</span>,
+  <span class="string">"• Use 'r' to add a random line"</span>,
+  <span class="string">"• Use 'c' to clear content"</span>,
+  <span class="string">"• Use 's' to reset to this sample text"</span>,
+  <span class="string">"• Use 'f' to swicth line-formatters; trunc, wrap, word-wrap"</span>,
+  <span class="string">"• Use 'q' to quit"</span>,
+  <span class="string">""</span>,
+  <span class="string">"The TextPanel class inherits from Panel and provides:"</span>,
+  <span class="string">""</span>,
+  <span class="string">"• Automatic text truncation using terminal.text.width"</span>,
+  <span class="string">"• Viewport management for large text content"</span>,
+  <span class="string">"• Integration with the Panel layout system"</span>,
+  <span class="string">"• Support for borders and text attributes"</span>,
+  <span class="string">""</span>,
+  <span class="string">"This is a long line that should be truncated when the panel width is insufficient to display the entire content. The truncation respects UTF-8 character boundaries and double-width characters."</span>,
+  <span class="string">""</span>,
+  <span class="string">"More content follows:"</span>,
+  <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"A"</span>, <span class="number">50</span>),
+  <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"B"</span>, <span class="number">30</span>),
+  <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"C"</span>, <span class="number">40</span>),
+  <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"D"</span>, <span class="number">20</span>),
+  <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"E"</span>, <span class="number">60</span>),
+  <span class="string">""</span>,
+  <span class="string">"You can add more lines dynamically:"</span>,
+  <span class="string">"• Call add_line() to append new content"</span>,
+  <span class="string">"• Call set_lines() to replace all content"</span>,
+  <span class="string">"• Call clear() to remove all content"</span>,
+  <span class="string">""</span>,
+  <span class="string">"The panel automatically handles:"</span>,
+  <span class="string">"• Empty lines and nil content"</span>,
+  <span class="string">"• Position clamping to valid ranges"</span>,
+  <span class="string">"• Efficient rendering (only when content changes)"</span>,
+  <span class="string">""</span>,
+  <span class="string">"This concludes the TextPanel demonstration."</span>,
+  <span class="string">"Thank you for trying out this example!"</span>
+}
+
+<span class="comment">-- Create the main screen
+</span><span class="keyword">local</span> screen = <span class="function-name">Screen</span> {
+  header = <span class="function-name">Bar</span> {
+    left = {
+      text = <span class="string">"TextPanel Example"</span>,
+      attr = { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    center = {
+      text = <span class="string">"Scrollable Text Display"</span>,
+      attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span>, underline = <span class="keyword">true</span> }
+    },
+    right = {
+      text = <span class="string">"Press 'q' to quit"</span>,
+      attr = { fg = <span class="string">"green"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    attr = { bg = <span class="string">"blue"</span> }
+  },
+
+  body = <span class="function-name">TextPanel</span> {
+    lines = sample_text,
+    scroll_step = <span class="number">1</span>,
+    text_attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"bright"</span> },
+    <span class="comment">--highlight_attr = { fg = "red", brightness = "bright" },
+</span>    border = { format = terminal.draw.box_fmt.single },
+    auto_render = <span class="keyword">true</span>,
+  },
+
+  footer = <span class="function-name">Bar</span> {
+    left = {
+      text = <span class="string">"j/k or ↑/↓: scroll"</span>,
+      attr = { fg = <span class="string">"magenta"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    center = {
+      text = <span class="string">"pgup/pgdn: page, g/G: top/bottom"</span>,
+      attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    right = {
+      text = <span class="string">"q: quit"</span>,
+      attr = { fg = <span class="string">"red"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    attr = { bg = <span class="string">"black"</span>, fg = <span class="string">"white"</span> }
+  }
+}
+
+<span class="keyword">local</span> formatters = {
+  TextPanel.format_line_truncate,
+  TextPanel.format_line_wrap,
+  TextPanel.format_line_wordwrap,
+}
+<span class="keyword">local</span> current_formatter = <span class="number">1</span>
+
+<span class="comment">-- Main event loop
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
+  <span class="keyword">local</span> keymap = terminal.input.keymap.default_key_map
+  <span class="keyword">local</span> keys = terminal.input.keymap.default_keys
+
+  screen:<span class="function-name">calculate_layout</span>()
+  screen:<span class="function-name">render</span>()
+
+  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    <span class="keyword">local</span> key = terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>)
+    <span class="keyword">local</span> keyname = keymap[key <span class="keyword">or</span> <span class="string">""</span>]
+
+    <span class="keyword">if</span> key == <span class="string">"q"</span> <span class="keyword">or</span> key == <span class="string">"Q"</span> <span class="keyword">then</span>
+      <span class="keyword">break</span>
+    <span class="keyword">elseif</span> key == <span class="string">"j"</span> <span class="keyword">or</span> keyname == keys.down <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">scroll_down</span>()
+    <span class="keyword">elseif</span> key == <span class="string">"k"</span> <span class="keyword">or</span> keyname == keys.up <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">scroll_up</span>()
+    <span class="keyword">elseif</span> keyname == keys.pageup <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">page_up</span>()
+    <span class="keyword">elseif</span> keyname == keys.pagedown <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">page_down</span>()
+    <span class="keyword">elseif</span> key == <span class="string">"["</span> <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_highlight</span>((screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">get_highlight</span>() <span class="keyword">or</span> <span class="number">2</span>) - <span class="number">1</span>, <span class="keyword">true</span>)
+    <span class="keyword">elseif</span> key == <span class="string">"]"</span> <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_highlight</span>((screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">get_highlight</span>() <span class="keyword">or</span> <span class="number">0</span>) + <span class="number">1</span>, <span class="keyword">true</span>)
+    <span class="keyword">elseif</span> key == <span class="string">"g"</span> <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_position</span>(<span class="number">1</span>)
+    <span class="keyword">elseif</span> key == <span class="string">"G"</span> <span class="keyword">then</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_position</span>(<span class="global">math</span>.huge)
+    <span class="keyword">elseif</span> key == <span class="string">"f"</span> <span class="keyword">then</span>
+      current_formatter = current_formatter % #formatters + <span class="number">1</span>
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_line_formatter</span>(formatters[current_formatter])
+    <span class="keyword">elseif</span> key == <span class="string">"r"</span> <span class="keyword">then</span>
+      <span class="comment">-- Add a random line
+</span>      <span class="keyword">local</span> random_line = <span class="string">"Random line "</span> .. <span class="global">math</span>.<span class="function-name">random</span>(<span class="number">1000</span>) .. <span class="string">" added at "</span> .. <span class="global">os</span>.<span class="function-name">date</span>(<span class="string">"%H:%M:%S"</span>)
+      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">add_line</span>(random_line)
+    <span class="keyword">elseif</span> key == <span class="string">"c"</span> <span class="keyword">then</span>
+      <span class="comment">-- Clear content
+</span>      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">clear_lines</span>()
+    <span class="keyword">elseif</span> key == <span class="string">"s"</span> <span class="keyword">then</span>
+      <span class="comment">-- Reset to sample text
+</span>      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_lines</span>(sample_text)
+    <span class="keyword">end</span>
+
+    <span class="comment">-- Check for resize, and redraw if needed
+</span>    screen:<span class="function-name">check_resize</span>(<span class="keyword">true</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">-- Initialize terminal and run the example
+</span>terminal.<span class="function-name">initwrap</span>(main, {
+  displaybackup = <span class="keyword">true</span>,
+  filehandle = <span class="global">io</span>.stdout,
+})()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -44,7 +44,9 @@
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><strong>ui.Screen</strong></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><strong>ui.panel.Screen</strong></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -93,29 +95,31 @@
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
 
 </div>
 
 <div id="content">
 
-<h1>Class <code>ui.Screen</code></h1>
+<h1>Class <code>ui.panel.Screen</code></h1>
 <p>Screen class for full-screen terminal applications.</p>
-<p> Manages a full-screen layout with optional header and footer panels.</p>
+<p> Manages a full-screen layout with optional header and footer panels (see <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a>).
+ Derives from <a href="../classes/ui.Panel.html#">ui.Panel</a>.</p>
 
 
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#ui.screen:calculate_layout">ui.screen:calculate_layout ()</a></td>
+	<td class="name" nowrap><a href="#ui.panel.screen:calculate_layout">ui.panel.screen:calculate_layout ()</a></td>
 	<td class="summary">Recalculate the screen layout using current terminal dimensions.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.screen:check_resize">ui.screen:check_resize ([update=false])</a></td>
+	<td class="name" nowrap><a href="#ui.panel.screen:check_resize">ui.panel.screen:check_resize ([update=false])</a></td>
 	<td class="summary">Check if the terminal has been resized and optionally update the layout.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.screen:init">ui.screen:init (opts)</a></td>
+	<td class="name" nowrap><a href="#ui.panel.screen:init">ui.panel.screen:init (opts)</a></td>
 	<td class="summary">Initialize a new Screen instance.</td>
 	</tr>
 </table>
@@ -128,8 +132,8 @@
 
     <dl class="function">
     <dt>
-    <a name = "ui.screen:calculate_layout"></a>
-    <strong>ui.screen:calculate_layout ()</strong>
+    <a name = "ui.panel.screen:calculate_layout"></a>
+    <strong>ui.panel.screen:calculate_layout ()</strong>
     </dt>
     <dd>
     Recalculate the screen layout using current terminal dimensions.
@@ -143,8 +147,8 @@
 
 </dd>
     <dt>
-    <a name = "ui.screen:check_resize"></a>
-    <strong>ui.screen:check_resize ([update=false])</strong>
+    <a name = "ui.panel.screen:check_resize"></a>
+    <strong>ui.panel.screen:check_resize ([update=false])</strong>
     </dt>
     <dd>
     Check if the terminal has been resized and optionally update the layout.
@@ -171,8 +175,8 @@
 
 </dd>
     <dt>
-    <a name = "ui.screen:init"></a>
-    <strong>ui.screen:init (opts)</strong>
+    <a name = "ui.panel.screen:init"></a>
+    <strong>ui.panel.screen:init (opts)</strong>
     </dt>
     <dd>
     Initialize a new Screen instance.
@@ -185,15 +189,15 @@
         <ul>
         <li><span class="parameter">header</span>
             <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
-         Optional header panel (will be named "header")
+         Optional header panel (will be (re)named "header")
         </li>
         <li><span class="parameter">body</span>
             <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
-         Required body panel (will be named "body")
+         Required body panel (will be (re)named "body")
         </li>
         <li><span class="parameter">footer</span>
             <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
-         Optional footer panel (will be named "footer")
+         Optional footer panel (will be (re)named "footer")
         </li>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
@@ -204,6 +208,10 @@
 
 
 
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a>
+    </ul>
 
 
 </dd>
