@@ -47,6 +47,7 @@
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><strong>testscreen.lua</strong></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -80,7 +81,9 @@
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -104,6 +107,7 @@
 </span><span class="comment">-- that the entire string is written.
 </span>
 <span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Sequence = <span class="global">require</span>(<span class="string">"terminal.sequence"</span>)
 
 
 
@@ -131,7 +135,7 @@
 
 
   main = <span class="keyword">function</span>()
-    <span class="keyword">local</span> o = {}
+    <span class="keyword">local</span> o = <span class="function-name">Sequence</span>()
     <span class="comment">-- clear the screen, and draw the test screen
 </span>    o[#o+<span class="number">1</span>] = t.clear.<span class="function-name">screen_seq</span>()
     <span class="function-name">testscreen</span>(o)
@@ -140,7 +144,8 @@
 </span>    <span class="keyword">local</span> edge = <span class="number">2</span>
     <span class="keyword">local</span> r,c = t.<span class="function-name">size</span>()
     o[#o+<span class="number">1</span>] = t.cursor.position.<span class="function-name">set_seq</span>(edge+<span class="number">1</span>, edge+<span class="number">1</span>)
-    o[#o+<span class="number">1</span>] = t.draw.<span class="function-name">box_seq</span>(r - <span class="number">2</span>*edge, c - <span class="number">2</span>*edge, t.draw.box_fmt.double, <span class="keyword">true</span>, <span class="string">"test screen"</span>)
+    o[#o+<span class="number">1</span>] = t.draw.<span class="function-name">box_seq</span>(r - <span class="number">2</span>*edge, c - <span class="number">2</span>*edge, t.draw.box_fmt.double, <span class="keyword">true</span>,
+              <span class="string">"test screen"</span>, <span class="keyword">nil</span>, <span class="keyword">nil</span>, { fg = <span class="string">"green"</span>, bg = <span class="string">"black"</span>, brightness = <span class="number">3</span> })
 
     <span class="comment">-- move cursor inside the box
 </span>    o[#o+<span class="number">1</span>] = t.cursor.position.<span class="function-name">move_seq</span>(<span class="number">1</span>, <span class="number">1</span>)
@@ -154,7 +159,7 @@
     o[#o+<span class="number">1</span>] = <span class="string">"press any key, or wait 5 seconds..."</span>
 
     <span class="comment">-- write the whole thing at once
-</span>    <span class="global">assert</span>(t.output.<span class="function-name">write</span>(<span class="global">table</span>.<span class="function-name">concat</span>(o)))
+</span>    <span class="global">assert</span>(t.output.<span class="function-name">write</span>(o))
 
     <span class="comment">-- wait for user input, or timeout after 5 seconds
 </span>    t.input.<span class="function-name">readansi</span>(<span class="number">5</span>)

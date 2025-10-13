@@ -71,7 +71,9 @@
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -95,6 +97,7 @@
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
 
 </div>
@@ -109,7 +112,7 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#box">box (height, width, format, clear_flag[, title=""[, lastcolumn=false]])</a></td>
+	<td class="name" nowrap><a href="#box">box (height, width, format, clear_flag[, title=""[, lastcolumn=false[, type="right"[, title_attr]]]])</a></td>
 	<td class="summary">Draws a box and writes it to the terminal.</td>
 	</tr>
 	<tr>
@@ -127,7 +130,7 @@
 <h2><a href="#Sequences">Sequences</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#box_seq">box_seq (height, width[, format[, clear_flag=" "[, title=" "[, lastcolumn=""]]]])</a></td>
+	<td class="name" nowrap><a href="#box_seq">box_seq (height, width[, format[, clear_flag=" "[, title=" "[, lastcolumn=""[, type=""[, title_attr=""]]]]]])</a></td>
 	<td class="summary">Creates a sequence to draw a box, without writing it to the terminal.</td>
 	</tr>
 </table>
@@ -141,7 +144,7 @@
     <dl class="function">
     <dt>
     <a name = "box"></a>
-    <strong>box (height, width, format, clear_flag[, title=""[, lastcolumn=false]])</strong>
+    <strong>box (height, width, format, clear_flag[, title=""[, lastcolumn=false[, type="right"[, title_attr]]]])</strong>
     </dt>
     <dd>
     Draws a box and writes it to the terminal.
@@ -174,6 +177,16 @@
             <span class="types"><span class="type">boolean</span></span>
          whether to draw the last column of the terminal
          (<em>default</em> false)
+        </li>
+        <li><span class="parameter">type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the type of title-truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.draw.line.html#title_fmt">draw.line.title_fmt</a> for details
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">title_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         table of attributes for the title, eg. <code>{ fg = &quot;red&quot;, bg = &quot;blue&quot; }</code>
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -257,12 +270,13 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
     <dl class="function">
     <dt>
     <a name = "box_seq"></a>
-    <strong>box_seq (height, width[, format[, clear_flag=" "[, title=" "[, lastcolumn=""]]]])</strong>
+    <strong>box_seq (height, width[, format[, clear_flag=" "[, title=" "[, lastcolumn=""[, type=""[, title_attr=""]]]]]])</strong>
     </dt>
     <dd>
     Creates a sequence to draw a box, without writing it to the terminal.
  The box is drawn starting from the top-left corner at the current cursor position,
  after drawing the cursor will be in the same position.
+ The left, right, top, bottom characters can be empty strings(eg. ""), to not draw them.
 
 
     <h3>Parameters:</h3>
@@ -343,13 +357,23 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
          whether to draw the last column of the terminal
          (<em>default</em> false)
         </li>
+        <li><span class="parameter">type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the type of title-truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.draw.line.html#title_fmt">draw.line.title_fmt</a> for details
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">title_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         table of attributes for the title, eg. <code>{ fg = &quot;red&quot;, bg = &quot;blue&quot; }</code>
+         (<em>optional</em>)
+        </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
+           <span class="types"><a class="type" href="../classes/Sequence.html#">Sequence</a></span>
+        The sequence to write to the terminal
     </ol>
 
 

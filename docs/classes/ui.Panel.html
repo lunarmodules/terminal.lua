@@ -45,7 +45,9 @@
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><strong>ui.Panel</strong></li>
-  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -94,6 +96,7 @@
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
 
 </div>
@@ -118,6 +121,8 @@
     <li>Minimum and maximum size constraints</li>
     <li>Dynamic resizing based on orientation</li>
 </ul>
+
+<p> The typical usage starts with a <a href="../classes/ui.panel.Screen.html#">ui.panel.Screen</a> instance as the root panel.</p>
 
 <p> <em>Usage:</em></p>
 
@@ -171,8 +176,12 @@
 	<td class="summary">Calculate the layout for this panel and all its children.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.panel:content_border">ui.panel:content_border (callback, format[, title])</a></td>
-	<td class="summary">Returns a new content callback that draws a border and optional title around your panel content.</td>
+	<td class="name" nowrap><a href="#ui.panel:clear">ui.panel:clear ()</a></td>
+	<td class="summary">Clears the panel content (inner area).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:draw_border">ui.panel:draw_border ()</a></td>
+	<td class="summary">Draw the border around panel content.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#ui.panel:get_children">ui.panel:get_children ()</a></td>
@@ -308,44 +317,37 @@
 
 </dd>
     <dt>
-    <a name = "ui.panel:content_border"></a>
-    <strong>ui.panel:content_border (callback, format[, title])</strong>
+    <a name = "ui.panel:clear"></a>
+    <strong>ui.panel:clear ()</strong>
     </dt>
     <dd>
-    Returns a new content callback that draws a border and optional title around your panel content.
- This function wraps your original content callback, first drawing a box (border and title) using the given
- box format and title, then calling your callback with the coordinates and size <em>inside</em> the border.</p>
-
-<p> The border is drawn using the specified box format (see <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a>). If any of the
- box format's top, bottom, left, or right characters are empty strings, that side of the border is omitted
- and the space becomes part of the <em>inner</em> area.</p>
-
-<p> The wrapped callback receives adjusted (row, col, height, width) arguments, so your content is always
- drawn inside the border area.
+    Clears the panel content (inner area).
 
 
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">callback</span>
-            <span class="types"><span class="type">function</span></span>
-         The original content callback to wrap.
-        </li>
-        <li><span class="parameter">format</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         The box format table (see <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a>).
-        </li>
-        <li><span class="parameter">title</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         Optional title to display in the border.
-         (<em>optional</em>)
-        </li>
-    </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">function</span></span>
-        A new callback that draws the border and then calls your original callback.
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:draw_border"></a>
+    <strong>ui.panel:draw_border ()</strong>
+    </dt>
+    <dd>
+    Draw the border around panel content.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
     </ol>
 
 
@@ -560,6 +562,11 @@
          Content callback function that takes (self, row, col, height, width) parameters.
          (<em>optional</em>)
         </li>
+        <li><span class="parameter">clear_content</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to clear the content area before rendering.
+         (<em>default</em> true)
+        </li>
         <li><span class="parameter">orientation</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          Panel orientation: <code>Panel.orientations.horizontal</code> or <code>Panel.orientations.vertical</code> (for divided panels).
@@ -600,6 +607,35 @@
          Ratio for dividing child panels (0.0 to 1.0).
          (<em>default</em> 0.5)
         </li>
+        <li><span class="parameter">border</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Border configuration for content panels, with the following properties:
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">format</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The box format table (see <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a>).
+        </li>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Table of attributes for the border, eg. <code>{ fg = &quot;red&quot;, bg = &quot;blue&quot; }</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">title</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Optional title to display in the border.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">truncation_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The type of title-truncation to apply, either "left", "right", or "drop".
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">title_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Table of attributes for the title, eg. <code>{ fg = &quot;red&quot;, bg = &quot;blue&quot; }</code>.
+         (<em>optional</em>)
+        </li>
         </li></ul>
     </ul>
 
@@ -618,7 +654,11 @@
 <span class="keyword">local</span> panel = <span class="function-name">Panel</span> {
   content = <span class="keyword">function</span>(self, row, col, height, width)
     <span class="comment">-- render content here
-</span>  <span class="keyword">end</span>
+</span>  <span class="keyword">end</span>,
+  border = {
+    format = terminal.draw.box_fmt.single,
+    title = <span class="string">"My Panel"</span>
+  }
 }</pre>
     </ul>
 

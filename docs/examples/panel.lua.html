@@ -47,6 +47,7 @@
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -80,7 +81,9 @@
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.Screen.html">ui.Screen</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -108,9 +111,11 @@
 
 
 
-<span class="comment">-- Helper function to draw content in a panel
-</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_content</span>(row, col, height, width, text, color)
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_content</span>(self, text, color)
   color = color <span class="keyword">or</span> <span class="string">"white"</span>
+
+  <span class="keyword">local</span> row, col = self.inner_row, self.inner_col
+  <span class="keyword">local</span> height, width = self.inner_height, self.inner_width
 
   <span class="comment">-- Center the text in the panel
 </span>  <span class="keyword">local</span> text_row = row + <span class="global">math</span>.<span class="function-name">floor</span>(height / <span class="number">2</span>)
@@ -141,7 +146,11 @@
 <span class="comment">-- Helper function to create full-screen panel
 </span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">create_fullscreen_panel</span>(content_func)
   <span class="keyword">return</span> <span class="function-name">Panel</span> {
-    content = Panel.<span class="function-name">content_border</span>(content_func, terminal.draw.box_fmt.single, <span class="string">""</span>),
+    content = content_func,
+    border = {
+      format = terminal.draw.box_fmt.single,
+      title = <span class="string">""</span>
+    }
   }
 <span class="keyword">end</span>
 
@@ -153,10 +162,8 @@
   terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
 
   <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
-  <span class="keyword">local</span> simple_panel = <span class="function-name">create_fullscreen_panel</span>(<span class="keyword">function</span>(self, row, col, height, width)
-    terminal.cursor.position.<span class="function-name">set</span>(row + <span class="number">1</span>, col + <span class="number">1</span>)
-    terminal.draw.<span class="function-name">box</span>(height - <span class="number">2</span>, width - <span class="number">2</span>, terminal.draw.box_fmt.single, <span class="keyword">true</span>, <span class="string">"Simple Panel"</span>)
-    <span class="function-name">draw_content</span>(row + <span class="number">1</span>, col + <span class="number">1</span>, height - <span class="number">2</span>, width - <span class="number">2</span>, <span class="string">"Hello World! Press any key to continue..."</span>, <span class="string">"green"</span>)
+  <span class="keyword">local</span> simple_panel = <span class="function-name">create_fullscreen_panel</span>(<span class="keyword">function</span>(self)
+    <span class="function-name">draw_content</span>(self, <span class="string">"Hello World! Press any key to continue..."</span>, <span class="string">"green"</span>)
   <span class="keyword">end</span>)
 
   simple_panel:<span class="function-name">calculate_layout</span>(<span class="number">1</span>, <span class="number">1</span>, rows, cols)
@@ -183,14 +190,24 @@
     split_ratio = <span class="number">0.6</span>, <span class="comment">-- 60% left, 40% right
 </span>    children = {
       <span class="function-name">Panel</span> {
-        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"60% - Press any key"</span>, <span class="string">"blue"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Left Panel"</span>),
+        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"60% - Press any key"</span>, <span class="string">"blue"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = <span class="string">"blue"</span> },
+          title = <span class="string">"Left Panel"</span>
+        },
       },
       <span class="function-name">Panel</span> {
-        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"40%"</span>, <span class="string">"red"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Right Panel"</span>),
+        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"40%"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = <span class="string">"red"</span> },
+          title = <span class="string">"Right Panel"</span>
+        },
       }
     }
   }
@@ -219,14 +236,24 @@
     split_ratio = <span class="number">0.4</span>, <span class="comment">-- 40% top, 60% bottom
 </span>    children = {
       <span class="function-name">Panel</span> {
-        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"40% - Press any key"</span>, <span class="string">"yellow"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Top Panel"</span>),
+        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"40% - Press any key"</span>, <span class="string">"yellow"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = <span class="string">"yellow"</span> },
+          title = <span class="string">"Top Panel"</span>
+        },
       },
       <span class="function-name">Panel</span> {
-        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"60%"</span>, <span class="string">"magenta"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Bottom Panel"</span>),
+        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"60%"</span>, <span class="string">"magenta"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = <span class="string">"magenta"</span> },
+          title = <span class="string">"Bottom Panel"</span>
+        },
       }
     }
   }
@@ -249,6 +276,24 @@
   terminal.clear.<span class="function-name">screen</span>()
   terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
 
+  <span class="comment">-- create custom formats to connect the panel borders visually
+</span>  <span class="keyword">local</span> fmt_top_left = terminal.draw.box_fmt.<span class="function-name">copy</span>(terminal.draw.box_fmt.single)
+  fmt_top_left.tr = <span class="string">"┬"</span> <span class="comment">-- connect to the right panel top left corner
+</span>  fmt_top_left.b = <span class="string">""</span>   <span class="comment">-- do not draw the bottom bar (use the lower panels top bar)
+</span>  fmt_top_left.bl = fmt_top_left.l  <span class="comment">-- no edge, continue vertical line
+</span>  fmt_top_left.br = fmt_top_left.l  <span class="comment">-- no edge, continue vertical line
+</span>
+  <span class="keyword">local</span> fmt_bottom_left = terminal.draw.box_fmt.<span class="function-name">copy</span>(terminal.draw.box_fmt.single)
+  fmt_bottom_left.tl = <span class="string">"├"</span>  <span class="comment">-- connect to the top panel bottom left corner
+</span>  fmt_bottom_left.tr = <span class="string">"┤"</span>  <span class="comment">-- connect to the top panel bottom right corner
+</span>  fmt_bottom_left.br = <span class="string">"┴"</span>  <span class="comment">-- connect to the right panel bottom left corner
+</span>
+  <span class="keyword">local</span> fmt_right = terminal.draw.box_fmt.<span class="function-name">copy</span>(terminal.draw.box_fmt.single)
+  fmt_right.l = <span class="string">""</span>    <span class="comment">-- do not draw the left border (use the left panels right border)
+</span>  fmt_right.tl = fmt_right.t <span class="comment">-- no edge, continue horizontal line
+</span>  fmt_right.bl = fmt_right.b <span class="comment">-- no edge, continue horizontal line
+</span>
+
   <span class="keyword">local</span> rows, cols = terminal.<span class="function-name">size</span>()
   <span class="keyword">local</span> nested_panel = <span class="function-name">Panel</span> {
     orientation = Panel.orientations.horizontal,
@@ -260,22 +305,37 @@
         split_ratio = <span class="number">0.3</span>,
         children = {
           <span class="function-name">Panel</span> {
-            content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-              <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"30%"</span>, <span class="string">"cyan"</span>)
-            <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Top Left"</span>),
+            content = <span class="keyword">function</span>(self)
+              <span class="function-name">draw_content</span>(self, <span class="string">"30%"</span>, <span class="string">"cyan"</span>)
+            <span class="keyword">end</span>,
+            border = {
+              format = fmt_top_left,
+              attr = { fg = <span class="string">"cyan"</span> },
+              title = <span class="string">"Top Left"</span>
+            },
           },
           <span class="function-name">Panel</span> {
-            content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-              <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"70%"</span>, <span class="string">"green"</span>)
-            <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Bottom Left"</span>),
+            content = <span class="keyword">function</span>(self)
+              <span class="function-name">draw_content</span>(self, <span class="string">"70%"</span>, <span class="string">"green"</span>)
+            <span class="keyword">end</span>,
+            border = {
+              format = fmt_bottom_left,
+              attr = { fg = <span class="string">"green"</span> },
+              title = <span class="string">"Bottom Left"</span>
+            },
           }
         }
       },
       <span class="comment">-- Right side: simple content
 </span>      <span class="function-name">Panel</span> {
-        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"Full Right - Press any key"</span>, <span class="string">"red"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Right Side"</span>),
+        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"Full Right - Press any key"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = fmt_right,
+          attr = { fg = <span class="string">"red"</span> },
+          title = <span class="string">"Right Side"</span>
+        },
       }
     }
   }
@@ -303,14 +363,24 @@
     split_ratio = <span class="number">0.5</span>,
     children = {
       <span class="function-name">Panel</span> {
-        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"50%"</span>, <span class="string">"blue"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Panel A"</span>),
+        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"50%"</span>, <span class="string">"blue"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = <span class="string">"blue"</span> },
+          title = <span class="string">"Panel A"</span>
+        },
       },
       <span class="function-name">Panel</span> {
-        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"50% - Press any key"</span>, <span class="string">"red"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.single, <span class="string">"Panel B"</span>),
+        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"50% - Press any key"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.single,
+          attr = { fg = <span class="string">"red"</span> },
+          title = <span class="string">"Panel B"</span>
+        },
       }
     }
   }
@@ -350,15 +420,25 @@
     children = {
       <span class="function-name">Panel</span> {
         min_width = <span class="global">math</span>.<span class="function-name">max</span>(<span class="number">15</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.3</span>)), <span class="comment">-- Minimum width constraint
-</span>        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"Min: "</span> .. <span class="global">math</span>.<span class="function-name">max</span>(<span class="number">15</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.3</span>)), <span class="string">"green"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Min Width"</span>),
+</span>        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"Min: "</span> .. <span class="global">math</span>.<span class="function-name">max</span>(<span class="number">15</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.3</span>)), <span class="string">"green"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = <span class="string">"green"</span> },
+          title = <span class="string">"Min Width"</span>
+        },
       },
       <span class="function-name">Panel</span> {
         max_width = <span class="global">math</span>.<span class="function-name">min</span>(<span class="number">20</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.7</span>)), <span class="comment">-- Maximum width constraint
-</span>        content = Panel.<span class="function-name">content_border</span>(<span class="keyword">function</span>(self, row, col, height, width)
-          <span class="function-name">draw_content</span>(row, col, height, width, <span class="string">"Max: "</span> .. <span class="global">math</span>.<span class="function-name">min</span>(<span class="number">20</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.7</span>)) .. <span class="string">" - Press any key"</span>, <span class="string">"red"</span>)
-        <span class="keyword">end</span>, terminal.draw.box_fmt.double, <span class="string">"Max Width"</span>),
+</span>        content = <span class="keyword">function</span>(self)
+          <span class="function-name">draw_content</span>(self, <span class="string">"Max: "</span> .. <span class="global">math</span>.<span class="function-name">min</span>(<span class="number">20</span>, <span class="global">math</span>.<span class="function-name">floor</span>(cols * <span class="number">0.7</span>)) .. <span class="string">" - Press any key"</span>, <span class="string">"red"</span>)
+        <span class="keyword">end</span>,
+        border = {
+          format = terminal.draw.box_fmt.double,
+          attr = { fg = <span class="string">"red"</span> },
+          title = <span class="string">"Max Width"</span>
+        },
       }
     }
   }

@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><strong>ui.panel.Bar</strong></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.panel.Bar</code></h1>
+<p>Panel bar for single-line terminal UI elements.</p>
+<p> This class creates a fixed-height panel (1 line) that displays content in a
+ structured format with left, center, and right sections separated by configurable
+ spacing. The bar uses margin and padding parameters to control spacing, and supports
+ text attributes for styling individual sections or the entire bar.</p>
+
+<p> The typical use case is a header or footer bar for full-screen UI applications.
+ See <a href="../classes/ui.panel.Screen.html#">ui.panel.Screen</a> for an example.</p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.bar:init">ui.panel.bar:init (opts)</a></td>
+	<td class="summary">Create a new Bar instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.bar:set_center">ui.panel.bar:set_center (content)</a></td>
+	<td class="summary">Set the center section content.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.bar:set_left">ui.panel.bar:set_left (content)</a></td>
+	<td class="summary">Set the left section content.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.bar:set_right">ui.panel.bar:set_right (content)</a></td>
+	<td class="summary">Set the right section content.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel.bar:init"></a>
+    <strong>ui.panel.bar:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Bar instance.
+ A bar is a single line <code>panel</code> with left, center, and right (text) sections.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Configuration options (see <a href="../classes/ui.Panel.html#ui.panel:init">Panel:init</a> for inherited properties)
+        <ul>
+        <li><span class="parameter">margin</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of spaces from left and right edges.
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">padding</span>
+            <span class="types"><span class="type">number</span></span>
+         Minimum number of spaces between each section.
+         (<em>default</em> 2)
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Name for the bar-panel. Defaults to <code>tostring(self)</code> if not provided.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for the entire bar.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">left</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Left section configuration.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">left.text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Left section content.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">left.type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Truncation type for left section ("left", "right", or "drop").
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">left.attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for left section content.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">center</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Center section configuration.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">center.text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Center section content.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">center.type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Truncation type for center section ("left", "right", or "drop").
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">center.attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for center section content.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">right</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Right section configuration.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">right.text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Right section content.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">right.type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Truncation type for right section ("left", "right", or "drop").
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">right.attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for right section content.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">auto_render</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to automatically re-render when text content changes.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.panel.Bar.html">Bar</a></span>
+        A new Bar instance.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"terminal.ui.panel.bar"</span>)
+<span class="keyword">local</span> bar = <span class="function-name">Bar</span> {
+  margin = <span class="number">1</span>,
+  padding = <span class="number">2</span>,
+  left = {
+    text = <span class="string">"File"</span>,
+    <span class="global">type</span> = <span class="string">"right"</span>,
+    attr = { fg = <span class="string">"blue"</span> }
+  },
+  center = {
+    text = <span class="string">"Editor"</span>,
+    <span class="global">type</span> = <span class="string">"left"</span>,
+    attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span> }
+  },
+  right = {
+    text = <span class="string">"Help"</span>,
+    <span class="global">type</span> = <span class="string">"drop"</span>,
+    attr = { fg = <span class="string">"green"</span> }
+  },
+  attr = { bg = <span class="string">"black"</span> }
+}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.bar:set_center"></a>
+    <strong>ui.panel.bar:set_center (content)</strong>
+    </dt>
+    <dd>
+    Set the center section content.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">content</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The center section content.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.bar:set_left"></a>
+    <strong>ui.panel.bar:set_left (content)</strong>
+    </dt>
+    <dd>
+    Set the left section content.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">content</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The left section content.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.bar:set_right"></a>
+    <strong>ui.panel.bar:set_right (content)</strong>
+    </dt>
+    <dd>
+    Set the right section content.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">content</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The right section content.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

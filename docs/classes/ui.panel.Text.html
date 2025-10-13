@@ -1,0 +1,775 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><strong>ui.panel.Text</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.panel.Text</code></h1>
+<p>TextPanel class for displaying and navigating scrollable text content.</p>
+<p>
+
+
+<p> The TextPanel provides a powerful interface for displaying text content that doesn't fit on a single screen
+ with efficient scrolling, navigation, and content management capabilities. It's designed
+ for applications that need to display logs, documentation, or any scrollable text content.</p>
+
+<p> <strong>Key Features</strong></p>
+
+<ul>
+    <li>Inherits from <a href="../classes/ui.Panel.html">Panel</a> class, so it supports all the features of the <a href="../classes/ui.Panel.html">Panel</a> class.</li>
+</ul>
+
+<p> Navigation &amp; Scrolling:</p>
+
+<ul>
+    <li>Line-by-line scrolling with configurable step size</li>
+    <li>Page-based navigation (scroll by viewport height)</li>
+    <li>Direct positioning to any line or "go to bottom"</li>
+    <li>Highlighting a line for selection</li>
+</ul>
+
+<p> Content Management:</p>
+
+<ul>
+    <li>Dynamic line addition and removal</li>
+    <li>Automatic line rotation with <code>max_lines</code> option</li>
+    <li>Text truncation/wrapping/word-wrapping and padding with UTF-8 support</li>
+    <li>Automatic re-rendering with <code>auto_render</code> option</li>
+</ul>
+
+<p> <strong>Usage Examples</strong></p>
+
+<p> Basic text display:</p>
+
+
+<pre>
+<span class="keyword">local</span> panel = <span class="function-name">TextPanel</span> {
+  lines = {<span class="string">"Line 1"</span>, <span class="string">"Line 2"</span>, <span class="string">"Line 3"</span>},
+  scroll_step = <span class="number">1</span>,
+  auto_render = <span class="keyword">true</span>,
+  line_formatter = TextPanel.format_line_wordwrap,
+}
+</pre>
+
+<p> Log viewer with line limits:</p>
+
+
+<pre>
+<span class="keyword">local</span> log_panel = <span class="function-name">TextPanel</span> {
+  max_lines = <span class="number">200</span>,  <span class="comment">-- Keep only last 200 lines
+</span>  text_attr = { fg = <span class="string">"green"</span> },
+  auto_render = <span class="keyword">true</span>
+}
+log_panel:<span class="function-name">add_line</span>(<span class="string">"New log entry"</span>)
+</pre>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:add_line">TextPanel:add_line (line)</a></td>
+	<td class="summary">Add a line to the text content.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:clear_lines">TextPanel:clear_lines ()</a></td>
+	<td class="summary">Clear all text content.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:format_line_truncate">TextPanel:format_line_truncate (line, max_width)</a></td>
+	<td class="summary">Format a line by truncating/padding it to fit the available width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:format_line_wordwrap">TextPanel:format_line_wordwrap (line, max_width)</a></td>
+	<td class="summary">Format a line by word-wrapping it to fit the available width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:format_line_wrap">TextPanel:format_line_wrap (line, max_width)</a></td>
+	<td class="summary">Format a line by wrapping it to fit the available width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:get_highlight">TextPanel:get_highlight ()</a></td>
+	<td class="summary">Get the highlighted source line index.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:get_line_count">TextPanel:get_line_count ()</a></td>
+	<td class="summary">Get the total number of lines.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:get_position">TextPanel:get_position ()</a></td>
+	<td class="summary">Get the current scroll position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:get_source_line_index">TextPanel:get_source_line_index (display_line_index)</a></td>
+	<td class="summary">Get the source-line index from the display-line index.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:init">TextPanel:init (opts)</a></td>
+	<td class="summary">Create a new TextPanel instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:page_down">TextPanel:page_down ()</a></td>
+	<td class="summary">Scroll down by one page (inner_height lines).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:page_up">TextPanel:page_up ()</a></td>
+	<td class="summary">Scroll up by one page (inner_height lines).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:scroll_down">TextPanel:scroll_down ()</a></td>
+	<td class="summary">Scroll down by scroll_step lines.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:scroll_up">TextPanel:scroll_up ()</a></td>
+	<td class="summary">Scroll up by scroll_step lines.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:set_highlight">TextPanel:set_highlight (source_line_idx[, jump=false])</a></td>
+	<td class="summary">Set the highlight for a specific source line.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:set_line_formatter">TextPanel:set_line_formatter (formatter_func)</a></td>
+	<td class="summary">Set the line formatter function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:set_lines">TextPanel:set_lines (lines)</a></td>
+	<td class="summary">Set new text lines.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextPanel:set_position">TextPanel:set_position (position)</a></td>
+	<td class="summary">Set the viewport position to a specific line.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "TextPanel:add_line"></a>
+    <strong>TextPanel:add_line (line)</strong>
+    </dt>
+    <dd>
+    Add a line to the text content.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">line</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The line to add.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:clear_lines"></a>
+    <strong>TextPanel:clear_lines ()</strong>
+    </dt>
+    <dd>
+    Clear all text content.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:format_line_truncate"></a>
+    <strong>TextPanel:format_line_truncate (line, max_width)</strong>
+    </dt>
+    <dd>
+    Format a line by truncating/padding it to fit the available width.
+ Returned lines must be padded with spaces to prevent having to clear lines.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">line</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The line text to format.
+        </li>
+        <li><span class="parameter">max_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum width in display columns.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        Array of formatted lines
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:format_line_wordwrap"></a>
+    <strong>TextPanel:format_line_wordwrap (line, max_width)</strong>
+    </dt>
+    <dd>
+    Format a line by word-wrapping it to fit the available width.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">line</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The line text to format.
+        </li>
+        <li><span class="parameter">max_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum width in display columns.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        Array of formatted lines
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:format_line_wrap"></a>
+    <strong>TextPanel:format_line_wrap (line, max_width)</strong>
+    </dt>
+    <dd>
+    Format a line by wrapping it to fit the available width.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">line</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The line text to format.
+        </li>
+        <li><span class="parameter">max_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum width in display columns.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        Array of formatted lines
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:get_highlight"></a>
+    <strong>TextPanel:get_highlight ()</strong>
+    </dt>
+    <dd>
+    Get the highlighted source line index.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span> or <span class="type">nil</span></span>
+        The highlighted source line index, or nil if no highlight is set.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:get_line_count"></a>
+    <strong>TextPanel:get_line_count ()</strong>
+    </dt>
+    <dd>
+    Get the total number of lines.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The total number of lines.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:get_position"></a>
+    <strong>TextPanel:get_position ()</strong>
+    </dt>
+    <dd>
+    Get the current scroll position.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The current line position (1-based).
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:get_source_line_index"></a>
+    <strong>TextPanel:get_source_line_index (display_line_index)</strong>
+    </dt>
+    <dd>
+    Get the source-line index from the display-line index.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">display_line_index</span>
+            <span class="types"><span class="type">number</span></span>
+         The display-line index to get the source-line index for.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The source-line index, or nil if the display-line index is out of bounds.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:init"></a>
+    <strong>TextPanel:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new TextPanel instance.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Configuration options (see <a href="../classes/ui.Panel.html#ui.panel:init">Panel:init</a> for inherited properties)
+        <ul>
+        <li><span class="parameter">lines</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of text lines to display.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">scroll_step</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of lines to scroll at a time.
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">initial_position</span>
+            <span class="types"><span class="type">number</span></span>
+         Initial scroll position (1-based line number).
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">text_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes to apply to all displayed text.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">auto_render</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to automatically re-render when content changes.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">max_lines</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum number of lines to keep (older lines are removed when
+ exceeded upon a call to <a href="../classes/ui.panel.Text.html#TextPanel:add_line">add_line</a>).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">line_formatter</span>
+            <span class="types"><span class="type">function</span></span>
+         Line formatter function to use (defaults to format<em>line</em>truncate).
+ see <a href="../classes/ui.panel.Text.html#TextPanel:set_line_formatter">set_line_formatter</a> for more details.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">highlight</span>
+            <span class="types"><span class="type">number</span></span>
+         Source line index to highlight (1-based).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">highlight_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for highlighted lines (defaults to { reverse = true }).
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">TextPanel</span></span>
+        A new TextPanel instance.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> TextPanel = <span class="global">require</span>(<span class="string">"terminal.ui.panel.text"</span>)
+<span class="keyword">local</span> panel = <span class="function-name">TextPanel</span> {
+  lines = {<span class="string">"Line 1"</span>, <span class="string">"Line 2"</span>, <span class="string">"Line 3"</span>},
+  scroll_step = <span class="number">2</span>,
+  initial_position = <span class="number">1</span>,
+  text_attr = { fg = <span class="string">"green"</span>, brightness = <span class="string">"bright"</span> },
+  highlight = <span class="number">2</span>,
+  highlight_attr = { fg = <span class="string">"red"</span>, bg = <span class="string">"yellow"</span> },
+}
+panel:<span class="function-name">set_position</span>(<span class="number">5</span>)  <span class="comment">-- Go to line 5
+</span>panel:<span class="function-name">scroll_down</span>()  <span class="comment">-- Scroll down by scroll_step</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "TextPanel:page_down"></a>
+    <strong>TextPanel:page_down ()</strong>
+    </dt>
+    <dd>
+    Scroll down by one page (inner_height lines).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:page_up"></a>
+    <strong>TextPanel:page_up ()</strong>
+    </dt>
+    <dd>
+    Scroll up by one page (inner_height lines).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:scroll_down"></a>
+    <strong>TextPanel:scroll_down ()</strong>
+    </dt>
+    <dd>
+    Scroll down by scroll_step lines.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:scroll_up"></a>
+    <strong>TextPanel:scroll_up ()</strong>
+    </dt>
+    <dd>
+    Scroll up by scroll_step lines.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:set_highlight"></a>
+    <strong>TextPanel:set_highlight (source_line_idx[, jump=false])</strong>
+    </dt>
+    <dd>
+    Set the highlight for a specific source line.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">source_line_idx</span>
+            <span class="types"><span class="type">number</span> or <span class="type">nil</span></span>
+         The source line index to highlight, or nil to remove highlight.
+        </li>
+        <li><span class="parameter">jump</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to adjust viewport to show the highlighted line.
+         (<em>default</em> false)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:set_line_formatter"></a>
+    <strong>TextPanel:set_line_formatter (formatter_func)</strong>
+    </dt>
+    <dd>
+
+<p>Set the line formatter function.
+ Must conform to the <code>line_formatter</code> function signature;
+ <code>array_formatted_lines = function(text_panel_instance, line, max_width)</code>.
+ The formatted lines must be full width, padded with spaces where necessary, to ensure
+ that any previous content is overwritten.</p>
+
+<p> This class comes with 3 formatters:</p>
+
+<ul>
+    <li><code>TextPanel.format_line_truncate</code> - truncates long lines (default)</li>
+    <li><code>TextPanel.format_line_wrap</code> - wraps lines to fit the available width</li>
+    <li><code>TextPanel.format_line_wordwrap</code> - word-wraps lines to fit the available width</li>
+</ul>
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">formatter_func</span>
+            <span class="types"><span class="type">function</span></span>
+         The formatter function to use.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:set_lines"></a>
+    <strong>TextPanel:set_lines (lines)</strong>
+    </dt>
+    <dd>
+    Set new text lines.
+ This will reset position to 1, and clear highlighting.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">lines</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of text lines.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextPanel:set_position"></a>
+    <strong>TextPanel:set_position (position)</strong>
+    </dt>
+    <dd>
+    Set the viewport position to a specific line.
+ If the position is out of bounds, it will be corrected to be within bounds.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+            <span class="types"><span class="type">number</span></span>
+         The line position to go to (1-based).
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
