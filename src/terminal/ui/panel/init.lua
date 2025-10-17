@@ -255,20 +255,20 @@ function Panel:_derive_constraints_from_children()
 
   if self.orientation == Panel.orientations.horizontal then
     -- For horizontal division, derive width constraints from children
-    self._min_width = (child1._min_width or DEFAULT_MIN_SIZE) + (child2._min_width or DEFAULT_MIN_SIZE)
-    self._max_width = (child1._max_width or DEFAULT_MAX_SIZE) + (child2._max_width or DEFAULT_MAX_SIZE)
+    self._min_width = (child1:get_min_width() or DEFAULT_MIN_SIZE) + (child2:get_min_width() or DEFAULT_MIN_SIZE)
+    self._max_width = (child1:get_max_width() or DEFAULT_MAX_SIZE) + (child2:get_max_width() or DEFAULT_MAX_SIZE)
 
     -- Height constraints are the minimum of both children
-    self._min_height = math.max(child1._min_height or DEFAULT_MIN_SIZE, child2._min_height or DEFAULT_MIN_SIZE)
-    self._max_height = math.min(child1._max_height or DEFAULT_MAX_SIZE, child2._max_height or DEFAULT_MAX_SIZE)
+    self._min_height = math.max(child1:get_min_height() or DEFAULT_MIN_SIZE, child2:get_min_height() or DEFAULT_MIN_SIZE)
+    self._max_height = math.min(child1:get_max_height() or DEFAULT_MAX_SIZE, child2:get_max_height() or DEFAULT_MAX_SIZE)
   else -- VERTICAL
     -- For vertical division, derive height constraints from children
-    self._min_height = (child1._min_height or DEFAULT_MIN_SIZE) + (child2._min_height or DEFAULT_MIN_SIZE)
-    self._max_height = (child1._max_height or DEFAULT_MAX_SIZE) + (child2._max_height or DEFAULT_MAX_SIZE)
+    self._min_height = (child1:get_min_height() or DEFAULT_MIN_SIZE) + (child2:get_min_height() or DEFAULT_MIN_SIZE)
+    self._max_height = (child1:get_max_height() or DEFAULT_MAX_SIZE) + (child2:get_max_height() or DEFAULT_MAX_SIZE)
 
     -- Width constraints are the minimum of both children
-    self._min_width = math.max(child1._min_width or DEFAULT_MIN_SIZE, child2._min_width or DEFAULT_MIN_SIZE)
-    self._max_width = math.min(child1._max_width or DEFAULT_MAX_SIZE, child2._max_width or DEFAULT_MAX_SIZE)
+    self._min_width = math.max(child1:get_min_width() or DEFAULT_MIN_SIZE, child2:get_min_width() or DEFAULT_MIN_SIZE)
+    self._max_width = math.min(child1:get_max_width() or DEFAULT_MAX_SIZE, child2:get_max_width() or DEFAULT_MAX_SIZE)
   end
 end
 
@@ -283,10 +283,10 @@ function Panel:_calculate_children_layout()
     local child2_width = self.width - child1_width
 
     -- Get size constraints
-    local child1_min_width = child1._min_width or DEFAULT_MIN_SIZE
-    local child1_max_width = child1._max_width
-    local child2_min_width = child2._min_width or DEFAULT_MIN_SIZE
-    local child2_max_width = child2._max_width
+    local child1_min_width = child1:get_min_width() or DEFAULT_MIN_SIZE
+    local child1_max_width = child1:get_max_width()
+    local child2_min_width = child2:get_min_width() or DEFAULT_MIN_SIZE
+    local child2_max_width = child2:get_max_width()
 
     -- Apply maximum width constraints
     if child1_max_width and child1_width > child1_max_width then
@@ -318,10 +318,10 @@ function Panel:_calculate_children_layout()
     local child2_height = self.height - child1_height
 
     -- Get size constraints
-    local child1_min_height = child1._min_height or DEFAULT_MIN_SIZE
-    local child1_max_height = child1._max_height
-    local child2_min_height = child2._min_height or DEFAULT_MIN_SIZE
-    local child2_max_height = child2._max_height
+    local child1_min_height = child1:get_min_height() or DEFAULT_MIN_SIZE
+    local child1_max_height = child1:get_max_height()
+    local child2_min_height = child2:get_min_height() or DEFAULT_MIN_SIZE
+    local child2_max_height = child2:get_max_height()
 
     -- Apply maximum height constraints
     if child1_max_height and child1_height > child1_max_height then
