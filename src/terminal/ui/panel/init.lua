@@ -399,11 +399,14 @@ end
 
 
 --- Get the split ratio of this panel.
--- @treturn number|nil The split ratio (0.0 to 1.0) or nil if not divided. The value determines the size
+-- @treturn[1] number The split ratio (0.0 to 1.0) or nil if not divided. The value determines the size
 -- of the upper or left child panel. The remainder will go to the lower or right child panel.
+-- @treturn[2] nil In case the panel is a content panel.
+-- @treturn[2] string Error message.
 -- @see set_split_ratio
 function Panel:get_split_ratio()
-  return self.split_ratio -- return error message if not divided
+  local err = (self.split_ratio == nil) and "No split ratio for a content panel"
+  return self.split_ratio, err
 end
 
 
@@ -439,9 +442,6 @@ end
 function Panel:get_type() -- TODO: create constants lookup table and an example for this
   return self.orientation or "content"
 end
-
-
-
 
 
 
@@ -571,7 +571,9 @@ end
 --- Find a panel by name in this panel tree.
 -- Searches in order: self, child 1, child 2.
 -- @tparam string name The name to search for.
--- @treturn Panel|nil The first panel found with the given name, or nil if not found.
+-- @treturn[1] Panel The first panel found with the given name.
+-- @treturn[2] nil In case the panel wasn't found.
+-- @treturn[2] string Error message if panel not found.
 function Panel:get_panel(name)
   -- Check self first
   if self.name == name then
@@ -588,7 +590,7 @@ function Panel:get_panel(name)
     end
   end
 
-  return nil -- TODO: return an errormessage as well
+  return nil, "panel by name '" .. tostring(name) .. "' not found"
 end
 
 
