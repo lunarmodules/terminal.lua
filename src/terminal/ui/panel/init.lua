@@ -442,11 +442,6 @@ end
 
 
 
---- Get the children of this panel.
--- @treturn table|nil Array of child panels or nil if not divided.
-function Panel:get_children() -- TODO: remove this method
-  return self.children
-end
 
 
 
