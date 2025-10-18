@@ -22,7 +22,6 @@ function Screen:init(opts)
 
   -- Validate required body panel
   assert(opts.body, "Screen requires a body panel")
-  assert(opts.body:get_type() == "content", "Body panel must be a content panel")
 
   -- Set names for the panels so they can be looked up later
   if opts.header then

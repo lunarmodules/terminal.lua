@@ -154,20 +154,6 @@ describe("terminal.ui.screen", function()
     end)
 
 
-    it("throws error when body panel is not a content panel", function()
-      local left_panel = Panel { content = function() end }
-      local right_panel = Panel { content = function() end }
-      local divided_panel = Panel {
-        orientation = Panel.orientations.horizontal,
-        children = { left_panel, right_panel }
-      }
-
-      assert.has_error(function()
-        Screen { body = divided_panel }
-      end, "Body panel must be a content panel")
-    end)
-
-
     it("accepts custom name", function()
       local body = Panel {
         content = function(self)
