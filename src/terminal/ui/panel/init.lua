@@ -84,6 +84,7 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @tparam[opt=math.huge] number opts.max_height Maximum height constraint.
 -- @tparam[opt=math.huge] number opts.max_width Maximum width constraint.
 -- @tparam[opt=0.5] number opts.split_ratio Ratio for dividing child panels (0.0 to 1.0).
+-- @tparam[opt=true] boolean opts.visible Whether the panel is visible (true) or hidden (false).
 -- @tparam[opt] table opts.border Border configuration for content panels, with the following properties:
 -- @tparam table border.format The box format table (see `terminal.draw.box_fmt`).
 -- @tparam[opt] table border.attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
@@ -148,6 +149,9 @@ function Panel:init(opts)
 
   -- Panel name
   self.name = opts.name or tostring(self)
+
+  -- Visibility (private)
+  self._visible = opts.visible ~= false  -- Default to true, unless explicitly set to false
 
   --- Panels lookup table.
   -- Provides access to child panels by name with recursive search and caching.
@@ -256,9 +260,9 @@ function Panel:_calculate_children_layout()
 
     -- Get size constraints
     local child1_min_width = child1:get_min_width()
-    local child1_max_width = child1:get_max_width()
+    local child1_max_width = child1:visible() and child1:get_max_width() or DEFAULT_MAX_SIZE
     local child2_min_width = child2:get_min_width()
-    local child2_max_width = child2:get_max_width()
+    local child2_max_width = child2:visible() and child2:get_max_width() or DEFAULT_MAX_SIZE
 
     -- Apply maximum width constraints
     if child1_width > child1_max_width then
@@ -346,6 +350,10 @@ end
 --- Render this panel and all its children.
 -- @return nothing
 function Panel:render()
+  if not self:visible() then
+    return  -- Skip rendering hidden panels
+  end
+
   if self.content then
     -- Render content panel with optional border
     self:draw_border()
@@ -476,6 +484,36 @@ function Panel:get_max_width()
 
   return math.min(self._max_width, derived_max_width)
 end
+
+
+
+--- Get the visibility of this panel.
+-- @treturn boolean True if visible, false if hidden.
+function Panel:visible()
+  -- If this panel itself is hidden, return false
+  if not self._visible then
+    return false
+  end
+
+  -- If this is a content panel, return its own visibility
+  if not self.children then
+    return self._visible  -- always retuns true here, because of check above
+  end
+
+  -- For divided panels, check if at least one child is visible
+  return self.children[1]:visible() or self.children[2]:visible()
+end
+
+
+
+--- Set the visibility of this panel.
+-- @tparam[opt=true] boolean hide True to hide the panel, false to show it.
+-- @return nothing
+function Panel:hide(hide)
+  hide = hide ~= false  -- default to true (hide), unless explicitly set to false
+  self._visible = not hide  -- invert the hide parameter
+end
+
 
 
 
