@@ -3,9 +3,10 @@
 -- TextPanel example demonstrating scrollable text display
 
 local TextPanel = require("src.terminal.ui.panel.text")
-local Screen = require("src.terminal.ui.panel.screen")
-local Bar = require("src.terminal.ui.panel.bar")
 local terminal = require("terminal")
+local Screen = require("src.terminal.ui.panel.screen")
+local Panel = require("src.terminal.ui.panel")
+local Bar = require("src.terminal.ui.panel.bar")
 
 -- Create some sample text content
 local sample_text = {
@@ -18,18 +19,6 @@ local sample_text = {
   "• Configurable scroll step size",
   "• Methods for navigation: set_position(), scroll_up(), scroll_down()",
   "• Dynamic content management: set_lines(), add_line(), clear()",
-  "",
-  "Navigation:",
-  "• Use 'j' or ↓ arrow to scroll down",
-  "• Use 'k' or ↑ arrow to scroll up",
-  "• Use '[' and ']' to move the highlight",
-  "• Use 'g' to go to top",
-  "• Use 'G' to go to bottom",
-  "• Use 'r' to add a random line",
-  "• Use 'c' to clear content",
-  "• Use 's' to reset to this sample text",
-  "• Use 'f' to swicth line-formatters; trunc, wrap, word-wrap",
-  "• Use 'q' to quit",
   "",
   "The TextPanel class inherits from Panel and provides:",
   "",
@@ -61,6 +50,44 @@ local sample_text = {
   "Thank you for trying out this example!"
 }
 
+-- Create help text content
+local help_text = {
+  "Help:",
+  "• Use 'h' to toggle this help",
+  "• Use 'j' or ↓ arrow to scroll down",
+  "• Use 'k' or ↑ arrow to scroll up",
+  "• Use 'pgup' or 'pgdn' to page up/down",
+  "• Use '[' and ']' to move the highlight",
+  "• Use 'g' to go to top",
+  "• Use 'G' to go to bottom",
+  "• Use 'r' to add a random line",
+  "• Use 'c' to clear content",
+  "• Use 's' to reset to the sample text",
+  "• Use 'f' to switch line-formatters; trunc, wrap, word-wrap",
+  "• Use 'q' to quit",
+}
+
+-- Create the main content panel (left side)
+local main_content = TextPanel {
+  lines = sample_text,
+  scroll_step = 1,
+  text_attr = { fg = "white", brightness = "bright" },
+  --highlight_attr = { fg = "red", brightness = "bright" },
+  border = { format = terminal.draw.box_fmt.single },
+  auto_render = true,
+}
+
+-- Create the help panel (right side)
+local help_panel = TextPanel {
+  lines = help_text,
+  line_formatter = TextPanel.format_line_wordwrap,
+  scroll_step = 1,
+  text_attr = { fg = "cyan", brightness = "bright" },
+  border = { format = terminal.draw.box_fmt.single },
+  auto_render = true,
+}
+
+
 -- Create the main screen
 local screen = Screen {
   header = Bar {
@@ -79,13 +106,10 @@ local screen = Screen {
     attr = { bg = "blue" }
   },
 
-  body = TextPanel {
-    lines = sample_text,
-    scroll_step = 1,
-    text_attr = { fg = "white", brightness = "bright" },
-    --highlight_attr = { fg = "red", brightness = "bright" },
-    border = { format = terminal.draw.box_fmt.single },
-    auto_render = true,
+  body = Panel {         -- Create a horizontal split panel
+    orientation = Panel.orientations.horizontal,
+    children = { main_content, help_panel },
+    split_ratio = 0.7,   -- Give more space to main content
   },
 
   footer = Bar {
@@ -98,7 +122,7 @@ local screen = Screen {
       attr = { fg = "yellow", brightness = "bright" }
     },
     right = {
-      text = "q: quit",
+      text = "h: help, q: quit",
       attr = { fg = "red", brightness = "bright" }
     },
     attr = { bg = "black", fg = "white" }
@@ -117,6 +141,7 @@ local function main()
   local keymap = terminal.input.keymap.default_key_map
   local keys = terminal.input.keymap.default_keys
 
+  terminal.cursor.visible.set(false)
   screen:calculate_layout()
   screen:render()
 
@@ -126,35 +151,40 @@ local function main()
 
     if key == "q" or key == "Q" then
       break
+    elseif key == "h" or key == "H" then
+      -- Toggle help panel visibility
+      help_panel:hide(help_panel:visible())
+      screen:calculate_layout()
+      screen:render()
     elseif key == "j" or keyname == keys.down then
-      screen:get_panel("body"):scroll_down()
+      main_content:scroll_down()
     elseif key == "k" or keyname == keys.up then
-      screen:get_panel("body"):scroll_up()
+      main_content:scroll_up()
     elseif keyname == keys.pageup then
-      screen:get_panel("body"):page_up()
+      main_content:page_up()
     elseif keyname == keys.pagedown then
-      screen:get_panel("body"):page_down()
+      main_content:page_down()
     elseif key == "[" then
-      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 2) - 1, true)
+      main_content:set_highlight((main_content:get_highlight() or 2) - 1, true)
     elseif key == "]" then
-      screen:get_panel("body"):set_highlight((screen:get_panel("body"):get_highlight() or 0) + 1, true)
+      main_content:set_highlight((main_content:get_highlight() or 0) + 1, true)
     elseif key == "g" then
-      screen:get_panel("body"):set_position(1)
+      main_content:set_position(1)
     elseif key == "G" then
-      screen:get_panel("body"):set_position(math.huge)
+      main_content:set_position(math.huge)
     elseif key == "f" then
       current_formatter = current_formatter % #formatters + 1
-      screen:get_panel("body"):set_line_formatter(formatters[current_formatter])
+      main_content:set_line_formatter(formatters[current_formatter])
     elseif key == "r" then
       -- Add a random line
       local random_line = "Random line " .. math.random(1000) .. " added at " .. os.date("%H:%M:%S")
-      screen:get_panel("body"):add_line(random_line)
+      main_content:add_line(random_line)
     elseif key == "c" then
       -- Clear content
-      screen:get_panel("body"):clear_lines()
+      main_content:clear_lines()
     elseif key == "s" then
       -- Reset to sample text
-      screen:get_panel("body"):set_lines(sample_text)
+      main_content:set_lines(sample_text)
     end
 
     -- Check for resize, and redraw if needed
