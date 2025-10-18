@@ -213,7 +213,7 @@ describe("terminal.ui.screen", function()
 
     it("returns false when terminal size has not changed", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -236,7 +236,7 @@ describe("terminal.ui.screen", function()
 
     it("returns true when terminal size has changed", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -256,7 +256,7 @@ describe("terminal.ui.screen", function()
 
     it("updates layout when update is true and terminal was resized", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -276,7 +276,7 @@ describe("terminal.ui.screen", function()
 
     it("does not update layout when update is false", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -315,7 +315,7 @@ describe("terminal.ui.screen", function()
 
     it("recalculates layout using current terminal dimensions", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -344,7 +344,7 @@ describe("terminal.ui.screen", function()
 
     it("renders all panels", function()
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Test content
         end
       }
@@ -371,19 +371,19 @@ describe("terminal.ui.screen", function()
 
     it("works with a complete screen layout", function()
       local header = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Header content
         end
       }
 
       local body = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Body content
         end
       }
 
       local footer = Panel {
-        content = function(self, row, col, height, width)
+        content = function(self)
           -- Footer content
         end
       }

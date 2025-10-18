@@ -389,13 +389,13 @@ describe("terminal.ui.panel", function()
         orientation = Panel.orientations.vertical,
         children = {
           Panel {
-            content = function(self, row, col, height, width)
+            content = function(self)
               -- Test content
             end,
             max_height = 1  -- Maximum 1 row
           },
           Panel {
-            content = function(self, row, col, height, width)
+            content = function(self)
               -- Test content
             end
             -- No size constraints
@@ -421,13 +421,13 @@ describe("terminal.ui.panel", function()
         orientation = Panel.orientations.horizontal,
         children = {
           Panel {
-            content = function(self, row, col, height, width)
+            content = function(self)
               -- Test content
             end,
             max_width = 20  -- Maximum 20 columns
           },
           Panel {
-            content = function(self, row, col, height, width)
+            content = function(self)
               -- Test content
             end
             -- No size constraints

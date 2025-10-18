@@ -20,7 +20,7 @@
 --
 --     -- Create a root panel with content
 --     local root = Panel {
---       content = function(row, col, height, width)
+--       content = function(self)
 --         -- render content here
 --       end
 --     }
@@ -31,10 +31,10 @@
 --       min_width = 50,    -- User-defined minimum width
 --       max_width = 100,   -- User-defined maximum width
 --       children = {
---         Panel { content = function(self, r, c, h, w) -- left/top panel
+--         Panel { content = function(self) -- left/top panel
 --           -- render left/top content
 --         end },
---         Panel { content = function(self, r, c, h, w) -- right/bottom panel
+--         Panel { content = function(self) -- right/bottom panel
 --           -- render right/bottom content
 --         end }
 --       }
@@ -74,7 +74,7 @@ local DEFAULT_MAX_SIZE = math.huge
 --- Create a new Panel instance.
 -- Do not call this method directly, call on the class instead. See example.
 -- @tparam table opts Options for the panel.
--- @tparam[opt] function opts.content Content callback function that takes (self, row, col, height, width) parameters.
+-- @tparam[opt] function opts.content Content callback function that takes only self parameter. Access layout via self.inner_row, self.inner_col, self.inner_height, self.inner_width.
 -- @tparam[opt=true] boolean opts.clear_content Whether to clear the content area before rendering.
 -- @tparam[opt] table opts.orientation Panel orientation: `Panel.orientations.horizontal` or `Panel.orientations.vertical` (for divided panels).
 -- @tparam[opt] table opts.children Array of exactly 2 child panels (for divided panels).
@@ -95,7 +95,7 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @usage
 --   local Panel = require("terminal.ui.panel")
 --   local panel = Panel {
---     content = function(self, row, col, height, width)
+--     content = function(self)
 --       -- render content here
 --     end,
 --     border = {
