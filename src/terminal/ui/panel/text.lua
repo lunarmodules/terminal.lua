@@ -416,7 +416,12 @@ function TextPanel:set_lines(lines)
     error("max_lines is set and number of lines is greater than max_lines")
   end
 
-  self.lines = lines or {}
+  local copy_lines = {}
+  for i, line in ipairs(lines or {}) do
+    copy_lines[i] = line
+  end
+  self.lines = copy_lines
+
   self.highlight = nil
   self.formatted_lines = nil
   self.position = 1  -- Reset to top
