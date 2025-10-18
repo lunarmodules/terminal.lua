@@ -28,6 +28,8 @@
 --     -- Create a divided panel
 --     local divided = Panel {
 --       orientation = Panel.orientations.horizontal, -- or Panel.orientations.vertical
+--       min_width = 50,    -- User-defined minimum width
+--       max_width = 100,   -- User-defined maximum width
 --       children = {
 --         Panel { content = function(self, r, c, h, w) -- left/top panel
 --           -- render left/top content
@@ -52,6 +54,8 @@ local text = require("terminal.text")
 
 local Panel = utils.class()
 
+
+
 --- Panel orientation constants table.
 -- @field ui.panel.orientations table lookup table for child panels by name.
 Panel.orientations = utils.make_lookup("orientation", {
@@ -59,9 +63,13 @@ Panel.orientations = utils.make_lookup("orientation", {
   vertical = "vertical",
 })
 
+
+
 -- Default size constraints
 local DEFAULT_MIN_SIZE = 1
 local DEFAULT_MAX_SIZE = math.huge
+
+
 
 --- Create a new Panel instance.
 -- Do not call this method directly, call on the class instead. See example.
@@ -71,10 +79,10 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @tparam[opt] table opts.orientation Panel orientation: `Panel.orientations.horizontal` or `Panel.orientations.vertical` (for divided panels).
 -- @tparam[opt] table opts.children Array of exactly 2 child panels (for divided panels).
 -- @tparam[opt] string opts.name Optional name for the panel. Defaults to tostring(self) if not provided.
--- @tparam[opt=1] number opts.min_height Minimum height constraint (content panels only).
--- @tparam[opt=1] number opts.min_width Minimum width constraint (content panels only).
--- @tparam[opt=math.huge] number opts.max_height Maximum height constraint (content panels only).
--- @tparam[opt=math.huge] number opts.max_width Maximum width constraint (content panels only).
+-- @tparam[opt=1] number opts.min_height Minimum height constraint.
+-- @tparam[opt=1] number opts.min_width Minimum width constraint.
+-- @tparam[opt=math.huge] number opts.max_height Maximum height constraint.
+-- @tparam[opt=math.huge] number opts.max_width Maximum width constraint.
 -- @tparam[opt=0.5] number opts.split_ratio Ratio for dividing child panels (0.0 to 1.0).
 -- @tparam[opt] table opts.border Border configuration for content panels, with the following properties:
 -- @tparam table border.format The box format table (see `terminal.draw.box_fmt`).
@@ -132,19 +140,11 @@ function Panel:init(opts)
   end
 
   -- Size constraints (private)
-  if has_content then
-    -- Leaf panels can have explicit constraints
-    self._min_height = opts.min_height or DEFAULT_MIN_SIZE
-    self._min_width = opts.min_width or DEFAULT_MIN_SIZE
-    self._max_height = opts.max_height or DEFAULT_MAX_SIZE
-    self._max_width = opts.max_width or DEFAULT_MAX_SIZE
-  else
-    -- Split panels derive constraints from children (will be calculated)
-    self._min_height = nil
-    self._min_width = nil
-    self._max_height = nil
-    self._max_width = nil
-  end
+  -- Set defaults so we don't need nil checks in getters
+  self._min_height = opts.min_height or DEFAULT_MIN_SIZE
+  self._min_width = opts.min_width or DEFAULT_MIN_SIZE
+  self._max_height = opts.max_height or DEFAULT_MAX_SIZE
+  self._max_width = opts.max_width or DEFAULT_MAX_SIZE
 
   -- Panel name
   self.name = opts.name or tostring(self)
@@ -173,6 +173,8 @@ function Panel:init(opts)
   self.inner_width = nil
 end
 
+
+
 --- Calculate the layout for this panel and all its children.
 -- @tparam number parent_row Parent panel's starting row.
 -- @tparam number parent_col Parent panel's starting column.
@@ -180,27 +182,19 @@ end
 -- @tparam number parent_width Parent panel's width.
 -- @return nothing
 function Panel:calculate_layout(parent_row, parent_col, parent_height, parent_width)
+
+  -- Apply size constraints
+  local min_height = self:get_min_height()
+  local max_height = self:get_max_height()
+  local min_width = self:get_min_width()
+  local max_width = self:get_max_width()
+
+  local calculated_height = math.max(min_height, math.min(max_height, parent_height))
+  local calculated_width = math.max(min_width, math.min(max_width, parent_width))
+
   -- Set position
   self.row = parent_row
   self.col = parent_col
-
-  -- Calculate size based on constraints
-  local calculated_height = parent_height
-  local calculated_width = parent_width
-
-  -- For split panels, derive constraints from children first
-  if self.children then
-    self:_derive_constraints_from_children()
-  end
-
-  -- Apply size constraints
-  if self._min_height then
-    calculated_height = math.max(self._min_height, math.min(self._max_height, calculated_height))
-  end
-  if self._min_width then
-    calculated_width = math.max(self._min_width, math.min(self._max_width, calculated_width))
-  end
-
   self.height = calculated_height
   self.width = calculated_width
 
@@ -212,6 +206,7 @@ function Panel:calculate_layout(parent_row, parent_col, parent_height, parent_wi
     self:_calculate_children_layout()
   end
 end
+
 
 
 -- Private method to calculate inner content area coordinates.
@@ -248,29 +243,6 @@ function Panel:_calculate_inner_area()
 end
 
 
--- Derive size constraints from children (internal method).
--- @return nothing
-function Panel:_derive_constraints_from_children()
-  local child1, child2 = self.children[1], self.children[2]
-
-  if self.orientation == Panel.orientations.horizontal then
-    -- For horizontal division, derive width constraints from children
-    self._min_width = (child1:get_min_width() or DEFAULT_MIN_SIZE) + (child2:get_min_width() or DEFAULT_MIN_SIZE)
-    self._max_width = (child1:get_max_width() or DEFAULT_MAX_SIZE) + (child2:get_max_width() or DEFAULT_MAX_SIZE)
-
-    -- Height constraints are the minimum of both children
-    self._min_height = math.max(child1:get_min_height() or DEFAULT_MIN_SIZE, child2:get_min_height() or DEFAULT_MIN_SIZE)
-    self._max_height = math.min(child1:get_max_height() or DEFAULT_MAX_SIZE, child2:get_max_height() or DEFAULT_MAX_SIZE)
-  else -- VERTICAL
-    -- For vertical division, derive height constraints from children
-    self._min_height = (child1:get_min_height() or DEFAULT_MIN_SIZE) + (child2:get_min_height() or DEFAULT_MIN_SIZE)
-    self._max_height = (child1:get_max_height() or DEFAULT_MAX_SIZE) + (child2:get_max_height() or DEFAULT_MAX_SIZE)
-
-    -- Width constraints are the minimum of both children
-    self._min_width = math.max(child1:get_min_width() or DEFAULT_MIN_SIZE, child2:get_min_width() or DEFAULT_MIN_SIZE)
-    self._max_width = math.min(child1:get_max_width() or DEFAULT_MAX_SIZE, child2:get_max_width() or DEFAULT_MAX_SIZE)
-  end
-end
 
 -- Calculate layout for child panels (internal method).
 -- @return nothing
@@ -283,17 +255,17 @@ function Panel:_calculate_children_layout()
     local child2_width = self.width - child1_width
 
     -- Get size constraints
-    local child1_min_width = child1:get_min_width() or DEFAULT_MIN_SIZE
+    local child1_min_width = child1:get_min_width()
     local child1_max_width = child1:get_max_width()
-    local child2_min_width = child2:get_min_width() or DEFAULT_MIN_SIZE
+    local child2_min_width = child2:get_min_width()
     local child2_max_width = child2:get_max_width()
 
     -- Apply maximum width constraints
-    if child1_max_width and child1_width > child1_max_width then
+    if child1_width > child1_max_width then
       child1_width = child1_max_width
       child2_width = self.width - child1_width
     end
-    if child2_max_width and child2_width > child2_max_width then
+    if child2_width > child2_max_width then
       child2_width = child2_max_width
       child1_width = self.width - child2_width
     end
@@ -318,17 +290,17 @@ function Panel:_calculate_children_layout()
     local child2_height = self.height - child1_height
 
     -- Get size constraints
-    local child1_min_height = child1:get_min_height() or DEFAULT_MIN_SIZE
+    local child1_min_height = child1:get_min_height()
     local child1_max_height = child1:get_max_height()
-    local child2_min_height = child2:get_min_height() or DEFAULT_MIN_SIZE
+    local child2_min_height = child2:get_min_height()
     local child2_max_height = child2:get_max_height()
 
     -- Apply maximum height constraints
-    if child1_max_height and child1_height > child1_max_height then
+    if child1_height > child1_max_height then
       child1_height = child1_max_height
       child2_height = self.height - child1_height
     end
-    if child2_max_height and child2_height > child2_max_height then
+    if child2_height > child2_max_height then
       child2_height = child2_max_height
       child1_height = self.height - child2_height
     end
@@ -350,12 +322,15 @@ function Panel:_calculate_children_layout()
 end
 
 
+
 --- Get the current size of this panel.
 -- @treturn number The current height in rows.
 -- @treturn number The current width in columns.
 function Panel:get_size()
   return self.height, self.width
 end
+
+
 
 --- Set the split ratio for divided panels.
 -- @tparam number ratio The split ratio (0.0 to 1.0).
@@ -365,6 +340,8 @@ function Panel:set_split_ratio(ratio)
   assert(ratio >= 0.0 and ratio <= 1.0, "Split ratio must be between 0.0 and 1.0")
   self.split_ratio = ratio
 end
+
+
 
 --- Render this panel and all its children.
 -- @return nothing
@@ -385,11 +362,14 @@ function Panel:render()
 end
 
 
+
 --- Get the type of this panel.
 -- @return Returns "content" for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
 function Panel:get_type()
   return self.orientation or "content"
 end
+
+
 
 --- Get the children of this panel.
 -- @treturn table|nil Array of child panels or nil if not divided.
@@ -397,34 +377,104 @@ function Panel:get_children()
   return self.children
 end
 
+
+
 --- Get the split ratio of this panel.
 -- @treturn number|nil The split ratio or nil if not divided.
 function Panel:get_split_ratio()
   return self.split_ratio
 end
 
+
+
 --- Get the minimum height constraint of this panel.
 -- @treturn number The minimum height.
 function Panel:get_min_height()
-  return self._min_height
+  if not self.children then
+    return self._min_height  -- For content panels, return stored value
+  end
+
+  -- For divided panels, calculate from children
+  local derived_min_height
+
+  if self.orientation == Panel.orientations.horizontal then
+    -- Height constraints are the minimum of both children
+    derived_min_height = math.max(self.children[1]:get_min_height(), self.children[2]:get_min_height())
+  else -- VERTICAL
+    -- For vertical division, derive height constraints from children
+    derived_min_height = self.children[1]:get_min_height() + self.children[2]:get_min_height()
+  end
+
+  return math.max(self._min_height, derived_min_height)
 end
+
+
 
 --- Get the minimum width constraint of this panel.
 -- @treturn number The minimum width.
 function Panel:get_min_width()
-  return self._min_width
+  if not self.children then
+    return self._min_width  -- For content panels, return stored value
+  end
+
+  -- For divided panels, calculate from children
+  local derived_min_width
+
+  if self.orientation == Panel.orientations.horizontal then
+    -- For horizontal division, derive width constraints from children
+    derived_min_width = self.children[1]:get_min_width() + self.children[2]:get_min_width()
+  else -- VERTICAL
+    -- Width constraints are the minimum of both children
+    derived_min_width = math.max(self.children[1]:get_min_width(), self.children[2]:get_min_width())
+  end
+
+  return math.max(self._min_width, derived_min_width)
 end
+
+
 
 --- Get the maximum height constraint of this panel.
 -- @treturn number The maximum height.
 function Panel:get_max_height()
-  return self._max_height
+  if not self.children then
+    return self._max_height  -- For content panels, return stored value
+  end
+
+  -- For divided panels, calculate from children
+  local derived_max_height
+
+  if self.orientation == Panel.orientations.horizontal then
+    -- Height constraints are the minimum of both children
+    derived_max_height = math.min(self.children[1]:get_max_height(), self.children[2]:get_max_height())
+  else -- VERTICAL
+    -- For vertical division, derive height constraints from children
+    derived_max_height = self.children[1]:get_max_height() + self.children[2]:get_max_height()
+  end
+
+  return math.min(self._max_height, derived_max_height)
 end
+
+
 
 --- Get the maximum width constraint of this panel.
 -- @treturn number The maximum width.
 function Panel:get_max_width()
-  return self._max_width
+  if not self.children then
+    return self._max_width  -- For content panels, return stored value
+  end
+
+  -- For divided panels, calculate from children
+  local derived_max_width
+
+  if self.orientation == Panel.orientations.horizontal then
+    -- For horizontal division, derive width constraints from children
+    derived_max_width = self.children[1]:get_max_width() + self.children[2]:get_max_width()
+  else -- VERTICAL
+    -- Width constraints are the minimum of both children
+    derived_max_width = math.min(self.children[1]:get_max_width(), self.children[2]:get_max_width())
+  end
+
+  return math.min(self._max_width, derived_max_width)
 end
 
 
@@ -451,6 +501,7 @@ function Panel:get_panel(name)
 
   return nil
 end
+
 
 
 --- Clears the panel content (inner area).
@@ -494,6 +545,7 @@ function Panel:draw_border()
   end
   cursor.position.restore()
 end
+
 
 
 return Panel

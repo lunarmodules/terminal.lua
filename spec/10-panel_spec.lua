@@ -151,6 +151,239 @@ describe("terminal.ui.panel", function()
     end)
 
 
+    it("accepts user-defined constraints on divided panels", function()
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        min_height = 5,
+        min_width = 20,
+        max_height = 15,
+        max_width = 50,
+        children = { left_panel, right_panel }
+      }
+
+      -- User constraints should be stored
+      assert.are.equal(5, split_panel._min_height)
+      assert.are.equal(20, split_panel._min_width)
+      assert.are.equal(15, split_panel._max_height)
+      assert.are.equal(50, split_panel._max_width)
+    end)
+
+
+    it("combines user constraints with child-derived constraints", function()
+      local left_panel = Panel {
+        content = function() end,
+        min_height = 3,
+        min_width = 8,
+        max_height = 10,
+        max_width = 15
+      }
+      local right_panel = Panel {
+        content = function() end,
+        min_height = 4,
+        min_width = 6,
+        max_height = 12,
+        max_width = 18
+      }
+
+      -- User constraints more restrictive than child constraints
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        min_height = 6,    -- more restrictive than max(3, 4) = 4
+        min_width = 20,    -- more restrictive than 8 + 6 = 14
+        max_height = 8,    -- more restrictive than min(10, 12) = 10
+        max_width = 25,    -- more restrictive than 15 + 18 = 33
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 20, 30)
+
+      -- Should use user constraints (more restrictive)
+      assert.are.equal(6, split_panel:get_min_height()) -- max(6, 4) = 6
+      assert.are.equal(8, split_panel:get_max_height()) -- min(8, 10) = 8
+      assert.are.equal(20, split_panel:get_min_width()) -- max(20, 14) = 20
+      assert.are.equal(25, split_panel:get_max_width()) -- min(25, 33) = 25
+    end)
+
+
+    it("uses child constraints when user constraints are less restrictive", function()
+      local left_panel = Panel {
+        content = function() end,
+        min_height = 3,
+        min_width = 8,
+        max_height = 10,
+        max_width = 15
+      }
+      local right_panel = Panel {
+        content = function() end,
+        min_height = 4,
+        min_width = 6,
+        max_height = 12,
+        max_width = 18
+      }
+
+      -- User constraints less restrictive than child constraints
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        min_height = 2,    -- less restrictive than max(3, 4) = 4
+        min_width = 10,    -- less restrictive than 8 + 6 = 14
+        max_height = 20,   -- less restrictive than min(10, 12) = 10
+        max_width = 50,    -- less restrictive than 15 + 18 = 33
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 20, 30)
+
+      -- Should use child constraints (more restrictive)
+      assert.are.equal(4, split_panel:get_min_height()) -- max(2, 4) = 4
+      assert.are.equal(10, split_panel:get_max_height()) -- min(20, 10) = 10
+      assert.are.equal(14, split_panel:get_min_width()) -- max(10, 14) = 14
+      assert.are.equal(33, split_panel:get_max_width()) -- min(50, 33) = 33
+    end)
+
+
+    it("handles mixed constraint restrictiveness", function()
+      local left_panel = Panel {
+        content = function() end,
+        min_height = 3,
+        min_width = 8,
+        max_height = 10,
+        max_width = 15
+      }
+      local right_panel = Panel {
+        content = function() end,
+        min_height = 4,
+        min_width = 6,
+        max_height = 12,
+        max_width = 18
+      }
+
+      -- Mixed: some user constraints more restrictive, some less
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        min_height = 6,    -- more restrictive than max(3, 4) = 4
+        min_width = 10,    -- less restrictive than 8 + 6 = 14
+        max_height = 20,   -- less restrictive than min(10, 12) = 10
+        max_width = 25,    -- more restrictive than 15 + 18 = 33
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 20, 30)
+
+      -- Should use the more restrictive constraint for each dimension
+      assert.are.equal(6, split_panel:get_min_height()) -- max(6, 4) = 6 (user more restrictive)
+      assert.are.equal(10, split_panel:get_max_height()) -- min(20, 10) = 10 (child more restrictive)
+      assert.are.equal(14, split_panel:get_min_width()) -- max(10, 14) = 14 (child more restrictive)
+      assert.are.equal(25, split_panel:get_max_width()) -- min(25, 33) = 25 (user more restrictive)
+    end)
+
+
+    it("works with vertical orientation constraints", function()
+      local top_panel = Panel {
+        content = function() end,
+        min_height = 5,
+        min_width = 10,
+        max_height = 15,
+        max_width = 20
+      }
+      local bottom_panel = Panel {
+        content = function() end,
+        min_height = 3,
+        min_width = 8,
+        max_height = 12,
+        max_width = 18
+      }
+
+      local split_panel = Panel {
+        orientation = Panel.orientations.vertical,
+        min_height = 10,   -- more restrictive than 5 + 3 = 8
+        min_width = 15,    -- more restrictive than max(10, 8) = 10
+        max_height = 20,   -- less restrictive than 15 + 12 = 27
+        max_width = 25,    -- less restrictive than min(20, 18) = 18
+        children = { top_panel, bottom_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 20, 30)
+
+
+      -- For vertical split: height = sum of children, width = min of children
+      assert.are.equal(10, split_panel:get_min_height()) -- max(10, 8) = 10 (user more restrictive)
+      assert.are.equal(20, split_panel:get_max_height()) -- min(20, 27) = 20 (user more restrictive)
+      assert.are.equal(15, split_panel:get_min_width()) -- max(15, 10) = 15 (user more restrictive)
+      assert.are.equal(18, split_panel:get_max_width()) -- min(25, 18) = 18 (child more restrictive)
+    end)
+
+
+    it("handles nil user constraints (backward compatibility)", function()
+      local left_panel = Panel {
+        content = function() end,
+        min_height = 3,
+        min_width = 8,
+        max_height = 10,
+        max_width = 15
+      }
+      local right_panel = Panel {
+        content = function() end,
+        min_height = 4,
+        min_width = 6,
+        max_height = 12,
+        max_width = 18
+      }
+
+      -- No user constraints provided
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 20, 30)
+
+      -- Should behave exactly as before (only child-derived constraints)
+      assert.are.equal(4, split_panel:get_min_height()) -- max(3, 4)
+      assert.are.equal(10, split_panel:get_max_height()) -- min(10, 12)
+      assert.are.equal(14, split_panel:get_min_width()) -- 8 + 6
+      assert.are.equal(33, split_panel:get_max_width()) -- 15 + 18
+    end)
+
+
+    it("handles partial user constraints", function()
+      local left_panel = Panel {
+        content = function() end,
+        min_height = 3,
+        min_width = 8,
+        max_height = 10,
+        max_width = 15
+      }
+      local right_panel = Panel {
+        content = function() end,
+        min_height = 4,
+        min_width = 6,
+        max_height = 12,
+        max_width = 18
+      }
+
+      -- Only some user constraints provided
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        min_height = 6,    -- user constraint
+        -- min_width = nil (no user constraint)
+        -- max_height = nil (no user constraint)
+        max_width = 25,    -- user constraint
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 20, 30)
+
+      -- Should use user constraint where provided, child constraint otherwise
+      assert.are.equal(6, split_panel:get_min_height()) -- max(6, 4) = 6 (user more restrictive)
+      assert.are.equal(10, split_panel:get_max_height()) -- min(infinity, 10) = 10 (child constraint)
+      assert.are.equal(14, split_panel:get_min_width()) -- max(infinity, 14) = 14 (child constraint)
+      assert.are.equal(25, split_panel:get_max_width()) -- min(25, 33) = 25 (user more restrictive)
+    end)
+
+
     it("respects maximum size constraints in layout calculation", function()
       local panel = Panel {
         orientation = Panel.orientations.vertical,
