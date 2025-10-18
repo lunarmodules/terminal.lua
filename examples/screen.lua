@@ -60,11 +60,11 @@ local function main()
 
   -- Create body panel
   local body = Panel {
-    content = function(self, row, col, height, width)
-      for i = 1, height do
-        t.cursor.position.set(row + i - 1, col)
+    content = function(self)
+      for i = 1, self.inner_height do
+        t.cursor.position.set(self.inner_row + i - 1, self.inner_col)
         t.output.write(
-          string.format("Body content line %d of %d", i, height),
+          string.format("Body content line %d of %d", i, self.inner_height),
           t.clear.eol_seq()
         )
       end
