@@ -70,7 +70,7 @@ function Screen:init(opts)
 end
 
 --- Check if the terminal has been resized and optionally update the layout.
--- @tparam[opt=false] boolean update Whether to recalculate and redraw if resized
+-- @tparam[opt=false] boolean update Whether to automatically recalculate and rerender if a resize was detected.
 -- @treturn boolean True if the terminal was resized
 function Screen:check_resize(update)
   local current_height, current_width = terminal.size()
@@ -88,6 +88,7 @@ end
 
 --- Recalculate the screen layout using current terminal dimensions.
 -- Overrides `ui.Panel:calculate_layout` to use full screen dimensions instead of specifying them.
+-- There typically is no need to call this method, as `check_resize` is the friendlier way to update.
 function Screen:calculate_layout()
   local height, width = terminal.size()
   Panel.calculate_layout(self, 1, 1, height, width)

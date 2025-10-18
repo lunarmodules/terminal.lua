@@ -2,11 +2,11 @@
 --
 -- This module provides a flexible panel system for creating terminal UI layouts.
 -- Each panel can contain content or be divided into two child panels (horizontally or vertically).
--- Panels automatically recalculate their size and position based on parent constraints.
+-- Panels recalculate their size and position based on parent constraints.
 --
 -- Features:
 --
--- - Automatic layout calculation with size constraints
+-- - Layout calculation with size constraints
 -- - Horizontal and vertical panel division
 -- - Content callback system for rendering
 -- - Minimum and maximum size constraints
@@ -57,10 +57,20 @@ local Panel = utils.class()
 
 
 --- Panel orientation constants table.
--- @field ui.panel.orientations table lookup table for child panels by name.
+-- @field ui.panel.orientations table lookup table for oirientation constants.
 Panel.orientations = utils.make_lookup("orientation", {
   horizontal = "horizontal",
   vertical = "vertical",
+})
+
+
+
+--- Panel type constants table. See `get_type`.
+-- @field ui.panel.types table lookup table for panel type constants.
+Panel.types = utils.make_lookup("type", {
+  horizontal = Panel.orientations.horizontal,
+  vertical = Panel.orientations.vertical,
+  content = "content",
 })
 
 
@@ -167,19 +177,38 @@ function Panel:init(opts)
   })
 
   -- Calculated layout properties (set by calculate_layout)
+
+  --- Position: row, upper left corner
+  -- @field row number Starting row, upper left corner.
   self.row = nil
+  --- Position: column, upper left corner
+  -- @field col number Starting column, upper left corner.
   self.col = nil
+  --- Size: height
+  -- @field height number Height.
   self.height = nil
+  --- Size: width
+  -- @field width number Width.
   self.width = nil
+  --- Position: row, inner upper left corner
+  -- @field inner_row number Inner upper left corner.
   self.inner_row = nil
+  --- Position: column, inner upper left corner
+  -- @field inner_col number Inner upper left corner.
   self.inner_col = nil
+  --- Size: inner height
+  -- @field inner_height number Inner height.
   self.inner_height = nil
+  --- Size: inner width
+  -- @field inner_width number Inner width.
   self.inner_width = nil
 end
 
 
 
 --- Calculate the layout for this panel and all its children.
+-- This method must be called before `render` whenever there has been a change that impacts the layout.
+-- For example, terminal resize, (un)hiding a panel, changing the split ratio, etc.
 -- @tparam number parent_row Parent panel's starting row.
 -- @tparam number parent_col Parent panel's starting column.
 -- @tparam number parent_height Parent panel's height.
@@ -366,8 +395,11 @@ end
 
 
 --- Set the split ratio for divided panels.
--- @tparam number ratio The split ratio (0.0 to 1.0).
+-- After changing the ratio, `calculate_layout` must be called to update the layout.
+-- @tparam number ratio The split ratio (0.0 to 1.0). The value set determines the size
+-- of the upper or left child panel. The remainder will go to the lower or right child panel.
 -- @return nothing
+-- @see get_split_ratio
 function Panel:set_split_ratio(ratio)
   assert(self.children ~= nil, "Split ratio can only be set on divided panels")
   assert(ratio >= 0.0 and ratio <= 1.0, "Split ratio must be between 0.0 and 1.0")
@@ -376,7 +408,22 @@ end
 
 
 
+--- Get the split ratio of this panel.
+-- @treturn[1] number The split ratio (0.0 to 1.0) or nil if not divided. The value determines the size
+-- of the upper or left child panel. The remainder will go to the lower or right child panel.
+-- @treturn[2] nil In case the panel is a content panel.
+-- @treturn[2] string Error message.
+-- @see set_split_ratio
+function Panel:get_split_ratio()
+  local err = (self.split_ratio == nil) and "No split ratio for a content panel"
+  return self.split_ratio, err
+end
+
+
+
 --- Render this panel and all its children.
+-- **Note:** if any changes have been made that impact the layout, then `calculate_layout` must be called before `render`.
+-- For example, terminal resize, (un)hiding a panel, changing the split ratio, etc.
 -- @return nothing
 function Panel:render()
   if not self:visible() then
@@ -401,25 +448,20 @@ end
 
 
 --- Get the type of this panel.
--- @return Returns "content" for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
+-- @return Returns `Panel.types.content` for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
+-- @usage
+-- local t = my_panel:get_type()
+-- if t == Panel.types.content then
+--   -- my_panel is a content panel
+--
+-- elseif t == Panel.types.horizontal then
+--   -- my_panel is a horizontal divided panel
+--
+-- elseif t == Panel.types.vertical then
+--   -- my_panel is a vertical divided panel
+-- end
 function Panel:get_type()
-  return self.orientation or "content"
-end
-
-
-
---- Get the children of this panel.
--- @treturn table|nil Array of child panels or nil if not divided.
-function Panel:get_children()
-  return self.children
-end
-
-
-
---- Get the split ratio of this panel.
--- @treturn number|nil The split ratio or nil if not divided.
-function Panel:get_split_ratio()
-  return self.split_ratio
+  return self.orientation or Panel.types.content
 end
 
 
@@ -518,6 +560,7 @@ end
 
 --- Get the visibility of this panel.
 -- @treturn boolean True if visible, false if hidden.
+-- @see hide
 function Panel:visible()
   -- If this panel itself is hidden, return false
   if not self._visible then
@@ -538,6 +581,7 @@ end
 --- Set the visibility of this panel.
 -- @tparam[opt=true] boolean hide True to hide the panel, false to show it.
 -- @return nothing
+-- @see visible
 function Panel:hide(hide)
   hide = hide ~= false  -- default to true (hide), unless explicitly set to false
   self._visible = not hide  -- invert the hide parameter
@@ -545,11 +589,12 @@ end
 
 
 
-
 --- Find a panel by name in this panel tree.
 -- Searches in order: self, child 1, child 2.
 -- @tparam string name The name to search for.
--- @treturn Panel|nil The first panel found with the given name, or nil if not found.
+-- @treturn[1] Panel The first panel found with the given name.
+-- @treturn[2] nil In case the panel wasn't found.
+-- @treturn[2] string Error message if panel not found.
 function Panel:get_panel(name)
   -- Check self first
   if self.name == name then
@@ -566,7 +611,7 @@ function Panel:get_panel(name)
     end
   end
 
-  return nil
+  return nil, "panel by name '" .. tostring(name) .. "' not found"
 end
 
 
@@ -583,6 +628,7 @@ end
 
 
 --- Draw the border around panel content.
+-- This will automatically be called by the `render` method if a border is defined.
 -- @return nothing
 function Panel:draw_border()
   if not self.border then

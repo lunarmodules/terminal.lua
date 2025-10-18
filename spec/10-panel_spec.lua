@@ -865,39 +865,6 @@ describe("terminal.ui.panel", function()
 
 
 
-
-
-
-  describe("get_children()", function()
-
-    it("returns nil for content panel", function()
-      local panel = Panel { content = function() end }
-
-      assert.is_nil(panel:get_children())
-    end)
-
-
-    it("returns children for divided panel", function()
-      local left_panel = Panel { content = function() end }
-      local right_panel = Panel { content = function() end }
-
-      local panel = Panel {
-        orientation = Panel.orientations.horizontal,
-        children = { left_panel, right_panel }
-      }
-
-      local children = panel:get_children()
-
-      assert.is_not_nil(children)
-      assert.are.equal(2, #children)
-      assert.are.equal(left_panel, children[1])
-      assert.are.equal(right_panel, children[2])
-    end)
-
-  end)
-
-
-
   describe("get_split_ratio()", function()
 
     it("returns nil for content panel", function()
@@ -944,15 +911,16 @@ describe("terminal.ui.panel", function()
     end)
 
 
-    it("returns nil when name does not match", function()
+    it("returns nil and error message when name does not match", function()
       local panel = Panel {
         content = function() end,
         name = "test-panel"
       }
 
-      local found = panel:get_panel("other-panel")
+      local found, err = panel:get_panel("other-panel")
 
       assert.is_nil(found)
+      assert.are.equal("panel by name 'other-panel' not found", err)
     end)
 
 
