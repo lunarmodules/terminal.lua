@@ -57,10 +57,20 @@ local Panel = utils.class()
 
 
 --- Panel orientation constants table.
--- @field ui.panel.orientations table lookup table for child panels by name.
+-- @field ui.panel.orientations table lookup table for oirientation constants.
 Panel.orientations = utils.make_lookup("orientation", {
   horizontal = "horizontal",
   vertical = "vertical",
+})
+
+
+
+--- Panel type constants table. See `get_type`.
+-- @field ui.panel.types table lookup table for panel type constants.
+Panel.types = utils.make_lookup("type", {
+  horizontal = Panel.orientations.horizontal,
+  vertical = Panel.orientations.vertical,
+  content = "content",
 })
 
 
@@ -438,9 +448,20 @@ end
 
 
 --- Get the type of this panel.
--- @return Returns "content" for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
-function Panel:get_type() -- TODO: create constants lookup table and an example for this
-  return self.orientation or "content"
+-- @return Returns `Panel.types.content` for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
+-- @usage
+-- local t = my_panel:get_type()
+-- if t == Panel.types.content then
+--   -- my_panel is a content panel
+--
+-- elseif t == Panel.types.horizontal then
+--   -- my_panel is a horizontal divided panel
+--
+-- elseif t == Panel.types.vertical then
+--   -- my_panel is a vertical divided panel
+-- end
+function Panel:get_type()
+  return self.orientation or Panel.types.content
 end
 
 
