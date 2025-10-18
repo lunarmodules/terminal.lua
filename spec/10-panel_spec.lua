@@ -1349,6 +1349,97 @@ describe("terminal.ui.panel", function()
       assert.is_true(right_panel:visible())  -- Right child visible from constructor
     end)
 
+    it("recalculates layout when child visibility changes", function()
+      local left_panel = Panel {
+        content = function() end,
+        visible = true
+      }
+      local right_panel = Panel {
+        content = function() end,
+        visible = true
+      }
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel },
+        split_ratio = 0.5  -- Equal split
+      }
+
+      -- Initial layout with both panels visible
+      split_panel:calculate_layout(1, 1, 10, 100)
+      assert.are.equal(50, left_panel.width)   -- Half width
+      assert.are.equal(50, right_panel.width)  -- Half width
+      assert.are.equal(100, split_panel.width) -- Full width
+
+      -- Hide right panel and recalculate
+      right_panel:hide()
+      split_panel:calculate_layout(1, 1, 10, 100)
+      assert.are.equal(100, left_panel.width)  -- Should take full width
+      assert.are.equal(1, right_panel.width)   -- Hidden panel has minimum width (1)
+      assert.are.equal(100, split_panel.width) -- Parent still full width
+
+      -- Show right panel again and recalculate
+      right_panel:hide(false)
+      split_panel:calculate_layout(1, 1, 10, 100)
+      assert.are.equal(50, left_panel.width)   -- Back to half width
+      assert.are.equal(50, right_panel.width)  -- Back to half width
+      assert.are.equal(100, split_panel.width) -- Full width
+    end)
+
+    it("handles vertical split with visibility changes", function()
+      local top_panel = Panel {
+        content = function() end,
+        visible = true
+      }
+      local bottom_panel = Panel {
+        content = function() end,
+        visible = true
+      }
+      local split_panel = Panel {
+        orientation = Panel.orientations.vertical,
+        children = { top_panel, bottom_panel },
+        split_ratio = 0.5  -- Equal split
+      }
+
+      -- Initial layout with both panels visible
+      split_panel:calculate_layout(1, 1, 20, 50)
+      assert.are.equal(10, top_panel.height)    -- Half height
+      assert.are.equal(10, bottom_panel.height) -- Half height
+      assert.are.equal(20, split_panel.height)  -- Full height
+
+      -- Hide bottom panel and recalculate
+      bottom_panel:hide()
+      split_panel:calculate_layout(1, 1, 20, 50)
+      assert.are.equal(20, top_panel.height)    -- Should take full height
+      assert.are.equal(1, bottom_panel.height)  -- Hidden panel has minimum height (1)
+      assert.are.equal(20, split_panel.height)  -- Parent still full height
+    end)
+
+    it("maintains parent visibility when hiding visible child", function()
+      local left_panel = Panel {
+        content = function() end,
+        visible = true
+      }
+      local right_panel = Panel {
+        content = function() end,
+        visible = true
+      }
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 10, 100)
+      assert.is_true(split_panel:visible())  -- Both children visible
+
+      -- Hide one child
+      right_panel:hide()
+      assert.is_true(split_panel:visible())  -- Parent still visible (left child visible)
+
+      -- Hide both children
+      left_panel:hide()
+      assert.is_false(split_panel:visible()) -- Parent hidden (no children visible)
+    end)
+
   end)
 
 end)

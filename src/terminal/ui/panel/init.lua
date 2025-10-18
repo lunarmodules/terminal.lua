@@ -251,17 +251,33 @@ end
 -- Calculate layout for child panels (internal method).
 -- @return nothing
 function Panel:_calculate_children_layout()
+  if not self:visible() then
+    return
+  end
+
   local child1, child2 = self.children[1], self.children[2]
 
   if self.orientation == Panel.orientations.horizontal then
     -- Horizontal division: split width
-    local child1_width = math.floor(self.width * self.split_ratio)
-    local child2_width = self.width - child1_width
+    local child1_width
+    local child2_width
+    if child1:visible() then
+      if child2:visible() then  -- both children are visible
+        child1_width = math.floor(self.width * self.split_ratio)
+        child2_width = self.width - child1_width
+      else  -- only child1 is visible
+        child1_width = self.width
+        child2_width = 0
+      end
+    else  -- only child2 is visible
+      child1_width = 0
+      child2_width = self.width
+    end
 
     -- Get size constraints
-    local child1_min_width = child1:get_min_width()
+    local child1_min_width = child1:visible() and child1:get_min_width() or 0
     local child1_max_width = child1:visible() and child1:get_max_width() or DEFAULT_MAX_SIZE
-    local child2_min_width = child2:get_min_width()
+    local child2_min_width = child2:visible() and child2:get_min_width() or 0
     local child2_max_width = child2:visible() and child2:get_max_width() or DEFAULT_MAX_SIZE
 
     -- Apply maximum width constraints
@@ -290,14 +306,27 @@ function Panel:_calculate_children_layout()
 
   else -- VERTICAL
     -- Vertical division: split height
-    local child1_height = math.floor(self.height * self.split_ratio)
-    local child2_height = self.height - child1_height
+    local child1_height
+    local child2_height
+
+    if child1:visible() then
+      if child2:visible() then  -- both children are visible
+        child1_height = math.floor(self.height * self.split_ratio)
+        child2_height = self.height - child1_height
+      else  -- only child1 is visible
+        child1_height = self.height
+        child2_height = 0
+      end
+    else  -- only child2 is visible
+      child1_height = 0
+      child2_height = self.height
+    end
 
     -- Get size constraints
-    local child1_min_height = child1:get_min_height()
-    local child1_max_height = child1:get_max_height()
-    local child2_min_height = child2:get_min_height()
-    local child2_max_height = child2:get_max_height()
+    local child1_min_height = child1:visible() and child1:get_min_height() or 0
+    local child1_max_height = child1:visible() and child1:get_max_height() or DEFAULT_MAX_SIZE
+    local child2_min_height = child2:visible() and child2:get_min_height() or 0
+    local child2_max_height = child2:visible() and child2:get_max_height() or DEFAULT_MAX_SIZE
 
     -- Apply maximum height constraints
     if child1_height > child1_max_height then
