@@ -1179,4 +1179,176 @@ describe("terminal.ui.panel", function()
 
   end)
 
+
+
+  describe("visibility", function()
+
+    it("defaults to visible", function()
+      local panel = Panel { content = function() end }
+      assert.is_true(panel:visible())
+    end)
+
+
+    it("can be set to hidden in constructor", function()
+      local panel = Panel {
+        content = function() end,
+        visible = false
+      }
+      assert.is_false(panel:visible())
+    end)
+
+
+    it("can be set to visible in constructor", function()
+      local panel = Panel {
+        content = function() end,
+        visible = true
+      }
+      assert.is_true(panel:visible())
+    end)
+
+
+    it("treats nil as visible in constructor", function()
+      local panel = Panel {
+        content = function() end,
+        visible = nil
+      }
+      assert.is_true(panel:visible())
+    end)
+
+
+    it("can hide a panel", function()
+      local panel = Panel { content = function() end }
+      panel:hide()  -- hide (default)
+      assert.is_false(panel:visible())
+    end)
+
+
+    it("can show a panel", function()
+      local panel = Panel { content = function() end }
+      panel:hide()     -- hide first
+      panel:hide(false) -- then show
+      assert.is_true(panel:visible())
+    end)
+
+
+    it("forces boolean values", function()
+      local panel = Panel { content = function() end }
+      panel:hide(nil)
+      assert.is_false(panel:visible())  -- nil defaults to true (hide), so panel is hidden
+      panel:hide(1)
+      assert.is_false(panel:visible())  -- 1 is true (hide), so panel is hidden
+      panel:hide(false)
+      assert.is_true(panel:visible())   -- false explicitly shows the panel
+    end)
+
+
+    it("skips rendering hidden panels", function()
+      local rendered = false
+      local panel = Panel {
+        content = function()
+          rendered = true
+        end
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:hide()  -- hide (default)
+      panel:render()
+      assert.is_false(rendered)
+    end)
+
+
+    it("renders visible panels", function()
+      local rendered = false
+      local panel = Panel {
+        content = function()
+          rendered = true
+        end,
+        clear_content = false  -- Disable clearing to avoid layout issues
+      }
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:render()
+      assert.is_true(rendered)
+    end)
+
+
+    it("hides parent when both children are hidden", function()
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 10, 20)
+      assert.is_true(split_panel:visible())
+      left_panel:hide()  -- hide (default)
+      assert.is_true(split_panel:visible())  -- still visible, only one child hidden
+      right_panel:hide()  -- hide (default)
+      assert.is_false(split_panel:visible()) -- now hidden, both children hidden
+    end)
+
+
+    it("shows parent when at least one child is visible", function()
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 10, 20)
+      -- Hide both children
+      left_panel:hide()  -- hide (default)
+      right_panel:hide()  -- hide (default)
+      assert.is_false(split_panel:visible())
+
+      -- Show one child
+      left_panel:hide(false)
+      assert.is_true(split_panel:visible())
+    end)
+
+
+    it("works with nested panel structures", function()
+      local grandchild1 = Panel { content = function() end }
+      local grandchild2 = Panel { content = function() end }
+      local child = Panel {
+        orientation = Panel.orientations.vertical,
+        children = { grandchild1, grandchild2 }
+      }
+      local parent = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { child, Panel { content = function() end } }
+      }
+
+      parent:calculate_layout(1, 1, 10, 20)
+      assert.is_true(parent:visible())
+      grandchild1:hide()  -- hide (default)
+      assert.is_true(parent:visible())  -- still visible
+      grandchild2:hide()  -- hide (default)
+      assert.is_false(child:visible())  -- child is now hidden
+      assert.is_true(parent:visible())  -- parent still visible (has other child)
+    end)
+
+
+    it("works with constructor visibility settings", function()
+      local left_panel = Panel {
+        content = function() end,
+        visible = false  -- Hidden from constructor
+      }
+      local right_panel = Panel {
+        content = function() end,
+        visible = true   -- Visible from constructor
+      }
+      local split_panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel }
+      }
+
+      split_panel:calculate_layout(1, 1, 10, 20)
+      assert.is_true(split_panel:visible())  -- Parent visible because right child is visible
+      assert.is_false(left_panel:visible())  -- Left child hidden from constructor
+      assert.is_true(right_panel:visible())  -- Right child visible from constructor
+    end)
+
+  end)
+
 end)

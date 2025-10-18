@@ -52,10 +52,9 @@ function Screen:init(opts)
   else
     -- No header or footer: create a dummy panel to satisfy the 2-child requirement
     local dummy_panel = Panel {
-      content = function(self, row, col, height, width)
-        -- Empty panel that takes no space
-      end,
-      name = "dummy"
+      name = "dummy",
+      visible = false,
+      content = function(self) end,
     }
     children = { opts.body, dummy_panel }
   end
