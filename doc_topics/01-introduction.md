@@ -4,7 +4,7 @@ Yet another terminal library, why? Becasue it adds a couple of things not found 
 
 - Also works on Windows (since it builds on top of `luasystem`)
 - Works async with coroutines for keyboard input
-- Has [stacks](#13-stacks) to track settings so it becomes possible to revert to previous settings, even if a piece of code has no knowledge about those settings.
+- Has [stacks](#14-stacks) to track settings so it becomes possible to revert to previous settings, even if a piece of code has no knowledge about those settings.
 - Remains Lua only, to not fall back to a full curses type implementation (except for the LuaSystem dependency)
 
 ## 1.1 Basic design
@@ -19,12 +19,13 @@ There are a few major concepts implemented in this library:
 ## 1.2 initialization & shutdown
 
 Before use the terminal should be initialized (`terminal.initialize`) and finally it should be cleaned up (`terminal.shutdown`).
+The most convenient (and preferred) way to do this would be by using the `terminal.initwrap` function.
 
 The platform specifics (Windows vs Nix'es) are handled here.
 
 ## 1.3 functions vs strings
 
-Most functions to control the terminal in this library also have a string-counterpart. That would be the same function, but with an extra "_seq" appended to its name. For example;
+The low-level functions to control the terminal in this library also have a string-counterpart. That would be the same function, but with an extra "_seq" appended to its name. For example;
 
 - `terminal.clear.eol` and `terminal.clear.eol_seq`
 - `terminal.cursor.shape.set` and `terminal.cursor.shape.set_seq`
@@ -93,11 +94,11 @@ For each piece of state there is a separate stack to control it. Leading to the 
 
 Each stack has the following operations:
 
-- **push(values...)**: takes value(s) for the specific stack, pushes it onto the stack, and applies it.
-- **pop(n)**: pops `n` items of the stack, and applies the top of the stack again.
-- **apply()**: applies the item at the top of the stack (eg. undoes any intermediate changes).
+- `push(values...)`: takes value(s) for the specific stack, pushes it onto the stack, and applies it.
+- `pop(n)`: pops `n` items of the stack, and applies the top of the stack again.
+- `apply()`: applies the item at the top of the stack (eg. undoes any intermediate changes).
 
-The cursor position stack operates as follows:
+The cursor position stack operates slightly different:
 
-- **push(new_row, new_col)**: pushes the current cursor position onto the stack, and moves the cursor to the new position.
-- **pop(n)**: pops `n` items of the stack, and applies the last item popped.
+- `push(new_row, new_col)`: pushes the current cursor position onto the stack, and moves the cursor to the new position.
+- `pop(n)`: pops `n` items of the stack, and applies the last item popped.

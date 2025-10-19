@@ -232,7 +232,7 @@ end
 -- This function wraps a function in calls to `initialize` and `shutdown`, ensuring the terminal is properly shut down.
 -- If an error is caught, it first shutsdown the terminal and then rethrows the error.
 -- @tparam function main the function to wrap
--- @tparam[opt] table opts options table, to pass to `initialize`.
+-- @tparam[opt] table opts options table, see `initialize` for details.
 -- @treturn function wrapped function
 -- @within Initialization
 -- @usage
