@@ -12,9 +12,9 @@ local Screen = utils.class(Panel)
 --- Initialize a new Screen instance.
 -- Do not call this method directly, call on the class instead.
 -- @tparam table opts Configuration options (see `Panel:init` for inherited properties)
--- @tparam Panel opts.header Optional header panel (will be (re)named "header")
--- @tparam Panel opts.body Required body panel (will be (re)named "body")
--- @tparam Panel opts.footer Optional footer panel (will be (re)named "footer")
+-- @tparam Panel opts.header Optional header panel (will be named "header" if not already named )
+-- @tparam Panel opts.body Required body panel (will be named "body" if not already named)
+-- @tparam Panel opts.footer Optional footer panel (will be named "footer" if not already named)
 -- @tparam string opts.name Optional name for the screen
 -- @see ui.panel.Bar
 function Screen:init(opts)
@@ -23,12 +23,14 @@ function Screen:init(opts)
   -- Validate required body panel
   assert(opts.body, "Screen requires a body panel")
 
-  -- Set names for the panels so they can be looked up later
-  if opts.header then
+  -- Set names for the panels so they can be looked up later (only if not already named)
+  if opts.header and opts.header.name == tostring(opts.header) then
     opts.header.name = "header"
   end
-  opts.body.name = "body"
-  if opts.footer then
+  if opts.body.name == tostring(opts.body) then
+    opts.body.name = "body"
+  end
+  if opts.footer and opts.footer.name == tostring(opts.footer) then
     opts.footer.name = "footer"
   end
 
