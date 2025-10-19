@@ -89,6 +89,7 @@
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -162,11 +163,11 @@
 
   <span class="comment">-- Create body panel
 </span>  <span class="keyword">local</span> body = <span class="function-name">Panel</span> {
-    content = <span class="keyword">function</span>(self, row, col, height, width)
-      <span class="keyword">for</span> i = <span class="number">1</span>, height <span class="keyword">do</span>
-        t.cursor.position.<span class="function-name">set</span>(row + i - <span class="number">1</span>, col)
+    content = <span class="keyword">function</span>(self)
+      <span class="keyword">for</span> i = <span class="number">1</span>, self.inner_height <span class="keyword">do</span>
+        t.cursor.position.<span class="function-name">set</span>(self.inner_row + i - <span class="number">1</span>, self.inner_col)
         t.output.<span class="function-name">write</span>(
-          <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"Body content line %d of %d"</span>, i, height),
+          <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"Body content line %d of %d"</span>, i, self.inner_height),
           t.clear.<span class="function-name">eol_seq</span>()
         )
       <span class="keyword">end</span>
