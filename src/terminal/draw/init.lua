@@ -19,7 +19,9 @@ local text = require "terminal.text"
 --- Table with pre-defined box formats.
 -- @table box_fmt
 -- @field single Single line box format
+-- @field single_top Single line box format with top border only
 -- @field double Double line box format
+-- @field double_top Double line box format with top border only
 -- @field copy Function to copy a box format, see `box_fmt.copy` for details
 M.box_fmt = utils.make_lookup("box-format", {
   single = {
@@ -34,6 +36,18 @@ M.box_fmt = utils.make_lookup("box-format", {
     pre = "┤",
     post = "├",
   },
+  single_top = {
+    t = "─",
+    b = "",
+    l = "",
+    r = "",
+    tl = "",
+    tr = "",
+    bl = "",
+    br = "",
+    pre = "┤",
+    post = "├",
+  },
   double = {
     t = "═",
     b = "═",
@@ -43,6 +57,18 @@ M.box_fmt = utils.make_lookup("box-format", {
     tr = "╗",
     bl = "╚",
     br = "╝",
+    pre = "╡",
+    post = "╞",
+  },
+  double_top = {
+    t = "═",
+    b = "",
+    l = "",
+    r = "",
+    tl = "",
+    tr = "",
+    bl = "",
+    br = "",
     pre = "╡",
     post = "╞",
   },
