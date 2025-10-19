@@ -78,6 +78,7 @@
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -110,12 +111,12 @@
 
 <p> This module provides a flexible panel system for creating terminal UI layouts.
  Each panel can contain content or be divided into two child panels (horizontally or vertically).
- Panels automatically recalculate their size and position based on parent constraints.</p>
+ Panels recalculate their size and position based on parent constraints.</p>
 
 <p> Features:</p>
 
 <ul>
-    <li>Automatic layout calculation with size constraints</li>
+    <li>Layout calculation with size constraints</li>
     <li>Horizontal and vertical panel division</li>
     <li>Content callback system for rendering</li>
     <li>Minimum and maximum size constraints</li>
@@ -132,7 +133,7 @@
 
 <span class="comment">-- Create a root panel with content
 </span><span class="keyword">local</span> root = <span class="function-name">Panel</span> {
-  content = <span class="keyword">function</span>(row, col, height, width)
+  content = <span class="keyword">function</span>(self)
     <span class="comment">-- render content here
 </span>  <span class="keyword">end</span>
 }
@@ -140,11 +141,13 @@
 <span class="comment">-- Create a divided panel
 </span><span class="keyword">local</span> divided = <span class="function-name">Panel</span> {
   orientation = Panel.orientations.horizontal, <span class="comment">-- or Panel.orientations.vertical
+</span>  min_width = <span class="number">50</span>,    <span class="comment">-- User-defined minimum width
+</span>  max_width = <span class="number">100</span>,   <span class="comment">-- User-defined maximum width
 </span>  children = {
-    <span class="function-name">Panel</span> { content = <span class="keyword">function</span>(self, r, c, h, w) <span class="comment">-- left/top panel
+    <span class="function-name">Panel</span> { content = <span class="keyword">function</span>(self) <span class="comment">-- left/top panel
 </span>      <span class="comment">-- render left/top content
 </span>    <span class="keyword">end</span> },
-    <span class="function-name">Panel</span> { content = <span class="keyword">function</span>(self, r, c, h, w) <span class="comment">-- right/bottom panel
+    <span class="function-name">Panel</span> { content = <span class="keyword">function</span>(self) <span class="comment">-- right/bottom panel
 </span>      <span class="comment">-- render right/bottom content
 </span>    <span class="keyword">end</span> }
   }
@@ -161,12 +164,48 @@
 <h2><a href="#Fields">Fields</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#self.col">self.col</a></td>
+	<td class="summary">Position: column, upper left corner</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#self.height">self.height</a></td>
+	<td class="summary">Size: height</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#self.inner_col">self.inner_col</a></td>
+	<td class="summary">Position: column, inner upper left corner</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#self.inner_height">self.inner_height</a></td>
+	<td class="summary">Size: inner height</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#self.inner_row">self.inner_row</a></td>
+	<td class="summary">Position: row, inner upper left corner</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#self.inner_width">self.inner_width</a></td>
+	<td class="summary">Size: inner width</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#self.panels">self.panels</a></td>
 	<td class="summary">Panels lookup table.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#self.row">self.row</a></td>
+	<td class="summary">Position: row, upper left corner</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#self.width">self.width</a></td>
+	<td class="summary">Size: width</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#ui.panel.orientations">ui.panel.orientations</a></td>
 	<td class="summary">Panel orientation constants table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.types">ui.panel.types</a></td>
+	<td class="summary">Panel type constants table.</td>
 	</tr>
 </table>
 <h2><a href="#Methods">Methods</a></h2>
@@ -182,10 +221,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#ui.panel:draw_border">ui.panel:draw_border ()</a></td>
 	<td class="summary">Draw the border around panel content.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.panel:get_children">ui.panel:get_children ()</a></td>
-	<td class="summary">Get the children of this panel.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#ui.panel:get_max_height">ui.panel:get_max_height ()</a></td>
@@ -220,6 +255,10 @@
 	<td class="summary">Get the type of this panel.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#ui.panel:hide">ui.panel:hide ([hide=true])</a></td>
+	<td class="summary">Set the visibility of this panel.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#ui.panel:init">ui.panel:init (opts)</a></td>
 	<td class="summary">Create a new Panel instance.</td>
 	</tr>
@@ -231,6 +270,10 @@
 	<td class="name" nowrap><a href="#ui.panel:set_split_ratio">ui.panel:set_split_ratio (ratio)</a></td>
 	<td class="summary">Set the split ratio for divided panels.</td>
 	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel:visible">ui.panel:visible ()</a></td>
+	<td class="summary">Get the visibility of this panel.</td>
+	</tr>
 </table>
 
 <br/>
@@ -240,6 +283,120 @@
     <h2 class="section-header "><a name="Fields"></a>Fields</h2>
 
     <dl class="function">
+    <dt>
+    <a name = "self.col"></a>
+    <strong>self.col</strong>
+    </dt>
+    <dd>
+    Position: column, upper left corner
+
+
+    <ul>
+        <li><span class="parameter">col</span>
+         number Starting column, upper left corner.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "self.height"></a>
+    <strong>self.height</strong>
+    </dt>
+    <dd>
+    Size: height
+
+
+    <ul>
+        <li><span class="parameter">height</span>
+         number Height.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "self.inner_col"></a>
+    <strong>self.inner_col</strong>
+    </dt>
+    <dd>
+    Position: column, inner upper left corner
+
+
+    <ul>
+        <li><span class="parameter">inner_col</span>
+         number Inner upper left corner.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "self.inner_height"></a>
+    <strong>self.inner_height</strong>
+    </dt>
+    <dd>
+    Size: inner height
+
+
+    <ul>
+        <li><span class="parameter">inner_height</span>
+         number Inner height.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "self.inner_row"></a>
+    <strong>self.inner_row</strong>
+    </dt>
+    <dd>
+    Position: row, inner upper left corner
+
+
+    <ul>
+        <li><span class="parameter">inner_row</span>
+         number Inner upper left corner.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "self.inner_width"></a>
+    <strong>self.inner_width</strong>
+    </dt>
+    <dd>
+    Size: inner width
+
+
+    <ul>
+        <li><span class="parameter">inner_width</span>
+         number Inner width.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
     <dt>
     <a name = "self.panels"></a>
     <strong>self.panels</strong>
@@ -261,11 +418,63 @@
 
 </dd>
     <dt>
+    <a name = "self.row"></a>
+    <strong>self.row</strong>
+    </dt>
+    <dd>
+    Position: row, upper left corner
+
+
+    <ul>
+        <li><span class="parameter">row</span>
+         number Starting row, upper left corner.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "self.width"></a>
+    <strong>self.width</strong>
+    </dt>
+    <dd>
+    Size: width
+
+
+    <ul>
+        <li><span class="parameter">width</span>
+         number Width.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "ui.panel.orientations"></a>
     <strong>ui.panel.orientations</strong>
     </dt>
     <dd>
     Panel orientation constants table.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.types"></a>
+    <strong>ui.panel.types</strong>
+    </dt>
+    <dd>
+    Panel type constants table.  See <a href="../classes/ui.Panel.html#ui.panel:get_type">get_type</a>.
 
 
 
@@ -284,6 +493,8 @@
     </dt>
     <dd>
     Calculate the layout for this panel and all its children.
+ This method must be called before <a href="../classes/ui.Panel.html#ui.panel:render">render</a> whenever there has been a change that impacts the layout.
+ For example, terminal resize, (un)hiding a panel, changing the split ratio, etc.
 
 
     <h3>Parameters:</h3>
@@ -341,6 +552,7 @@
     </dt>
     <dd>
     Draw the border around panel content.
+ This will automatically be called by the <a href="../classes/ui.Panel.html#ui.panel:render">render</a> method if a border is defined.
 
 
 
@@ -348,26 +560,6 @@
     <ol>
 
         nothing
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "ui.panel:get_children"></a>
-    <strong>ui.panel:get_children ()</strong>
-    </dt>
-    <dd>
-    Get the children of this panel.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a> or <span class="type">nil</span></span>
-        Array of child panels or nil if not divided.
     </ol>
 
 
@@ -474,8 +666,17 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a> or <span class="type">nil</span></span>
-        The first panel found with the given name, or nil if not found.
+           <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
+        The first panel found with the given name.
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        In case the panel wasn't found.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        Error message if panel not found.</li>
     </ol>
 
 
@@ -517,11 +718,25 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">number</span> or <span class="type">nil</span></span>
-        The split ratio or nil if not divided.
+           <span class="types"><span class="type">number</span></span>
+        The split ratio (0.0 to 1.0) or nil if not divided. The value determines the size
+ of the upper or left child panel. The remainder will go to the lower or right child panel.
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        In case the panel is a content panel.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        Error message.</li>
     </ol>
 
 
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/ui.Panel.html#ui.panel:set_split_ratio">set_split_ratio</a>
+    </ul>
 
 
 </dd>
@@ -537,10 +752,54 @@
     <h3>Returns:</h3>
     <ol>
 
-        Returns "content" for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
+        Returns <code>Panel.types.content</code> for content panels, or the orientation (Panel.orientations.horizontal or Panel.orientations.vertical) for divided panels.
     </ol>
 
 
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> t = my_panel:<span class="function-name">get_type</span>()
+<span class="keyword">if</span> t == Panel.types.content <span class="keyword">then</span>
+  <span class="comment">-- my_panel is a content panel
+</span>
+<span class="keyword">elseif</span> t == Panel.types.horizontal <span class="keyword">then</span>
+  <span class="comment">-- my_panel is a horizontal divided panel
+</span>
+<span class="keyword">elseif</span> t == Panel.types.vertical <span class="keyword">then</span>
+  <span class="comment">-- my_panel is a vertical divided panel
+</span><span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel:hide"></a>
+    <strong>ui.panel:hide ([hide=true])</strong>
+    </dt>
+    <dd>
+    Set the visibility of this panel.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">hide</span>
+            <span class="types"><span class="type">boolean</span></span>
+         True to hide the panel, false to show it.
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/ui.Panel.html#ui.panel:visible">visible</a>
+    </ul>
 
 
 </dd>
@@ -559,7 +818,7 @@
         <ul>
         <li><span class="parameter">content</span>
             <span class="types"><span class="type">function</span></span>
-         Content callback function that takes (self, row, col, height, width) parameters.
+         Content callback function that takes only self parameter. Access layout via self.inner<em>row, self.inner</em>col, self.inner<em>height, self.inner</em>width.
          (<em>optional</em>)
         </li>
         <li><span class="parameter">clear_content</span>
@@ -584,28 +843,33 @@
         </li>
         <li><span class="parameter">min_height</span>
             <span class="types"><span class="type">number</span></span>
-         Minimum height constraint (content panels only).
+         Minimum height constraint.
          (<em>default</em> 1)
         </li>
         <li><span class="parameter">min_width</span>
             <span class="types"><span class="type">number</span></span>
-         Minimum width constraint (content panels only).
+         Minimum width constraint.
          (<em>default</em> 1)
         </li>
         <li><span class="parameter">max_height</span>
             <span class="types"><span class="type">number</span></span>
-         Maximum height constraint (content panels only).
+         Maximum height constraint.
          (<em>default</em> math.huge)
         </li>
         <li><span class="parameter">max_width</span>
             <span class="types"><span class="type">number</span></span>
-         Maximum width constraint (content panels only).
+         Maximum width constraint.
          (<em>default</em> math.huge)
         </li>
         <li><span class="parameter">split_ratio</span>
             <span class="types"><span class="type">number</span></span>
          Ratio for dividing child panels (0.0 to 1.0).
          (<em>default</em> 0.5)
+        </li>
+        <li><span class="parameter">visible</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether the panel is visible (true) or hidden (false).
+         (<em>default</em> true)
         </li>
         <li><span class="parameter">border</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
@@ -652,7 +916,7 @@
     <ul>
         <pre class="example"><span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
 <span class="keyword">local</span> panel = <span class="function-name">Panel</span> {
-  content = <span class="keyword">function</span>(self, row, col, height, width)
+  content = <span class="keyword">function</span>(self)
     <span class="comment">-- render content here
 </span>  <span class="keyword">end</span>,
   border = {
@@ -669,6 +933,8 @@
     </dt>
     <dd>
     Render this panel and all its children.
+ <strong>Note:</strong> if any changes have been made that impact the layout, then <a href="../classes/ui.Panel.html#ui.panel:calculate_layout">calculate_layout</a> must be called before <a href="../classes/ui.Panel.html#ui.panel:render">render</a>.
+ For example, terminal resize, (un)hiding a panel, changing the split ratio, etc.
 
 
 
@@ -688,13 +954,15 @@
     </dt>
     <dd>
     Set the split ratio for divided panels.
+ After changing the ratio, <a href="../classes/ui.Panel.html#ui.panel:calculate_layout">calculate_layout</a> must be called to update the layout.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">ratio</span>
             <span class="types"><span class="type">number</span></span>
-         The split ratio (0.0 to 1.0).
+         The split ratio (0.0 to 1.0). The value set determines the size
+ of the upper or left child panel. The remainder will go to the lower or right child panel.
         </li>
     </ul>
 
@@ -705,6 +973,34 @@
     </ol>
 
 
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/ui.Panel.html#ui.panel:get_split_ratio">get_split_ratio</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel:visible"></a>
+    <strong>ui.panel:visible ()</strong>
+    </dt>
+    <dd>
+    Get the visibility of this panel.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+        True if visible, false if hidden.
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/ui.Panel.html#ui.panel:hide">hide</a>
+    </ul>
 
 
 </dd>

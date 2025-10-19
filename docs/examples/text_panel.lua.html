@@ -89,6 +89,7 @@
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -105,9 +106,10 @@
 <span class="comment">-- TextPanel example demonstrating scrollable text display
 </span>
 <span class="keyword">local</span> TextPanel = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.text"</span>)
-<span class="keyword">local</span> Screen = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.screen"</span>)
-<span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.bar"</span>)
 <span class="keyword">local</span> terminal = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Screen = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.screen"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel"</span>)
+<span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.bar"</span>)
 
 <span class="comment">-- Create some sample text content
 </span><span class="keyword">local</span> sample_text = {
@@ -120,18 +122,6 @@
   <span class="string">"• Configurable scroll step size"</span>,
   <span class="string">"• Methods for navigation: set_position(), scroll_up(), scroll_down()"</span>,
   <span class="string">"• Dynamic content management: set_lines(), add_line(), clear()"</span>,
-  <span class="string">""</span>,
-  <span class="string">"Navigation:"</span>,
-  <span class="string">"• Use 'j' or ↓ arrow to scroll down"</span>,
-  <span class="string">"• Use 'k' or ↑ arrow to scroll up"</span>,
-  <span class="string">"• Use '[' and ']' to move the highlight"</span>,
-  <span class="string">"• Use 'g' to go to top"</span>,
-  <span class="string">"• Use 'G' to go to bottom"</span>,
-  <span class="string">"• Use 'r' to add a random line"</span>,
-  <span class="string">"• Use 'c' to clear content"</span>,
-  <span class="string">"• Use 's' to reset to this sample text"</span>,
-  <span class="string">"• Use 'f' to swicth line-formatters; trunc, wrap, word-wrap"</span>,
-  <span class="string">"• Use 'q' to quit"</span>,
   <span class="string">""</span>,
   <span class="string">"The TextPanel class inherits from Panel and provides:"</span>,
   <span class="string">""</span>,
@@ -163,6 +153,44 @@
   <span class="string">"Thank you for trying out this example!"</span>
 }
 
+<span class="comment">-- Create help text content
+</span><span class="keyword">local</span> help_text = {
+  <span class="string">"Help:"</span>,
+  <span class="string">"• Use 'h' to toggle this help"</span>,
+  <span class="string">"• Use 'j' or ↓ arrow to scroll down"</span>,
+  <span class="string">"• Use 'k' or ↑ arrow to scroll up"</span>,
+  <span class="string">"• Use 'pgup' or 'pgdn' to page up/down"</span>,
+  <span class="string">"• Use '[' and ']' to move the highlight"</span>,
+  <span class="string">"• Use 'g' to go to top"</span>,
+  <span class="string">"• Use 'G' to go to bottom"</span>,
+  <span class="string">"• Use 'r' to add a random line"</span>,
+  <span class="string">"• Use 'c' to clear content"</span>,
+  <span class="string">"• Use 's' to reset to the sample text"</span>,
+  <span class="string">"• Use 'f' to switch line-formatters; trunc, wrap, word-wrap"</span>,
+  <span class="string">"• Use 'q' to quit"</span>,
+}
+
+<span class="comment">-- Create the main content panel (left side)
+</span><span class="keyword">local</span> main_content = <span class="function-name">TextPanel</span> {
+  lines = sample_text,
+  scroll_step = <span class="number">1</span>,
+  text_attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"bright"</span> },
+  <span class="comment">--highlight_attr = { fg = "red", brightness = "bright" },
+</span>  border = { format = terminal.draw.box_fmt.single },
+  auto_render = <span class="keyword">true</span>,
+}
+
+<span class="comment">-- Create the help panel (right side)
+</span><span class="keyword">local</span> help_panel = <span class="function-name">TextPanel</span> {
+  lines = help_text,
+  line_formatter = TextPanel.format_line_wordwrap,
+  scroll_step = <span class="number">1</span>,
+  text_attr = { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"bright"</span> },
+  border = { format = terminal.draw.box_fmt.single },
+  auto_render = <span class="keyword">true</span>,
+}
+
+
 <span class="comment">-- Create the main screen
 </span><span class="keyword">local</span> screen = <span class="function-name">Screen</span> {
   header = <span class="function-name">Bar</span> {
@@ -181,14 +209,11 @@
     attr = { bg = <span class="string">"blue"</span> }
   },
 
-  body = <span class="function-name">TextPanel</span> {
-    lines = sample_text,
-    scroll_step = <span class="number">1</span>,
-    text_attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"bright"</span> },
-    <span class="comment">--highlight_attr = { fg = "red", brightness = "bright" },
-</span>    border = { format = terminal.draw.box_fmt.single },
-    auto_render = <span class="keyword">true</span>,
-  },
+  body = <span class="function-name">Panel</span> {         <span class="comment">-- Create a horizontal split panel
+</span>    orientation = Panel.orientations.horizontal,
+    children = { main_content, help_panel },
+    split_ratio = <span class="number">0.7</span>,   <span class="comment">-- Give more space to main content
+</span>  },
 
   footer = <span class="function-name">Bar</span> {
     left = {
@@ -200,7 +225,7 @@
       attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span> }
     },
     right = {
-      text = <span class="string">"q: quit"</span>,
+      text = <span class="string">"h: help, q: quit"</span>,
       attr = { fg = <span class="string">"red"</span>, brightness = <span class="string">"bright"</span> }
     },
     attr = { bg = <span class="string">"black"</span>, fg = <span class="string">"white"</span> }
@@ -219,6 +244,7 @@
   <span class="keyword">local</span> keymap = terminal.input.keymap.default_key_map
   <span class="keyword">local</span> keys = terminal.input.keymap.default_keys
 
+  terminal.cursor.visible.<span class="function-name">set</span>(<span class="keyword">false</span>)
   screen:<span class="function-name">calculate_layout</span>()
   screen:<span class="function-name">render</span>()
 
@@ -228,35 +254,40 @@
 
     <span class="keyword">if</span> key == <span class="string">"q"</span> <span class="keyword">or</span> key == <span class="string">"Q"</span> <span class="keyword">then</span>
       <span class="keyword">break</span>
+    <span class="keyword">elseif</span> key == <span class="string">"h"</span> <span class="keyword">or</span> key == <span class="string">"H"</span> <span class="keyword">then</span>
+      <span class="comment">-- Toggle help panel visibility
+</span>      help_panel:<span class="function-name">hide</span>(help_panel:<span class="function-name">visible</span>())
+      screen:<span class="function-name">calculate_layout</span>()
+      screen:<span class="function-name">render</span>()
     <span class="keyword">elseif</span> key == <span class="string">"j"</span> <span class="keyword">or</span> keyname == keys.down <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">scroll_down</span>()
+      main_content:<span class="function-name">scroll_down</span>()
     <span class="keyword">elseif</span> key == <span class="string">"k"</span> <span class="keyword">or</span> keyname == keys.up <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">scroll_up</span>()
+      main_content:<span class="function-name">scroll_up</span>()
     <span class="keyword">elseif</span> keyname == keys.pageup <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">page_up</span>()
+      main_content:<span class="function-name">page_up</span>()
     <span class="keyword">elseif</span> keyname == keys.pagedown <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">page_down</span>()
+      main_content:<span class="function-name">page_down</span>()
     <span class="keyword">elseif</span> key == <span class="string">"["</span> <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_highlight</span>((screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">get_highlight</span>() <span class="keyword">or</span> <span class="number">2</span>) - <span class="number">1</span>, <span class="keyword">true</span>)
+      main_content:<span class="function-name">set_highlight</span>((main_content:<span class="function-name">get_highlight</span>() <span class="keyword">or</span> <span class="number">2</span>) - <span class="number">1</span>, <span class="keyword">true</span>)
     <span class="keyword">elseif</span> key == <span class="string">"]"</span> <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_highlight</span>((screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">get_highlight</span>() <span class="keyword">or</span> <span class="number">0</span>) + <span class="number">1</span>, <span class="keyword">true</span>)
+      main_content:<span class="function-name">set_highlight</span>((main_content:<span class="function-name">get_highlight</span>() <span class="keyword">or</span> <span class="number">0</span>) + <span class="number">1</span>, <span class="keyword">true</span>)
     <span class="keyword">elseif</span> key == <span class="string">"g"</span> <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_position</span>(<span class="number">1</span>)
+      main_content:<span class="function-name">set_position</span>(<span class="number">1</span>)
     <span class="keyword">elseif</span> key == <span class="string">"G"</span> <span class="keyword">then</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_position</span>(<span class="global">math</span>.huge)
+      main_content:<span class="function-name">set_position</span>(<span class="global">math</span>.huge)
     <span class="keyword">elseif</span> key == <span class="string">"f"</span> <span class="keyword">then</span>
       current_formatter = current_formatter % #formatters + <span class="number">1</span>
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_line_formatter</span>(formatters[current_formatter])
+      main_content:<span class="function-name">set_line_formatter</span>(formatters[current_formatter])
     <span class="keyword">elseif</span> key == <span class="string">"r"</span> <span class="keyword">then</span>
       <span class="comment">-- Add a random line
 </span>      <span class="keyword">local</span> random_line = <span class="string">"Random line "</span> .. <span class="global">math</span>.<span class="function-name">random</span>(<span class="number">1000</span>) .. <span class="string">" added at "</span> .. <span class="global">os</span>.<span class="function-name">date</span>(<span class="string">"%H:%M:%S"</span>)
-      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">add_line</span>(random_line)
+      main_content:<span class="function-name">add_line</span>(random_line)
     <span class="keyword">elseif</span> key == <span class="string">"c"</span> <span class="keyword">then</span>
       <span class="comment">-- Clear content
-</span>      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">clear_lines</span>()
+</span>      main_content:<span class="function-name">clear_lines</span>()
     <span class="keyword">elseif</span> key == <span class="string">"s"</span> <span class="keyword">then</span>
       <span class="comment">-- Reset to sample text
-</span>      screen:<span class="function-name">get_panel</span>(<span class="string">"body"</span>):<span class="function-name">set_lines</span>(sample_text)
+</span>      main_content:<span class="function-name">set_lines</span>(sample_text)
     <span class="keyword">end</span>
 
     <span class="comment">-- Check for resize, and redraw if needed

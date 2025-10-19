@@ -37,10 +37,10 @@
 <ul class="">
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
-  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><strong>3. Text handling</strong></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
-  <li><strong>MIT License</strong></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -100,27 +100,42 @@
 <div id="content">
 
 
-<h1>MIT License</h1>
+<h1>3. Text handling</h1>
 
-<h3>Copyright (c) 2024-2025 Thijs Schreijer</h3>
+<p>Text handling in a terminal has several challenges. With Lua even more since the Lua strings are essentially
+byte arrays, any encoding must be manually handled. This library standardizes on UTF8 (during terminal
+initialization it will set UTF8 as the encoding on Windows to create cross-platform consistency).</p>
 
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
+<p>Besides the encoding there is also the display width of characters. Especially non-western languages and
+special characters like emojis are often displayed as 2 columns wide. For some characters there isn't even a
+defined display width.</p>
 
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
+<p>To handle these problems the library has several convenience functions and classes to do the hard work for you.</p>
 
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<p><strong>Important</strong>: for writing to the terminal, the module <a href="../modules/terminal.output.html#">terminal.output</a> must be used! Not the standard Lua
+functions. If needed the Lua functions can be patched with the ones provided in <a href="../modules/terminal.output.html#">terminal.output</a>.</p>
+
+<h1>3.1 Character display width</h1>
+
+<p>Since not all characters have a predefined width (east-asian languages with ambiguous widths), so even if using
+LuaSystems functions to determine character display width there are still unknowns. The only way to know how they
+render (single or double columns) is to actually test display width.</p>
+
+<p>For this purpose there are several utility functions in <a href="../modules/terminal.text.width.html#">terminal.text.width</a>, and there is the width-testing for
+use during application startup/initialization by means of <a href="../modules/terminal.html#preload_widths">terminal.preload_widths</a>.</p>
+
+<h1>3.2 Displaying strings</h1>
+
+<p>In terminal displays the proper alignment of characters is a must to be able to provide a good looking UI. Hence
+some utility functions/classes are provided to help with that.</p>
+
+<ul>
+    <li>the <a href="../classes/EditLine.html#">EditLine</a> class. A cursor based editor for strings. This class will also keep track of positions, both in
+    UTF8 characters as well as in display-columns. For display purposes check out the <a href="../classes/EditLine.html#editline:format">EditLine.format</a> method.</li>
+    <li>the <a href="../modules/terminal.utils.html#utf8sub">terminal.utils.utf8sub</a> and <a href="../modules/terminal.utils.html#utf8sub_col">terminal.utils.utf8sub_col</a> functions. Both behave like the standard
+    <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string.sub</a> function, but the former operates on UTF8 characters (also for Lua 5.1, 5.2, and LuaJIT), and the
+    latter operates on display columns.</li>
+</ul>
 
 
 </div> <!-- id="content" -->
