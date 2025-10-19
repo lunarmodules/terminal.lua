@@ -83,7 +83,10 @@ local help_panel = TextPanel {
   line_formatter = TextPanel.format_line_wordwrap,
   scroll_step = 1,
   text_attr = { fg = "cyan", brightness = "bright" },
-  border = { format = terminal.draw.box_fmt.single },
+  border = {
+    format = terminal.draw.box_fmt.single,
+    title = "Help",
+  },
   auto_render = true,
 }
 
