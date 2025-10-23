@@ -434,8 +434,9 @@ end
 
 --- Add a line to the text content.
 -- @tparam string line The line to add.
+-- @tparam[opt=false] boolean jump Whether to adjust viewport to show the new line.
 -- @return nothing
-function TextPanel:add_line(line)
+function TextPanel:add_line(line, jump)
   table.insert(self.lines, line or "")
 
   -- Enforce max_lines limit if set
@@ -491,6 +492,10 @@ function TextPanel:add_line(line)
       if must_redraw or lastline_displayed > old_line_count then
         self:render()
       end
+    end
+
+    if jump then
+      self:set_position((#formatted_lines))
     end
   end
 end
