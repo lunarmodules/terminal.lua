@@ -629,9 +629,10 @@ end
 
 --- Draw the border around panel content.
 -- This will automatically be called by the `render` method if a border is defined.
+-- A no-op if the panel is not visible or no border is defined.
 -- @return nothing
 function Panel:draw_border()
-  if not self.border then
+  if (not self.border) or (not self:visible()) then
     return
   end
 

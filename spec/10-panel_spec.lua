@@ -1410,4 +1410,108 @@ describe("terminal.ui.panel", function()
 
   end)
 
+
+  describe("draw_border()", function()
+
+    local old_cursor, old_text, old_draw, old_terminal_size
+    before_each(function()
+      -- Mock terminal functions to avoid actually drawing
+      local terminal = require("terminal")
+      old_cursor = terminal.cursor
+      terminal.cursor = {
+        position = {
+          backup = function() end,
+          restore = function() end,
+          set = function() end,
+        }
+      }
+
+      local text_module = require("terminal.text")
+      old_text = text_module.stack
+      text_module.stack = {
+        push = function() end,
+        pop = function() end,
+      }
+
+      local draw_module = require("terminal.draw")
+      old_draw = draw_module.box
+      draw_module.box = function() return true end
+
+      old_terminal_size = terminal.size
+      terminal.size = function() return 24, 80 end
+    end)
+
+    after_each(function()
+      local terminal = require("terminal")
+      terminal.cursor = old_cursor
+      local text_module = require("terminal.text")
+      text_module.stack = old_text
+      local draw_module = require("terminal.draw")
+      draw_module.box = old_draw
+      terminal.size = old_terminal_size
+    end)
+
+
+    it("is a no-op when panel is hidden", function()
+      local Panel = require("terminal.ui.panel")
+      local draw = require("terminal.draw")
+
+      local panel = Panel {
+        content = function() end,
+        border = {
+          format = draw.box_fmt.single,
+          title = "Test Panel"
+        }
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+      assert.is_true(panel:visible())
+
+      panel:hide()
+      assert.is_false(panel:visible())
+
+      -- Should not throw an error when drawing border on hidden panel
+      assert.has_no.errors(function()
+        panel:draw_border()
+      end)
+    end)
+
+
+    it("is a no-op when panel has no border", function()
+      local panel = Panel {
+        content = function() end
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+
+      -- Should not throw an error when drawing border on panel with no border
+      assert.has_no.errors(function()
+        panel:draw_border()
+      end)
+    end)
+
+
+    it("draws border when panel is visible and has border", function()
+      local Panel = require("terminal.ui.panel")
+      local draw = require("terminal.draw")
+
+      local panel = Panel {
+        content = function() end,
+        border = {
+          format = draw.box_fmt.single,
+          title = "Test Panel"
+        }
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+      assert.is_true(panel:visible())
+
+      -- Should not throw an error when drawing border on visible panel with border
+      assert.has_no.errors(function()
+        panel:draw_border()
+      end)
+    end)
+
+  end)
+
 end)
