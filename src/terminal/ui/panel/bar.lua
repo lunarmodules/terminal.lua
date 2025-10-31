@@ -200,7 +200,7 @@ function Bar:_build_bar_line(width)
   else
     s[#s+1] = right_str
   end
-  s[#s+1] = terminal.clear.eol_seq
+  s[#s+1] = string.rep(" ", self.margin)
   if self.attr then
     s[#s+1] = text.stack.pop_seq
   end
