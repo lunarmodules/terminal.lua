@@ -108,9 +108,8 @@ describe("terminal.ui.panel.bar", function()
 
       local line = bar:_build_bar_line(20)
       local line_str = tostring(line)
-      -- Should end with EOL sequence (4 bytes)
-      assert.are.equal(" L       C        R", line_str:sub(1, -5))
-      assert.are.equal(23, #line_str)  -- 19 content + 4 EOL bytes
+      assert.are.equal(" L       C        R ", line_str)
+      assert.are.equal(20, #line_str)
     end)
 
 
@@ -122,9 +121,8 @@ describe("terminal.ui.panel.bar", function()
 
       local line = bar:_build_bar_line(10)
       local line_str = tostring(line)
-      -- Should end with EOL sequence (4 bytes)
-      assert.are.equal("         ", line_str:sub(1, -5))
-      assert.are.equal(13, #line_str)  -- 9 content + 4 EOL bytes
+      assert.are.equal("          ", line_str)
+      assert.are.equal(10, #line_str)
     end)
 
 
@@ -139,9 +137,8 @@ describe("terminal.ui.panel.bar", function()
 
       local line = bar:_build_bar_line(10)
       local line_str = tostring(line)
-      -- Should end with EOL sequence (4 bytes)
-      assert.are.equal("L   C    R", line_str:sub(1, -5))
-      assert.are.equal(14, #line_str)  -- 10 content + 4 EOL bytes
+      assert.are.equal("L   C    R", line_str)
+      assert.are.equal(10, #line_str)
     end)
 
 
@@ -156,9 +153,8 @@ describe("terminal.ui.panel.bar", function()
 
       local line = bar:_build_bar_line(10)
       local line_str = tostring(line)
-      -- Should end with EOL sequence (4 bytes)
-      assert.are.equal(" L  C   R", line_str:sub(1, -5))
-      assert.are.equal(13, #line_str)  -- 9 content + 4 EOL bytes
+      assert.are.equal(" L  C   R ", line_str)
+      assert.are.equal(10, #line_str)
     end)
 
 
