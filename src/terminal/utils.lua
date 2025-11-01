@@ -46,6 +46,7 @@ end
 -- @tparam table constants The valid values for the constant.
 -- @tparam[opt="Invalid value: "] string prefix the prefix for the message.
 -- @treturn string The error message.
+-- @within Constants
 function M.invalid_constant(value, constants, prefix)
   local prefix = prefix or "Invalid value: "
   local list = constants_to_string(constants)
@@ -67,6 +68,7 @@ end
 -- @tparam[opt="Invalid value: "] string prefix the prefix for the message.
 -- @tparam[opt=1] number err_lvl the error level when throwing the error.
 -- @return nothing, throws an error.
+-- @within Constants
 function M.throw_invalid_constant(value, constants, prefix, err_lvl)
   err_lvl = (err_lvl or 1) + 1 -- +1 to add this function itself
   error(M.invalid_constant(value, constants, prefix), err_lvl)
@@ -92,6 +94,7 @@ end
 --
 -- local value = cursor_shape["bad-shape"] -- throws an error;
 -- -- Invalid cursor shape: "bad-shape". Expected one of: "block", "underline", "bar"
+-- @within Constants
 function M.make_lookup(value_type, t)
   local value_type = value_type or "value"
 
@@ -112,6 +115,7 @@ end
 -- @tparam number index The index to resolve.
 -- @tparam number max_value The maximum value for the index.
 -- @tparam[opt=1] number min_value The minimum value for the index.
+-- @within Generic
 function M.resolve_index(index, max_value, min_value)
   if index < 0 then
     index = max_value + index + 1
@@ -217,7 +221,8 @@ do
   -- print(instance1.value)      --> 84
   -- local instance2 = Lion(10)
   -- print(instance2.value)      --> 20
-  function M.class(baseclass)
+  -- @within Classes
+function M.class(baseclass)
     baseclass = baseclass or base
     assert(rawget(baseclass, "__index"), "Baseclass is not a Class, can only subclass a Class")
     local class = setmetatable({}, baseclass)
@@ -241,6 +246,7 @@ end
 -- utf8sub("你好", 1, 2)       -- "你好"
 -- utf8sub("你好", 1, 1)       -- "你"
 -- utf8sub("你好世界", 2, 3)    -- "好世"
+-- @within Text
 function M.utf8sub(str, i, j)
   local n = utf8.len(str)
   if #str == n then -- fast path, no utf8 codes
@@ -277,6 +283,7 @@ end
 -- utf8sub_pos("你好世界", 3, 6)  -- "好世" (columns 3-6)
 -- utf8sub_pos("你好世界", 2, 7)  -- " 好世 " (columns 2-7 with padding for half of double-width chars)
 -- utf8sub_pos("你好世界", 2, 7, true)  -- "好世" (columns 2-7, no_pad == true)
+-- @within Text
 function M.utf8sub_col(str, i, j, no_pad)
   i = i or 1
   j = j or math.huge
@@ -374,6 +381,9 @@ end
 -- truncate_ellipsis(3, "Very long text", "drop")  -- ""
 -- -- Custom ellipsis
 -- truncate_ellipsis(10, "Very long text", "right", "..")  -- "Very lon.."
+-- -- Empty string as ellipsis just truncates the text
+-- truncate_ellipsis(10, "Very long text", "left", "")  -- " long text"
+-- @within Text
 function M.truncate_ellipsis(width, text, trunc_type, ellipsis)
   if text == nil or text == "" then
     return "", 0
