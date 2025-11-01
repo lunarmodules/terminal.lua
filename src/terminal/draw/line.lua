@@ -9,6 +9,7 @@ local Sequence = require "terminal.sequence"
 local output = require "terminal.output"
 local cursor = require "terminal.cursor"
 local text = require "terminal.text"
+local utils = require "terminal.utils"
 
 
 
@@ -72,53 +73,6 @@ end
 
 
 
---- Formats a title for display in a title line.
--- Shortens it if necessary, adds ellipsis if necessary. "left" means truncate from the left,
--- "right" means truncate from the right, "drop" means drop the entire thing all at once.
--- @tparam number width the available width for the title in columns
--- @tparam[opt=""] string title the title to format
--- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop"
--- @treturn string the formatted title, this can be an empty string if it doesn't fit
--- @treturn number the size of the returned title in columns
-function M.title_fmt(width, title, type)
-  if title == nil or title == "" then
-    return "", 0
-  end
-  type = type or "right"
-  local EditLine = require "terminal.editline"
-
-  local title_w = text.width.utf8swidth(title)
-  if width >= title_w then
-    -- enough space for title
-    return title, title_w
-
-  elseif width < 4 or type == "drop" then
-    -- too little space for title, omit it alltogether
-    return "", 0
-
-  elseif type == "right" then -- truncate the title to the right
-    width = width - 3 -- for "..."
-    local el_title = EditLine(title):goto_index(width+1)
-    while el_title:pos_col() - 1 > width do
-      el_title:left()
-    end
-    el_title = el_title:sub_char(1, el_title:pos_char() - 1)
-    return tostring(el_title) .. "...", el_title:len_col() + 3
-
-  else -- truncate the title to the left
-    width = width - 3 -- for "..."
-    local el_title = EditLine(title):left(width + 1)
-    local l = el_title:len_col()
-    while l - el_title:pos_col() >= width do
-      el_title:right()
-    end
-    el_title = el_title:sub_char(el_title:pos_char(), -1)
-    return "..." .. tostring(el_title), el_title:len_col() + 3
-  end
-end
-
-
-
 --- Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.
 -- Line is drawn left to right. If the width is too small for the title, the title is truncated.
 -- If less than 4 characters are available for the title, the title is omitted alltogether.
@@ -127,7 +81,7 @@ end
 -- @tparam[opt="─"] string char the line-character to use
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
--- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `title_fmt` for details
+-- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `utils.truncate_ellipsis` for details
 -- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
 -- @treturn Sequence|string The sequence to write to the terminal
 -- @within Sequences
@@ -142,7 +96,7 @@ function M.title_seq(width, title, char, pre, post, type, title_attr)
   local post_w = text.width.utf8swidth(post)
   local w_for_title = width - pre_w - post_w
 
-  local title, title_w = M.title_fmt(w_for_title, title, type)
+  local title, title_w = utils.truncate_ellipsis(w_for_title, title, type)
   if title_w == 0 then
     return M.horizontal_seq(width, char)
   end
@@ -175,7 +129,7 @@ end
 -- @tparam[opt="─"] string char the line-character to use
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
--- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `title_fmt` for details
+-- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `utils.truncate_ellipsis` for details
 -- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
 -- @return true
 function M.title(title, width, char, pre, post, type, title_attr)
