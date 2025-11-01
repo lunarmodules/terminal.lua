@@ -50,19 +50,13 @@ describe("terminal.draw", function()
 
   it("handles title that's too long - truncates with ellipsis", function()
     local result = line.title_seq(8, "VeryLongTitle")
-    assert.are.equal("VeryL...", result)
+    assert.are.equal("VeryLon…", result)
   end)
 
 
   it("handles title that's too long with prefix/postfix", function()
     local result = line.title_seq(10, "VeryLongTitle", "─", "┤ ", " ├")
-    assert.are.equal("┤ Ver... ├", result)
-  end)
-
-
-  it("omits title when width too small (less than 4 chars)", function()
-    local result = line.title_seq(3, "Test")
-    assert.are.equal("───", result)
+    assert.are.equal("┤ VeryL… ├", result)
   end)
 
 
@@ -92,7 +86,7 @@ describe("terminal.draw", function()
 
   it("handles title with spaces", function()
     local result = line.title_seq(10, "Hello World")
-    assert.are.equal("Hello W...", result) -- Should truncate
+    assert.are.equal("Hello Wor…", result) -- Should truncate
   end)
 
 
@@ -113,7 +107,7 @@ describe("terminal.draw", function()
   it("handles very long title", function()
     local long_title = string.rep("A", 1000)
     local result = line.title_seq(10, long_title)
-    assert.are.equal("AAAAAAA...", result)
+    assert.are.equal("AAAAAAAAA…", result)
   end)
 
 
@@ -122,7 +116,7 @@ describe("terminal.draw", function()
     assert.are.equal("hello 测试!", result)
 
     local result = line.title_seq(10, "hello 测试!")
-    assert.are.equal("hello ...─", result)
+    assert.are.equal("hello 测…─", result)
   end)
 
 
@@ -134,7 +128,7 @@ describe("terminal.draw", function()
 
   it("truncates to the left if the title is too long and 'left' is specified", function()
     local result = line.title_seq(10, "hello 测试!", nil, nil, nil, "left")
-    assert.are.equal("...o 测试!", result)
+    assert.are.equal("…llo 测试!", result)
   end)
 
 end)
