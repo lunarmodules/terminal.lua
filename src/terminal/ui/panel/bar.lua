@@ -13,7 +13,6 @@ local Panel = require("terminal.ui.panel.init")
 local terminal = require("terminal")
 local utils = require("terminal.utils")
 local text = require("terminal.text")
-local draw = require("terminal.draw")
 local Sequence = require("terminal.sequence")
 
 local Bar = utils.class(Panel)
@@ -154,10 +153,10 @@ function Bar:_build_bar_line(width)
   local center_alloc = math.floor(available_content_space * 0.4)
   local right_alloc = available_content_space - left_alloc - center_alloc
 
-  -- Use title_fmt for proper truncation
-  local left_str, left_w = draw.line.title_fmt(left_alloc, self.left, self.left_type)
-  local center_str, center_w = draw.line.title_fmt(center_alloc, self.center, self.center_type)
-  local right_str, right_w = draw.line.title_fmt(right_alloc, self.right, self.right_type)
+  -- Use truncate_ellipsis for proper truncation
+  local left_str, left_w = utils.truncate_ellipsis(left_alloc, self.left, self.left_type)
+  local center_str, center_w = utils.truncate_ellipsis(center_alloc, self.center, self.center_type)
+  local right_str, right_w = utils.truncate_ellipsis(right_alloc, self.right, self.right_type)
 
   -- Calculate actual space used by content
   local content_width = left_w + center_w + right_w

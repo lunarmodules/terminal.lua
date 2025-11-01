@@ -350,5 +350,65 @@ end
 
 
 
+
+
+--- Truncates text to fit within a given width, adding ellipsis as needed.
+-- Shortens text if necessary, adds ellipsis ("...") when truncated. Respects UTF-8
+-- character boundaries and handles double-width characters correctly.
+-- @tparam number width The available width for the text in columns.
+-- @tparam[opt=""] string text The text to truncate.
+-- @tparam[opt="right"] string trunc_type The type of truncation to apply:
+--   - "right": Truncate from the right, show beginning of text with "..."
+--   - "left": Truncate from the left, show end of text with "..."
+--   - "drop": Drop the entire text if it doesn't fit (return empty string).
+-- @treturn string The truncated text (may be empty string).
+-- @treturn number The size of the returned text in columns.
+-- @usage
+-- -- Truncate from right (default)
+-- truncate_ellipsis(10, "Very long text")  -- "Very lo..."
+-- -- Truncate from left
+-- truncate_ellipsis(10, "Very long text", "left")  -- "...ng text"
+-- -- Drop if too small
+-- truncate_ellipsis(3, "Very long text", "drop")  -- ""
+function M.truncate_ellipsis(width, text, trunc_type)
+  if text == nil or text == "" then
+    return "", 0
+  end
+  trunc_type = trunc_type or "right"
+  local EditLine = require "terminal.editline"
+  local width_module = require("terminal.text.width")
+
+  local text_w = width_module.utf8swidth(text)
+  if width >= text_w then
+    -- enough space for text
+    return text, text_w
+
+  elseif width < 4 or trunc_type == "drop" then
+    -- too little space for text, omit it altogether
+    return "", 0
+
+  elseif trunc_type == "right" then -- truncate the text from the right
+    width = width - 3 -- for "..."
+    local el_text = EditLine(text):goto_index(width+1)
+    while el_text:pos_col() - 1 > width do
+      el_text:left()
+    end
+    el_text = el_text:sub_char(1, el_text:pos_char() - 1)
+    return tostring(el_text) .. "...", el_text:len_col() + 3
+
+  else -- truncate the text from the left
+    width = width - 3 -- for "..."
+    local el_text = EditLine(text):left(width + 1)
+    local l = el_text:len_col()
+    while l - el_text:pos_col() >= width do
+      el_text:right()
+    end
+    el_text = el_text:sub_char(el_text:pos_char(), -1)
+    return "..." .. tostring(el_text), el_text:len_col() + 3
+  end
+end
+
+
+
 width = require("terminal.text.width") -- load only now, to prevent loops
 return M
