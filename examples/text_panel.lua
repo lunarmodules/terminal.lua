@@ -35,6 +35,7 @@ local sample_text = {
   "Line " .. string.rep("C", 40),
   "Line " .. string.rep("D", 20),
   "Line " .. string.rep("E", 60),
+  "Line 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽",
   "",
   "You can add more lines dynamically:",
   "• Call add_line() to append new content",

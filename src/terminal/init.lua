@@ -91,7 +91,7 @@ end
 -- @return true
 -- @within Initialization
 function M.preload_widths(str)
-  text.width.test((str or "") .. M.progress._spinner_fmt_chars() .. M.draw.box_fmt_chars())
+  text.width.test((str or "") .. M.progress._spinner_fmt_chars() .. M.draw._box_fmt_chars())
   return true
 end
 
