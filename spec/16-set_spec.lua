@@ -77,6 +77,7 @@ describe("terminal.ui.panel.set", function()
   end)
 
 
+
   describe("add()", function()
 
     it("adds by panel instance using its name", function()
@@ -123,6 +124,7 @@ describe("terminal.ui.panel.set", function()
     end)
 
   end)
+
 
 
   describe("select()", function()
@@ -179,6 +181,7 @@ describe("terminal.ui.panel.set", function()
   end)
 
 
+
   describe("remove()", function()
 
     it("removes a non-selected panel", function()
@@ -232,6 +235,7 @@ describe("terminal.ui.panel.set", function()
   end)
 
 
+
   describe("get_selected()", function()
 
     it("returns nil with error message when no panel is selected", function()
@@ -263,6 +267,7 @@ describe("terminal.ui.panel.set", function()
     end)
 
   end)
+
 
 
   describe("panel_set()", function()
@@ -314,6 +319,7 @@ describe("terminal.ui.panel.set", function()
     end)
 
   end)
+
 
 
   describe("layout integration", function()
