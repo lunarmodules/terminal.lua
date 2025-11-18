@@ -7,6 +7,7 @@ local terminal = require("terminal")
 local Screen = require("src.terminal.ui.panel.screen")
 local Panel = require("src.terminal.ui.panel")
 local Bar = require("src.terminal.ui.panel.bar")
+local KeyBar = require("src.terminal.ui.panel.key_bar")
 
 -- Create some sample text content
 local sample_text = {
@@ -116,20 +117,32 @@ local screen = Screen {
     split_ratio = 0.7,   -- Give more space to main content
   },
 
-  footer = Bar {
-    left = {
-      text = "j/k or ↑/↓: scroll",
-      attr = { fg = "magenta", brightness = "bright" }
+  footer = KeyBar {
+    rows = 2,
+    margin = 1,
+    padding = 2,
+    separator = ":",
+    items = {
+      -- Row 1: up/top actions (vertically aligned with down/bottom below)
+      { key = "k/↑", desc = "scroll up" },
+      { key = "pgup", desc = "page up" },
+      { key = "g", desc = "go to top" },
+      { key = "[", desc = "highlight up" },
+      { key = "h", desc = "toggle help" },
+      { key = "r", desc = "add random line" },
+      { key = "f", desc = "switch formatter" },
+      -- Row 2: down/bottom actions (vertically aligned with up/top above)
+      { key = "j/↓", desc = "scroll down" },
+      { key = "pgdn", desc = "page down" },
+      { key = "G", desc = "go to bottom" },
+      { key = "]", desc = "highlight down" },
+      { key = "s", desc = "reset text" },
+      { key = "c", desc = "clear content" },
+      { key = "q", desc = "quit" },
     },
-    center = {
-      text = "pgup/pgdn: page, g/G: top/bottom",
-      attr = { fg = "yellow", brightness = "bright" }
-    },
-    right = {
-      text = "h: help, q: quit",
-      attr = { fg = "red", brightness = "bright" }
-    },
-    attr = { bg = "black", fg = "white" }
+    key_attr = { fg = "yellow", brightness = "bright" },
+    desc_attr = { fg = "white" },
+    attr = { bg = "black" }
   }
 }
 
