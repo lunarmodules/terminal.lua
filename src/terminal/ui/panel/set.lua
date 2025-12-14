@@ -2,7 +2,9 @@
 --
 -- This class is a Panel that holds a set of content panels (by unique name) of
 -- which at most one is visible/active at a time. It can be used in combination
--- with a tab-control for example: switching a tab simply calls `select(name)`.
+-- with a `ui.panel.TabStrip`.
+--
+-- Example usage:
 --
 --     local PanelSet = require("terminal.ui.panel.set")
 --     local Panel = require("terminal.ui.panel")
