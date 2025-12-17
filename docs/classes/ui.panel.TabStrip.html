@@ -1,0 +1,513 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><strong>ui.panel.TabStrip</strong></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.panel.TabStrip</code></h1>
+<p>TabStrip panel for displaying horizontal tab labels.</p>
+<p> This class creates a single-line panel that displays a horizontal list of tab labels
+ with viewport scrolling and navigation capabilities. TabStrip is responsible only for
+ the strip of labels and navigation between tab-labels.</p>
+
+<p> A typical implementation would use a panel, vertically split, with the TabStrip in the top panel
+ and the content panels (usually a tab-set panel) in the bottom panel.
+ See <a href="../classes/ui.panel.Set.html#">ui.panel.Set</a>, and the example <a href="../examples/tabstrip.lua.html#">tabstrip.lua</a>.</p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:add_item">ui.panel.tabstrip:add_item (item[, before_id])</a></td>
+	<td class="summary">Add a new item to the items list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:get_items">ui.panel.tabstrip:get_items ()</a></td>
+	<td class="summary">Get a copy of the items table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:get_selected">ui.panel.tabstrip:get_selected ()</a></td>
+	<td class="summary">Get the currently selected tab id.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:init">ui.panel.tabstrip:init (opts)</a></td>
+	<td class="summary">Create a new TabStrip instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:remove_item">ui.panel.tabstrip:remove_item (id)</a></td>
+	<td class="summary">Remove an item from the items list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:select">ui.panel.tabstrip:select (tab_id)</a></td>
+	<td class="summary">Select a tab by id.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:select_next">ui.panel.tabstrip:select_next ()</a></td>
+	<td class="summary">Select the next tab.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:select_prev">ui.panel.tabstrip:select_prev ()</a></td>
+	<td class="summary">Select the previous tab.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.tabstrip:set_items">ui.panel.tabstrip:set_items (items)</a></td>
+	<td class="summary">Set the items table.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel.tabstrip:add_item"></a>
+    <strong>ui.panel.tabstrip:add_item (item[, before_id])</strong>
+    </dt>
+    <dd>
+    Add a new item to the items list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">item</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The item to add (must have <code>label</code> field).
+        </li>
+        <li><span class="parameter">before_id</span>
+            <span class="types"><span class="type">any</span></span>
+         If provided, insert before the item with this id.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">tab_strip:<span class="function-name">add_item</span>({ id = <span class="string">"tab3"</span>, label = <span class="string">"Tab 3"</span> })
+tab_strip:<span class="function-name">add_item</span>({ id = <span class="string">"tab2.5"</span>, label = <span class="string">"Tab 2.5"</span> }, <span class="string">"tab3"</span>)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:get_items"></a>
+    <strong>ui.panel.tabstrip:get_items ()</strong>
+    </dt>
+    <dd>
+    Get a copy of the items table.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        A copy of the items array.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> items = tab_strip:<span class="function-name">get_items</span>()</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:get_selected"></a>
+    <strong>ui.panel.tabstrip:get_selected ()</strong>
+    </dt>
+    <dd>
+    Get the currently selected tab id.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">any</span> or <span class="type">nil</span></span>
+        The selected tab id, or nil if no tabs exist.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        Error message if no tabs exist.</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> selected_id, err = tab_strip:<span class="function-name">get_selected</span>()
+<span class="keyword">if</span> err <span class="keyword">then</span>
+  <span class="global">print</span>(<span class="string">"No tabs available"</span>)
+<span class="keyword">else</span>
+  <span class="global">print</span>(<span class="string">"Selected tab:"</span>, selected_id)
+<span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:init"></a>
+    <strong>ui.panel.tabstrip:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new TabStrip instance.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Configuration options (see <a href="../classes/ui.Panel.html#ui.panel:init">Panel:init</a> for inherited properties)
+        <ul>
+        <li><span class="parameter">items</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of tab items, each with <code>label</code> field (required) and optional <code>id</code> field.
+        </li>
+        <li><span class="parameter">selected</span>
+            <span class="types"><span class="type">any</span></span>
+         Initial selected tab id.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">prefix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Prefix string for tab labels.
+         (<em>default</em> "[")
+        </li>
+        <li><span class="parameter">postfix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Postfix string for tab labels.
+         (<em>default</em> "[")
+        </li>
+        <li><span class="parameter">padding</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of spaces between tabs.
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for the entire strip.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">selected_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for the selected tab.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">select_cb</span>
+            <span class="types"><span class="type">function</span></span>
+         Callback function called when selection changes: <code>select_cb(self, id)</code>.
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.panel.TabStrip.html">TabStrip</a></span>
+        A new TabStrip instance.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> TabStrip = <span class="global">require</span>(<span class="string">"terminal.ui.panel.tab_strip"</span>)
+<span class="keyword">local</span> tab_strip = <span class="function-name">TabStrip</span> {
+  items = {
+    { id = <span class="string">"tab1"</span>, label = <span class="string">"Tab 1"</span> },
+    { id = <span class="string">"tab2"</span>, label = <span class="string">"Tab 2"</span> }
+  },
+  selected = <span class="string">"tab1"</span>,
+  attr = { fg = <span class="string">"white"</span>, bg = <span class="string">"black"</span> },
+  selected_attr = { reverse = <span class="keyword">true</span> }
+}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:remove_item"></a>
+    <strong>ui.panel.tabstrip:remove_item (id)</strong>
+    </dt>
+    <dd>
+    Remove an item from the items list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">any</span></span>
+         The id of the item to remove.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">boolean</span> or <span class="type">nil</span></span>
+        True on success, or nil if id not found.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        Error message if id not found.</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> success, err = tab_strip:<span class="function-name">remove_item</span>(<span class="string">"tab2"</span>)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:select"></a>
+    <strong>ui.panel.tabstrip:select (tab_id)</strong>
+    </dt>
+    <dd>
+    Select a tab by id.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">tab_id</span>
+            <span class="types"><span class="type">any</span></span>
+         The id of the tab to select.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">boolean</span> or <span class="type">nil</span></span>
+        True on success, or nil if id not found.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        Error message if id not found.</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> success, err = tab_strip:<span class="global">select</span>(<span class="string">"tab2"</span>)
+<span class="keyword">if</span> <span class="keyword">not</span> success <span class="keyword">then</span>
+  <span class="global">print</span>(<span class="string">"Error:"</span>, err)
+<span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:select_next"></a>
+    <strong>ui.panel.tabstrip:select_next ()</strong>
+    </dt>
+    <dd>
+    Select the next tab.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">any</span> or <span class="type">nil</span></span>
+        The selected tab id, or nil if no tabs exist.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        Error message if no tabs exist.</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> selected_id, err = tab_strip:<span class="function-name">select_next</span>()
+<span class="keyword">if</span> err <span class="keyword">then</span>
+  <span class="global">print</span>(<span class="string">"Error:"</span>, err)
+<span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:select_prev"></a>
+    <strong>ui.panel.tabstrip:select_prev ()</strong>
+    </dt>
+    <dd>
+    Select the previous tab.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">any</span> or <span class="type">nil</span></span>
+        The selected tab id, or nil if no tabs exist.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        Error message if no tabs exist.</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> selected_id, err = tab_strip:<span class="function-name">select_prev</span>()
+<span class="keyword">if</span> err <span class="keyword">then</span>
+  <span class="global">print</span>(<span class="string">"Error:"</span>, err)
+<span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.tabstrip:set_items"></a>
+    <strong>ui.panel.tabstrip:set_items (items)</strong>
+    </dt>
+    <dd>
+    Set the items table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">items</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The new items array.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">tab_strip:<span class="function-name">set_items</span>({
+  { id = <span class="string">"tab1"</span>, label = <span class="string">"Tab 1"</span> },
+  { id = <span class="string">"tab2"</span>, label = <span class="string">"Tab 2"</span> }
+})</pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

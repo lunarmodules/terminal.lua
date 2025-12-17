@@ -45,8 +45,8 @@
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
-  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
-  <li><strong>ui.panel.Screen</strong></li>
+  <li><strong>ui.panel.KeyBar</strong></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
   <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
   <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
   <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
@@ -107,25 +107,29 @@
 
 <div id="content">
 
-<h1>Class <code>ui.panel.Screen</code></h1>
-<p>Screen class for full-screen terminal applications.</p>
-<p> Manages a full-screen layout with optional header and footer panels (see <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a>).
- Derives from <a href="../classes/ui.Panel.html#">ui.Panel</a>.</p>
+<h1>Class <code>ui.panel.KeyBar</code></h1>
+<p>Key bar panel for displaying keyboard shortcuts.</p>
+<p> This class creates a fixed-height panel (1 or 2 lines) that displays
+ keyboard shortcuts in equally wide cells, similar to editors like
+ nano or tools like htop.</p>
+
+<p> Each cell shows a key and a description with separate text attributes.
+ When configured for 2 rows, columns are aligned vertically.</p>
 
 
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#ui.panel.screen:calculate_layout">ui.panel.screen:calculate_layout ()</a></td>
-	<td class="summary">Recalculate the screen layout using current terminal dimensions.</td>
+	<td class="name" nowrap><a href="#ui.panel.keybar:init">ui.panel.keybar:init (opts)</a></td>
+	<td class="summary">Create a new KeyBar instance.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.panel.screen:check_resize">ui.panel.screen:check_resize ([update=false])</a></td>
-	<td class="summary">Check if the terminal has been resized and optionally update the layout.</td>
+	<td class="name" nowrap><a href="#ui.panel.keybar:set_items">ui.panel.keybar:set_items (items)</a></td>
+	<td class="summary">Set the items (shortcuts) to display.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.panel.screen:init">ui.panel.screen:init (opts)</a></td>
-	<td class="summary">Initialize a new Screen instance.</td>
+	<td class="name" nowrap><a href="#ui.panel.keybar:set_rows">ui.panel.keybar:set_rows (rows)</a></td>
+	<td class="summary">Set the number of rows (1 or 2).</td>
 	</tr>
 </table>
 
@@ -137,55 +141,13 @@
 
     <dl class="function">
     <dt>
-    <a name = "ui.panel.screen:calculate_layout"></a>
-    <strong>ui.panel.screen:calculate_layout ()</strong>
+    <a name = "ui.panel.keybar:init"></a>
+    <strong>ui.panel.keybar:init (opts)</strong>
     </dt>
     <dd>
-    Recalculate the screen layout using current terminal dimensions.
- Overrides <a href="../classes/ui.Panel.html#ui.panel:calculate_layout">ui.Panel:calculate_layout</a> to use full screen dimensions instead of specifying them.
- There typically is no need to call this method, as <a href="../classes/ui.panel.Screen.html#ui.panel.screen:check_resize">check_resize</a> is the friendlier way to update.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "ui.panel.screen:check_resize"></a>
-    <strong>ui.panel.screen:check_resize ([update=false])</strong>
-    </dt>
-    <dd>
-    Check if the terminal has been resized and optionally update the layout.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">update</span>
-            <span class="types"><span class="type">boolean</span></span>
-         Whether to automatically recalculate and rerender if a resize was detected.
-         (<em>default</em> false)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">boolean</span></span>
-        True if the terminal was resized
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "ui.panel.screen:init"></a>
-    <strong>ui.panel.screen:init (opts)</strong>
-    </dt>
-    <dd>
-    Initialize a new Screen instance.
+    Create a new KeyBar instance.
+ A key-bar is a 1 or 2 line <code>panel</code> that displays keyboard shortcuts
+ in equally wide columns.
  Do not call this method directly, call on the class instead.
 
 
@@ -193,31 +155,105 @@
     <ul>
         <li><span class="parameter">opts</span> Configuration options (see <a href="../classes/ui.Panel.html#ui.panel:init">Panel:init</a> for inherited properties)
         <ul>
-        <li><span class="parameter">header</span>
-            <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
-         Optional header panel (will be named "header" if not already named )
+        <li><span class="parameter">margin</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of spaces from left and right edges.
+         (<em>default</em> 1)
         </li>
-        <li><span class="parameter">body</span>
-            <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
-         Required body panel (will be named "body" if not already named)
+        <li><span class="parameter">padding</span>
+            <span class="types"><span class="type">number</span></span>
+         Minimum number of spaces between columns.
+         (<em>default</em> 2)
         </li>
-        <li><span class="parameter">footer</span>
-            <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
-         Optional footer panel (will be named "footer" if not already named)
-        </li>
-        <li><span class="parameter">name</span>
+        <li><span class="parameter">separator</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         Optional name for the screen
+         Separator string between key and description.
+         (<em>default</em> " ")
+        </li>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for the entire bar area.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">key_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for the key labels.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">desc_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for the descriptions.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">items</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of <code>{ key = string, desc = string }</code> items.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of rows (1 or 2).
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">auto_render</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to auto-render on updates.
+         (<em>default</em> false)
         </li>
         </li></ul>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.panel.KeyBar.html">KeyBar</a></span>
+        A new KeyBar instance.
+    </ol>
 
 
-    <h3>See also:</h3>
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.keybar:set_items"></a>
+    <strong>ui.panel.keybar:set_items (items)</strong>
+    </dt>
+    <dd>
+    Set the items (shortcuts) to display.
+
+
+    <h3>Parameters:</h3>
     <ul>
-         <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a>
+        <li><span class="parameter">items</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of <code>{ key = string, desc = string }</code> items.
+        </li>
     </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.keybar:set_rows"></a>
+    <strong>ui.panel.keybar:set_rows (rows)</strong>
+    </dt>
+    <dd>
+    Set the number of rows (1 or 2).
+ Adjusts height constraints accordingly.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">number</span></span>
+         1 or 2
+        </li>
+    </ul>
+
+
+
 
 
 </dd>

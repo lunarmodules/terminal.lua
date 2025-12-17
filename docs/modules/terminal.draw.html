@@ -72,7 +72,10 @@
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
   <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
@@ -97,6 +100,7 @@
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
@@ -141,7 +145,7 @@
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-
+    Methods
     <dl class="function">
     <dt>
     <a name = "box"></a>
@@ -181,7 +185,7 @@
         </li>
         <li><span class="parameter">type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the type of title-truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.draw.line.html#title_fmt">draw.line.title_fmt</a> for details
+         the type of title-truncation to apply, either "left", "right", or "drop", see <code>draw.line.title_fmt</code> for details
          (<em>default</em> "right")
         </li>
         <li><span class="parameter">title_attr</span>
@@ -252,8 +256,14 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
         <li><span class="parameter">single</span>
          Single line box format
         </li>
+        <li><span class="parameter">single_top</span>
+         Single line box format with top border only
+        </li>
         <li><span class="parameter">double</span>
          Double line box format
+        </li>
+        <li><span class="parameter">double_top</span>
+         Double line box format with top border only
         </li>
         <li><span class="parameter">copy</span>
          Function to copy a box format, see <a href="../modules/terminal.draw.html#box_fmt.copy">box_fmt.copy</a> for details
@@ -360,7 +370,7 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
         </li>
         <li><span class="parameter">type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the type of title-truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.draw.line.html#title_fmt">draw.line.title_fmt</a> for details
+         the type of title-truncation to apply, either "left", "right", or "drop", see <code>draw.line.title_fmt</code> for details
          (<em>default</em> "right")
         </li>
         <li><span class="parameter">title_attr</span>

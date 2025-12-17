@@ -46,6 +46,7 @@
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><strong>text_panel.lua</strong></li>
 </ul>
@@ -82,7 +83,10 @@
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
   <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
@@ -110,6 +114,7 @@
 <span class="keyword">local</span> Screen = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.screen"</span>)
 <span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel"</span>)
 <span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.bar"</span>)
+<span class="keyword">local</span> KeyBar = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.key_bar"</span>)
 
 <span class="comment">-- Create some sample text content
 </span><span class="keyword">local</span> sample_text = {
@@ -138,6 +143,7 @@
   <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"C"</span>, <span class="number">40</span>),
   <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"D"</span>, <span class="number">20</span>),
   <span class="string">"Line "</span> .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"E"</span>, <span class="number">60</span>),
+  <span class="string">"Line 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽 🚀😎🍕🔥🤖🎉🤔👽"</span>,
   <span class="string">""</span>,
   <span class="string">"You can add more lines dynamically:"</span>,
   <span class="string">"• Call add_line() to append new content"</span>,
@@ -186,7 +192,10 @@
   line_formatter = TextPanel.format_line_wordwrap,
   scroll_step = <span class="number">1</span>,
   text_attr = { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"bright"</span> },
-  border = { format = terminal.draw.box_fmt.single },
+  border = {
+    format = terminal.draw.box_fmt.single,
+    title = <span class="string">"Help"</span>,
+  },
   auto_render = <span class="keyword">true</span>,
 }
 
@@ -215,20 +224,32 @@
     split_ratio = <span class="number">0.7</span>,   <span class="comment">-- Give more space to main content
 </span>  },
 
-  footer = <span class="function-name">Bar</span> {
-    left = {
-      text = <span class="string">"j/k or ↑/↓: scroll"</span>,
-      attr = { fg = <span class="string">"magenta"</span>, brightness = <span class="string">"bright"</span> }
+  footer = <span class="function-name">KeyBar</span> {
+    rows = <span class="number">2</span>,
+    margin = <span class="number">1</span>,
+    padding = <span class="number">2</span>,
+    separator = <span class="string">":"</span>,
+    items = {
+      <span class="comment">-- Row 1: up/top actions (vertically aligned with down/bottom below)
+</span>      { key = <span class="string">"k/↑"</span>, desc = <span class="string">"scroll up"</span> },
+      { key = <span class="string">"pgup"</span>, desc = <span class="string">"page up"</span> },
+      { key = <span class="string">"g"</span>, desc = <span class="string">"go to top"</span> },
+      { key = <span class="string">"["</span>, desc = <span class="string">"highlight up"</span> },
+      { key = <span class="string">"h"</span>, desc = <span class="string">"toggle help"</span> },
+      { key = <span class="string">"r"</span>, desc = <span class="string">"add random line"</span> },
+      { key = <span class="string">"f"</span>, desc = <span class="string">"switch formatter"</span> },
+      <span class="comment">-- Row 2: down/bottom actions (vertically aligned with up/top above)
+</span>      { key = <span class="string">"j/↓"</span>, desc = <span class="string">"scroll down"</span> },
+      { key = <span class="string">"pgdn"</span>, desc = <span class="string">"page down"</span> },
+      { key = <span class="string">"G"</span>, desc = <span class="string">"go to bottom"</span> },
+      { key = <span class="string">"]"</span>, desc = <span class="string">"highlight down"</span> },
+      { key = <span class="string">"s"</span>, desc = <span class="string">"reset text"</span> },
+      { key = <span class="string">"c"</span>, desc = <span class="string">"clear content"</span> },
+      { key = <span class="string">"q"</span>, desc = <span class="string">"quit"</span> },
     },
-    center = {
-      text = <span class="string">"pgup/pgdn: page, g/G: top/bottom"</span>,
-      attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span> }
-    },
-    right = {
-      text = <span class="string">"h: help, q: quit"</span>,
-      attr = { fg = <span class="string">"red"</span>, brightness = <span class="string">"bright"</span> }
-    },
-    attr = { bg = <span class="string">"black"</span>, fg = <span class="string">"white"</span> }
+    key_attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span> },
+    desc_attr = { fg = <span class="string">"white"</span> },
+    attr = { bg = <span class="string">"black"</span> }
   }
 }
 

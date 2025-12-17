@@ -33,7 +33,10 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Functions">Functions</a></li>
+<li><a href="#Constants">Constants</a></li>
+<li><a href="#Generic">Generic</a></li>
+<li><a href="#Classes">Classes</a></li>
+<li><a href="#Text">Text</a></li>
 </ul>
 
 
@@ -70,7 +73,10 @@
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
   <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
@@ -95,6 +101,7 @@
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
@@ -110,12 +117,8 @@
 </p>
 
 
-<h2><a href="#Functions">Functions</a></h2>
+<h2><a href="#Constants">Constants</a></h2>
 <table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#class">class ([baseclass])</a></td>
-	<td class="summary">Creates a (sub)class.</td>
-	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#invalid_constant">invalid_constant (value, constants[, prefix="Invalid value: "])</a></td>
 	<td class="summary">Returns an error message for an invalid lookup constant.</td>
@@ -125,12 +128,29 @@
 	<td class="summary">Converts a lookup table to a constant table with user friendly error reporting.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#throw_invalid_constant">throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</a></td>
+	<td class="summary">Throws an error message for an invalid lookup constant.</td>
+	</tr>
+</table>
+<h2><a href="#Generic">Generic</a></h2>
+<table class="function_list">
+	<tr>
 	<td class="name" nowrap><a href="#resolve_index">resolve_index (index, max_value[, min_value=1])</a></td>
 	<td class="summary">Resolve indices.</td>
 	</tr>
+</table>
+<h2><a href="#Classes">Classes</a></h2>
+<table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#throw_invalid_constant">throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</a></td>
-	<td class="summary">Throws an error message for an invalid lookup constant.</td>
+	<td class="name" nowrap><a href="#class">class ([baseclass])</a></td>
+	<td class="summary">Creates a (sub)class.</td>
+	</tr>
+</table>
+<h2><a href="#Text">Text</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#truncate_ellipsis">truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</a></td>
+	<td class="summary">Truncates text to fit within a given width, adding ellipsis as needed.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
@@ -146,68 +166,9 @@
 <br/>
 
 
-    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    <h2 class="section-header "><a name="Constants"></a>Constants</h2>
 
     <dl class="function">
-    <dt>
-    <a name = "class"></a>
-    <strong>class ([baseclass])</strong>
-    </dt>
-    <dd>
-
-<p>Creates a (sub)class.
- This function creates a new class, which is a subclass of the given baseclass.
- An instance can be created by calling on the class, any parameteres passed in will be passed on
- to the <code>init</code> method. The <code>init</code> method (if present), will be called upon instantiation.</p>
-
-<p> Every instance will:</p>
-
-<ul>
-    <li>have a <code>super</code> property, which points to the class itself.</li>
-    <li>upon creation call the <code>init</code> method (if present) with the parameters passed when calling on the Class.</li>
-</ul>
-
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">baseclass</span>
-            <span class="types"><a class="type" href="../modules/terminal.utils.html#class">class</a></span>
-         The base-class to inherit from.
-         (<em>optional</em>)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-        The new class.
-    </ol>
-
-
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="keyword">local</span> Cat = utils.<span class="function-name">class</span>()
-<span class="keyword">function</span> Cat:<span class="function-name">init</span>(value)
-  self.value = value <span class="keyword">or</span> <span class="number">42</span>
-<span class="keyword">end</span>
-
-<span class="keyword">local</span> Lion = utils.<span class="function-name">class</span>(Cat)
-<span class="keyword">function</span> Lion:<span class="function-name">init</span>(value)
-  <span class="global">assert</span>(self.super == Cat, <span class="string">"Superclass is not a Cat"</span>)
-  Cat.<span class="function-name">init</span>(self, value)   <span class="comment">-- call ancestor initializer
-</span>  self.value = self.value * <span class="number">2</span>
-<span class="keyword">end</span>
-
-<span class="keyword">local</span> instance1 = <span class="function-name">Lion</span>()
-<span class="global">print</span>(instance1.value)      <span class="comment">--&gt; 84
-</span><span class="keyword">local</span> instance2 = <span class="function-name">Lion</span>(<span class="number">10</span>)
-<span class="global">print</span>(instance2.value)      <span class="comment">--&gt; 20</span></pre>
-    </ul>
-
-</dd>
     <dt>
     <a name = "invalid_constant"></a>
     <strong>invalid_constant (value, constants[, prefix="Invalid value: "])</strong>
@@ -293,38 +254,6 @@
 
 </dd>
     <dt>
-    <a name = "resolve_index"></a>
-    <strong>resolve_index (index, max_value[, min_value=1])</strong>
-    </dt>
-    <dd>
-    Resolve indices.
- This function resolves negative indices to positive indices.
- The result will be capped into the range [<code>min_value</code>, <code>max_value</code>].
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">index</span>
-            <span class="types"><span class="type">number</span></span>
-         The index to resolve.
-        </li>
-        <li><span class="parameter">max_value</span>
-            <span class="types"><span class="type">number</span></span>
-         The maximum value for the index.
-        </li>
-        <li><span class="parameter">min_value</span>
-            <span class="types"><span class="type">number</span></span>
-         The minimum value for the index.
-         (<em>default</em> 1)
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
     <a name = "throw_invalid_constant"></a>
     <strong>throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</strong>
     </dt>
@@ -363,6 +292,173 @@
 
 
 
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Generic"></a>Generic</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "resolve_index"></a>
+    <strong>resolve_index (index, max_value[, min_value=1])</strong>
+    </dt>
+    <dd>
+    Resolve indices.
+ This function resolves negative indices to positive indices.
+ The result will be capped into the range [<code>min_value</code>, <code>max_value</code>].
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">index</span>
+            <span class="types"><span class="type">number</span></span>
+         The index to resolve.
+        </li>
+        <li><span class="parameter">max_value</span>
+            <span class="types"><span class="type">number</span></span>
+         The maximum value for the index.
+        </li>
+        <li><span class="parameter">min_value</span>
+            <span class="types"><span class="type">number</span></span>
+         The minimum value for the index.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Classes"></a>Classes</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "class"></a>
+    <strong>class ([baseclass])</strong>
+    </dt>
+    <dd>
+
+<p>Creates a (sub)class.
+ This function creates a new class, which is a subclass of the given baseclass.
+ An instance can be created by calling on the class, any parameteres passed in will be passed on
+ to the <code>init</code> method. The <code>init</code> method (if present), will be called upon instantiation.</p>
+
+<p> Every instance will:</p>
+
+<ul>
+    <li>have a <code>super</code> property, which points to the class itself.</li>
+    <li>upon creation call the <code>init</code> method (if present) with the parameters passed when calling on the Class.</li>
+</ul>
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">baseclass</span>
+            <span class="types"><a class="type" href="../modules/terminal.utils.html#class">class</a></span>
+         The base-class to inherit from.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        The new class.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Cat = utils.<span class="function-name">class</span>()
+<span class="keyword">function</span> Cat:<span class="function-name">init</span>(value)
+  self.value = value <span class="keyword">or</span> <span class="number">42</span>
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> Lion = utils.<span class="function-name">class</span>(Cat)
+<span class="keyword">function</span> Lion:<span class="function-name">init</span>(value)
+  <span class="global">assert</span>(self.super == Cat, <span class="string">"Superclass is not a Cat"</span>)
+  Cat.<span class="function-name">init</span>(self, value)   <span class="comment">-- call ancestor initializer
+</span>  self.value = self.value * <span class="number">2</span>
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> instance1 = <span class="function-name">Lion</span>()
+<span class="global">print</span>(instance1.value)      <span class="comment">--&gt; 84
+</span><span class="keyword">local</span> instance2 = <span class="function-name">Lion</span>(<span class="number">10</span>)
+<span class="global">print</span>(instance2.value)      <span class="comment">--&gt; 20</span></pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Text"></a>Text</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "truncate_ellipsis"></a>
+    <strong>truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</strong>
+    </dt>
+    <dd>
+    Truncates text to fit within a given width, adding ellipsis as needed.
+ Shortens text if necessary, adds ellipsis when truncated. Respects UTF-8
+ character boundaries and handles double-width characters correctly.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The available width for the text in columns.
+        </li>
+        <li><span class="parameter">text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The text to truncate.
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">trunc_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The type of truncation to apply:
+   - "right": Truncate from the right, show beginning of text with ellipsis on the right
+   - "left": Truncate from the left, show end of text with ellipsis on the left
+   - "drop": Drop the entire text if it doesn't fit (return empty string).
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">ellipsis</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The ellipsis string to use. Defaults to Unicode ellipsis character "…".
+   Can be a multi-character string or empty string.
+         (<em>default</em> "…")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The truncated text (may be empty string).</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The size of the returned text in columns.</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- Truncate from right (default)
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>)  <span class="comment">-- "Very long…"
+</span><span class="comment">-- Truncate from left
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>)  <span class="comment">-- "…long text"
+</span><span class="comment">-- Drop if too small
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">3</span>, <span class="string">"Very long text"</span>, <span class="string">"drop"</span>)  <span class="comment">-- ""
+</span><span class="comment">-- Custom ellipsis
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"right"</span>, <span class="string">".."</span>)  <span class="comment">-- "Very lon.."
+</span><span class="comment">-- Empty string as ellipsis just truncates the text
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>, <span class="string">""</span>)  <span class="comment">-- " long text"</span></pre>
+    </ul>
 
 </dd>
     <dt>
