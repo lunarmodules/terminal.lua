@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><strong>tabstrip.lua</strong></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>tabstrip.lua</h2>
+<pre>
+#!/usr/bin/env lua
+
+<span class="comment">-- TabStrip example demonstrating tabbed interface with TabStrip and PanelSet
+</span>
+<span class="keyword">local</span> TabStrip = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.tab_strip"</span>)
+<span class="keyword">local</span> Set = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> terminal = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Screen = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.screen"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel"</span>)
+<span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.bar"</span>)
+<span class="keyword">local</span> TextPanel = <span class="global">require</span>(<span class="string">"src.terminal.ui.panel.text"</span>)
+
+<span class="comment">-- Create sample content for each tab
+</span><span class="keyword">local</span> tab_contents = {
+  overview = {
+    <span class="string">"Welcome to the TabStrip Example!"</span>,
+    <span class="string">""</span>,
+    <span class="string">"This example demonstrates:"</span>,
+    <span class="string">""</span>,
+    <span class="string">"• TabStrip panel for displaying tab labels"</span>,
+    <span class="string">"• PanelSet for managing tab content panels"</span>,
+    <span class="string">"• Integration between TabStrip and PanelSet"</span>,
+    <span class="string">"• Keyboard navigation between tabs"</span>,
+    <span class="string">""</span>,
+    <span class="string">"Use the following keys to navigate:"</span>,
+    <span class="string">"• Left/Right arrows or h/l to switch tabs"</span>,
+    <span class="string">"• Tab/Shift+Tab to move between tabs"</span>,
+    <span class="string">"• q to quit"</span>,
+    <span class="string">""</span>,
+    <span class="string">"The TabStrip automatically handles:"</span>,
+    <span class="string">"• Viewport scrolling when tabs overflow"</span>,
+    <span class="string">"• Visual highlighting of selected tab"</span>,
+    <span class="string">"• Smooth navigation between tabs"</span>,
+  },
+  features = {
+    <span class="string">"TabStrip Features:"</span>,
+    <span class="string">""</span>,
+    <span class="string">"• Horizontal tab label display"</span>,
+    <span class="string">"• Viewport scrolling for many tabs"</span>,
+    <span class="string">"• Configurable prefix/postfix (default: [])"</span>,
+    <span class="string">"• Customizable attributes for selected/unselected tabs"</span>,
+    <span class="string">"• Callback support for selection changes"</span>,
+    <span class="string">"• Methods: select(), select_next(), select_prev()"</span>,
+    <span class="string">""</span>,
+    <span class="string">"PanelSet Features:"</span>,
+    <span class="string">""</span>,
+    <span class="string">"• Manages multiple named panels"</span>,
+    <span class="string">"• Shows one panel at a time"</span>,
+    <span class="string">"• Automatic selection management"</span>,
+    <span class="string">"• Methods: select(), get_selected(), add(), remove()"</span>,
+    <span class="string">""</span>,
+    <span class="string">"Integration:"</span>,
+    <span class="string">""</span>,
+    <span class="string">"• TabStrip select_cb connects to PanelSet:select()"</span>,
+    <span class="string">"• Keyboard input controls TabStrip selection"</span>,
+    <span class="string">"• PanelSet automatically shows/hides panels"</span>,
+  },
+  content = {
+    <span class="string">"Content Tab"</span>,
+    <span class="string">""</span>,
+    <span class="string">"This is the content tab. You can put any panel content here."</span>,
+    <span class="string">""</span>,
+    <span class="string">"The panels in the PanelSet can be:"</span>,
+    <span class="string">"• TextPanel (like this one)"</span>,
+    <span class="string">"• Regular Panel with custom content"</span>,
+    <span class="string">"• Nested panels with complex layouts"</span>,
+    <span class="string">""</span>,
+    <span class="string">"Each tab can have completely different content and layout."</span>,
+    <span class="string">""</span>,
+    <span class="string">"Try switching between tabs to see different content!"</span>,
+  },
+  settings = {
+    <span class="string">"Settings Tab"</span>,
+    <span class="string">""</span>,
+    <span class="string">"This tab could contain:"</span>,
+    <span class="string">"• Configuration options"</span>,
+    <span class="string">"• User preferences"</span>,
+    <span class="string">"• Application settings"</span>,
+    <span class="string">""</span>,
+    <span class="string">"For this example, it's just another TextPanel."</span>,
+    <span class="string">""</span>,
+    <span class="string">"In a real application, you might have:"</span>,
+    <span class="string">"• Input fields"</span>,
+    <span class="string">"• Checkboxes"</span>,
+    <span class="string">"• Dropdown menus"</span>,
+    <span class="string">"• Other interactive elements"</span>,
+  },
+  help = {
+    <span class="string">"Help Tab"</span>,
+    <span class="string">""</span>,
+    <span class="string">"Keyboard Shortcuts:"</span>,
+    <span class="string">""</span>,
+    <span class="string">"Navigation:"</span>,
+    <span class="string">"  ← / h    - Previous tab"</span>,
+    <span class="string">"  → / l    - Next tab"</span>,
+    <span class="string">"  Tab      - Next tab"</span>,
+    <span class="string">"  Shift+Tab - Previous tab"</span>,
+    <span class="string">""</span>,
+    <span class="string">"General:"</span>,
+    <span class="string">"  q / Q    - Quit application"</span>,
+    <span class="string">""</span>,
+    <span class="string">"The TabStrip will automatically scroll to show"</span>,
+    <span class="string">"the selected tab if there are many tabs."</span>,
+  }
+}
+
+<span class="comment">-- Create content panels for each tab
+</span><span class="keyword">local</span> tab_panels = {}
+<span class="keyword">for</span> tab_id, content <span class="keyword">in</span> <span class="global">pairs</span>(tab_contents) <span class="keyword">do</span>
+  tab_panels[tab_id] = <span class="function-name">TextPanel</span> {
+    name = tab_id,
+    lines = content,
+    scroll_step = <span class="number">1</span>,
+    text_attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"bright"</span> },
+    border = { format = terminal.draw.box_fmt.single },
+    auto_render = <span class="keyword">true</span>,
+    min_height = <span class="number">1</span>,  <span class="comment">-- Ensure minimum height, 1 line considering 2 lines for border
+</span>    min_width = <span class="number">4</span>,  <span class="comment">-- Ensure minimum width, 2 chars (or 1 double width) and 2 for the border
+</span>  }
+<span class="keyword">end</span>
+
+<span class="comment">-- Create PanelSet with all tab panels
+</span><span class="keyword">local</span> tab_set = <span class="function-name">Set</span> {
+  children = {
+    tab_panels.overview,
+    tab_panels.features,
+    tab_panels.content,
+    tab_panels.settings,
+    tab_panels.help,
+  },
+  selected = <span class="string">"overview"</span>,
+}
+
+<span class="comment">-- Create TabStrip with items matching the panels
+</span><span class="keyword">local</span> tab_strip = <span class="function-name">TabStrip</span> {
+  items = {
+    { id = <span class="string">"overview"</span>, label = <span class="string">"Overview"</span> },
+    { id = <span class="string">"features"</span>, label = <span class="string">"Features"</span> },
+    { id = <span class="string">"content"</span>, label = <span class="string">"Content"</span> },
+    { id = <span class="string">"settings"</span>, label = <span class="string">"Settings"</span> },
+    { id = <span class="string">"help"</span>, label = <span class="string">"Help"</span> },
+  },
+  selected = <span class="string">"overview"</span>,
+  attr = { fg = <span class="string">"white"</span>, bg = <span class="string">"black"</span> },
+  selected_attr = { fg = <span class="string">"black"</span>, bg = <span class="string">"cyan"</span>, brightness = <span class="string">"bright"</span> },
+  select_cb = <span class="keyword">function</span>(self, tab_id)
+    <span class="comment">-- When tab is selected in TabStrip, select corresponding panel in PanelSet
+</span>    tab_set:<span class="global">select</span>(tab_id)
+  <span class="keyword">end</span>,
+  auto_render = <span class="keyword">true</span>,
+  padding = <span class="number">2</span>,
+  prefix = <span class="string">"┌"</span>,
+  postfix = <span class="string">"┐"</span>,
+}
+
+<span class="comment">-- Create the main screen
+</span><span class="keyword">local</span> screen = <span class="function-name">Screen</span> {
+  header = <span class="function-name">Panel</span> {       <span class="comment">-- Header with TabStrip
+</span>    orientation = Panel.orientations.vertical,
+    children = {
+      <span class="function-name">Bar</span> {
+        left = {
+          text = <span class="string">"TabStrip Example"</span>,
+          attr = { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"bright"</span> }
+        },
+        center = {
+          text = <span class="string">"Tabbed Interface Demo"</span>,
+          attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span>, underline = <span class="keyword">true</span> }
+        },
+        right = {
+          text = <span class="string">"Press 'q' to quit"</span>,
+          attr = { fg = <span class="string">"green"</span>, brightness = <span class="string">"bright"</span> }
+        },
+        attr = { bg = <span class="string">"blue"</span> }
+      },
+      tab_strip
+    },
+    split_ratio = <span class="number">0.6</span>,   <span class="comment">-- Give Bar 60%, TabStrip 40% (both need 1 line minimum)
+</span>  },
+
+  body = tab_set,  <span class="comment">-- Body contains the PanelSet with tab content
+</span>
+  footer = <span class="function-name">Bar</span> {
+    left = {
+      text = <span class="string">"←/→ or h/l: switch tabs"</span>,
+      attr = { fg = <span class="string">"magenta"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    center = {
+      text = <span class="string">"Tab/Shift+Tab: navigate"</span>,
+      attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    right = {
+      text = <span class="string">"q: quit"</span>,
+      attr = { fg = <span class="string">"red"</span>, brightness = <span class="string">"bright"</span> }
+    },
+    attr = { bg = <span class="string">"black"</span>, fg = <span class="string">"white"</span> }
+  }
+}
+
+<span class="comment">-- Main event loop
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
+  <span class="keyword">local</span> keymap = terminal.input.keymap.default_key_map
+  <span class="keyword">local</span> keys = terminal.input.keymap.default_keys
+
+  terminal.cursor.visible.<span class="function-name">set</span>(<span class="keyword">false</span>)
+  screen:<span class="function-name">calculate_layout</span>()
+  screen:<span class="function-name">render</span>()
+
+  <span class="comment">-- Debug: Check TabStrip dimensions (can be removed later)
+</span>  <span class="comment">-- print(string.format("TabStrip: row=%d, col=%d, height=%d, width=%d, inner_height=%d, inner_width=%d",
+</span>  <span class="comment">--   tab_strip.row or 0, tab_strip.col or 0, tab_strip.height or 0, tab_strip.width or 0,
+</span>  <span class="comment">--   tab_strip.inner_height or 0, tab_strip.inner_width or 0))
+</span>
+  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    <span class="keyword">local</span> key = terminal.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>)
+    <span class="keyword">local</span> keyname = keymap[key <span class="keyword">or</span> <span class="string">""</span>]
+
+    <span class="keyword">if</span> key == <span class="string">"q"</span> <span class="keyword">or</span> key == <span class="string">"Q"</span> <span class="keyword">then</span>
+      <span class="keyword">break</span>
+    <span class="keyword">elseif</span> key == <span class="string">"h"</span> <span class="keyword">or</span> keyname == keys.left <span class="keyword">then</span>
+      <span class="comment">-- Previous tab
+</span>      tab_strip:<span class="function-name">select_prev</span>()
+      screen:<span class="function-name">calculate_layout</span>()  <span class="comment">-- Recalculate layout after tab switch
+</span>      screen:<span class="function-name">render</span>()
+    <span class="keyword">elseif</span> key == <span class="string">"l"</span> <span class="keyword">or</span> keyname == keys.right <span class="keyword">then</span>
+      <span class="comment">-- Next tab
+</span>      tab_strip:<span class="function-name">select_next</span>()
+      screen:<span class="function-name">calculate_layout</span>()  <span class="comment">-- Recalculate layout after tab switch
+</span>      screen:<span class="function-name">render</span>()
+    <span class="keyword">elseif</span> keyname == keys.tab <span class="keyword">then</span>
+      <span class="comment">-- Next tab (Tab key)
+</span>      tab_strip:<span class="function-name">select_next</span>()
+      screen:<span class="function-name">calculate_layout</span>()  <span class="comment">-- Recalculate layout after tab switch
+</span>      screen:<span class="function-name">render</span>()
+    <span class="keyword">elseif</span> keyname == keys.shift_tab <span class="keyword">then</span>
+      <span class="comment">-- Previous tab (Shift+Tab)
+</span>      tab_strip:<span class="function-name">select_prev</span>()
+      screen:<span class="function-name">calculate_layout</span>()  <span class="comment">-- Recalculate layout after tab switch
+</span>      screen:<span class="function-name">render</span>()
+    <span class="keyword">end</span>
+
+    <span class="comment">-- Check for resize, and redraw if needed
+</span>    screen:<span class="function-name">check_resize</span>(<span class="keyword">true</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">-- Initialize terminal and run the example
+</span>terminal.<span class="function-name">initwrap</span>(main, {
+  displaybackup = <span class="keyword">true</span>,
+  filehandle = <span class="global">io</span>.stdout,
+})()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

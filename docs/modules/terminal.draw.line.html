@@ -71,7 +71,10 @@
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
   <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
 </ul>
 <h2>Topics</h2>
@@ -96,6 +99,7 @@
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
@@ -118,10 +122,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#title">title (title, width[, char="─"[, pre=""[, post=""[, type="right"[, title_attr]]]]])</a></td>
 	<td class="summary">Draws a horizontal line with a title centered in it and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#title_fmt">title_fmt (width[, title=""[, type="right"]])</a></td>
-	<td class="summary">Formats a title for display in a title line.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#vertical">vertical (n[, char="│"[, lastcolumn]])</a></td>
@@ -149,7 +149,7 @@
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-
+    Methods
     <dl class="function">
     <dt>
     <a name = "horizontal"></a>
@@ -222,7 +222,7 @@
         </li>
         <li><span class="parameter">type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.draw.line.html#title_fmt">title_fmt</a> for details
+         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.utils.html#truncate_ellipsis">utils.truncate_ellipsis</a> for details
          (<em>default</em> "right")
         </li>
         <li><span class="parameter">title_attr</span>
@@ -236,48 +236,6 @@
     <ol>
 
         true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "title_fmt"></a>
-    <strong>title_fmt (width[, title=""[, type="right"]])</strong>
-    </dt>
-    <dd>
-    Formats a title for display in a title line.
- Shortens it if necessary, adds ellipsis if necessary. "left" means truncate from the left,
- "right" means truncate from the right, "drop" means drop the entire thing all at once.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">width</span>
-            <span class="types"><span class="type">number</span></span>
-         the available width for the title in columns
-        </li>
-        <li><span class="parameter">title</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the title to format
-         (<em>default</em> "")
-        </li>
-        <li><span class="parameter">type</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the type of truncation to apply, either "left", "right", or "drop"
-         (<em>default</em> "right")
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-        <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        the formatted title, this can be an empty string if it doesn't fit</li>
-        <li>
-           <span class="types"><span class="type">number</span></span>
-        the size of the returned title in columns</li>
     </ol>
 
 
@@ -398,7 +356,7 @@
         </li>
         <li><span class="parameter">type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.draw.line.html#title_fmt">title_fmt</a> for details
+         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.utils.html#truncate_ellipsis">utils.truncate_ellipsis</a> for details
          (<em>default</em> "right")
         </li>
         <li><span class="parameter">title_attr</span>

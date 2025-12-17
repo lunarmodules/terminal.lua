@@ -45,7 +45,10 @@
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
   <li><strong>ui.panel.Text</strong></li>
 </ul>
 <h2>Modules</h2>
@@ -95,6 +98,7 @@
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
   <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
 </ul>
@@ -168,7 +172,7 @@ log_panel:<span class="function-name">add_line</span>(<span class="string">"New 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextPanel:add_line">TextPanel:add_line (line)</a></td>
+	<td class="name" nowrap><a href="#TextPanel:add_line">TextPanel:add_line (line[, jump=false])</a></td>
 	<td class="summary">Add a line to the text content.</td>
 	</tr>
 	<tr>
@@ -246,11 +250,11 @@ log_panel:<span class="function-name">add_line</span>(<span class="string">"New 
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-
+    Methods
     <dl class="function">
     <dt>
     <a name = "TextPanel:add_line"></a>
-    <strong>TextPanel:add_line (line)</strong>
+    <strong>TextPanel:add_line (line[, jump=false])</strong>
     </dt>
     <dd>
     Add a line to the text content.
@@ -261,6 +265,11 @@ log_panel:<span class="function-name">add_line</span>(<span class="string">"New 
         <li><span class="parameter">line</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          The line to add.
+        </li>
+        <li><span class="parameter">jump</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to adjust viewport to show the new line.
+         (<em>default</em> false)
         </li>
     </ul>
 
