@@ -84,6 +84,7 @@ end
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
 -- @tparam[opt] table opts.text_attr Text attributes for the prompt (input value only).
 -- @tparam[opt=false] boolean opts.wordwrap Whether to wordwrap the input value.
+-- @tparam[opt=false] boolean opts.cancellable Whether <Esc> cancels the prompt.
 -- @treturn Prompt A new Prompt instance.
 -- @name cli.Prompt
 function Prompt:init(opts)
@@ -106,6 +107,7 @@ function Prompt:init(opts)
   self.max_length = opts.max_length or 80   -- the maximum length of the input
   self.text_attr = opts.text_attr or {} -- text attributes for the input value
   self.wordwrap = not not opts.wordwrap -- whether to wordwrap the input value
+  self.cancellable = not not opts.cancellable -- whether to allow the user to cancel the input
 
   if self.value:len_char() > self.max_length then
     -- truncate the value if it is too long, keep cursor position
