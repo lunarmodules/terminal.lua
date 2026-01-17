@@ -85,7 +85,7 @@ end
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
 -- @tparam[opt] table opts.text_attr Text attributes for the prompt (input value only).
 -- @tparam[opt=false] boolean opts.wordwrap Whether to wordwrap the input value.
--- @tparam[opt=false] boolean opts.cancellable Default is false. When true, pressing &lt;Esc&gt; cancels
+-- @tparam[opt=false] boolean opts.cancellable When true, pressing &lt;Esc&gt; cancels
 -- the input and `run()` returns nil, "cancelled".
 -- @treturn Prompt A new Prompt instance.
 -- @name cli.Prompt
