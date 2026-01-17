@@ -34,13 +34,13 @@ local screen = Screen {
   },
 
   body = Panel {
-    name = "body",
+    name = "screen_body",
     orientation = Panel.orientations.vertical,
     split_ratio = 0.7,
     children = {
       -- top panel is where we have the interactive panels
       Panel {
-        name = "body",
+        name = "content_body",
         orientation = Panel.orientations.horizontal,
         split_ratio = 0.5,
         children = {
@@ -114,10 +114,10 @@ local keyhandlers = setmetatable({
     local panel = screen.panels.rockstree
 
     if keyname == keys.up then
-      panel:set_highlight((panel:get_highlight() or 0) - 1)
+      panel:set_highlight((panel:get_highlight() or 0) - 1, true)
 
     elseif keyname == keys.down then
-      panel:set_highlight((panel:get_highlight() or 0) + 1)
+      panel:set_highlight((panel:get_highlight() or 0) + 1, true)
 
     elseif keyname == keys.pageup then
       panel:page_up()
