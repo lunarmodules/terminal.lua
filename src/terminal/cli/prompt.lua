@@ -1,7 +1,8 @@
 --- Prompt input for CLI tools.
 --
 -- This module provides a simple way to read line input from the terminal. The user can
--- confirm their choices by pressing &lt;Enter&gt; or cancel their choices by pressing &lt;Esc&gt;.
+-- confirm their choices by pressing &lt;Enter&gt; or cancel their choices by pressing &lt;Esc&gt;
+-- (when cancellable is enabled).
 --
 -- Features: Prompt, UTF8 support, async input, (to be added: secrets, scrolling and wrapping)
 --
@@ -13,10 +14,10 @@
 --         value = "Hello, 你-好 World 🚀!",
 --         max_length = 62,
 --         -- overflow = "wrap" -- or "scroll"   -- TODO: implement
---         -- cancellable = true,                -- TODO: implement
+--         cancellable = true,
 --         position = 2,
 --     }
---     local result, exitkey = pr:run()
+--     local result, exitkey = prompt:run()
 -- @classmod cli.Prompt
 
 local t = require("terminal")
@@ -84,7 +85,8 @@ end
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
 -- @tparam[opt] table opts.text_attr Text attributes for the prompt (input value only).
 -- @tparam[opt=false] boolean opts.wordwrap Whether to wordwrap the input value.
--- @tparam[opt=false] boolean opts.cancellable Whether <Esc> cancels the prompt.
+-- @tparam[opt=false] boolean opts.cancellable When true, pressing &lt;Esc&gt; cancels
+-- the input and `run()` returns nil, "cancelled".
 -- @treturn Prompt A new Prompt instance.
 -- @name cli.Prompt
 function Prompt:init(opts)
@@ -244,9 +246,10 @@ end
 --- Starts the prompt input loop.
 -- This function initializes the input loop for the readline instance.
 -- It uses a coroutine to process key input until an exit key is pressed.
--- @tparam boolean redraw Whether to redraw the prompt initially.
--- @treturn string The final input value entered by the user.
--- @treturn string The exit key that terminated the input loop.
+-- @treturn string|nil
+--   The final input value entered by the user, or nil if the input was cancelled.
+-- @treturn string
+--   The exit status that terminated the input loop: "returned" or "cancelled".
 function Prompt:run()
   local status
 
