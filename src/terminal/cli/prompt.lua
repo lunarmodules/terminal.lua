@@ -250,7 +250,6 @@ end
 --   The final input value entered by the user, or nil if the input was cancelled.
 -- @treturn string
 --   The exit status that terminated the input loop: "returned" or "cancelled".
-
 function Prompt:run()
   local status
 
