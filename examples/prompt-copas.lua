@@ -1,6 +1,10 @@
+-- Compare this to examples/prompt.lua to see how to make it behave asynchronously
+-- by integrating with the Copas coroutine scheduler
+
 local t = require("terminal")
 local Prompt = require("terminal.cli.prompt")
 local copas = require("copas")
+
 
 local terminal_opts = {
   sleep = copas.pause, -- use copas pause for sleep to allow other coroutines to run
@@ -50,4 +54,6 @@ copas.addthread(function()
 end)
 
 
-t.initwrap(copas.loop, terminal_opts)()
+local main = t.initwrap(copas.loop, terminal_opts)
+
+main()
