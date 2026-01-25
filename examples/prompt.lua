@@ -1,6 +1,12 @@
 local t = require("terminal")
 local Prompt = require("terminal.cli.prompt")
 
+
+local terminal_opts = {
+  -- use all defaults
+}
+
+
 local pr = Prompt {
   prompt = "Enter something: ",
   value = "Hello, 你-好 World 🚀!",
@@ -11,7 +17,8 @@ local pr = Prompt {
   wordwrap = true,
 }
 
-t.initwrap(function () -- on Windows: wrap for utf8 output
+
+local main = t.initwrap(function()
   t.text.stack.push { brightness = "low" }
   local result, status = pr()
   if result then
@@ -20,4 +27,7 @@ t.initwrap(function () -- on Windows: wrap for utf8 output
   else
     print("Status: " .. (status or "nil"))
   end
-end, {})()
+end, terminal_opts)
+
+
+main()
