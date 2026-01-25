@@ -214,8 +214,53 @@ describe("Cursor", function()
 
   describe("position.get()", function()
 
-    pending("returns the cursor position", function()
-      -- TODO: implement
+    local input
+    local old_query
+    local query_result -- the 'input.query' mock results to return in a test, will be unpacked, n for value-count
+
+    before_each(function()
+      -- Set up mock after modules are reloaded by parent before_each
+      input = require("terminal.input")
+      old_query = input.query
+      query_result = nil
+
+      -- create a mock
+      input.query = function(query, pattern)
+        assert(query_result, "Test did not set 'query_result' variable")
+        assert.are.equal("\27[6n", query)
+        assert.are.equal("^\27%[(%d+);(%d+)R$", pattern)
+        -- Return the predefined query_result
+        return require("pl.utils").unpack(query_result)
+      end
+
+      -- Reload cursor.position module to pick up the mocked input.query
+      package.loaded["terminal.cursor.position"] = nil
+      cursor.position = require("terminal.cursor.position")
+    end)
+
+
+    after_each(function()
+      input.query = old_query
+    end)
+
+
+    it("returns the cursor position", function()
+      -- mock input.query to return a valid ANSI cursor position response
+      query_result = { n = 1, {"12", "34"}}
+
+      local row, col = cursor.position.get()
+      assert.are.equal(12, row)
+      assert.are.equal(34, col)
+    end)
+
+
+    it("returns nil and error message when query fails", function()
+      -- mock input.query to return an error
+      query_result = { n = 2, nil, "error reading keyboard: timeout" }
+
+      local row, col = cursor.position.get()
+      assert.is_nil(row)
+      assert.are.equal("error reading keyboard: timeout", col)
     end)
 
   end)
