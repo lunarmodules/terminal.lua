@@ -1,14 +1,14 @@
 local TextPanel = require("terminal.ui.panel.text")
 local luarocks = require("luarocket.luarocks")
+local PanelSet = require("terminal.ui.panel.set")
 local terminal = require("terminal")
 local keymap = require("terminal.input.keymap").default_key_map
+local KeyBar = require("terminal.ui.panel.key_bar")
 local Screen = require("terminal.ui.panel.screen")
 local Panel = require("terminal.ui.panel")
 local copas = require("copas")
 local keys = require("terminal.input.keymap").default_keys
 local Bar = require("terminal.ui.panel.bar")
-
-
 
 local active_panel = nil
 
@@ -84,22 +84,27 @@ local screen = Screen {
     },
   },
 
-  footer = Bar {
-    name = "footer",
-    left = {
-      text = "left text",
-      attr = { fg = "magenta", brightness = "bright" }
+  footer = PanelSet {
+    name = "keybar_set",
+    children = {
+      KeyBar {
+        name = "keybar1",
+        rows = 1,
+        margin = 1,
+        padding = 2,
+        separator = ":",
+        items = {
+          { key = "TAB", desc = "Next Panel" },
+          { key = "Shift+TAB", desc = "Prev Panel" },
+          { key = "c", desc = "Toggle Config" },
+          { key = "l", desc = "Toggle Log" },
+          { key = "q", desc = "Quit" },
+        },
+        key_attr = { fg = "yellow", bg = "black" },
+        desc_attr = { brightness = "bright" },
+        attr = { bg = "blue", fg = "white" },
+      },
     },
-    center = {
-      text = "middle text",
-      attr = { fg = "yellow", brightness = "bright" }
-    },
-    right = {
-      text = "q: quit",
-      attr = { fg = "red", brightness = "bright" }
-    },
-    attr = { bg = "black", fg = "white" },
-    auto_render = true,
   }
 }
 
