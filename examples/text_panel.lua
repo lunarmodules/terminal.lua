@@ -2,12 +2,12 @@
 
 -- TextPanel example demonstrating scrollable text display
 
-local TextPanel = require("src.terminal.ui.panel.text")
+local TextPanel = require("terminal.ui.panel.text")
 local terminal = require("terminal")
-local Screen = require("src.terminal.ui.panel.screen")
-local Panel = require("src.terminal.ui.panel")
-local Bar = require("src.terminal.ui.panel.bar")
-local KeyBar = require("src.terminal.ui.panel.key_bar")
+local Screen = require("terminal.ui.panel.screen")
+local Panel = require("terminal.ui.panel")
+local Bar = require("terminal.ui.panel.bar")
+local KeyBar = require("terminal.ui.panel.key_bar")
 
 -- Create some sample text content
 local sample_text = {
