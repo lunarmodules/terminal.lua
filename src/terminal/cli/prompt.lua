@@ -28,6 +28,7 @@ local EditLine = require("terminal.editline")
 local Sequence = require("terminal.sequence")
 local utf8 = require("utf8") -- explicitly requires lua-utf8 for Lua < 5.3
 
+local unpack = unpack or table.unpack -- lua 5.1 compatibility: unpack is global in 5.1, table.unpack in 5.2+
 
 -- Key bindings
 local keys = t.input.keymap.get_keys()
@@ -190,7 +191,7 @@ function Prompt:draw()
 
     -- current value in proper format
     function() return t.text.stack.push_seq(self.text_attr) end,
-    Sequence(table.unpack(self.current_lines)), -- all lines concatenated (we formatted using padding, so should properly wrap)
+    Sequence(unpack(self.current_lines)), -- all lines concatenated (we formatted using padding, so should properly wrap)
     t.text.stack.pop_seq,
     t.clear.eol_seq(),        -- clear the remainder of the last line
 
