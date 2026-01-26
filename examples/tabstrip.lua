@@ -2,13 +2,13 @@
 
 -- TabStrip example demonstrating tabbed interface with TabStrip and PanelSet
 
-local TabStrip = require("src.terminal.ui.panel.tab_strip")
-local Set = require("src.terminal.ui.panel.set")
+local TabStrip = require("terminal.ui.panel.tab_strip")
+local Set = require("terminal.ui.panel.set")
 local terminal = require("terminal")
-local Screen = require("src.terminal.ui.panel.screen")
-local Panel = require("src.terminal.ui.panel")
-local Bar = require("src.terminal.ui.panel.bar")
-local TextPanel = require("src.terminal.ui.panel.text")
+local Screen = require("terminal.ui.panel.screen")
+local Panel = require("terminal.ui.panel")
+local Bar = require("terminal.ui.panel.bar")
+local TextPanel = require("terminal.ui.panel.text")
 
 -- Create sample content for each tab
 local tab_contents = {
