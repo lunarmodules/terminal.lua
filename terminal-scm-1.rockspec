@@ -69,7 +69,7 @@ build = {
   },
 
   copy_directories = {
-    -- can be accessed locally: `luarocks terminal doc`
+    -- can be accessed by `luarocks terminal doc` from the commandline
     "docs",
   },
 }
