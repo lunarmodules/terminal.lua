@@ -79,7 +79,7 @@ local function prompt_loop(initial_value)
       local method = line[action]
       if method then method(line) end
     elseif keytype == "char" and line:len_char() < MAX_LEN and rawkey and #rawkey >= 1 then
-      local ok, err = pcall(function() line:insert(rawkey) end)
+      local ok = pcall(function() line:insert(rawkey) end)
       if not ok then t.bell() end
     else
       t.bell()
