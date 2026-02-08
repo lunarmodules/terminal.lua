@@ -4,6 +4,7 @@ local Prompt = require("terminal.cli.prompt")
 
 local terminal_opts = {
   -- use all defaults
+  disable_sigint = true, -- disable ctrl-c signal handling (so it can be handled as a cancellation key in the prompt)
 }
 
 
@@ -20,12 +21,12 @@ local pr = Prompt {
 
 local main = t.initwrap(function()
   t.text.stack.push { brightness = "low" }
-  local result, status = pr()
+  local result, err = pr()
   if result then
     print("Result (string): '" .. result .. "'")
     print("Result (bytes):", (result or ""):byte(1, -1))
   else
-    print("Status: " .. (status or "nil"))
+    print("Status: " .. (err or "nil"))
   end
 end, terminal_opts)
 

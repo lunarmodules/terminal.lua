@@ -8,6 +8,7 @@ local copas = require("copas")
 
 local terminal_opts = {
   sleep = copas.pause, -- use copas pause for sleep to allow other coroutines to run
+  disable_sigint = true, -- disable ctrl-c signal handling (so it can be handled as a cancellation key in the prompt)
 }
 
 
@@ -42,12 +43,12 @@ local clock = copas.timer.new{
 copas.addthread(function()
   t.text.stack.push { brightness = "low" }
   print("Time is ticking in the top-right corner!")
-  local result, status = pr()
+  local result, err = pr()
   if result then
     print("Result (string): '" .. result .. "'")
     print("Result (bytes):", (result or ""):byte(1, -1))
   else
-    print("Status: " .. (status or "nil"))
+    print("Status: " .. (err or "nil"))
   end
 
   clock:cancel() -- stop the timer

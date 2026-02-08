@@ -9,6 +9,7 @@
 -- NOTE: you MUST call `terminal.initialize` before calling this widget's `:run()` method.
 --
 -- *Usage:*
+--
 --     local prompt = Prompt {
 --         prompt = "Enter something: ",
 --         value = "Hello, 你-好 World 🚀!",
@@ -17,7 +18,13 @@
 --         cancellable = true,
 --         position = 2,
 --     }
---     local result, exitkey = prompt:run()
+--     local result, err = prompt:run()  --> nil, "cancelled": if cancelled
+--
+-- Alternative short version:
+--
+--     local result, err = Prompt{ prompt = "What's your name: " }()
+--
+-- Note: `ctrl-c` is handled as a cancellation, just like escape (if the terminal was set up to handle ctrl-c).
 -- @classmod cli.Prompt
 
 local t = require("terminal")
@@ -205,11 +212,11 @@ end
 
 
 
---- Processes key input async
+-- Processes key input async
 -- This function listens for key events and processes them.
--- @return string "returned" or "cancelled" based on the key pressed.
+-- @treturn[1] boolean ok, true if enter was pressed, or false if cancelled.
+-- @treturn[2] string error, "cancelled" if the input was cancelled.
 function Prompt:handleInput()
-  -- TODO: this should support "exitKeys"
   while true do
     local rawkey, keytype = t.input.readansi(math.huge)
     if rawkey then
@@ -220,11 +227,11 @@ function Prompt:handleInput()
         local method = self.value[action] or nop
         method(self.value)
 
-      elseif keyname == keys.escape and self.cancellable then
-        return "cancelled"
+      elseif (keyname == keys.escape or keyname == keys.ctrl_c) and self.cancellable then
+        return false, "cancelled"
 
       elseif keyname == keys.enter then
-        return "returned"
+        return true
 
       elseif keytype ~= "char" then
         t.bell()
@@ -245,23 +252,21 @@ end
 
 
 --- Starts the prompt input loop.
--- This function initializes the input loop for the readline instance.
--- It uses a coroutine to process key input until an exit key is pressed.
+-- Calling on the instance is a short-cut to calling this method.
 -- @treturn string|nil
 --   The final input value entered by the user, or nil if the input was cancelled.
 -- @treturn string
---   The exit status that terminated the input loop: "returned" or "cancelled".
+--   The error string if cancelled; "cancelled".
 function Prompt:run()
-  local status
 
   self:draw()
-  status = self:handleInput()
-  t.output.print() -- move to new line (we're still on the 'press any key' line)
+  local ok, err = self:handleInput()
+  t.output.print() -- move to new line (cursor is still on the input line)
 
-  if status == "returned" then
-    return tostring(self.value), status
+  if ok then
+    return tostring(self.value)
   else
-    return nil, status
+    return nil, err
   end
 end
 
