@@ -71,6 +71,26 @@ describe("terminal.cli.prompt", function()
   end
   assert(ENTER_KEY, "Could not find Enter key in keymap")
 
+  -- Find the raw key that maps to the "escape" key name
+  local ESC_KEY
+  for raw_key, key_name in pairs(default_key_map) do
+    if key_name == keys.escape then
+      ESC_KEY = raw_key
+      break
+    end
+  end
+  assert(ESC_KEY, "Could not find Escape key in keymap")
+
+  -- Find the raw key that maps to the "ctrl_c" key name (Ctrl+C)
+  local CTRL_C_KEY
+  for raw_key, key_name in pairs(default_key_map) do
+    if key_name == keys.ctrl_c then
+      CTRL_C_KEY = raw_key
+      break
+    end
+  end
+  assert(CTRL_C_KEY, "Could not find Ctrl+C key in keymap")
+
 
 
   describe("init() with empty value", function()
@@ -107,13 +127,30 @@ describe("terminal.cli.prompt", function()
         cancellable = true,
       }
 
-      -- Queue Esc key
-      queue_key("\27", "ansi")
+      -- Queue Esc key (from keymap)
+      queue_key(ESC_KEY, "ansi")
 
-      local result, status = prompt:run()
+      local result, err = prompt:run()
 
       assert.is_nil(result)
-      assert.are.equal("cancelled", status)
+      assert.are.equal("cancelled", err)
+    end)
+
+
+    it("treats Ctrl+C as cancel when cancellable=true", function()
+      local prompt = Prompt {
+        prompt = "Enter: ",
+        value = "test",
+        cancellable = true,
+      }
+
+      -- Queue Ctrl+C key (from keymap)
+      queue_key(CTRL_C_KEY, "char")
+
+      local result, err = prompt:run()
+
+      assert.is_nil(result)
+      assert.are.equal("cancelled", err)
     end)
 
   end)
@@ -122,7 +159,7 @@ describe("terminal.cli.prompt", function()
 
   describe("run() returned behavior", function()
 
-    it("returns value and 'returned' when Enter pressed", function()
+    it("returns value and no error when Enter pressed", function()
       local prompt = Prompt {
         prompt = "Enter: ",
         value = "hello",
@@ -131,10 +168,10 @@ describe("terminal.cli.prompt", function()
       -- Queue Enter key (platform-specific)
       queue_key(ENTER_KEY, "char")
 
-      local result, status = prompt:run()
+      local result, err = prompt:run()
 
       assert.are.equal("hello", result)
-      assert.are.equal("returned", status)
+      assert.is_nil(err)
     end)
 
 
@@ -147,10 +184,10 @@ describe("terminal.cli.prompt", function()
       -- Queue Enter key (platform-specific)
       queue_key(ENTER_KEY, "char")
 
-      local result, status = prompt:run()
+      local result, err = prompt:run()
 
       assert.are.equal("", result)
-      assert.are.equal("returned", status)
+      assert.is_nil(err)
     end)
 
   end)
