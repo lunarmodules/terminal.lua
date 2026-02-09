@@ -19,6 +19,8 @@ See [online documentation](https://lunarmodules.github.io/terminal.lua/)
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
+**For AI agents:** Project context and conventions for AI tools are in [AGENTS.md](AGENTS.md). Read that file first.
+
 ## Changelog & Versioning
 
 See [CHANGELOG.md](CHANGELOG.md)
