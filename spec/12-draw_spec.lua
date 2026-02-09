@@ -12,6 +12,7 @@ describe("terminal.draw", function()
   end)
 
 
+
   it("creates title sequence with empty title", function()
     local result = line.title_seq(10, "")
     assert.are.equal("──────────", result)
