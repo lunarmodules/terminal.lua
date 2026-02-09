@@ -1,7 +1,7 @@
 describe("input:", function()
 
   local t, sys, old_readkey
-  local keyboard_buffer = ""
+  local keyboard_buffer
 
   setup(function()
     sys = require("system")
@@ -103,12 +103,17 @@ describe("input:", function()
 
   describe("read_query_answer()", function()
 
-    -- returns an ANSWER sequence to the cursor-position query
-    local add_cpos = function(row, col)
-      keyboard_buffer = keyboard_buffer .. ("\027[%d;%dR"):format(row, col)
-    end
+    local add_cpos
+    local cursor_answer_pattern
 
-    local cursor_answer_pattern = "^\27%[(%d+);(%d+)R$"
+    setup(function()
+      -- returns an ANSWER sequence to the cursor-position query
+      add_cpos = function(row, col)
+        keyboard_buffer = keyboard_buffer .. ("\027[%d;%dR"):format(row, col)
+      end
+      cursor_answer_pattern = "^\27%[(%d+);(%d+)R$"
+    end)
+
 
 
     it("returns the cursor positions read", function()
@@ -169,6 +174,5 @@ describe("input:", function()
     end)
 
   end)
-
 
 end)

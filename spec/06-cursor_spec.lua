@@ -314,6 +314,7 @@ describe("Cursor", function()
       assert.are.equal("\27[1A", cursor.position.up_seq())
     end)
 
+
     it("does nothing if 0", function()
       assert.are.equal("", cursor.position.up_seq(0))
     end)

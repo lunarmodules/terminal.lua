@@ -24,11 +24,13 @@ describe("terminal.ui.panel.bar", function()
     }
   end)
 
+
   teardown(function()
     -- Unset modules for clean test isolation
     Bar = nil
     terminal = nil -- luacheck: ignore
   end)
+
 
 
   describe("init()", function()

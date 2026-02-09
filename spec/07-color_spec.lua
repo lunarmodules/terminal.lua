@@ -6,6 +6,7 @@ describe("text.color", function()
     color = require("terminal.text.color")
   end)
 
+
   after_each(function()
     color = nil
   end)

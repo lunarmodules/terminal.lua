@@ -42,6 +42,7 @@ describe("terminal.ui.panel.text", function()
   end)
 
 
+
   describe("init()", function()
 
     it("creates a text panel with default values", function()
@@ -74,6 +75,7 @@ describe("terminal.ui.panel.text", function()
     end)
 
   end)
+
 
 
   describe("format_line_truncate()", function()
@@ -111,6 +113,7 @@ describe("terminal.ui.panel.text", function()
     end)
 
   end)
+
 
 
   describe("set_position()", function()
@@ -154,6 +157,7 @@ describe("terminal.ui.panel.text", function()
   end)
 
 
+
   describe("scroll_up()", function()
 
     it("scrolls up by scroll_step", function()
@@ -189,6 +193,7 @@ describe("terminal.ui.panel.text", function()
     end)
 
   end)
+
 
 
   describe("scroll_down()", function()
@@ -230,6 +235,7 @@ describe("terminal.ui.panel.text", function()
   end)
 
 
+
   describe("page_up()", function()
 
     it("scrolls up by page size", function()
@@ -265,6 +271,7 @@ describe("terminal.ui.panel.text", function()
     end)
 
   end)
+
 
 
   describe("page_down()", function()
@@ -304,6 +311,7 @@ describe("terminal.ui.panel.text", function()
   end)
 
 
+
   describe("get_position()", function()
 
     it("returns current position", function()
@@ -316,6 +324,7 @@ describe("terminal.ui.panel.text", function()
     end)
 
   end)
+
 
 
   describe("get_line_count()", function()

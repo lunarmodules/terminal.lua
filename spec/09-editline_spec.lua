@@ -80,6 +80,7 @@ describe("EditLine:", function()
       }, line.word_delimiters)
     end)
 
+
     it("initializes cursor position at the end", function()
       local line = EditLine("hello")
       assert.are.equal(6, line:pos_char())  -- cursor should be at the end of "hello"

@@ -22,6 +22,7 @@ describe("terminal.ui.screen", function()
   end)
 
 
+
   describe("init()", function()
 
     it("creates a screen with body panel only", function()
