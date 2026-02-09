@@ -2,12 +2,12 @@ describe("keymap:", function()
 
   local keymap
 
-  lazy_setup(function()
+  setup(function()
     keymap = require("terminal.input.keymap")
   end)
 
 
-  lazy_teardown(function()
+  teardown(function()
     keymap = nil
   end)
 
