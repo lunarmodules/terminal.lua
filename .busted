@@ -3,5 +3,6 @@ return {
     verbose = true,
     coverage = true,
     output = "gtest",
+    lazy = true,
   },
 }

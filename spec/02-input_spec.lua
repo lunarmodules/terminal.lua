@@ -3,7 +3,7 @@ describe("input:", function()
   local t, sys, old_readkey
   local keyboard_buffer = ""
 
-  lazy_setup(function()
+  setup(function()
     sys = require("system")
 
     -- patch low level readkey, such that it won't block during tests
@@ -19,7 +19,7 @@ describe("input:", function()
   end)
 
 
-  lazy_teardown(function()
+  teardown(function()
     sys._readkey = old_readkey
   end)
 
