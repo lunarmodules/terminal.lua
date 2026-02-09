@@ -24,7 +24,7 @@ description = {
 }
 
 dependencies = {
-  "lua >= 5.1, < 5.5",
+  "lua >= 5.1, < 5.6",
   "luasystem >= 0.6.3",
   "utf8 >= 1.3.0",
 }
