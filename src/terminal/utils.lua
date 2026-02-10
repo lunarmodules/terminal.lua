@@ -357,6 +357,25 @@ end
 
 
 
+--- Strips all ANSI escape sequences from a string.
+-- Removes CSI (e.g. colors, cursor movement, SGR), OSC, DCS, SOS, PM, APC,
+-- two-byte sequences, and C1 control codes. Use when you need plain text
+-- without terminal control sequences.
+-- @tparam string str The string that may contain ANSI sequences.
+-- @treturn string The string with all ANSI sequences removed.
+-- @usage
+-- strip_ansi("\27[31mred\27[0m")  -- "red"
+-- @within Text
+function M.strip_ansi(str)
+  return str               -- Note: order is important here
+    :gsub("\27%].-\7", "")                -- OSC (terminated by BEL)
+    :gsub("\27%].-\27%\\", "")            -- OSC (terminated by ST)
+    :gsub("\27[P^X_].-\27%\\", "")        -- DCS, SOS, PM, APC
+    :gsub("\27%[[0-?]*[ -/]*[@-~]", "")   -- CSI
+    :gsub("\155[0-?]*[ -/]*[@-~]", "")    -- C1 CSI
+    :gsub("\27[@-_]", "")                 -- two-byte sequences
+end
+
 
 
 --- Truncates text to fit within a given width, adding ellipsis as needed.

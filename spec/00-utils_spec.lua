@@ -206,4 +206,61 @@ describe("Utils", function()
 
   end)
 
+
+
+  describe("strip_ansi()", function()
+
+    it("returns empty string unchanged", function()
+      assert.are.equal("", utils.strip_ansi(""))
+    end)
+
+
+    it("errors on nil", function()
+      assert.has_error(function()
+        utils.strip_ansi(nil)
+      end)
+    end)
+
+
+    it("returns plain text unchanged", function()
+      assert.are.equal("plain", utils.strip_ansi("plain"))
+      assert.are.equal("hello world", utils.strip_ansi("hello world"))
+    end)
+
+
+    it("strips SGR (color/attribute) sequences", function()
+      local red = "\27[31m"
+      local reset = "\27[0m"
+      assert.are.equal("red", utils.strip_ansi(red .. "red" .. reset))
+      assert.are.equal("bold", utils.strip_ansi("\27[1mbold\27[0m"))
+    end)
+
+
+    it("strips CSI cursor/control sequences", function()
+      assert.are.equal("", utils.strip_ansi("\27[2J\27[H"))
+      assert.are.equal("x", utils.strip_ansi("\27[10;20Hx\27[6n"))
+      assert.are.equal("ab", utils.strip_ansi("a\27[1Kb"))
+    end)
+
+
+    it("strips OSC sequences (until BEL or ST)", function()
+      assert.are.equal("", utils.strip_ansi("\27]0;title\7"))
+      assert.are.equal("xy", utils.strip_ansi("x\27]1;http://example.com\27\\y"))
+      assert.are.equal("y", utils.strip_ansi("\27]1;url\27\\y"))
+    end)
+
+
+    it("strips C1 CSI (0x9b)", function()
+      -- 0x9b is C1 CSI (same as ESC [); following bytes are params + final, e.g. "31m"
+      assert.are.equal("x", utils.strip_ansi("\15531mx"))
+    end)
+
+
+    it("strips mixed content", function()
+      local s = "\27[1m\27[31mbold red\27[0m and \27[32mgreen\27[0m"
+      assert.are.equal("bold red and green", utils.strip_ansi(s))
+    end)
+
+  end)
+
 end)
