@@ -31,7 +31,7 @@
 --     local key_map = terminal.input.keymap.default_key_map
 --     local keys = terminal.input.keymap.default_keys
 --
---     -- lookup the key-name from the raw inpout
+--     -- lookup the key-name from the raw input
 --     local keyname = key_map[rawkey] --> "ctrl_m"
 --
 --     -- the following if statements are equivalent:

@@ -53,8 +53,8 @@ local function main()
       print(to_hex_debug_format(key))
 
       local keyname = keymap[key]
-      print(yellow("\tit has the internal name: '") .. tostring(keyname) .. yellow("'"))
-      print(yellow("\tit maps to the names:"))
+      print(yellow("\tkey name: '") .. tostring(keyname) .. yellow("'"))
+      print(yellow("\taliases:"))
       for k, v in pairs(keys) do
         if v == keyname then
           print("\t\t" .. k)
