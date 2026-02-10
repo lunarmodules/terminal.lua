@@ -108,6 +108,13 @@
 <span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
 <span class="keyword">local</span> Prompt = <span class="global">require</span>(<span class="string">"terminal.cli.prompt"</span>)
 
+
+<span class="keyword">local</span> terminal_opts = {
+  <span class="comment">-- use all defaults
+</span>  disable_sigint = <span class="keyword">true</span>, <span class="comment">-- disable ctrl-c signal handling (so it can be handled as a cancellation key in the prompt)
+</span>}
+
+
 <span class="keyword">local</span> pr = <span class="function-name">Prompt</span> {
   prompt = <span class="string">"Enter something: "</span>,
   value = <span class="string">"Hello, 你-好 World 🚀!"</span>,
@@ -118,16 +125,20 @@
   wordwrap = <span class="keyword">true</span>,
 }
 
-t.<span class="function-name">initwrap</span>(<span class="keyword">function</span> () <span class="comment">-- on Windows: wrap for utf8 output
-</span>  t.text.stack.<span class="function-name">push</span> { brightness = <span class="string">"low"</span> }
-  <span class="keyword">local</span> result, status = <span class="function-name">pr</span>()
+
+<span class="keyword">local</span> main = t.<span class="function-name">initwrap</span>(<span class="keyword">function</span>()
+  t.text.stack.<span class="function-name">push</span> { brightness = <span class="string">"low"</span> }
+  <span class="keyword">local</span> result, err = <span class="function-name">pr</span>()
   <span class="keyword">if</span> result <span class="keyword">then</span>
     <span class="global">print</span>(<span class="string">"Result (string): '"</span> .. result .. <span class="string">"'"</span>)
     <span class="global">print</span>(<span class="string">"Result (bytes):"</span>, (result <span class="keyword">or</span> <span class="string">""</span>):<span class="function-name">byte</span>(<span class="number">1</span>, -<span class="number">1</span>))
   <span class="keyword">else</span>
-    <span class="global">print</span>(<span class="string">"Status: "</span> .. (status <span class="keyword">or</span> <span class="string">"nil"</span>))
+    <span class="global">print</span>(<span class="string">"Status: "</span> .. (err <span class="keyword">or</span> <span class="string">"nil"</span>))
   <span class="keyword">end</span>
-<span class="keyword">end</span>, {})()</pre>
+<span class="keyword">end</span>, terminal_opts)
+
+
+<span class="function-name">main</span>()</pre>
 
 
 </div> <!-- id="content" -->

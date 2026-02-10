@@ -110,11 +110,9 @@
 
 <h1>Class <code>cli.Prompt</code></h1>
 <p>Prompt input for CLI tools.</p>
-<p>
-
-
 <p> This module provides a simple way to read line input from the terminal. The user can
- confirm their choices by pressing &lt;Enter&gt; or cancel their choices by pressing &lt;Esc&gt;.</p>
+ confirm their choices by pressing &lt;Enter&gt; or cancel their choices by pressing &lt;Esc&gt;
+ (when cancellable is enabled).</p>
 
 <p> Features: Prompt, UTF8 support, async input, (to be added: secrets, scrolling and wrapping)</p>
 
@@ -122,19 +120,27 @@
 
 <p> <em>Usage:</em></p>
 
+
 <pre>
 <span class="keyword">local</span> prompt = <span class="function-name">Prompt</span> {
     prompt = <span class="string">"Enter something: "</span>,
     value = <span class="string">"Hello, 你-好 World 🚀!"</span>,
     max_length = <span class="number">62</span>,
     <span class="comment">-- overflow = "wrap" -- or "scroll"   -- TODO: implement
-</span>    <span class="comment">-- cancellable = true,                -- TODO: implement
-</span>    position = <span class="number">2</span>,
+</span>    cancellable = <span class="keyword">true</span>,
+    position = <span class="number">2</span>,
 }
-<span class="keyword">local</span> result, exitkey = pr:<span class="function-name">run</span>()
+<span class="keyword">local</span> result, err = prompt:<span class="function-name">run</span>()  <span class="comment">--&gt; nil, "cancelled": if cancelled</span>
 </pre>
 
-</p>
+<p> Alternative short version:</p>
+
+
+<pre>
+<span class="keyword">local</span> result, err = <span class="function-name">Prompt</span>{ prompt = <span class="string">"What's your name: "</span> }()
+</pre>
+
+<p> Note: <code>ctrl-c</code> is handled as a cancellation, just like escape (if the terminal was set up to handle ctrl-c).</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
@@ -147,12 +153,7 @@
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#cli.prompt:handleInput">cli.prompt:handleInput ()</a></td>
-	<td class="summary">Processes key input async
- This function listens for key events and processes them.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#cli.prompt:run">cli.prompt:run (redraw)</a></td>
+	<td class="name" nowrap><a href="#cli.prompt:run">cli.prompt:run ()</a></td>
 	<td class="summary">Starts the prompt input loop.</td>
 	</tr>
 </table>
@@ -211,6 +212,12 @@
          Whether to wordwrap the input value.
          (<em>default</em> false)
         </li>
+        <li><span class="parameter">cancellable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         When true, pressing &lt;Esc&gt; cancels
+ the input and <code>run()</code> returns nil, "cancelled".
+         (<em>default</em> false)
+        </li>
         </li></ul>
     </ul>
 
@@ -230,51 +237,23 @@
 
     <dl class="function">
     <dt>
-    <a name = "cli.prompt:handleInput"></a>
-    <strong>cli.prompt:handleInput ()</strong>
-    </dt>
-    <dd>
-    Processes key input async
- This function listens for key events and processes them.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        string "returned" or "cancelled" based on the key pressed.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
     <a name = "cli.prompt:run"></a>
-    <strong>cli.prompt:run (redraw)</strong>
+    <strong>cli.prompt:run ()</strong>
     </dt>
     <dd>
     Starts the prompt input loop.
- This function initializes the input loop for the readline instance.
- It uses a coroutine to process key input until an exit key is pressed.
+ Calling on the instance is a short-cut to calling this method.
 
 
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">redraw</span>
-            <span class="types"><span class="type">boolean</span></span>
-         Whether to redraw the prompt initially.
-        </li>
-    </ul>
 
     <h3>Returns:</h3>
     <ol>
         <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The final input value entered by the user.</li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        The final input value entered by the user, or nil if the input was cancelled.</li>
         <li>
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The exit key that terminated the input loop.</li>
+        The error string if cancelled; "cancelled".</li>
     </ol>
 
 

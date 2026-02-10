@@ -105,12 +105,17 @@
 
     <h2>prompt-copas.lua</h2>
 <pre>
+<span class="comment">-- Compare this to examples/prompt.lua to see how to make it behave asynchronously
+</span><span class="comment">-- by integrating with the Copas coroutine scheduler
+</span>
 <span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
 <span class="keyword">local</span> Prompt = <span class="global">require</span>(<span class="string">"terminal.cli.prompt"</span>)
 <span class="keyword">local</span> copas = <span class="global">require</span>(<span class="string">"copas"</span>)
 
+
 <span class="keyword">local</span> terminal_opts = {
   sleep = copas.pause, <span class="comment">-- use copas pause for sleep to allow other coroutines to run
+</span>  disable_sigint = <span class="keyword">true</span>, <span class="comment">-- disable ctrl-c signal handling (so it can be handled as a cancellation key in the prompt)
 </span>}
 
 
@@ -145,19 +150,21 @@
 copas.<span class="function-name">addthread</span>(<span class="keyword">function</span>()
   t.text.stack.<span class="function-name">push</span> { brightness = <span class="string">"low"</span> }
   <span class="global">print</span>(<span class="string">"Time is ticking in the top-right corner!"</span>)
-  <span class="keyword">local</span> result, status = <span class="function-name">pr</span>()
+  <span class="keyword">local</span> result, err = <span class="function-name">pr</span>()
   <span class="keyword">if</span> result <span class="keyword">then</span>
     <span class="global">print</span>(<span class="string">"Result (string): '"</span> .. result .. <span class="string">"'"</span>)
     <span class="global">print</span>(<span class="string">"Result (bytes):"</span>, (result <span class="keyword">or</span> <span class="string">""</span>):<span class="function-name">byte</span>(<span class="number">1</span>, -<span class="number">1</span>))
   <span class="keyword">else</span>
-    <span class="global">print</span>(<span class="string">"Status: "</span> .. (status <span class="keyword">or</span> <span class="string">"nil"</span>))
+    <span class="global">print</span>(<span class="string">"Status: "</span> .. (err <span class="keyword">or</span> <span class="string">"nil"</span>))
   <span class="keyword">end</span>
 
   clock:<span class="function-name">cancel</span>() <span class="comment">-- stop the timer
 </span><span class="keyword">end</span>)
 
 
-t.<span class="function-name">initwrap</span>(copas.loop, terminal_opts)()</pre>
+<span class="keyword">local</span> main = t.<span class="function-name">initwrap</span>(copas.loop, terminal_opts)
+
+<span class="function-name">main</span>()</pre>
 
 
 </div> <!-- id="content" -->

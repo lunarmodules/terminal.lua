@@ -160,8 +160,8 @@
       <span class="global">print</span>(<span class="function-name">to_hex_debug_format</span>(key))
 
       <span class="keyword">local</span> keyname = keymap[key]
-      <span class="global">print</span>(<span class="function-name">yellow</span>(<span class="string">"\tit has the internal name: '"</span>) .. <span class="global">tostring</span>(keyname) .. <span class="function-name">yellow</span>(<span class="string">"'"</span>))
-      <span class="global">print</span>(<span class="function-name">yellow</span>(<span class="string">"\tit maps to the names:"</span>))
+      <span class="global">print</span>(<span class="function-name">yellow</span>(<span class="string">"\tkey name: '"</span>) .. <span class="global">tostring</span>(keyname) .. <span class="function-name">yellow</span>(<span class="string">"'"</span>))
+      <span class="global">print</span>(<span class="function-name">yellow</span>(<span class="string">"\taliases:"</span>))
       <span class="keyword">for</span> k, v <span class="keyword">in</span> <span class="global">pairs</span>(keys) <span class="keyword">do</span>
         <span class="keyword">if</span> v == keyname <span class="keyword">then</span>
           <span class="global">print</span>(<span class="string">"\t\t"</span> .. k)

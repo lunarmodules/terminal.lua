@@ -196,7 +196,46 @@ terminal.<span class="function-name">initialize</span>()
 
 
 
+    <h3>See also:</h3>
+    <ul>
+         <a href="../modules/terminal.input.keymap.html#">terminal.input.keymap</a>
+    </ul>
 
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> t = <span class="global">require</span> <span class="string">"terminal"</span>
+<span class="keyword">local</span> key_names = t.input.keymap.default_key_map
+<span class="keyword">local</span> keys = t.input.keymap.default_keys
+
+<span class="comment">-- read a key, and look up its name
+</span><span class="keyword">local</span> rawkey, keytype = t.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
+<span class="keyword">local</span> keyname = key_names[rawkey] <span class="comment">-- note: not every key has a name
+</span>
+<span class="comment">-- use the 'keys' table to check for key-names to prevent
+</span><span class="comment">-- having to use magic strings
+</span><span class="keyword">if</span> keyname == keys.escape <span class="keyword">then</span>
+  t.output.<span class="global">print</span>(<span class="string">"Escape key pressed"</span>)
+<span class="keyword">elseif</span> keyname == keys.up <span class="keyword">then</span>
+  t.output.<span class="global">print</span>(<span class="string">"Up key pressed"</span>)
+<span class="keyword">elseif</span> keyname == keys.down <span class="keyword">then</span>
+  t.output.<span class="global">print</span>(<span class="string">"Down key pressed"</span>)
+<span class="keyword">elseif</span> keyname == keys.left <span class="keyword">then</span>
+  t.output.<span class="global">print</span>(<span class="string">"Left key pressed"</span>)
+<span class="keyword">elseif</span> keyname == keys.right <span class="keyword">then</span>
+  t.output.<span class="global">print</span>(<span class="string">"Right key pressed"</span>)
+<span class="keyword">else</span>
+  <span class="comment">-- check on key-type; ctrl/ansi/char
+</span>  <span class="keyword">if</span> keytype == <span class="string">"ctrl"</span> <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"Control key pressed: "</span> .. <span class="global">tostring</span>(keyname))
+  <span class="keyword">elseif</span> keytype == <span class="string">"ansi"</span> <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"ANSI key pressed: "</span> .. <span class="global">tostring</span>(keyname))
+  <span class="keyword">elseif</span> keytype == <span class="string">"char"</span> <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"Character key pressed: "</span> .. <span class="global">tostring</span>(rawkey))  <span class="comment">-- use rawkey here, not keyname
+</span>  <span class="keyword">else</span>
+    <span class="global">error</span>(<span class="string">"this cannot happen! keytype: "</span> .. <span class="global">tostring</span>(keytype))
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre>
+    </ul>
 
 </dd>
     <dt>
