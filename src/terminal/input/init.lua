@@ -50,6 +50,40 @@ M.sys_readansi = sys.readansi
 -- @tparam number timeout the timeout in seconds
 -- @tparam[opt] function fsleep the sleep function to use (default: the sleep function
 -- set by `initialize`)
+-- @see terminal.input.keymap
+-- @usage
+-- local t = require "terminal"
+-- local key_names = t.input.keymap.default_key_map
+-- local keys = t.input.keymap.default_keys
+--
+-- -- read a key, and look up its name
+-- local rawkey, keytype = t.input.readansi(math.huge)
+-- local keyname = key_names[rawkey] -- note: not every key has a name
+--
+-- -- use the 'keys' table to check for key-names to prevent
+-- -- having to use magic strings
+-- if keyname == keys.escape then
+--   t.output.print("Escape key pressed")
+-- elseif keyname == keys.up then
+--   t.output.print("Up key pressed")
+-- elseif keyname == keys.down then
+--   t.output.print("Down key pressed")
+-- elseif keyname == keys.left then
+--   t.output.print("Left key pressed")
+-- elseif keyname == keys.right then
+--   t.output.print("Right key pressed")
+-- else
+--   -- check on key-type; ctrl/ansi/char
+--   if keytype == "ctrl" then
+--     t.output.print("Control key pressed: " .. tostring(keyname))
+--   elseif keytype == "ansi" then
+--     t.output.print("ANSI key pressed: " .. tostring(keyname))
+--   elseif keytype == "char" then
+--     t.output.print("Character key pressed: " .. tostring(rawkey))  -- use rawkey here, not keyname
+--   else
+--     error("this cannot happen! keytype: " .. tostring(keytype))
+--   end
+-- end
 function M.readansi(timeout, fsleep)
   if kbend == 0 then
     -- buffer is empty, so read from the terminal
