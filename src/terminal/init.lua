@@ -32,7 +32,7 @@ local sys = require "system"
 
 -- Push the module table already in `package.loaded` to avoid circular dependencies
 package.loaded["terminal"] = M
--- load the submodules
+-- load the submodules; all but object; editline, sequence, cli.*, ui.*
 M.input = require("terminal.input")
 M.output = require("terminal.output")
 M.clear = require("terminal.clear")
@@ -41,6 +41,7 @@ M.cursor = require("terminal.cursor")
 M.text = require("terminal.text")
 M.draw = require("terminal.draw")
 M.progress = require("terminal.progress")
+M.utils = require("terminal.utils")
 -- create locals
 local output = M.output
 local scroll = M.scroll
