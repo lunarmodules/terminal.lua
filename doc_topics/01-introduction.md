@@ -11,9 +11,18 @@ Yet another terminal library, why? Becasue it adds a couple of things not found 
 
 There are a few major concepts implemented in this library:
 
-- [initialization & shutdown](#12-initialization--shutdown)
-- [functions vs strings](#13-functions-vs-strings)
-- [stacks](#14-stacks)
+**the core terminal stuff**
+
+configuring the terminal and abstractions over ANSI codes;
+
+  - [initialization & shutdown](#12-initialization--shutdown)
+  - [functions vs strings](#13-functions-vs-strings)
+  - [stacks](#14-stacks)
+
+**Higher level components**
+
+  - CLI widgets, see the `CLI` classes like `cli.Select` and `cli.Prompt`.
+  - Fullscreen UIs, see the `UI` classes like `ui.panel.Screen` and `ui.panel.Bar`.
 
 
 ## 1.2 initialization & shutdown
