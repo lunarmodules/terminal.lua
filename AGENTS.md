@@ -27,7 +27,7 @@ Details are in **[CONTRIBUTING.md](CONTRIBUTING.md)**. Summary:
 
 - **Getting started:** Use the `Makefile` from the repository root; LuaRocks should use the user tree (see CONTRIBUTING).
 - **Commits:** Atomic commits, [conventional-commits](https://www.conventionalcommits.org/) format (type + scope, present tense, 50-char header, 72-char body).
-- **Testing:** `make test` (Busted), `make lint` (LuaCheck). Coverage: LuaCov, output in `luacov.report.out`.
+- **Testing:** `make test` (Busted), `make lint` (LuaCheck). Coverage: LuaCov, output in `luacov.report.out`. Every new feature, function, or component must be accompanied by tests where reasonable and applicable; exceptions are documented (see CONTRIBUTING).
 - **Documentation:** ldoc; sources in `config.ld`. Run `make docs` to generate; do not commit generated docs (`make clean` will revert generated docs). Update comments and examples during development.
 
 ## Test isolation
@@ -61,6 +61,8 @@ In Busted test files in `./spec` the vertical whitespace is important:
 - 2 lines between other blocks (`it`, `setup`, `before_each`, etc)
 - 3 lines between initialization (`setup`/`teardown`/etc) and the first `it` or `describe` block
 - 1 line between multiple closing `end)` statements
+
+For functionality that requires more than 3 cases of input to be tested, table-test-style is prefered. But only if it enhances maintainability and readability.
 
 ## Architecture
 
