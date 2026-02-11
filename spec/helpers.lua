@@ -13,6 +13,12 @@ local system -- to hold the system module if loaded
 
 
 
+-- nil safe versions of pack and unpack
+local pack = require("pl.utils").pack
+local unpack = require("pl.utils").unpack
+
+
+
 local get_config do
   -- this config table holds config values as configured for the mock functions.
   -- the key is the terminal module-table, the value a hash-table of config values.
@@ -77,6 +83,42 @@ end
 
 
 
+--- Reads a single byute from the keyboard buffer, which is mocked.
+-- This is the mock for `system._readkey()`
+-- @treturn number the byte read from the keyboard buffer, or nil if the buffer is empty
+function M._readkey()
+  local buffer = get_config().keyboardbuffer
+  local entry = table.remove(buffer, 1) or {}
+  return unpack(entry)
+end
+
+
+
+-- Pushes input into the keyboard buffer mock.
+-- @tparam string seq the sequence of input, individual bytes of this string will be returned
+-- @tparam string err an eror to return, in this case `seq` MUST be nil.
+function M._push_input(seq, err)
+  local buffer = get_config().keyboardbuffer
+
+  if type(seq) == "string" then
+    assert(err == nil, "error must be nil if seq is a string")
+    assert(seq ~= "", "seq must be a non-empty string")
+    for i = 1, #seq do
+      table.insert(buffer, pack(string.byte(seq, i)))
+    end
+
+  elseif seq == nil then
+    assert(type(err) == "string", "err must be a string if seq is nil")
+    assert(err ~= "", "err must be a non-empty string")
+    table.insert(buffer, pack(nil, err))
+
+  else
+    error("invalid type for seq, must be a string or nil")
+  end
+end
+
+
+
 -- ====================================================================================================
 -- (Un)loading and patching system and terminal to enable mocks
 -- ====================================================================================================
@@ -85,6 +127,7 @@ end
 -- Patches system to enable mocking
 local function patch_system()
   system.termsize = M.get_termsize
+  system._readkey = M._readkey
 end
 
 
@@ -106,6 +149,7 @@ function M.load()
   system = require("system")
   patch_system()
 
+  _G._TEST = true  -- some modules export some private internals for testing
   terminal = require("terminal")
   patch_terminal()
 
@@ -118,8 +162,9 @@ end
 -- Does not load them again. Call from Busted teardown or after_each so the
 -- next load() gets a fresh terminal. Idempotent.
 function M.unload()
+  _G._TEST = nil
   terminal = nil
-  system = nil
+  system = nil                                                -- luacheck: ignore
   for key, _ in pairs(package.loaded) do
     if key == "terminal" or
        key == "system" or

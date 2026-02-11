@@ -56,7 +56,6 @@ describe("Spec helpers", function()
   describe("termsize", function()
 
     it("defaults to 25x80", function()
-      helpers.unload()
       helpers.load()
 
       local rows, cols = helpers.get_termsize()
@@ -66,7 +65,6 @@ describe("Spec helpers", function()
 
 
     it("patches system.termsize to use mocked values", function()
-      helpers.unload()
       helpers.load()
 
       helpers.set_termsize(30, 90)
@@ -75,6 +73,59 @@ describe("Spec helpers", function()
       local rows, cols = system.termsize()
       assert.equals(30, rows)
       assert.equals(90, cols)
+    end)
+
+  end)
+
+
+  describe("keyboard input mock", function()
+
+    it("returns bytes from the helper _readkey buffer", function()
+      helpers.load()
+
+      helpers._push_input("ab")
+
+      local b1 = helpers._readkey()
+      local b2 = helpers._readkey()
+      local b3 = helpers._readkey()
+
+      assert.equals(string.byte("a"), b1)
+      assert.equals(string.byte("b"), b2)
+      assert.is_nil(b3)
+    end)
+
+
+    it("returns nil and error when pushing an error entry", function()
+      helpers.load()
+
+      helpers._push_input(nil, "some-error")
+
+      local b, err = helpers._readkey()
+      assert.is_nil(b)
+      assert.equals("some-error", err)
+    end)
+
+
+    it("patches system._readkey to use the mock buffer", function()
+      helpers.load()
+
+      helpers._push_input("X")
+
+      local system = require("system")
+      local b = system._readkey()
+
+      assert.equals(string.byte("X"), b)
+    end)
+
+
+    it("terminal.input.readansi() returns data read from the mock buffer", function()
+      local terminal = helpers.load()
+
+      helpers._push_input("X")
+
+      local rawkey, keytype = terminal.input.readansi(0.01)
+      assert.equals("X", rawkey)
+      assert.equals("char", keytype)
     end)
 
   end)
