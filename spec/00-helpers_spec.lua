@@ -78,6 +78,7 @@ describe("Spec helpers", function()
   end)
 
 
+
   describe("keyboard input mock", function()
 
     it("returns bytes from the helper _readkey buffer", function()
@@ -126,6 +127,39 @@ describe("Spec helpers", function()
       local rawkey, keytype = terminal.input.readansi(0.01)
       assert.equals("X", rawkey)
       assert.equals("char", keytype)
+    end)
+
+  end)
+
+
+
+  describe("output capture", function()
+
+    it("accumulates writes between reads", function()
+      local terminal = helpers.load()
+
+      terminal.output.write("one")
+      local first = helpers.get_output()
+
+      terminal.output.write("two")
+      local second = helpers.get_output()
+
+      assert.equals("one", first)
+      assert.equals("onetwo", second)
+    end)
+
+
+    it("clears output and starts fresh", function()
+      local terminal = helpers.load()
+
+      terminal.output.write("abc")
+      assert.equals("abc", helpers.get_output())
+
+      helpers.clear_output()
+      terminal.output.write("xyz")
+
+      local out = helpers.get_output()
+      assert.equals("xyz", out)
     end)
 
   end)
