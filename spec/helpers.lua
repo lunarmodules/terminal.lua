@@ -94,10 +94,11 @@ end
 
 
 
--- Pushes input into the keyboard buffer mock.
+--- Pushes input into the keyboard buffer mock.
 -- @tparam string seq the sequence of input, individual bytes of this string will be returned
 -- @tparam string err an eror to return, in this case `seq` MUST be nil.
 function M._push_input(seq, err)
+  -- TODO: rename this function, remove underscore
   local buffer = get_config().keyboardbuffer
 
   if type(seq) == "string" then
@@ -119,6 +120,44 @@ end
 
 
 
+-- Gets the output written to the output stream.
+-- @treturn string the output written to the output stream, empty string if no output
+-- was written yet.
+function M.get_output()
+  local cfg = get_config()
+  if not cfg.output.filename then
+    return ""
+  end
+  return assert(require("pl.utils").readfile(cfg.output.filename))
+end
+
+
+
+--- Clears the output written to the output stream.
+-- and recreates an empty output file.
+function M.clear_output()
+  local cfg = get_config()
+
+  -- close an existing file
+  if cfg.output.filehandle then
+    cfg.output.filehandle:close()
+    cfg.output.filehandle = nil
+  end
+
+  -- remove an existing file, define name if none set yet
+  if cfg.output.filename then
+    os.remove(cfg.output.filename)
+  else
+    cfg.output.filename = require("pl.path").tmpname()
+  end
+
+  -- reopen file, and set it as the output stream
+  cfg.output.filehandle = assert(io.open(cfg.output.filename, "wb"))
+  terminal.output.set_stream(cfg.output.filehandle)
+end
+
+
+
 -- ====================================================================================================
 -- (Un)loading and patching system and terminal to enable mocks
 -- ====================================================================================================
@@ -134,6 +173,35 @@ end
 
 -- Patches terminal to enable mocking
 local function patch_terminal()
+  M.clear_output()
+
+  -- disable changing the output stream
+  local set_stream = terminal.output.set_stream
+  terminal.output.set_stream = function(filehandle)
+    local cfg = get_config() -- the upvalue cfg might be outdated, need to get the latest one
+    if filehandle ~= cfg.output.filehandle then
+      return true
+    end
+    -- only set it if it matches the mocked filehandle
+    return set_stream(filehandle)
+  end
+end
+
+
+
+-- Cleanup a config entry
+local function clean_config()
+  local cfg = get_config()
+
+  -- cleanup output files
+  if cfg.output.filehandle then
+    cfg.output.filehandle:close()
+    cfg.output.filehandle = nil
+  end
+  if cfg.output.filename then
+    os.remove(cfg.output.filename)
+    cfg.output.filename = nil
+  end
 end
 
 
@@ -162,9 +230,7 @@ end
 -- Does not load them again. Call from Busted teardown or after_each so the
 -- next load() gets a fresh terminal. Idempotent.
 function M.unload()
-  _G._TEST = nil
-  terminal = nil
-  system = nil                                                -- luacheck: ignore
+  -- clean up package.loaded
   for key, _ in pairs(package.loaded) do
     if key == "terminal" or
        key == "system" or
@@ -172,6 +238,13 @@ function M.unload()
       package.loaded[key] = nil
     end
   end
+  -- cleanup any dangling stuff
+  if terminal then
+    clean_config()
+  end
+  terminal = nil
+  system = nil                                                -- luacheck: ignore
+  _G._TEST = nil
   -- call twice to ensure finalization is complete
   collectgarbage()
   collectgarbage()
