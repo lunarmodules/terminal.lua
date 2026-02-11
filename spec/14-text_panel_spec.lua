@@ -1,3 +1,6 @@
+local helpers = require "spec.helpers"
+
+
 describe("terminal.ui.panel.text", function()
 
   local TextPanel
@@ -5,8 +8,8 @@ describe("terminal.ui.panel.text", function()
   local text
 
   setup(function()
+    terminal = helpers.load()
     TextPanel = require("terminal.ui.panel.text")
-    terminal = require("terminal")
     text = require("terminal.text")
 
     -- Mock terminal functions
@@ -39,6 +42,7 @@ describe("terminal.ui.panel.text", function()
     TextPanel = nil
     terminal = nil -- luacheck: ignore
     text = nil
+    helpers.unload()
   end)
 
 

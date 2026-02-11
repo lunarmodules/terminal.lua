@@ -1,3 +1,6 @@
+local helpers = require "spec.helpers"
+
+
 describe("terminal.ui.panel.bar", function()
 
   local Bar
@@ -5,8 +8,8 @@ describe("terminal.ui.panel.bar", function()
 
   setup(function()
     -- Load modules
+    terminal = helpers.load()
     Bar = require("terminal.ui.panel.bar")
-    terminal = require("terminal")
 
     -- Mock terminal functions for testing
     terminal.cursor = {
@@ -29,6 +32,7 @@ describe("terminal.ui.panel.bar", function()
     -- Unset modules for clean test isolation
     Bar = nil
     terminal = nil -- luacheck: ignore
+    helpers.unload()
   end)
 
 

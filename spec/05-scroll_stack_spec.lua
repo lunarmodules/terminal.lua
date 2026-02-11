@@ -1,33 +1,19 @@
+local helpers = require "spec.helpers"
+
+
 describe("Scroll stack", function()
 
-  local stack, scroll, old_sys_termsize
+  local terminal, stack, scroll
 
   before_each(function()
-    _G._TEST = true
-
-    local sys = require "system"
-    old_sys_termsize = sys.termsize
-    if os.getenv("GITHUB_ACTIONS") then
-      sys.termsize = function()
-        return 25, 80
-      end
-    end
-
-    stack = require "terminal.scroll.stack"
-    scroll = require "terminal.scroll"
+    terminal = helpers.load()
+    stack = terminal.scroll.stack
+    scroll = terminal.scroll
   end)
 
 
   after_each(function()
-    _G._TEST = nil
-
-    require("system").termsize = old_sys_termsize
-
-    for mod in pairs(package.loaded) do
-      if mod:match("^terminal") then
-        package.loaded[mod] = nil
-      end
-    end
+    helpers.unload()
   end)
 
 
