@@ -1,4 +1,3 @@
-local sys = require("system")
 local t = require("terminal")
 
 -- Keys
@@ -79,7 +78,7 @@ function TerminalUI:withStyle(style, callback)
 end
 
 function TerminalUI:drawBar(row, style, contentFn)
-  local _, cols = sys.termsize()
+  local _, cols = t.size()
 
   self:withStyle(style, function()
     t.cursor.position.set(row, 1)
@@ -120,7 +119,7 @@ function TerminalUI:drawHeader()
 end
 
 function TerminalUI:drawFooter()
-  local rows, _ = sys.termsize()
+  local rows, _ = t.size()
   local lineText = "Lines: " .. self.linesWritten
   local helpText = "Ctrl+F: Change FG | Ctrl+B: Change BG | ESC: Exit"
 
@@ -144,7 +143,7 @@ function TerminalUI:refreshDisplay()
 end
 
 function TerminalUI:initializeContent()
-  local rows, cols = sys.termsize()
+  local rows, cols = t.size()
 
   t.text.attr(self.contentStyle)
 
@@ -157,7 +156,7 @@ function TerminalUI:initializeContent()
 end
 
 function TerminalUI:handleInput()
-  local rows, cols = sys.termsize()
+  local rows, cols = t.size()
 
   self:refreshDisplay()
 
