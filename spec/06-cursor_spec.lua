@@ -1,30 +1,19 @@
+local helpers = require "spec.helpers"
+
+
 describe("Cursor", function()
 
-  local cursor, old_sys_termsize
+  local terminal, cursor
 
   before_each(function()
-    for mod in pairs(package.loaded) do
-      if mod:match("^terminal") then
-        package.loaded[mod] = nil
-      end
-    end
-
-    local sys = require "system"
-    old_sys_termsize = sys.termsize
-    if os.getenv("GITHUB_ACTIONS") then
-      sys.termsize = function()
-        return 25, 80
-      end
-    end
-
-    cursor = require "terminal.cursor"
+    terminal = helpers.load()
+    cursor = terminal.cursor
   end)
 
 
   after_each(function()
-    require("system").termsize = old_sys_termsize
+    helpers.unload()
   end)
-
 
 
 

@@ -1,3 +1,6 @@
+local helpers = require "spec.helpers"
+
+
 describe("terminal.ui.panel.key_bar", function()
 
   local KeyBar
@@ -6,8 +9,8 @@ describe("terminal.ui.panel.key_bar", function()
 
   setup(function()
     -- Load modules
+    terminal = helpers.load()
     KeyBar = require("terminal.ui.panel.key_bar")
-    terminal = require("terminal")
     text = require("terminal.text")
 
     -- Mock terminal functions for testing
@@ -30,6 +33,7 @@ describe("terminal.ui.panel.key_bar", function()
     -- Unset modules for clean test isolation
     KeyBar = nil
     terminal = nil -- luacheck: ignore
+    helpers.unload()
   end)
 
 

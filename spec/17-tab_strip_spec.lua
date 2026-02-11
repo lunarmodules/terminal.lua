@@ -1,3 +1,6 @@
+local helpers = require "spec.helpers"
+
+
 describe("terminal.ui.panel.tab_strip", function()
 
   local TabStrip
@@ -5,8 +8,8 @@ describe("terminal.ui.panel.tab_strip", function()
 
   setup(function()
     -- Load modules
+    terminal = helpers.load()
     TabStrip = require("terminal.ui.panel.tab_strip")
-    terminal = require("terminal")
     -- Mock terminal functions for testing
     terminal.cursor = {
       position = {
@@ -36,6 +39,7 @@ describe("terminal.ui.panel.tab_strip", function()
     -- Unset modules for clean test isolation
     TabStrip = nil
     terminal = nil -- luacheck: ignore
+    helpers.unload()
   end)
 
 

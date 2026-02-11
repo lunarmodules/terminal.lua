@@ -1,87 +1,18 @@
---- Tests for terminal.cli.prompt edge cases
--- Covers: empty value, cancelled/returned behavior
+local helpers = require "spec.helpers"
+
 
 describe("terminal.cli.prompt", function()
 
   local Prompt
-  local t
-  local old_size, old_write, old_print, old_readansi
-  local input_queue
-  local ENTER_KEY, ESC_KEY, CTRL_C_KEY
-  local queue_key
-
-  setup(function()
-    local keymap_module = require("terminal.input.keymap")
-    local keys = keymap_module.default_keys
-    local default_key_map = keymap_module.default_key_map
-
-    for raw_key, key_name in pairs(default_key_map) do
-      if key_name == keys.enter then
-        ENTER_KEY = raw_key
-        break
-      end
-    end
-    assert(ENTER_KEY, "Could not find Enter key in keymap")
-
-    for raw_key, key_name in pairs(default_key_map) do
-      if key_name == keys.escape then
-        ESC_KEY = raw_key
-        break
-      end
-    end
-    assert(ESC_KEY, "Could not find Escape key in keymap")
-
-    for raw_key, key_name in pairs(default_key_map) do
-      if key_name == keys.ctrl_c then
-        CTRL_C_KEY = raw_key
-        break
-      end
-    end
-    assert(CTRL_C_KEY, "Could not find Ctrl+C key in keymap")
-
-    queue_key = function(key, keytype)
-      assert(type(key) == "string", "queue_key: 'key' must be a string, got " .. type(key))
-      assert(type(keytype) == "string", "queue_key: 'keytype' must be a string, got " .. type(keytype))
-      table.insert(input_queue, { key = key, keytype = keytype })
-    end
-  end)
-
 
   before_each(function()
-    t = require("terminal")
-
-    -- mock terminal
-    old_size = t.size
-    t.size = function() return 24, 80 end
-
-    old_write = t.output.write
-    t.output.write = function() end
-
-    old_print = t.output.print
-    t.output.print = function() end
-
-    old_readansi = t.input.readansi
-    t.input.readansi = function()
-      if #input_queue > 0 then
-        local entry = table.remove(input_queue, 1)
-        return entry.key, entry.keytype
-      end
-      return nil, "timeout"
-    end
-
-    input_queue = {}
+    helpers.load()
     Prompt = require("terminal.cli.prompt")
   end)
 
 
   after_each(function()
-    t.size = old_size
-    t.output.write = old_write
-    t.output.print = old_print
-    t.input.readansi = old_readansi
-
-    package.loaded["terminal.cli.prompt"] = nil
-    Prompt = nil
+    helpers.unload()
   end)
 
 
@@ -121,7 +52,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Esc key (from keymap)
-      queue_key(ESC_KEY, "ansi")
+      helpers._push_input(helpers.keys.esc)
 
       local result, err = prompt:run()
 
@@ -138,7 +69,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Ctrl+C key (from keymap)
-      queue_key(CTRL_C_KEY, "char")
+      helpers._push_input(helpers.keys.ctrl_c)
 
       local result, err = prompt:run()
 
@@ -159,7 +90,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Enter key (platform-specific)
-      queue_key(ENTER_KEY, "char")
+      helpers._push_input(helpers.keys.enter)
 
       local result, err = prompt:run()
 
@@ -175,7 +106,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Enter key (platform-specific)
-      queue_key(ENTER_KEY, "char")
+      helpers._push_input(helpers.keys.enter)
 
       local result, err = prompt:run()
 

@@ -1,7 +1,5 @@
-#!/usr/bin/env lua
+local helpers = require "spec.helpers"
 
---- Tests for terminal.ui.screen module
--- @module spec.11-screen_spec
 
 describe("terminal.ui.screen", function()
 
@@ -10,15 +8,14 @@ describe("terminal.ui.screen", function()
   local terminal
 
   before_each(function()
+    terminal = helpers.load()
     Screen = require("terminal.ui.panel.screen")
     Panel = require("terminal.ui.panel")
-    terminal = require("terminal")
   end)
 
+
   after_each(function()
-    Screen = nil
-    Panel = nil
-    terminal = nil
+    helpers.unload()
   end)
 
 
