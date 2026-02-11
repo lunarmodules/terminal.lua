@@ -7,14 +7,14 @@ describe("terminal.ui.screen", function()
   local Panel
   local terminal
 
-  before_each(function()
+  setup(function()
     terminal = helpers.load()
     Screen = require("terminal.ui.panel.screen")
     Panel = require("terminal.ui.panel")
   end)
 
 
-  after_each(function()
+  teardown(function()
     helpers.unload()
   end)
 

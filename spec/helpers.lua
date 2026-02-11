@@ -99,7 +99,7 @@ end
 -- @tparam string err an eror to return, in this case `seq` MUST be nil.
 -- @usage
 -- helper.push_kb_input(helper.keys.esc)                -- push a specific named key
--- helper.push_kb_input(helper.keys.up)                 -- push an ansi sequence for the "up" key
+-- helper.push_kb_input(helper.keys.up)                 -- push an ansi sequence for the "up" arrow key
 -- helper.push_kb_input(nil, "fail reading keyboard")   -- push an error
 -- helper.push_kb_input("some text to type")            -- push a string of bytes
 function M.push_kb_input(seq, err)

@@ -8,33 +8,16 @@ describe("terminal.ui.panel.key_bar", function()
   local text
 
   setup(function()
-    -- Load modules
     terminal = helpers.load()
     KeyBar = require("terminal.ui.panel.key_bar")
     text = require("terminal.text")
-
-    -- Mock terminal functions for testing
-    terminal.cursor = {
-      position = {
-        set = function() end,
-        backup = function() end,
-        restore = function() end,
-        set_seq = function() return "" end,
-        backup_seq = function() return "" end,
-        restore_seq = function() return "" end,
-      }
-    }
-    terminal.output = {
-      write = function() end
-    }
   end)
+
 
   teardown(function()
-    -- Unset modules for clean test isolation
-    KeyBar = nil
-    terminal = nil -- luacheck: ignore
     helpers.unload()
   end)
+
 
 
   describe("init()", function()
@@ -94,6 +77,7 @@ describe("terminal.ui.panel.key_bar", function()
     end)
 
   end)
+
 
 
   describe("_build_lines()", function()
@@ -263,6 +247,7 @@ describe("terminal.ui.panel.key_bar", function()
   end)
 
 
+
   describe("render()", function()
 
     it("calls _draw and respects panel inner coords", function()
@@ -297,6 +282,7 @@ describe("terminal.ui.panel.key_bar", function()
     end)
 
   end)
+
 
 
   describe("separator feature", function()

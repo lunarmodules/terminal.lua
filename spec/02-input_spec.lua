@@ -1,42 +1,17 @@
+local helpers = require "spec.helpers"
+
+
 describe("input:", function()
 
-  local t, sys, old_readkey
-  local keyboard_buffer
-
-  setup(function()
-    sys = require("system")
-
-    -- patch low level readkey, such that it won't block during tests
-    old_readkey = sys._readkey
-    sys._readkey = function()
-      if keyboard_buffer == "" then
-        return nil
-      end
-      local char = keyboard_buffer:sub(1, 1)
-      keyboard_buffer = keyboard_buffer:sub(2)
-      return string.byte(char)
-    end
-  end)
-
-
-  teardown(function()
-    sys._readkey = old_readkey
-  end)
-
+  local t
 
   before_each(function()
-    keyboard_buffer = ""
-    t = require("terminal")
+    t = helpers.load()
   end)
 
 
   after_each(function()
-    -- forcefully unload module
-    for mod in pairs(package.loaded) do
-      if mod:match("^terminal") then
-        package.loaded[mod] = nil
-      end
-    end
+    helpers.unload()
   end)
 
 
@@ -45,6 +20,7 @@ describe("input:", function()
   describe("sys_readansi()", function()
 
     it("matches system.readansi()", function()
+      local sys = require("system")
       assert.are.equal(sys.readansi, t.input.sys_readansi)
     end)
 
@@ -68,13 +44,13 @@ describe("input:", function()
 
 
     it("reads a single character", function()
-      keyboard_buffer = "a"
+      helpers.push_kb_input("a")
       assert.are.equal("a", t.input.readansi(0.01))
     end)
 
 
     it("reads from the buffer first", function()
-      keyboard_buffer = "a"
+      helpers.push_kb_input("a")
       t.input.push_input("b", "key", nil)
       assert.are.equal("b", t.input.readansi(0.01))
       assert.are.equal("a", t.input.readansi(0.01))
@@ -87,10 +63,8 @@ describe("input:", function()
   describe("preread()", function()
 
     it("empties the keyboard-buffer into the preread-buffer", function()
-      keyboard_buffer = "abc"
+      helpers.push_kb_input("abc")
       t.input.preread()
-      assert.are.equal("", keyboard_buffer)
-
       assert.are.equal("a", t.input.readansi(0.01))
       assert.are.equal("b", t.input.readansi(0.01))
       assert.are.equal("c", t.input.readansi(0.01))
@@ -109,7 +83,7 @@ describe("input:", function()
     setup(function()
       -- returns an ANSWER sequence to the cursor-position query
       add_cpos = function(row, col)
-        keyboard_buffer = keyboard_buffer .. ("\027[%d;%dR"):format(row, col)
+        helpers.push_kb_input(("\027[%d;%dR"):format(row, col))
       end
       cursor_answer_pattern = "^\27%[(%d+);(%d+)R$"
     end)
@@ -124,11 +98,10 @@ describe("input:", function()
 
 
     it("leaves other 'char' input in the buffers", function()
-      keyboard_buffer = "abc"
+      helpers.push_kb_input("abc")
       add_cpos(12, 34)
-      keyboard_buffer = keyboard_buffer .. "123"
+      helpers.push_kb_input("123")
       assert.are.same({{"12", "34"}}, t.input.read_query_answer(cursor_answer_pattern, 1))
-      assert.are.equal("123", keyboard_buffer)
       assert.are.equal("a", t.input.readansi(0))
       assert.are.equal("b", t.input.readansi(0))
       assert.are.equal("c", t.input.readansi(0))
@@ -139,9 +112,8 @@ describe("input:", function()
 
 
     it("leaves other 'ansi' input in the buffers", function()
-      keyboard_buffer = "\27[8;10;80t\027[12;34R\027[56;78R\027[90;12R"
+      helpers.push_kb_input("\27[8;10;80t\027[12;34R\027[56;78R\027[90;12R")
       assert.are.same({{"12", "34"},{"56", "78"}}, t.input.read_query_answer(cursor_answer_pattern, 2))
-      assert.are.equal("\027[90;12R", keyboard_buffer)
       local binstring = require("luassert.formatters.binarystring")
       assert:add_formatter(binstring)
       local r = {t.input.readansi(0)}

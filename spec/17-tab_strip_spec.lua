@@ -7,38 +7,12 @@ describe("terminal.ui.panel.tab_strip", function()
   local terminal
 
   setup(function()
-    -- Load modules
     terminal = helpers.load()
     TabStrip = require("terminal.ui.panel.tab_strip")
-    -- Mock terminal functions for testing
-    terminal.cursor = {
-      position = {
-        set = function() end,
-        backup = function() end,
-        restore = function() end,
-        set_seq = function() return "" end,
-        backup_seq = function() return "" end,
-        restore_seq = function() return "" end,
-        left_seq = function() return "" end,
-        down_seq = function() return "" end,
-        up_seq = function() return "" end
-      }
-    }
-    terminal.output = {
-      write = function() end
-    }
-    terminal.clear = {
-      eol_seq = function() return "" end,
-      box = function() return "" end,
-      box_seq = function() return "" end
-    }
   end)
 
 
   teardown(function()
-    -- Unset modules for clean test isolation
-    TabStrip = nil
-    terminal = nil -- luacheck: ignore
     helpers.unload()
   end)
 
