@@ -77,6 +77,8 @@ Testing is done using the busted test framework, LuaCheck for linting, and LuaCo
 
 Use `make test` and `make lint` to run the tests. Coverage information will be in the file `luacov.report.out`.
 
+When writing tests, use the helpers (in `./spec/helpers.lua`) to ensure proper isolation and for handling generic mocking (mostly in and output). This is required over manually adding mocks etc in test files, any deviations should be clearly explained and documented.
+
 In this library we adhere to a rigorous standard of quality: every feature, function, or component added to the codebase is accompanied by comprehensive tests, where reasonable and applicable. This ensures reliability, maintainability, and robustness, and provides a safety net for future changes. Exceptions to this rule are documented and justified, so that our development process remains transparent.
 
 Be sensible, write tests, increase coverage.
