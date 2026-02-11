@@ -97,8 +97,12 @@ end
 --- Pushes input into the keyboard buffer mock.
 -- @tparam string seq the sequence of input, individual bytes of this string will be returned
 -- @tparam string err an eror to return, in this case `seq` MUST be nil.
-function M._push_input(seq, err)
-  -- TODO: rename this function, remove underscore
+-- @usage
+-- helper.push_kb_input(helper.keys.esc)                -- push a specific named key
+-- helper.push_kb_input(helper.keys.up)                 -- push an ansi sequence for the "up" key
+-- helper.push_kb_input(nil, "fail reading keyboard")   -- push an error
+-- helper.push_kb_input("some text to type")            -- push a string of bytes
+function M.push_kb_input(seq, err)
   local buffer = get_config().keyboardbuffer
 
   if type(seq) == "string" then
@@ -161,9 +165,9 @@ end
 --- A lookup table for key sequences to push into the keyboard buffer.
 -- @table keys
 -- @usage
--- helper._push_input(helper.keys.esc)
--- helper._push_input(helper.keys.ctrl_c)
--- helper._push_input(helper.keys.enter)
+-- helper.push_kb_input(helper.keys.esc)
+-- helper.push_kb_input(helper.keys.ctrl_c)
+-- helper.push_kb_input(helper.keys.enter)
 M.keys = setmetatable({}, {
   __newindex = function(self, key, value)
     error("table is read-only", 2)

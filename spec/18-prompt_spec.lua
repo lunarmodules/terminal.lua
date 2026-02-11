@@ -52,7 +52,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Esc key (from keymap)
-      helpers._push_input(helpers.keys.esc)
+      helpers.push_kb_input(helpers.keys.esc)
 
       local result, err = prompt:run()
 
@@ -69,7 +69,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Ctrl+C key (from keymap)
-      helpers._push_input(helpers.keys.ctrl_c)
+      helpers.push_kb_input(helpers.keys.ctrl_c)
 
       local result, err = prompt:run()
 
@@ -90,7 +90,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Enter key (platform-specific)
-      helpers._push_input(helpers.keys.enter)
+      helpers.push_kb_input(helpers.keys.enter)
 
       local result, err = prompt:run()
 
@@ -106,7 +106,7 @@ describe("terminal.cli.prompt", function()
       }
 
       -- Queue Enter key (platform-specific)
-      helpers._push_input(helpers.keys.enter)
+      helpers.push_kb_input(helpers.keys.enter)
 
       local result, err = prompt:run()
 
