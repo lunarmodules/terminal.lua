@@ -84,7 +84,7 @@ describe("Spec helpers", function()
     it("returns bytes from the helper _readkey buffer", function()
       helpers.load()
 
-      helpers._push_input("ab")
+      helpers.push_kb_input("ab")
 
       local b1 = helpers._readkey()
       local b2 = helpers._readkey()
@@ -99,7 +99,7 @@ describe("Spec helpers", function()
     it("returns nil and error when pushing an error entry", function()
       helpers.load()
 
-      helpers._push_input(nil, "some-error")
+      helpers.push_kb_input(nil, "some-error")
 
       local b, err = helpers._readkey()
       assert.is_nil(b)
@@ -110,7 +110,7 @@ describe("Spec helpers", function()
     it("patches system._readkey to use the mock buffer", function()
       helpers.load()
 
-      helpers._push_input("X")
+      helpers.push_kb_input("X")
 
       local system = require("system")
       local b = system._readkey()
@@ -122,7 +122,7 @@ describe("Spec helpers", function()
     it("terminal.input.readansi() returns data read from the mock buffer", function()
       local terminal = helpers.load()
 
-      helpers._push_input("X")
+      helpers.push_kb_input("X")
 
       local rawkey, keytype = terminal.input.readansi(0.01)
       assert.equals("X", rawkey)
