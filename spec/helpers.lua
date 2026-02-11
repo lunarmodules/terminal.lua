@@ -234,7 +234,7 @@ function M.unload()
   for key, _ in pairs(package.loaded) do
     if key == "terminal" or
        key == "system" or
-       (type(key) == "string" and key:sub(1, 11) == "terminal.") then
+       (type(key) == "string" and key:match("^terminal%.")) then
       package.loaded[key] = nil
     end
   end
