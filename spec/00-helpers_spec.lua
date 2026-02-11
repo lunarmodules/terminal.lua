@@ -164,4 +164,38 @@ describe("Spec helpers", function()
 
   end)
 
+
+
+  describe("keys lookup", function()
+
+    it("is read-only", function()
+      helpers.load()
+
+      assert.has_error(function()
+        helpers.keys.enter = "something"
+      end, "table is read-only")
+    end)
+
+
+    it("returns a raw sequence that maps back to the same keyname", function()
+      local terminal = helpers.load()
+
+      local raw = helpers.keys.enter
+      local keyname_from_map = terminal.input.keymap.default_key_map[raw]
+      local keyname_from_keys = terminal.input.keymap.default_keys.enter
+
+      assert.equals(keyname_from_keys, keyname_from_map)
+    end)
+
+
+    it("errors on unknown key name", function()
+      helpers.load()
+
+      assert.has_error(function()
+        local _ = helpers.keys.this_key_does_not_exist
+      end, "Unknown key-name: this_key_does_not_exist")
+    end)
+
+  end)
+
 end)

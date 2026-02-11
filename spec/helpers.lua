@@ -158,6 +158,30 @@ end
 
 
 
+--- A lookup table for key sequences to push into the keyboard buffer.
+-- @table keys
+-- @usage
+-- helper._push_input(helper.keys.esc)
+-- helper._push_input(helper.keys.ctrl_c)
+-- helper._push_input(helper.keys.enter)
+M.keys = setmetatable({}, {
+  __newindex = function(self, key, value)
+    error("table is read-only", 2)
+  end,
+  __index = function(self, key)
+    get_config() -- to assert the module was loaded
+    local keyname = terminal.input.keymap.default_keys[key]  -- should error if an unknown key
+    for raw, name in pairs(terminal.input.keymap.default_key_map) do
+      if name == keyname then
+        return raw
+      end
+    end
+    error("key " .. tostring(key) .. " not found in default key map", 2) -- should be impossible to reach
+  end
+})
+
+
+
 -- ====================================================================================================
 -- (Un)loading and patching system and terminal to enable mocks
 -- ====================================================================================================
