@@ -1,17 +1,20 @@
+local helpers = require "spec.helpers"
+
+
 describe("terminal.ui.panel.set", function()
 
   local Set
   local Panel
 
   setup(function()
+    helpers.load()
     Set = require("terminal.ui.panel.set")
     Panel = require("terminal.ui.panel.init")
   end)
 
 
   teardown(function()
-    Set = nil
-    Panel = nil -- luacheck: ignore
+    helpers.unload()
   end)
 
 

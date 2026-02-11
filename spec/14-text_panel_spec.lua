@@ -4,44 +4,16 @@ local helpers = require "spec.helpers"
 describe("terminal.ui.panel.text", function()
 
   local TextPanel
-  local terminal
   local text
 
   setup(function()
-    terminal = helpers.load()
+    helpers.load()
     TextPanel = require("terminal.ui.panel.text")
     text = require("terminal.text")
-
-    -- Mock terminal functions
-    terminal.cursor = {
-      position = {
-        set = function(row, col) end,
-        set_seq = function(row, col) return "pos_seq" end,
-        backup_seq = function() return "backup_seq" end,
-        restore_seq = function() return "restore_seq" end
-      }
-    }
-    terminal.output = {
-      write = function(text) end
-    }
-    terminal.text = {
-      stack = {
-        push_seq = function(attr) return "push_seq" end,
-        pop_seq = function() return "pop_seq" end
-      }
-    }
-    terminal.clear = {
-      box = function(row, col, height, width) end,
-      box_seq = function(row, col, height, width) return "clear_seq" end,
-      eol_seq = function() return "eol_seq" end
-    }
   end)
 
 
   teardown(function()
-    TextPanel = nil
-    terminal = nil -- luacheck: ignore
-    text = nil
     helpers.unload()
   end)
 

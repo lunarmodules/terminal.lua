@@ -5,13 +5,13 @@ describe("terminal.cli.prompt", function()
 
   local Prompt
 
-  before_each(function()
+  setup(function()
     helpers.load()
     Prompt = require("terminal.cli.prompt")
   end)
 
 
-  after_each(function()
+  teardown(function()
     helpers.unload()
   end)
 

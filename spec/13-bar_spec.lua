@@ -4,34 +4,15 @@ local helpers = require "spec.helpers"
 describe("terminal.ui.panel.bar", function()
 
   local Bar
-  local terminal
 
   setup(function()
-    -- Load modules
-    terminal = helpers.load()
+    helpers.load()
     Bar = require("terminal.ui.panel.bar")
-
-    -- Mock terminal functions for testing
-    terminal.cursor = {
-      position = {
-        set = function() end,
-        backup = function() end,
-        restore = function() end,
-        left_seq = function() return "" end,
-        down_seq = function() return "" end,
-        up_seq = function() return "" end
-      }
-    }
-    terminal.output = {
-      write = function() end
-    }
   end)
 
 
   teardown(function()
-    -- Unset modules for clean test isolation
     Bar = nil
-    terminal = nil -- luacheck: ignore
     helpers.unload()
   end)
 

@@ -1,22 +1,18 @@
+local helpers = require "spec.helpers"
+
+
 describe("Scroll Module Tests", function()
 
-  local scroll, old_sys_termsize
+  local scroll
 
   setup(function()
-    local sys = require "system"
-    old_sys_termsize = sys.termsize
-    if os.getenv("GITHUB_ACTIONS") then
-      sys.termsize = function()
-        return 25, 80
-      end
-    end
-
+    helpers.load()
     scroll = require "terminal.scroll"
   end)
 
 
   teardown(function()
-    require("system").termsize = old_sys_termsize
+    helpers.unload()
   end)
 
 

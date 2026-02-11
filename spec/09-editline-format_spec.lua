@@ -1,16 +1,19 @@
+local helpers = require "spec.helpers"
+
+
 describe("EditLine:", function()
 
   local EditLine
 
-  before_each(function()
-    _G._TEST = true
+  setup(function()
+    helpers.load()
     EditLine = require("terminal.editline")
   end)
 
 
-  after_each(function()
+  teardown(function()
     EditLine = nil
-    _G._TEST = nil
+    helpers.unload()
   end)
 
 
