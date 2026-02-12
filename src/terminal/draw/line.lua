@@ -75,7 +75,7 @@ end
 
 --- Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.
 -- Line is drawn left to right. If the width is too small for the title, the title is truncated.
--- If less than 4 characters are available for the title, the title is omitted alltogether.
+-- If less than 4 characters are available for the title, the title is omitted altogether.
 -- @tparam number width the total width of the line in columns
 -- @tparam[opt=""] string title the title to draw (if empty or nil, only the line is drawn)
 -- @tparam[opt="─"] string char the line-character to use
@@ -123,17 +123,17 @@ end
 
 --- Draws a horizontal line with a title centered in it and writes it to the terminal.
 -- Line is drawn left to right. If the width is too small for the title, the title is truncated with "trailing `"..."`.
--- If less than 4 characters are available for the title, the title is omitted alltogether.
--- @tparam string title the title to draw
+-- If less than 4 characters are available for the title, the title is omitted altogether.
 -- @tparam number width the total width of the line in columns
+-- @tparam[opt=""] string title the title to draw (if empty or nil, only the line is drawn)
 -- @tparam[opt="─"] string char the line-character to use
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
 -- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `utils.truncate_ellipsis` for details
 -- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
 -- @return true
-function M.title(title, width, char, pre, post, type, title_attr)
-  output.write(M.title_seq(title, width, char, pre, post, type, title_attr))
+function M.title(width, title, char, pre, post, type, title_attr)
+  output.write(M.title_seq(width, title, char, pre, post, type, title_attr))
   return true
 end
 
