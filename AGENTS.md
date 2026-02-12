@@ -64,6 +64,32 @@ In Busted test files in `./spec` the vertical whitespace is important:
 
 For functionality that requires more than 3 cases of input to be tested, table-test-style is prefered. But only if it enhances maintainability and readability.
 
+When unit testing functions or methods, each function should have its own `describe` block inside the module-level `describe`. This keeps tests grouped by functions and provides a clear structure. 
+
+Example:
+
+    describe("terminal.draw", function()
+
+      describe("title_seq()", function()
+        
+        it("returns a sequence for a simple title", function()
+           -- implementation here 
+        end)
+      
+      end)
+
+
+
+      describe("title()", function()
+      
+        it("writes the same output as title_seq()", function()
+          -- implementation here
+        end)
+      
+      end)
+
+    end)
+
 ## Architecture
 
 High-level design and module boundaries will be described in **[ARCHITECTURE.md](ARCHITECTURE.md)**.
