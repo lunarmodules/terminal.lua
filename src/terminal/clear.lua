@@ -90,7 +90,7 @@ end
 --- Clears from cursor to end of the line (EOL) and writes to the terminal.
 -- @treturn true Always returns true after clearing.
 function M.eol()
-  output.write(M.	eol_seq())
+  output.write(M.eol_seq())
   return true
 end
 
