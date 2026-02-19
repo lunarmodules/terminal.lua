@@ -122,6 +122,22 @@ describe("input:", function()
       assert.is_nil(r[3])
     end)
 
+
+    it("returns nil and error message on timeout without throwing", function()
+      local old_sys_readansi = t.input.sys_readansi
+      t.input.sys_readansi = function()
+        return nil, "timeout"
+      end
+      finally(function()
+        t.input.sys_readansi = old_sys_readansi
+      end)
+
+      local result, err = t.input.read_query_answer(cursor_answer_pattern, 1)
+
+      assert.is_nil(result)
+      assert.are.equal("timeout: no response from terminal", err)
+    end)
+
   end)
 
 
@@ -143,6 +159,18 @@ describe("input:", function()
         { "flush" },
         { "read_query_answer", "answer_pattern", 1 },
       }, res)
+    end)
+
+
+    it("returns nil and error when read_query_answer times out", function()
+      t.input.read_query_answer = function()
+        return nil, "timeout: no response from terminal"
+      end
+
+      local result, err = t.input.query("\27[6n", "^\27%[(%d+);(%d+)R$")
+
+      assert.is_nil(result)
+      assert.are.equal("timeout: no response from terminal", err)
     end)
 
   end)
