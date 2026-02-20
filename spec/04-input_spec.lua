@@ -124,13 +124,7 @@ describe("input:", function()
 
 
     it("returns nil and error message on timeout without throwing", function()
-      local old_sys_readansi = t.input.sys_readansi
-      t.input.sys_readansi = function()
-        return nil, "timeout"
-      end
-      finally(function()
-        t.input.sys_readansi = old_sys_readansi
-      end)
+      helpers.push_kb_input(nil, "timeout")
 
       local result, err = t.input.read_query_answer(cursor_answer_pattern, 1)
 
