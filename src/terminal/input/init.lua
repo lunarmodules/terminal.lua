@@ -155,7 +155,9 @@ end
 --- Reads the answer to a query from the terminal.
 -- @tparam string answer_pattern a pattern that matches the expected ANSI response sequence, and captures the data needed.
 -- @tparam[opt=1] number count the number of responses to read (in case multiple queries were sent)
--- @treturn table an array with `count` entries. Each entry is another array with the captures from the answer pattern.
+-- @treturn[1] table an array with `count` entries. Each entry is another array with the captures from the answer pattern.
+-- @treturn[2] nil on timeout or keyboard read error.
+-- @treturn[2] string error message (e.g. `"timeout: no response from terminal"` or `"error reading keyboard: ..."`).
 -- @within Querying
 function M.read_query_answer(answer_pattern, count)
   count = count or 1
@@ -164,7 +166,7 @@ function M.read_query_answer(answer_pattern, count)
   while true do
     local seq, typ, part = M.sys_readansi(0.5, terminal._bsleep) -- 500ms timeout, max time for terminal to respond
     if seq == nil and typ == "timeout" then
-      error("no response from terminal, this is unexpected")
+      return nil, "timeout: no response from terminal"
     end
     if typ == "ansi" then
       local captures = { seq:match(answer_pattern) }
@@ -198,7 +200,9 @@ end
 -- in one go. It is a convenience function for simple queries. It is limited to only a single query/answer pair.
 -- @tparam string query the ANSI sequence to be written to query the terminal
 -- @tparam string answer_pattern a pattern that matches the expected ANSI response sequence, and captures the data needed.
--- @treturn table an array with the captures from the answer pattern.
+-- @treturn[1] table an array with the captures from the answer pattern.
+-- @treturn[2] nil on timeout or keyboard read error (see `read_query_answer`).
+-- @treturn[2] string error message.
 -- @within Querying
 function M.query(query, answer_pattern)
   M.preread()
