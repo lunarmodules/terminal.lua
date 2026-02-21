@@ -157,9 +157,8 @@ describe("input:", function()
 
 
     it("returns nil and error when read_query_answer times out", function()
-      t.input.read_query_answer = function()
-        return nil, "timeout: no response from terminal"
-      end
+      t.input.preread = function() end
+      helpers.push_kb_input(nil, "timeout")
 
       local result, err = t.input.query("\27[6n", "^\27%[(%d+);(%d+)R$")
 
