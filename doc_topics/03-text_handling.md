@@ -15,12 +15,12 @@ functions. If needed the Lua functions can be patched with the ones provided in 
 
 # 3.1 Character display width
 
-Since not all characters have a predefined width (east-asian languages with ambiguous widths), so even if using
-LuaSystems functions to determine character display width there are still unknowns. The only way to know how they
-render (single or double columns) is to actually test display width.
+Some characters have an ambiguous width in Unicode (notably in East-Asian contexts).
+To handle this, the library calibrates one ambiguous character at startup and reuses
+that measured width in all width calculations.
 
-For this purpose there are several utility functions in `terminal.text.width`, and there is the width-testing for
-use during application startup/initialization by means of `terminal.preload_widths`.
+This calibration is done during `terminal.initialize`, and can also be triggered
+through `terminal.preload_widths`.
 
 # 3.2 Displaying strings
 

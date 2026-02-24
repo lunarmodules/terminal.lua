@@ -98,7 +98,7 @@ M.box_fmt = utils.make_lookup("box-format", {
 
 
 
--- returns a string with all box_fmt characters, to pre-load the character width cache
+-- returns a string with all box_fmt characters
 function M._box_fmt_chars()
   local r = {}
   for _, fmt in pairs(M.box_fmt) do

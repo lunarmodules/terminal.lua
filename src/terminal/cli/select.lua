@@ -165,15 +165,11 @@ end
 
 
 --- Returns the display height in rows.
--- Note: on a first call it will test character widths, see `terminal.text.width.test`.
--- So terminal must be initialized before calling this method.
 -- @treturn number The height of the menu in rows.
 function Select:height()
 
   if not self.widths then
-    -- first call, so test display width
-    t.text.width.test(self.prompt .. diamond .. circle .. dot .. pipe .. angle .. table.concat(self.choices))
-    -- calculate display width
+    -- first call, calculate and cache display widths
     self.widths = {}
     for i, txt in ipairs(self.choices) do
       self.widths[i] = t.text.width.utf8swidth(pipe .. circle .. txt)

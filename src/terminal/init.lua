@@ -83,16 +83,19 @@ end
 
 
 
---- Preload known characters into the width-cache.
--- Typically this should be called right after initialization. It will check default
--- characters in use by this library, and the optional specified characters in `str`.
--- Characters loaded will be the `terminal.draw.box_fmt` formats, and the `progress` spinner sprites.
--- Uses `terminal.text.width.test` to test the widths of the characters.
--- @tparam[opt] string str additional character string to preload
+--- Calibrate display-width handling.
+-- Detects the width of a single ambiguous-width character and stores it globally
+-- for subsequent width calculations.
+-- The optional argument is kept for backward compatibility.
+-- @tparam[opt] string str unused; retained for backward compatibility
 -- @return true
 -- @within Initialization
 function M.preload_widths(str)
-  text.width.test((str or "") .. M.progress._spinner_fmt_chars() .. M.draw._box_fmt_chars())
+  if str then
+    -- Kept for backward compatibility to preserve argument validation behavior.
+    assert(type(str) == "string", "expected string, got " .. type(str))
+  end
+  text.width.initialize(true)
   return true
 end
 
@@ -185,6 +188,8 @@ do
       })
       sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) - sys.CIF_PROCESSED_INPUT)
     end
+
+    text.width.initialize(true)
 
     return true
   end

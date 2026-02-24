@@ -32,8 +32,10 @@ The scope of what is covered by the version number excludes:
 
 ### Version X.Y.Z, unreleased
 
-- a fix
-- a change
+- refactor: simplify `terminal.text.width` with `luasystem` (>= 0.7.0).
+  Removed per-character width cache and now calibrate one ambiguous-width
+  character during initialization, reused for all width calculations.
+  `test` and `test_write` are preserved for API compatibility.
 
 ### Version 0.1.0, released 01-Jan-2022
 
