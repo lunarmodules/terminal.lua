@@ -76,6 +76,8 @@ end
 --- Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.
 -- Line is drawn left to right. If the width is too small for the title, the title is truncated.
 -- If less than 4 characters are available for the title, the title is omitted altogether.
+-- ANSI escape sequences in title/prefix/postfix are ignored for width calculations.
+-- If truncation is needed, the rendered title uses plain text.
 -- @tparam number width the total width of the line in columns
 -- @tparam[opt=""] string title the title to draw (if empty or nil, only the line is drawn)
 -- @tparam[opt="─"] string char the line-character to use
@@ -92,11 +94,20 @@ function M.title_seq(width, title, char, pre, post, type, title_attr)
 
   pre = pre or ""
   post = post or ""
-  local pre_w = text.width.utf8swidth(pre)
-  local post_w = text.width.utf8swidth(post)
+  local pre_w = text.width.utf8swidth(utils.strip_ansi(pre))
+  local post_w = text.width.utf8swidth(utils.strip_ansi(post))
   local w_for_title = width - pre_w - post_w
 
-  local title, title_w = utils.truncate_ellipsis(w_for_title, title, type)
+  local stripped_title = utils.strip_ansi(title)
+  local stripped_title_w = text.width.utf8swidth(stripped_title)
+  local title_w
+  if stripped_title_w <= w_for_title then
+    title_w = stripped_title_w
+  else
+    stripped_title, title_w = utils.truncate_ellipsis(w_for_title, stripped_title, type)
+    title = stripped_title
+  end
+
   if title_w == 0 then
     return M.horizontal_seq(width, char)
   end

@@ -13,6 +13,12 @@ local gettime = require("system").gettime
 
 
 
+local function visible_width(str)
+  return tw.utf8swidth(utils.strip_ansi(str))
+end
+
+
+
 --- table with predefined sprites for progress spinners.
 -- The sprites are tables of strings, where each string is a frame in the spinner animation.
 -- The frame at index 0 is optional and is the "done" message, the rest are the animation frames.
@@ -71,6 +77,8 @@ end
 -- If `row` and `col` are given then terminal memory is used to (re)store the cursor position. If they are not given
 -- then the spinner will be printed at the current cursor position, and the cursor will return to the same position
 -- after each update.
+-- ANSI escape sequences in sprites are ignored for width calculations, allowing
+-- styled/colorized sprite frames.
 -- @tparam table opts a table of options;
 -- @tparam table opts.sprites a table of strings to display, one at a time, overwriting the previous one. Index 0 is the "done" message.
 -- See `sprites` for a table of predefined sprites.
@@ -118,10 +126,11 @@ function M.spinner(opts)
       if i == 0 then
         s = opts.done_sprite or s
       end
+      local w = visible_width(s)
       local sequence = Sequence()
       sequence[#sequence+1] = pos_set
       sequence[#sequence+1] = (i == 0 and attr_push_done) or attr_push or nil
-      sequence[#sequence+1] = s .. t.cursor.position.left_seq(t.text.width.utf8swidth(s))
+      sequence[#sequence+1] = s .. t.cursor.position.left_seq(w)
       sequence[#sequence+1] = attr_pop
       sequence[#sequence+1] = pos_restore
       steps[i] = sequence
@@ -168,7 +177,7 @@ function M.ticker(text, width, text_done)
   local max_len = 0
   for i = 1, lengths[0] do
     result[i] = utils.utf8sub(base, i, i + width - 1)
-    lengths[i] = tw.utf8swidth(result[i])
+    lengths[i] = visible_width(result[i])
     max_len = math.max(max_len, lengths[i])
   end
   result[0] = utils.utf8sub(result[0], 1, max_len)

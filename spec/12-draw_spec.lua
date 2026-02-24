@@ -138,6 +138,18 @@ describe("terminal.draw", function()
       assert.are.equal("…llo 测试!", result)
     end)
 
+
+    it("preserves ANSI codes in title when no truncation is needed", function()
+      local result = line.title_seq(10, "\27[31mTest\27[0m")
+      assert.are.equal("───\27[31mTest\27[0m───", result)
+    end)
+
+
+    it("strips ANSI codes when title truncation is needed", function()
+      local result = line.title_seq(8, "\27[31mVeryLongTitle\27[0m")
+      assert.are.equal("VeryLon…", result)
+    end)
+
   end)
 
 

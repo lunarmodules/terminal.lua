@@ -36,6 +36,9 @@ The scope of what is covered by the version number excludes:
   Removed per-character width cache and now calibrate one ambiguous-width
   character during initialization, reused for all width calculations.
   `test` and `test_write` are preserved for API compatibility.
+- feat(progress): account for ANSI escape sequences in sprite width math.
+  Spinner frames and done sprites can now include color/style sequences
+  without breaking cursor rewind behavior.
 
 ### Version 0.1.0, released 01-Jan-2022
 
