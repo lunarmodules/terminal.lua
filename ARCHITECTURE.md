@@ -109,7 +109,7 @@ The main entry point is `src/terminal/init.lua`, which exposes the `terminal` mo
   - Holds version metadata and high-level helpers:
     - `terminal.size()` – wrapper around `system.termsize`.
     - `terminal.bell()` / `terminal.bell_seq()` – terminal bell.
-    - `terminal.preload_widths()` – preloads characters into the width cache for box drawing and progress spinners.
+    - `terminal.preload_widths()` – detects the terminal’s ambiguous character width (for East Asian width). Call after init if you use `terminal.draw` or `terminal.progress`.
   - Manages initialization/shutdown and integration with `system`:
     - Console flags, non-blocking input, code page, alternate screen buffer.
     - Sleep function wiring for async usage.
@@ -237,12 +237,13 @@ Terminal UI must align and truncate text by **display columns**, not by bytes or
 
 ### 5.1 Display width
 
-- **`terminal.text.width`** provides the width primitives:
-  - **`utf8cwidth(char)`** – width in columns of a single character (string or codepoint). Uses a cache when available; otherwise falls back to `system.utf8cwidth`.
-  - **`utf8swidth(str)`** – total display width of a string in columns.
-- **Width cache:** Not all characters have a fixed width (e.g. East Asian ambiguous). The library maintains a cache of **tested** widths. To populate it:
-  - **`terminal.text.width.test(str)`** – writes characters invisibly, measures cursor movement, and records each character’s width. Call during startup or when you first display unknown glyphs.
-  - **`terminal.preload_widths(str)`** – convenience that tests the library’s own box-drawing and progress characters plus any optional `str`. Call once after `terminal.initialize` if you use `terminal.draw` or `terminal.progress`.
+- **`terminal.text.width`** provides the width primitives (delegates to LuaSystem >= 0.7.0):
+  - **`utf8cwidth(char)`** – width in columns of a single character (string or codepoint). Uses **`system.utf8cwidth(char, ambiguous_width)`**.
+  - **`utf8swidth(str)`** – total display width of a string in columns. Uses **`system.utf8swidth(str, ambiguous_width)`**.
+- **Ambiguous width:** East Asian ambiguous characters can be 1 or 2 columns. The library probes **one** ambiguous character at initialization and stores the result in **`terminal.text.width.ambiguous_width`** (1 or 2). All width calls pass this value to LuaSystem.
+  - **`terminal.text.width.detect_ambiguous_width()`** – probes the terminal (when initialized and TTY) and sets `ambiguous_width`; idempotent. Called automatically by `preload_widths` and by `test` / `test_write`.
+  - **`terminal.preload_widths(str)`** – calls `detect_ambiguous_width()`. Call once after `terminal.initialize` if you use `terminal.draw` or `terminal.progress`. The optional `str` is ignored (kept for API compatibility).
+  - **`terminal.text.width.test(str)`** / **`test_write(str)`** – ensure detection has run, then return `utf8swidth(str)` (and optionally write). No per-character cache or probing.
 - Use **`terminal.size()`** to get terminal dimensions (rows × columns) so you can fit text to the visible area.
 
 **Rule of thumb:** For correct alignment and truncation, always reason in **columns**. Use `utf8swidth` to measure strings and `utf8cwidth` for per-character width when implementing substrings or cursors.
@@ -289,7 +290,7 @@ Key methods for display and layout:
 
 - **Simple truncation or fixed-width slice:** use **`utils.utf8sub_col(str, 1, max_col)`** (and optionally ellipsis).
 - **Editable single/multi-line text with cursor and word wrap:** use **EditLine** and **`EditLine:format(...)`**.
-- **Measuring or testing width:** use **`terminal.text.width.utf8swidth`** / **`utf8cwidth`** and **`terminal.text.width.test`** / **`terminal.preload_widths`** as above.
+- **Measuring or testing width:** use **`terminal.text.width.utf8swidth`** / **`utf8cwidth`**; call **`terminal.preload_widths()`** after init to detect ambiguous width.
 
 All terminal output must go through **`terminal.output`** (e.g. `terminal.output.write`), not raw `print` or `io.write`, so that the library’s stream and any patching behave correctly.
 
