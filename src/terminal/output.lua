@@ -42,6 +42,14 @@ end
 
 
 
+--- Returns the current output stream (e.g. for isatty checks).
+-- @treturn file the stream set by `set_stream` or the default
+function M.get_stream()
+  return t
+end
+
+
+
 --- Writes to the stream.
 -- This is a safer write-function than the standard Lua one.
 -- It doesn't add add tabs between arguments, and it doesn't add a newline at the end (like `print` does).

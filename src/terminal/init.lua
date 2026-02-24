@@ -83,16 +83,15 @@ end
 
 
 
---- Preload known characters into the width-cache.
--- Typically this should be called right after initialization. It will check default
--- characters in use by this library, and the optional specified characters in `str`.
--- Characters loaded will be the `terminal.draw.box_fmt` formats, and the `progress` spinner sprites.
--- Uses `terminal.text.width.test` to test the widths of the characters.
--- @tparam[opt] string str additional character string to preload
+--- Detect the terminal's ambiguous character width (for East Asian width).
+-- Call once after `initialize` so that `terminal.text.width.utf8cwidth` and
+-- `utf8swidth` use the correct width (1 or 2) for ambiguous-width characters.
+-- Optional `str` is ignored; kept for API compatibility.
+-- @tparam[opt] string str ignored; kept for backward compatibility
 -- @return true
 -- @within Initialization
 function M.preload_widths(str)
-  text.width.test((str or "") .. M.progress._spinner_fmt_chars() .. M.draw._box_fmt_chars())
+  text.width.detect_ambiguous_width()
   return true
 end
 
