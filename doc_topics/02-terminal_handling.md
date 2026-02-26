@@ -30,13 +30,19 @@ This is handled by the `terminal.input` module. Specifically the `terminal.input
 
 # 2.4 Character width
 
-To properly control the UI in a terminal, it is important to know how text is displayed on the terminal.
-The primary thing to know is the display width of characters.
+To properly control the UI in a terminal, it is important to know how text is displayed.
+The primary thing to understand is the display width of characters.
 
-The `terminal.text.width` module reports character and string widths, using a
-startup calibration for ambiguous-width characters. `terminal.preload_widths`
-can be used to force that calibration. The `terminal.size` function can be used
-to find the terminal size (in rows and columns), to see if the text to display
-fits the screen or will roll-over/scroll.
+The `terminal.text.width` module reports character and string widths. Width
+calculation is delegated to the underlying `system.utf8cwidth` and
+`system.utf8swidth` functions.
+
+Ambiguous-width characters default to a width of 1 column, unless explicitly
+configured. Width detection can optionally be performed during terminal
+initialization.
+
+The `terminal.size` function can be used to determine the terminal size
+(in rows and columns), to verify whether text fits the screen or will
+wrap/scroll.
 
 The `EditLine` class has advanced ways of handling width.

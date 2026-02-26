@@ -15,12 +15,13 @@ functions. If needed the Lua functions can be patched with the ones provided in 
 
 # 3.1 Character display width
 
-Some characters have an ambiguous width in Unicode (notably in East-Asian contexts).
-To handle this, the library calibrates one ambiguous character at startup and reuses
-that measured width in all width calculations.
+Some Unicode characters have an ambiguous display width (notably in
+East-Asian contexts). Width calculation is delegated to the underlying
+`system.utf8cwidth` and `system.utf8swidth` functions.
 
-This calibration is done during `terminal.initialize`, and can also be triggered
-through `terminal.preload_widths`.
+Ambiguous-width characters default to a width of 1 column. If required,
+a different width (1 or 2) can be specified explicitly when calling
+the width functions.
 
 # 3.2 Displaying strings
 

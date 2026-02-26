@@ -109,7 +109,6 @@ The main entry point is `src/terminal/init.lua`, which exposes the `terminal` mo
   - Holds version metadata and high-level helpers:
     - `terminal.size()` – wrapper around `system.termsize`.
     - `terminal.bell()` / `terminal.bell_seq()` – terminal bell.
-    - `terminal.preload_widths()` – preloads characters into the width cache for box drawing and progress spinners.
   - Manages initialization/shutdown and integration with `system`:
     - Console flags, non-blocking input, code page, alternate screen buffer.
     - Sleep function wiring for async usage.
@@ -234,18 +233,24 @@ This is encapsulated by **`terminal.input`** (e.g. `preread` and `read_query_ans
 ## 5. Text handling in the UI
 
 Terminal UI must align and truncate text by **display columns**, not by bytes or UTF-8 character count. Characters can be one or two columns wide (e.g. CJK, emojis), and some have ambiguous width. This section describes how to handle width, substrings, and formatted display so text renders correctly.
-
 ### 5.1 Display width
 
 - **`terminal.text.width`** provides the width primitives:
-  - **`utf8cwidth(char)`** – width in columns of a single character (string or codepoint). Uses a cache when available; otherwise falls back to `system.utf8cwidth`.
-  - **`utf8swidth(str)`** – total display width of a string in columns.
-- **Width cache:** Not all characters have a fixed width (e.g. East Asian ambiguous). The library maintains a cache of **tested** widths. To populate it:
-  - **`terminal.text.width.test(str)`** – writes characters invisibly, measures cursor movement, and records each character’s width. Call during startup or when you first display unknown glyphs.
-  - **`terminal.preload_widths(str)`** – convenience that tests the library’s own box-drawing and progress characters plus any optional `str`. Call once after `terminal.initialize` if you use `terminal.draw` or `terminal.progress`.
-- Use **`terminal.size()`** to get terminal dimensions (rows × columns) so you can fit text to the visible area.
+  - **`utf8cwidth(char[, ambiguous_width])`** – returns the display width in columns of a single UTF-8 character (string or codepoint).
+  - **`utf8swidth(str[, ambiguous_width])`** – returns the total display width in columns of a UTF-8 string.
 
-**Rule of thumb:** For correct alignment and truncation, always reason in **columns**. Use `utf8swidth` to measure strings and `utf8cwidth` for per-character width when implementing substrings or cursors.
+Width calculation is delegated to the underlying `system.utf8cwidth`
+and `system.utf8swidth` functions provided by `luasystem`.
+
+Ambiguous-width characters default to a width of 1 column. A different
+width (1 or 2) can be specified explicitly via the optional
+`ambiguous_width` parameter.
+
+Use **`terminal.size()`** to obtain terminal dimensions (rows × columns)
+so text can be laid out to fit the visible area.
+
+**Rule of thumb:** For correct alignment and truncation, always reason in
+**display columns**, not bytes or character count.
 
 ### 5.2 Substrings by characters vs columns
 
@@ -289,7 +294,8 @@ Key methods for display and layout:
 
 - **Simple truncation or fixed-width slice:** use **`utils.utf8sub_col(str, 1, max_col)`** (and optionally ellipsis).
 - **Editable single/multi-line text with cursor and word wrap:** use **EditLine** and **`EditLine:format(...)`**.
-- **Measuring or testing width:** use **`terminal.text.width.utf8swidth`** / **`utf8cwidth`** and **`terminal.text.width.test`** / **`terminal.preload_widths`** as above.
+- Measuring display width: use `terminal.text.width.utf8swidth`
+  or `utf8cwidth`.
 
 All terminal output must go through **`terminal.output`** (e.g. `terminal.output.write`), not raw `print` or `io.write`, so that the library’s stream and any patching behave correctly.
 

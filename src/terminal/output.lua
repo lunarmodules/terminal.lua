@@ -12,7 +12,7 @@
 
 local M = {}
 package.loaded["terminal.output"] = M -- Register the module early to avoid circular dependencies
-
+local sys = require("system")
 
 local t = io.stderr -- the terminal/stream to operate on
 
@@ -85,7 +85,9 @@ function M.print(...)
   return true
 end
 
-
+function M.isatty()
+    return sys.isatty(t)
+end
 
 --- Flushes the stream.
 -- @return the return value of the stream's `flush` function

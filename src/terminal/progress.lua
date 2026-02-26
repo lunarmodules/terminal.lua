@@ -58,17 +58,6 @@ M.sprites = utils.make_lookup("spinner-sprite", {
 
 
 
--- returns a string with all spinner characters
-function M._spinner_fmt_chars()
-  local r = {}
-  for _, fmt in pairs(M.sprites) do
-    for _, v in pairs(fmt) do
-      r[#r+1] = v
-    end
-  end
-  return table.concat(r)
-end
-
 
 
 --- Create a progress spinner.

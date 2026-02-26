@@ -9,13 +9,13 @@
 --
 -- For generic instruction please read the [introduction](../topics/01-introduction.md.html).
 --
--- @copyright Copyright (c) 2024-2025 Thijs Schreijer
+-- @copyright Copyright (c) 2024-2024 Thijs Schreijer
 -- @author Thijs Schreijer
 -- @license MIT, see `LICENSE.md`.
 
 local M = {
   _VERSION = "0.0.1",
-  _COPYRIGHT = "Copyright (c) 2024-2025 Thijs Schreijer",
+  _COPYRIGHT = "Copyright (c) 2024-2026 Thijs Schreijer",
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
@@ -32,7 +32,7 @@ local sys = require "system"
 
 -- Push the module table already in `package.loaded` to avoid circular dependencies
 package.loaded["terminal"] = M
--- load the submodules; all but object; editline, sequence, cli.*, ui.*
+-- load the submodules
 M.input = require("terminal.input")
 M.output = require("terminal.output")
 M.clear = require("terminal.clear")
@@ -41,7 +41,6 @@ M.cursor = require("terminal.cursor")
 M.text = require("terminal.text")
 M.draw = require("terminal.draw")
 M.progress = require("terminal.progress")
-M.utils = require("terminal.utils")
 -- create locals
 local output = M.output
 local scroll = M.scroll
@@ -68,7 +67,7 @@ M.size = sys.termsize
 
 --- Returns a string sequence to make the terminal beep.
 -- @treturn string ansi sequence to write to the terminal
-function M.bell_seq()
+function M.beep_seq()
   return "\a"
 end
 
@@ -76,29 +75,10 @@ end
 
 --- Write a sequence to the terminal to make it beep.
 -- @return true
-function M.bell()
-  output.write(M.bell_seq())
+function M.beep()
+  output.write(M.beep_seq())
   return true
 end
-
-
-
---- Calibrate display-width handling.
--- Detects the width of a single ambiguous-width character and stores it globally
--- for subsequent width calculations.
--- The optional argument is kept for backward compatibility.
--- @tparam[opt] string str unused; retained for backward compatibility
--- @return true
--- @within Initialization
-function M.preload_widths(str)
-  if str then
-    -- Kept for backward compatibility to preserve argument validation behavior.
-    assert(type(str) == "string", "expected string, got " .. type(str))
-  end
-  text.width.initialize(true)
-  return true
-end
-
 
 
 do
@@ -137,9 +117,10 @@ do
   -- See [`luasystem.autotermrestore`](https://lunarmodules.github.io/luasystem/modules/system.html#autotermrestore).
   -- @tparam[opt=false] boolean opts.disable_sigint if `true`, the terminal will not send a SIGINT signal
   -- on Ctrl-C. Disables Ctrl-C, Ctrl-Z, and Ctrl-\, which allows the application to handle them.
+  -- @tparam[opt=true] boolean opts.calibrate_width if `false`, skips the automatic ambiguous-width calibration.
   -- @return true
   -- @within Initialization
-  function M.initialize(opts)
+function M.initialize(opts)
     assert(not M.ready(), "terminal already initialized")
 
     opts = opts or {}
@@ -189,7 +170,10 @@ do
       sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) - sys.CIF_PROCESSED_INPUT)
     end
 
-    text.width.initialize(true)
+    -- Hook in the width calibration unless the user explicitly opts out
+    if opts.calibrate_width ~= false then
+      text.width.calibrate()
+    end
 
     return true
   end
@@ -238,7 +222,7 @@ end
 -- This function wraps a function in calls to `initialize` and `shutdown`, ensuring the terminal is properly shut down.
 -- If an error is caught, it first shutsdown the terminal and then rethrows the error.
 -- @tparam function main the function to wrap
--- @tparam[opt] table opts options table, see `initialize` for details.
+-- @tparam[opt] table opts options table, to pass to `initialize`.
 -- @treturn function wrapped function
 -- @within Initialization
 -- @usage
@@ -275,7 +259,5 @@ function M.initwrap(main, opts)
     return unpack(results)
   end
 end
-
-
 
 return M
