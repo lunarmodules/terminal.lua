@@ -83,21 +83,6 @@ end
 
 
 
---- Preload known characters into the width-cache.
--- Typically this should be called right after initialization. It will check default
--- characters in use by this library, and the optional specified characters in `str`.
--- Characters loaded will be the `terminal.draw.box_fmt` formats, and the `progress` spinner sprites.
--- Uses `terminal.text.width.test` to test the widths of the characters.
--- @tparam[opt] string str additional character string to preload
--- @return true
--- @within Initialization
-function M.preload_widths(str)
-  text.width.test((str or "") .. M.progress._spinner_fmt_chars() .. M.draw._box_fmt_chars())
-  return true
-end
-
-
-
 do
   local termbackup
   local reset = "\27[0m"
