@@ -171,6 +171,8 @@ do
       sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) - sys.CIF_PROCESSED_INPUT)
     end
 
+    text.width.detect_and_set_ambiguous_width(filehandle)
+
     return true
   end
 

@@ -25,8 +25,6 @@ describe("terminal.text.width (LuaSystem delegation)", function()
     local system = require("system")
     local real_utf8cwidth = system.utf8cwidth
 
-    -- Mock system.utf8cwidth to return the ambiguous-width parameter directly,
-    -- so we can verify that set_ambiguous_width propagates the value correctly.
     system.utf8cwidth = function(_, aw)
       return aw
     end
@@ -37,10 +35,11 @@ describe("terminal.text.width (LuaSystem delegation)", function()
 
     local ok, err = pcall(function()
       width.set_ambiguous_width(2)
-      -- single-character width should forward ambiguous_width = 2
       assert.are.equal(2, width.utf8cwidth(utf8.char(0x00A1)))
-      -- string width should also respect the configured ambiguous width
-      assert.are.equal(4, width.utf8swidth(utf8.char(0x00A1) .. utf8.char(0x00A1)))
+      assert.are.equal(
+        4,
+        width.utf8swidth(utf8.char(0x00A1) .. utf8.char(0x00A1))
+      )
     end)
 
     width.set_ambiguous_width(1)
