@@ -132,7 +132,8 @@ The main entry point is `src/terminal/init.lua`, which exposes the `terminal` mo
   - All follow the **functions vs `*_seq`** pattern, plus stacks where applicable.
 
 - **`terminal.text.width`**
-  - Computes display width for UTF-8 text via LuaSystem (ambiguous width fixed to 1).
+  - Detect the ambiguous width for the terminal
+  - Computes display width for UTF-8 text via LuaSystem (using detected ambiguous width).
   - Used by higher-level components (e.g. `EditLine`, prompts, panel titles) to keep alignment correct.
 
 - **`terminal.utils`**
@@ -239,7 +240,7 @@ Terminal UI must align and truncate text by **display columns**, not by bytes or
 - **`terminal.text.width`** provides the width primitives:
   - **`utf8cwidth(char)`** – width in columns of a single character (string or codepoint).
   - **`utf8swidth(str)`** – total display width of a string in columns.
-- Width handling is fully delegated to LuaSystem (>= 0.7.0). Ambiguous width is fixed to 1. No runtime probing or caching is performed.
+- Ambiguous width is detected during initialization (if not disabled).
 - Use **`terminal.size()`** to get terminal dimensions (rows × columns) so you can fit text to the visible area.
 
 **Rule of thumb:** For correct alignment and truncation, always reason in **columns**. Use `utf8swidth` to measure strings and `utf8cwidth` for per-character width when implementing substrings or cursors.

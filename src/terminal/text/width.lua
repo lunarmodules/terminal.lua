@@ -1,44 +1,55 @@
 --- Module for character and string display width in terminal columns.
--- Delegates to LuaSystem (>= 0.7). Ambiguous-width characters use a configurable width
--- (default 1). Optionally, ambiguous width is detected once during terminal initialization.
 --
--- Use `utf8cwidth` for a single character and `utf8swidth` for a string.
--- Use `set_ambiguous_width` / `get_ambiguous_width` to control the width used for ambiguous-width characters (1 or 2).
+-- Not all characters are displayed with the same width on the terminal.
+-- The Unicode standard defines the width of many characters, but not all.
+-- Especially the ['ambiguous width'](https://www.unicode.org/Public/UCD/latest/ucd/EastAsianWidth.txt)
+-- characters can be displayed with different
+-- widths especially when used with East Asian languages.
+-- The only way to truly know their display width is to write them to the terminal
+-- and measure the cursor position change.
+--
+-- This module implements ambiguous-width configuration and detection (default 1).
+-- Preferably, ambiguous width is detected once during terminal initialization.
+--
+-- The functions `utf8cwidth` and `utf8swidth` can be used to get the display width of characters and strings, respectively.
 -- @module terminal.text.width
 
 local M = {}
 package.loaded["terminal.text.width"] = M -- Register the module early to avoid circular dependencies
 
-local sys = require("system")
-local sys_utf8cwidth = sys.utf8cwidth
+
+local sys_utf8cwidth = require("system").utf8cwidth
 local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 compatibility
 
 
+-- Global variable to use for ambiguous width characters
 local ambiguous_width = 1
 
 
-local function detect_ambiguous_width()
-  local output = require("terminal.output")
-  if not output.isatty() then
+
+--- Detects and sets the width of the abiguous width characters.
+-- Writes a test character and queries the cursor position. Returns (and sets) the default value 1 if detection fails.
+--
+-- The preferred way to call this function is during terminal initialization, see `terminal.initialize`.
+-- @treturn number 1 or 2
+function M.detect_ambiguous_width()
+  local t = require("terminal")
+  if not t.output.isatty() then
     return 1
   end
 
-  local input = require("terminal.input")
-  local text = require("terminal.text")
-  local cursor_pos = require("terminal.cursor.position")
-
   local probe_char = utf8.char(0x00A1)
-  local cpr = cursor_pos.query_seq()
+  local cpr = t.cursor.position.query_seq()
   local cpr_pattern = "^\27%[(%d+);(%d+)R$"
-  local width = 1
 
-  input.preread()
-  output.write(text.stack.push_seq({ brightness = 0 }))
-  output.write(cpr .. probe_char .. cpr)
-  output.flush()
+  t.input.preread()
+  t.text.stack.push({ brightness = 0 })
+  t.output.write(cpr .. probe_char .. cpr)
+  t.output.flush()
 
-  local responses = input.read_query_answer(cpr_pattern, 2)
+  local responses = t.input.read_query_answer(cpr_pattern, 2)
 
+  local width = 1 -- default to 1 if detection fails
   if responses and #responses == 2 then
     local r1 = tonumber(responses[1][1])
     local c1 = tonumber(responses[1][2])
@@ -51,22 +62,16 @@ local function detect_ambiguous_width()
       end
     end
     if r1 and c1 then
-      local restore = cursor_pos.set_seq(r1, c1)
-      output.write(restore .. string.rep(" ", width) .. restore)
+      -- erase the test character we wrote
+      local restore = t.cursor.position.set_seq(r1, c1)
+      t.output.write(restore .. string.rep(" ", width) .. restore)
     end
   end
 
-  output.write(text.stack.pop_seq())
-  output.flush()
+  t.text.stack.pop()
 
+  M.set_ambiguous_width(width)
   return width
-end
-
-
-
---- Runs one-time ambiguous-width detection and sets the module value. Called from terminal.initialize.
-function M.detect_and_set_ambiguous_width()
-  ambiguous_width = detect_ambiguous_width()
 end
 
 
@@ -79,7 +84,7 @@ end
 
 
 
---- Sets the width used for ambiguous-width characters (e.g. some CJK).
+--- Sets the width used for ambiguous-width characters.
 -- @tparam number n 1 or 2
 function M.set_ambiguous_width(n)
   if n ~= 1 and n ~= 2 then
@@ -90,7 +95,8 @@ end
 
 
 
---- Returns the width of a character in columns. Delegates to LuaSystem; ambiguous width is configurable (default 1).
+--- Returns the width of a character in columns.
+-- Calculates character width, using the configured ambiguous width for ambiguous characters.
 -- @tparam string|number char the character (string or codepoint) to check
 -- @treturn number the width of the first character in columns
 function M.utf8cwidth(char)
@@ -104,7 +110,8 @@ end
 
 
 
---- Returns the width of a string in columns. Delegates to LuaSystem; ambiguous width is configurable (default 1).
+--- Returns the width of a string in columns.
+-- Calculates string width, using the configured ambiguous width for ambiguous characters.
 -- @tparam string str the string to check
 -- @treturn number the width of the string in columns
 function M.utf8swidth(str)
@@ -114,6 +121,7 @@ function M.utf8swidth(str)
   end
   return w
 end
+
 
 
 return M

@@ -169,6 +169,7 @@ end
 function Select:height()
 
   if not self.widths then
+    -- first call, so calculate display width
     self.widths = {}
     for i, txt in ipairs(self.choices) do
       self.widths[i] = t.text.width.utf8swidth(pipe .. circle .. txt)

@@ -1,9 +1,18 @@
-describe("terminal.text.width (LuaSystem delegation)", function()
+local helpers = require "spec.helpers"
+local utf8 = require("utf8")
+
+describe("terminal.text.width", function()
 
   local text
 
-  setup(function()
+  before_each(function()
+    helpers.load()
     text = require("terminal.text")
+  end)
+
+
+  after_each(function()
+    helpers.unload()
   end)
 
 
@@ -14,39 +23,25 @@ describe("terminal.text.width (LuaSystem delegation)", function()
   end)
 
 
-  it("Ambiguous character test", function()
-    local utf8 = require("utf8")
+  it("ambiguous-width defaults to 1", function()
     local circle = utf8.char(0x25CB)
     assert.are.equal(1, text.width.utf8cwidth(circle))
   end)
 
 
-  it("set_ambiguous_width configures forwarded width", function()
-    local system = require("system")
-    local real_utf8cwidth = system.utf8cwidth
 
-    system.utf8cwidth = function(_, aw)
-      return aw
-    end
+  describe("set_ambiguous_width()", function()
 
-    package.loaded["terminal.text.width"] = nil
-    local width = require("terminal.text.width")
-    local utf8 = require("utf8")
+    it("configures forwarded width", function()
+      text.width.set_ambiguous_width(2)
+      assert.are.equal(2, text.width.utf8cwidth(utf8.char(0x00A1)))
+      assert.are.equal(4, text.width.utf8swidth(utf8.char(0x00A1) .. utf8.char(0x00A1)))
 
-    local ok, err = pcall(function()
-      width.set_ambiguous_width(2)
-      assert.are.equal(2, width.utf8cwidth(utf8.char(0x00A1)))
-      assert.are.equal(
-        4,
-        width.utf8swidth(utf8.char(0x00A1) .. utf8.char(0x00A1))
-      )
+      text.width.set_ambiguous_width(1)
+      assert.are.equal(1, text.width.utf8cwidth(utf8.char(0x00A1)))
+      assert.are.equal(2, text.width.utf8swidth(utf8.char(0x00A1) .. utf8.char(0x00A1)))
     end)
 
-    width.set_ambiguous_width(1)
-    system.utf8cwidth = real_utf8cwidth
-    package.loaded["terminal.text.width"] = nil
-
-    assert.is_true(ok, err)
   end)
 
 end)

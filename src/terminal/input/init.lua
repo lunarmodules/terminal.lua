@@ -40,8 +40,8 @@ M.sys_readansi = sys.readansi
 
 
 
---- Returns whether stdin is a TTY.
--- @treturn boolean true if stdin is a TTY
+--- Returns whether `stdin` is a TTY.
+-- @treturn boolean true if `stdin` is a TTY
 function M.isatty()
   return sys.isatty(io.stdin)
 end
