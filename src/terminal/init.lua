@@ -119,6 +119,7 @@ do
   -- See [`luasystem.autotermrestore`](https://lunarmodules.github.io/luasystem/modules/system.html#autotermrestore).
   -- @tparam[opt=false] boolean opts.disable_sigint if `true`, the terminal will not send a SIGINT signal
   -- on Ctrl-C. Disables Ctrl-C, Ctrl-Z, and Ctrl-\, which allows the application to handle them.
+  -- @tparam[opt=false] boolean opts.skip_width_detection if `true`, ambiguous-width detection is not run at initialization.
   -- @return true
   -- @within Initialization
   function M.initialize(opts)
@@ -171,7 +172,9 @@ do
       sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) - sys.CIF_PROCESSED_INPUT)
     end
 
-    text.width.detect_and_set_ambiguous_width(filehandle)
+    if not opts.skip_width_detection then
+      text.width.detect_and_set_ambiguous_width()
+    end
 
     return true
   end

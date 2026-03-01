@@ -40,6 +40,14 @@ M.sys_readansi = sys.readansi
 
 
 
+--- Returns whether stdin is a TTY.
+-- @treturn boolean true if stdin is a TTY
+function M.isatty()
+  return sys.isatty(io.stdin)
+end
+
+
+
 --- Same as [`sys.readansi`](https://lunarmodules.github.io/luasystem/modules/system.html#readansi),
 -- but works with the internal buffer required by `terminal.lua`.
 -- This function will read from the internal buffer first, before calling `sys.readansi`. This is

@@ -9,7 +9,7 @@
 local M = {}
 package.loaded["terminal.text.width"] = M -- Register the module early to avoid circular dependencies
 
-local sys = require "system"
+local sys = require("system")
 local sys_utf8cwidth = sys.utf8cwidth
 local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 compatibility
 
@@ -17,50 +17,46 @@ local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 c
 local ambiguous_width = 1
 
 
-local function detect_ambiguous_width(filehandle)
-  if not sys.isatty(filehandle) then
+local function detect_ambiguous_width()
+  local output = require("terminal.output")
+  if not output.isatty() then
     return 1
   end
 
-  local output = require("terminal.output")
   local input = require("terminal.input")
   local text = require("terminal.text")
   local cursor_pos = require("terminal.cursor.position")
 
   local probe_char = utf8.char(0x00A1)
   local cpr = cursor_pos.query_seq()
-  local invisible_on = text.brightness_seq(0)
-  local invisible_off = text.brightness_seq(2)
   local cpr_pattern = "^\27%[(%d+);(%d+)R$"
-
   local width = 1
 
   input.preread()
-  output.write(invisible_on .. cpr .. probe_char .. cpr)
+  output.write(text.stack.push_seq({ brightness = 0 }))
+  output.write(cpr .. probe_char .. cpr)
   output.flush()
 
-  pcall(function()
-    local responses = input.read_query_answer(cpr_pattern, 2)
+  local responses = input.read_query_answer(cpr_pattern, 2)
 
-    if responses and #responses == 2 then
-      local r1 = tonumber(responses[1][1])
-      local c1 = tonumber(responses[1][2])
-      local r2 = tonumber(responses[2][1])
-      local c2 = tonumber(responses[2][2])
-      if r1 and c1 and r2 and c2 and r1 == r2 then
-        local w = c2 - c1
-        if w == 1 or w == 2 then
-          width = w
-        end
-      end
-      if r1 and c1 then
-        local restore = cursor_pos.set_seq(r1, c1)
-        output.write(restore .. string.rep(" ", width) .. restore)
+  if responses and #responses == 2 then
+    local r1 = tonumber(responses[1][1])
+    local c1 = tonumber(responses[1][2])
+    local r2 = tonumber(responses[2][1])
+    local c2 = tonumber(responses[2][2])
+    if r1 and c1 and r2 and c2 and r1 == r2 then
+      local w = c2 - c1
+      if w == 1 or w == 2 then
+        width = w
       end
     end
-  end)
+    if r1 and c1 then
+      local restore = cursor_pos.set_seq(r1, c1)
+      output.write(restore .. string.rep(" ", width) .. restore)
+    end
+  end
 
-  output.write(invisible_off)
+  output.write(text.stack.pop_seq())
   output.flush()
 
   return width
@@ -69,9 +65,8 @@ end
 
 
 --- Runs one-time ambiguous-width detection and sets the module value. Called from terminal.initialize.
--- @tparam file filehandle output stream (e.g. opts.filehandle or io.stderr)
-function M.detect_and_set_ambiguous_width(filehandle)
-  ambiguous_width = detect_ambiguous_width(filehandle or io.stderr)
+function M.detect_and_set_ambiguous_width()
+  ambiguous_width = detect_ambiguous_width()
 end
 
 
