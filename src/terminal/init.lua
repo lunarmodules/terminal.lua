@@ -83,21 +83,6 @@ end
 
 
 
---- Preload known characters into the width-cache.
--- Typically this should be called right after initialization. It will check default
--- characters in use by this library, and the optional specified characters in `str`.
--- Characters loaded will be the `terminal.draw.box_fmt` formats, and the `progress` spinner sprites.
--- Uses `terminal.text.width.test` to test the widths of the characters.
--- @tparam[opt] string str additional character string to preload
--- @return true
--- @within Initialization
-function M.preload_widths(str)
-  text.width.test((str or "") .. M.progress._spinner_fmt_chars() .. M.draw._box_fmt_chars())
-  return true
-end
-
-
-
 do
   local termbackup
   local reset = "\27[0m"
@@ -134,6 +119,7 @@ do
   -- See [`luasystem.autotermrestore`](https://lunarmodules.github.io/luasystem/modules/system.html#autotermrestore).
   -- @tparam[opt=false] boolean opts.disable_sigint if `true`, the terminal will not send a SIGINT signal
   -- on Ctrl-C. Disables Ctrl-C, Ctrl-Z, and Ctrl-\, which allows the application to handle them.
+  -- @tparam[opt=false] boolean opts.skip_width_detection Set to `true`, to skip ambiguous-width detection.
   -- @return true
   -- @within Initialization
   function M.initialize(opts)
@@ -184,6 +170,10 @@ do
         lflag = sys.tcgetattr(io.stdin).lflag - sys.L_ISIG,
       })
       sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) - sys.CIF_PROCESSED_INPUT)
+    end
+
+    if not opts.skip_width_detection then
+      text.width.detect_ambiguous_width()
     end
 
     return true

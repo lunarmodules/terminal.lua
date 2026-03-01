@@ -13,7 +13,7 @@
 local M = {}
 package.loaded["terminal.output"] = M -- Register the module early to avoid circular dependencies
 
-
+local sys = require("system")
 local t = io.stderr -- the terminal/stream to operate on
 
 
@@ -22,6 +22,14 @@ local pack do
   local oldunpack = _G.unpack or table.unpack -- luacheck: ignore
   pack = function(...) return { n = select("#", ...), ... } end
   --unpack = function(t, i, j) return oldunpack(t, i or 1, j or t.n or #t) end
+end
+
+
+
+--- Returns whether the current output stream is a TTY.
+-- @treturn boolean
+function M.isatty()
+  return sys.isatty(t)
 end
 
 
