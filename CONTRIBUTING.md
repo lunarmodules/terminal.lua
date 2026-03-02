@@ -97,4 +97,395 @@ Use the `Makefile` to generate the documentation (`make docs`), and to clean it 
 
 ## Code style
 
-todo
+In order to ensure a healthy and consistent codebase, we ask of you that you
+respect the adopted code style. This section contains a non-exhaustive list
+of preferred styles for writing Lua. It is opinionated but common.
+
+Basic rules for indentation etc can be found in `.luacheckrc` and `.editorconfig`.
+
+When you are unsure about the style to adopt, please browse other parts of the
+codebase to find a similar case, and stay consistent with it.
+
+You might also notice places in the codebase where the described style is not
+respected. This is due to legacy code. **Contributions to update the code to
+the recommended style are welcome!**
+
+
+### Table of Contents - Code style
+
+- [Modules](#modules)
+- [Variables](#variables)
+- [Tables](#tables)
+- [Strings](#strings)
+- [Functions](#functions)
+- [Conditional expressions](#conditional-expressions)
+
+
+### Modules
+
+When writing a module (a Lua file), separate logical blocks of code with
+**three** blank lines:
+
+```lua
+local foo = require "some_module.foo"
+
+
+
+local _M = {}
+
+
+
+function _M.bar()
+  -- do thing...
+end
+
+
+
+function _M.baz()
+  -- do thing...
+end
+
+
+
+return _M
+```
+
+
+### Variables
+
+When naming a variable or function, **do** use snake_case:
+
+```lua
+-- bad
+local myString = "hello world"
+
+-- good
+local my_string = "hello world"
+```
+
+When assigning a constant variable, **do** give it an uppercase name:
+
+```lua
+-- bad
+local max_len = 100
+
+-- good
+local MAX_LEN = 100
+```
+
+
+### Tables
+
+Use the constructor syntax, and **do** include a trailing comma:
+
+```lua
+-- bad
+local t = {}
+t.foo = "hello"
+t.bar = "world"
+
+-- good
+local t = {
+  foo = "hello",
+  bar = "world", -- note the trailing comma
+}
+```
+
+On single-line constructors, **do** include spaces around curly-braces and
+assignments:
+
+```lua
+-- bad
+local t = {foo="hello",bar="world"}
+
+-- good
+local t = { foo = "hello", bar = "world" }
+```
+
+Prefer `ipairs()` to `for` loop when iterating an array,
+which gives us more readability:
+
+```lua
+-- bad
+for i = 1, #t do
+  ...
+end
+
+-- good
+for _, v in ipairs(t) do
+  ...
+end
+```
+
+
+### Strings
+
+**Do** favor the use of double quotes in all Lua code:
+
+```lua
+-- bad
+local str = 'hello'
+
+-- good
+local str = "hello"
+```
+
+If a string contains double quotes, **do** favor single quotes:
+
+```lua
+-- bad
+local str = "message: \"hello\""
+
+-- good
+local str = 'message: "hello"'
+```
+
+When using the concatenation operator, **do** insert spaces around it:
+
+```lua
+-- bad
+local str = "hello ".."world"
+
+-- good
+local str = "hello " .. "world"
+```
+
+If a string is too long, **do** break it into multiple lines,
+and join them with the concatenation operator:
+
+```lua
+-- bad
+local str = "It is a very very very long string, that should be broken into multiple lines."
+
+-- good
+local str = "It is a very very very long string, " ..
+            "that should be broken into multiple lines."
+```
+
+
+### Functions
+
+Prefer the function syntax over variable syntax:
+
+```lua
+-- bad
+local foo = function()
+
+end
+
+-- good
+local function foo()
+
+end
+```
+
+Perform validation early and return as early as possible:
+
+```lua
+-- bad
+local function check_name(name)
+  local valid = #name > 3
+  valid = valid and #name < 30
+
+  -- other validations
+
+  return valid
+end
+
+-- good
+local function check_name(name)
+  if #name <= 3 or #name >= 30 then
+    return false
+  end
+
+  -- other validations
+
+  return true
+end
+```
+
+Prefer if-then-error over assertions:
+
+```lua
+-- bad
+local function some_func(name)
+  -- string concatenation happens on good- and failure-case
+  assert(type(name) == "string", "expected name to be a string, got " .. type(name))
+
+  -- do work
+end
+
+-- good
+local function some_func(name)
+  if type(name) ~= "string" then
+    error("expected name to be a string, got " .. type(name))
+  end
+
+  -- do work
+end
+```
+
+Follow the return values conventions: Lua supports multiple return values, and
+by convention, handles recoverable errors by returning `nil` plus a `string`
+describing the error:
+
+```lua
+-- bad
+local function check()
+  local ok, err = do_thing()
+  if not ok then
+    return false, { message = err }
+  end
+
+  return true
+end
+
+-- good
+local function check()
+  local ok, err = do_thing()
+  if not ok then
+    return nil, "could not do thing: " .. err
+  end
+
+  return true
+end
+```
+
+When a function call makes a line go over 100 characters, **do** align the
+overflowing arguments to the first one:
+
+```lua
+-- bad
+local str = string.format("SELECT * FROM users WHERE first_name = '%s'", first_name)
+
+-- good
+local str = string.format("SELECT * FROM users WHERE first_name = '%s'",
+                          first_name)
+```
+
+
+### Conditional expressions
+
+Avoid writing 1-line conditions, **do** indent the child branch:
+
+```lua
+-- bad
+if err then return nil, err end
+
+-- good
+if err then
+  return nil, err
+end
+```
+
+When testing the assignment of a value, **do** use shortcuts, unless you
+care about the difference between `nil` and `false`:
+
+```lua
+-- bad
+if str ~= nil then
+
+end
+
+-- good
+if str then
+
+end
+```
+
+When creating multiple branches that span multiple lines, **do** include a
+blank line above the `elseif` and `else` statements:
+
+```lua
+-- bad
+if foo then
+  do_stuff()
+  keep_doing_stuff()
+elseif bar then
+  do_other_stuff()
+  keep_doing_other_stuff()
+else
+  error()
+end
+
+-- good
+if thing then
+  do_stuff()
+  keep_doing_stuff()
+
+elseif bar then
+  do_other_stuff()
+  keep_doing_other_stuff()
+
+else
+  error()
+end
+```
+
+For one-line blocks, blank lines are not necessary:
+
+```lua
+--- good
+if foo then
+  do_stuff()
+else
+  error("failed!")
+end
+```
+
+Note in the correct "long" example that if some branches are long, then all
+branches are created with the preceding blank line (including the one-liner
+`else` case).
+
+When a branch returns, **do not** create subsequent branches, but write the
+rest of your logic on the parent branch:
+
+```lua
+-- bad
+if not str then
+  return nil, "bad value"
+else
+  do_thing(str)
+end
+
+-- good
+if not str then
+  return nil, "bad value"
+end
+
+do_thing(str)
+```
+
+When assigning a value or returning from a function, **do** use ternaries if
+it makes the code more readable:
+
+```lua
+-- bad
+local foo
+if bar then
+  foo = "hello"
+
+else
+  foo = "world"
+end
+
+-- good
+local foo = bar and "hello" or "world"
+```
+
+When an expression makes a line longer than 100 characters, **do** align the
+expression on the following lines:
+
+```lua
+-- bad
+if thing_one < 1 and long_and_complicated_function(arg1, arg2) < 10 or thing_two > 10 then
+  do_thing(str)
+end
+
+-- good
+if thing_one < 1 and long_and_complicated_function(arg1, arg2) < 10
+   or thing_two > 10
+then
+  do_thing(str)
+end
+```
