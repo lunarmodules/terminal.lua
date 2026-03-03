@@ -108,7 +108,7 @@ function M.spinner(opts)
       local sequence = Sequence()
       sequence[#sequence+1] = pos_set
       sequence[#sequence+1] = (i == 0 and attr_push_done) or attr_push or nil
-      sequence[#sequence+1] = s .. t.cursor.position.left_seq(t.text.width.utf8swidth(s))
+      sequence[#sequence+1] = s .. t.cursor.position.left_seq(tw.utf8swidth(utils.strip_ansi(s)))
       sequence[#sequence+1] = attr_pop
       sequence[#sequence+1] = pos_restore
       steps[i] = sequence
