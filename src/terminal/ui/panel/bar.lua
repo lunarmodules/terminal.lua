@@ -154,9 +154,9 @@ function Bar:_build_bar_line(width)
   local right_alloc = available_content_space - left_alloc - center_alloc
 
   -- Use truncate_ellipsis for proper truncation
-  local left_str, left_w = utils.truncate_ellipsis(left_alloc, self.left, self.left_type)
-  local center_str, center_w = utils.truncate_ellipsis(center_alloc, self.center, self.center_type)
-  local right_str, right_w = utils.truncate_ellipsis(right_alloc, self.right, self.right_type)
+  local left_str, left_w = text.width.truncate_ellipsis(left_alloc, self.left, self.left_type)
+  local center_str, center_w = text.width.truncate_ellipsis(center_alloc, self.center, self.center_type)
+  local right_str, right_w = text.width.truncate_ellipsis(right_alloc, self.right, self.right_type)
 
   -- Calculate actual space used by content
   local content_width = left_w + center_w + right_w

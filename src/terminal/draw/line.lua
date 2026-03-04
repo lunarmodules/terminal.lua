@@ -9,7 +9,6 @@ local Sequence = require "terminal.sequence"
 local output = require "terminal.output"
 local cursor = require "terminal.cursor"
 local text = require "terminal.text"
-local utils = require "terminal.utils"
 
 
 
@@ -81,7 +80,7 @@ end
 -- @tparam[opt="─"] string char the line-character to use
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
--- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `utils.truncate_ellipsis` for details
+-- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `text.width.truncate_ellipsis` for details
 -- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
 -- @treturn Sequence|string The sequence to write to the terminal
 -- @within Sequences
@@ -96,7 +95,7 @@ function M.title_seq(width, title, char, pre, post, type, title_attr)
   local post_w = text.width.utf8swidth(post)
   local w_for_title = width - pre_w - post_w
 
-  local title, title_w = utils.truncate_ellipsis(w_for_title, title, type)
+  local title, title_w = text.width.truncate_ellipsis(w_for_title, title, type)
   if title_w == 0 then
     return M.horizontal_seq(width, char)
   end
@@ -129,7 +128,7 @@ end
 -- @tparam[opt="─"] string char the line-character to use
 -- @tparam[opt=""] string pre the prefix for the title, eg. "┤ "
 -- @tparam[opt=""] string post the postfix for the title, eg. " ├"
--- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `utils.truncate_ellipsis` for details
+-- @tparam[opt="right"] string type the type of truncation to apply, either "left", "right", or "drop", see `text.width.truncate_ellipsis` for details
 -- @tparam[opt] table title_attr table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`
 -- @return true
 function M.title(width, title, char, pre, post, type, title_attr)
