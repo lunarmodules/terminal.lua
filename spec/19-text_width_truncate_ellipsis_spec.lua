@@ -1,16 +1,13 @@
-describe("utils.truncate_ellipsis()", function()
+describe("text.width.truncate_ellipsis", function()
 
-  local utils
   local text
 
   before_each(function()
-    utils = require("terminal.utils")
     text = require("terminal.text")
   end)
 
 
   after_each(function()
-    utils = nil
     text = nil
   end)
 
@@ -75,7 +72,7 @@ describe("utils.truncate_ellipsis()", function()
       local description = test_case[6]
 
       it(description, function()
-        local str, w = utils.truncate_ellipsis(width, input_text, trunc_type)
+        local str, w = text.width.truncate_ellipsis(width, input_text, trunc_type)
         assert.are.equal(expected_str, str)
         assert.are.equal(expected_width, w)
         -- Verify that the reported width matches the actual width of the returned string
@@ -130,7 +127,7 @@ describe("utils.truncate_ellipsis()", function()
         local description = test_case[7]
 
         it(description, function()
-          local str, w = utils.truncate_ellipsis(width, input_text, trunc_type, ellipsis)
+          local str, w = text.width.truncate_ellipsis(width, input_text, trunc_type, ellipsis)
           assert.are.equal(expected_str, str)
           assert.are.equal(expected_width, w)
           -- Verify that the reported width matches the actual width of the returned string

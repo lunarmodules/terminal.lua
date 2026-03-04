@@ -172,13 +172,13 @@ function KeyBar:_build_lines(width)
         local separator_w = have_desc and text.width.utf8swidth(self.separator) or 0
         local max_desc_w = math.max(0, cw - key_w - separator_w)
         if desc_w > max_desc_w then
-          local t, tw = utils.truncate_ellipsis(max_desc_w, d, "right")
+          local t, tw = text.width.truncate_ellipsis(max_desc_w, d, "right")
           d = t; desc_w = tw
         end
         -- if still too wide, truncate key
         local max_key_w = math.max(0, cw - desc_w - separator_w)
         if key_w > max_key_w then
-          local t, tw = utils.truncate_ellipsis(max_key_w, k, "right")
+          local t, tw = text.width.truncate_ellipsis(max_key_w, k, "right")
           k = t; key_w = tw
         end
 
