@@ -378,11 +378,5 @@ end
 
 
 
-function M.truncate_ellipsis(...)
-  return require("terminal.text.width").truncate_ellipsis(...)
-end
-
-
-
 width = require("terminal.text.width") -- load only now, to prevent loops
 return M
