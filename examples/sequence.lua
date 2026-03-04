@@ -1,5 +1,5 @@
 -- An example of using `sequence` to create a reusable sequence of terminal commands.
--- This example uses the `text.stack.push_seq` and `text.stack.pop_seq` functions to change the text color.
+-- This example uses the `text.push_seq` and `text.pop_seq` functions to change the text color.
 -- By using functions instead of strings the color change is only active during the
 -- execution of the sequence.
 
@@ -8,9 +8,9 @@ local Sequence = require("terminal.sequence")
 
 -- print a green checkmark, without changing any other attributes
 local greencheck = Sequence(
-  function() return t.text.stack.push_seq({ fg = "green" }) end, -- set green FG color AT TIME OF WRITING
+  function() return t.text.push_seq({ fg = "green" }) end, -- set green FG color AT TIME OF WRITING
   "✔", -- write a check mark
-  t.text.stack.pop_seq -- passing in function is enough, since no parameters needed
+  t.text.pop_seq -- passing in function is enough, since no parameters needed
 )
 
 
@@ -28,9 +28,9 @@ local top = Sequence(
 -- this is safer, if the 'greencheck' sub-sequence would also use the
 -- terminal memory for the cursor position (overwriting ours).
 local top2 = Sequence(
-  function() return t.cursor.position.stack.push_seq(2,2) end,
+  function() return t.cursor.position.push_seq(2,2) end,
   greencheck, -- print the green checkmark
-  t.cursor.position.stack.pop_seq
+  t.cursor.position.pop_seq
 )
 
 
@@ -39,9 +39,9 @@ t.initialize()
 -- print the green checkmarks, by default this will be on a black background
 t.output.write(greencheck, " hello ", greencheck, " world ", greencheck, "\n") -- uses normal colors for the text
 -- change background to red, and print again, the same sequence now properly prints on a red background
-t.text.stack.push({ bg = "red" })
+t.text.push({ bg = "red" })
 t.output.write(greencheck, " hello ", greencheck, " world ", greencheck) -- text is on red background now
-t.text.stack.pop() -- whilst the cursor is still on the same line, otherwise if scrolling the scrolled line will be red!
+t.text.pop() -- whilst the cursor is still on the same line, otherwise if scrolling the scrolled line will be red!
 t.output.write("\n") -- push the newline
 -- print again, and the background is back to black
 t.output.write(greencheck, " hello ", greencheck, " world ", greencheck, "\n") -- text is back to normal colors

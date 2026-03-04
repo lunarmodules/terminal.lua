@@ -331,4 +331,46 @@ end
 
 
 
+--- Pushes the current cursor position onto the stack, and returns an ansi sequence to move to the new position (if applicable) without writing it to the terminal.
+-- Calls `position.get` under the hood.
+-- @tparam[opt] number new_row
+-- @tparam[opt] number new_column
+-- @treturn string ansi sequence to write to the terminal, or an empty string if no position is given
+-- @within Stack
+-- @see terminal.cursor.position.stack.push_seq
+M.push_seq = M.stack.push_seq
+
+
+
+--- Pushes the current cursor position onto the stack, and writes an ansi sequence to move to the new position (if applicable) to the terminal.
+-- Calls `position.get` under the hood.
+-- @tparam[opt] number new_row
+-- @tparam[opt] number new_column
+-- @return true
+-- @within Stack
+-- @see terminal.cursor.position.stack.push
+M.push = M.stack.push
+
+
+
+--- Pops the last n cursor positions off the stack, and returns an ansi sequence to move to
+-- the last one without writing it to the terminal.
+-- @tparam[opt=1] number n number of positions to pop
+-- @treturn string ansi sequence to write to the terminal
+-- @within Stack
+-- @see terminal.cursor.position.stack.pop_seq
+M.pop_seq = M.stack.pop_seq
+
+
+
+--- Pops the last n cursor positions off the stack, and writes an ansi sequence to move to
+-- the last one to the terminal.
+-- @tparam[opt=1] number n number of positions to pop
+-- @return true
+-- @within Stack
+-- @see terminal.cursor.position.stack.pop
+M.pop = M.stack.pop
+
+
+
 return M

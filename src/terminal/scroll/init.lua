@@ -132,4 +132,58 @@ M.stack = require("terminal.scroll.stack")
 
 
 
+--- Retrieves the current scroll region sequence from the top of the stack.
+-- @treturn string The ANSI sequence representing the current scroll region.
+-- @within Stack
+-- @see terminal.scroll.stack.apply_seq
+M.apply_seq = M.stack.apply_seq
+
+
+
+--- Applies the current scroll region by writing it to the terminal.
+-- @treturn true Always returns true after applying.
+-- @within Stack
+-- @see terminal.scroll.stack.apply
+M.apply = M.stack.apply
+
+
+
+--- Pushes a new scroll region onto the stack without applying it.
+-- @tparam number top The top line number of the scroll region.
+-- @tparam number bottom The bottom line number of the scroll region.
+-- @treturn string The ANSI sequence representing the pushed scroll region.
+-- @within Stack
+-- @see terminal.scroll.stack.push_seq
+M.push_seq = M.stack.push_seq
+
+
+
+--- Pushes a new scroll region onto the stack and applies it by writing to the terminal.
+-- @tparam number top The top line number of the scroll region.
+-- @tparam number bottom The bottom line number of the scroll region.
+-- @treturn true Always returns true after applying.
+-- @within Stack
+-- @see terminal.scroll.stack.push
+M.push = M.stack.push
+
+
+
+--- Pops the specified number of scroll regions from the stack without applying it.
+-- @tparam number n The number of scroll regions to pop. Defaults to 1.
+-- @treturn string The ANSI sequence representing the new top of the stack.
+-- @within Stack
+-- @see terminal.scroll.stack.pop_seq
+M.pop_seq = M.stack.pop_seq
+
+
+
+--- Pops the specified number of scroll regions from the stack and applies the new top by writing to the terminal.
+-- @tparam number n The number of scroll regions to pop. Defaults to 1.
+-- @treturn true Always returns true after applying.
+-- @within Stack
+-- @see terminal.scroll.stack.pop
+M.pop = M.stack.pop
+
+
+
 return M

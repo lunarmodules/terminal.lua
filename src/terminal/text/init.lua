@@ -252,4 +252,61 @@ end
 
 
 
+--- Pushes the given attributes/colors onto the stack, and returns an ansi sequence to set the new
+-- attributes without writing it to the terminal.
+-- Every element omitted in the `attr` table will be taken from the current top of the stack.
+-- @tparam table attr the attributes to set, see `text.attrs` for details.
+-- @treturn string ansi sequence to write to the terminal
+-- @within Stack
+-- @see terminal.text.stack.push_seq
+M.push_seq = M.stack.push_seq
+
+
+
+--- Pushes the given attributes/colors onto the stack, and writes an ansi sequence to set the new
+-- attributes to the terminal.
+-- Every element omitted in the `attr` table will be taken from the current top of the stack.
+-- @tparam table attr the attributes to set, see `text.attrs` for details.
+-- @return true
+-- @within Stack
+-- @see terminal.text.stack.push
+M.push = M.stack.push
+
+
+
+--- Pops n attributes/colors off the stack (and returns the last one), without writing it to the terminal.
+-- @tparam[opt=1] number n number of attributes to pop
+-- @treturn string ansi sequence to write to the terminal
+-- @within Stack
+-- @see terminal.text.stack.pop_seq
+M.pop_seq = M.stack.pop_seq
+
+
+
+--- Pops n attributes/colors off the stack, and writes the last one to the terminal.
+-- @tparam[opt=1] number n number of attributes to pop
+-- @return true
+-- @within Stack
+-- @see terminal.text.stack.pop
+M.pop = M.stack.pop
+
+
+
+--- Re-applies the current attributes/colors (at the top of the stack),
+-- returns the sequence without writing to the terminal.
+-- @treturn string ansi sequence to write to the terminal
+-- @within Stack
+-- @see terminal.text.stack.apply_seq
+M.apply_seq = M.stack.apply_seq
+
+
+
+--- Re-applies the current attributes/colors (at the top of the stack), and writes it to the terminal.
+-- @return true
+-- @within Stack
+-- @see terminal.text.stack.apply
+M.apply = M.stack.apply
+
+
+
 return M
