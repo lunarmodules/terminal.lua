@@ -3,6 +3,7 @@
 
 local t = require("terminal")
 local p = require("terminal.progress")
+local color = require("terminal.text.color")
 
 
 local function main()
@@ -15,6 +16,7 @@ local function main()
     print("     "..name) -- create a line for display
     lst[#lst+1] = name
   end
+  print("     colored_dot")
   print("                                                       <-- ticker type")
 
   -- create all spinners with fixed positions (positions are optional)
@@ -29,12 +31,22 @@ local function main()
     spinners[#spinners+1] = p.spinner {
       sprites = p.sprites[name],
       col = 1,
-      row = r - #lst - 2 + i,
+      row = r - #lst - 3 + i,
       done_textattr = done_textattr,
       done_sprite = done_sprite,
     }
   end
 
+  spinners[#spinners+1] = p.spinner {
+    sprites = {
+      color.fore_seq("red") .. "●",
+      color.fore_seq("green") .. "●",
+      color.fore_seq("yellow") .. "●",
+      color.fore_seq("cyan") .. "●",
+    },
+    col = 1,
+    row = r - 2,
+  }
 
   -- add the ticker one last
   spinners[#spinners+1] = p.spinner {
