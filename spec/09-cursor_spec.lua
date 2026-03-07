@@ -480,7 +480,7 @@ describe("Cursor", function()
       -- mock position.get to return fixed values
       cursor.position.get = function() return 2, 3 end
 
-      local seq = cursor.position.stack.push_seq(5, 10)
+      local seq = cursor.position.push_seq(5, 10)
       assert.are.equal(cursor.position.set_seq(5, 10), seq)
     end)
 
@@ -488,7 +488,7 @@ describe("Cursor", function()
     it("returns empty string when no position is provided", function()
       cursor.position.get = function() return 2, 3 end
 
-      assert.are.equal("", cursor.position.stack.push_seq())
+      assert.are.equal("", cursor.position.push_seq())
     end)
 
   end)
@@ -514,12 +514,12 @@ describe("Cursor", function()
 
       cursor.position.get = function() return 2, 3 end
 
-      cursor.position.stack.push_seq() -- push current position (2,3)
+      cursor.position.push_seq() -- push current position (2,3)
       cursor.position.get = function() return 5, 10 end
-      cursor.position.stack.push_seq() -- push another position (5,10)
+      cursor.position.push_seq() -- push another position (5,10)
 
-      assert.are.equal(cursor.position.set_seq(5, 10), cursor.position.stack.pop_seq())
-      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.stack.pop_seq())
+      assert.are.equal(cursor.position.set_seq(5, 10), cursor.position.pop_seq())
+      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.pop_seq())
     end)
 
 
@@ -535,11 +535,11 @@ describe("Cursor", function()
 
       -- Push multiple positions
       for _ = 1, 5 do
-        cursor.position.stack.push_seq()
+        cursor.position.push_seq()
       end
 
       -- Pop 3 positions at once, should return sequence for position 2
-      assert.are.equal(cursor.position.set_seq(3, 3), cursor.position.stack.pop_seq(3))
+      assert.are.equal(cursor.position.set_seq(3, 3), cursor.position.pop_seq(3))
     end)
 
 
@@ -552,7 +552,7 @@ describe("Cursor", function()
       end
       cursor = require "terminal.cursor"
 
-      assert.are.equal("", cursor.position.stack.pop_seq())
+      assert.are.equal("", cursor.position.pop_seq())
     end)
 
 
@@ -560,11 +560,11 @@ describe("Cursor", function()
       -- mock position.get to return fixed values
       cursor.position.get = function() return 2, 3 end
 
-      cursor.position.stack.push_seq() -- push position
+      cursor.position.push_seq() -- push position
 
       -- Pop way more than we pushed
-      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.stack.pop_seq(1)) -- first pop works
-      assert.are.equal("", cursor.position.stack.pop_seq(100))                          -- over-popping
+      assert.are.equal(cursor.position.set_seq(2, 3), cursor.position.pop_seq(1)) -- first pop works
+      assert.are.equal("", cursor.position.pop_seq(100))                          -- over-popping
     end)
 
   end)

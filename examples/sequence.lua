@@ -28,9 +28,9 @@ local top = Sequence(
 -- this is safer, if the 'greencheck' sub-sequence would also use the
 -- terminal memory for the cursor position (overwriting ours).
 local top2 = Sequence(
-  function() return t.cursor.position.stack.push_seq(2,2) end,
+  function() return t.cursor.position.push_seq(2,2) end,
   greencheck, -- print the green checkmark
-  t.cursor.position.stack.pop_seq
+  t.cursor.position.pop_seq
 )
 
 
