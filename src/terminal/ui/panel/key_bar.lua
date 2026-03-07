@@ -150,7 +150,7 @@ function KeyBar:_build_lines(width)
   local function build_row(row_items)
     local s = Sequence()
     if self.attr then
-      s[#s+1] = function() return text.stack.push_seq(self.attr) end
+      s[#s+1] = function() return text.push_seq(self.attr) end
     end
     s[#s+1] = string.rep(" ", self.margin)
     for c = 1, cols do
@@ -191,9 +191,9 @@ function KeyBar:_build_lines(width)
 
       -- write key (with attr)
       if self.key_attr and key_str ~= "" then
-        s[#s+1] = function() return text.stack.push_seq(self.key_attr) end
+        s[#s+1] = function() return text.push_seq(self.key_attr) end
         s[#s+1] = key_str
-        s[#s+1] = text.stack.pop_seq
+        s[#s+1] = text.pop_seq
       else
         s[#s+1] = key_str
       end
@@ -205,9 +205,9 @@ function KeyBar:_build_lines(width)
 
       -- write desc (with attr)
       if self.desc_attr and desc_str ~= "" then
-        s[#s+1] = function() return text.stack.push_seq(self.desc_attr) end
+        s[#s+1] = function() return text.push_seq(self.desc_attr) end
         s[#s+1] = desc_str
-        s[#s+1] = text.stack.pop_seq
+        s[#s+1] = text.pop_seq
       else
         s[#s+1] = desc_str
       end
@@ -226,7 +226,7 @@ function KeyBar:_build_lines(width)
     end
     s[#s+1] = string.rep(" ", self.margin)
     if self.attr then
-      s[#s+1] = text.stack.pop_seq
+      s[#s+1] = text.pop_seq
     end
     return s
   end

@@ -98,9 +98,9 @@ end
 function Select:template()
   local res = Sequence(
     function() return t.cursor.position.up_seq():rep(self:height()) end,
-    function() return t.text.stack.push_seq({ fg = "green" }) end,
+    function() return t.text.push_seq({ fg = "green" }) end,
     diamond,
-    t.text.stack.pop_seq,
+    t.text.pop_seq,
     self.prompt,
     t.clear.eol_seq,
     "\n"
@@ -111,13 +111,13 @@ function Select:template()
       i == #self.choices and angle or pipe,
       function() return i == self.selected and dot or circle end,
       function()
-        return t.text.stack.push_seq({
+        return t.text.push_seq({
           fg = (i == self.selected) and "yellow" or "white",
           brightness = (i == self.selected) and "normal" or "dim"
         })
       end,
       option,
-      t.text.stack.pop_seq,
+      t.text.pop_seq,
       t.clear.eol_seq,
       "\n"
     )

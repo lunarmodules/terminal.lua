@@ -151,9 +151,9 @@ end
 -- -- @tparam string ... The values to print.
 -- local function ping()
 --   t.output.write(
---     t.text.stack.push_seq { fg = "red", brightness = "high", blink = true },
+--     t.text.push_seq { fg = "red", brightness = "high", blink = true },
 --     "*",
---     t.text.stack.pop_seq(),
+--     t.text.pop_seq(),
 --     t.cursor.position.left_seq()
 --   )
 --  t.input.readansi(math.huge) -- wait for any key
@@ -197,9 +197,9 @@ function Prompt:draw()
     self.prompt,
 
     -- current value in proper format
-    function() return t.text.stack.push_seq(self.text_attr) end,
+    function() return t.text.push_seq(self.text_attr) end,
     Sequence(unpack(self.current_lines)), -- all lines concatenated (we formatted using padding, so should properly wrap)
-    t.text.stack.pop_seq,
+    t.text.pop_seq,
     t.clear.eol_seq(),        -- clear the remainder of the last line
 
     -- move cursor into position

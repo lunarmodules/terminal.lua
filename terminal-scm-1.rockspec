@@ -55,7 +55,6 @@ build = {
     ["terminal.draw.line"] = "src/terminal/draw/line.lua",
     ["terminal.text.init"] = "src/terminal/text/init.lua",
     ["terminal.text.color"] = "src/terminal/text/color.lua",
-    ["terminal.text.stack"] = "src/terminal/text/stack.lua",
     ["terminal.text.width"] = "src/terminal/text/width.lua",
     ["terminal.cli.select"] = "src/terminal/cli/select.lua",
     ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",

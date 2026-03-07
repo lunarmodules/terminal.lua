@@ -651,11 +651,11 @@ function Panel:draw_border()
   cursor.position.backup()
   cursor.position.set(row, col)
   if attr then
-    text.stack.push(attr)
+    text.push(attr)
   end
   draw.box(height, width, format, false, title, lastcolumn, truncation_type, title_attr)
   if attr then
-    text.stack.pop()
+    text.pop()
   end
   cursor.position.restore()
 end

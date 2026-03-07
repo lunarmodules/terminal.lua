@@ -43,7 +43,7 @@ function M.detect_ambiguous_width()
   local cpr_pattern = "^\27%[(%d+);(%d+)R$"
 
   t.input.preread()
-  t.text.stack.push({ brightness = 0 })
+  t.text.push({ brightness = 0 })
   t.output.write(cpr .. probe_char .. cpr)
   t.output.flush()
 
@@ -68,7 +68,7 @@ function M.detect_ambiguous_width()
     end
   end
 
-  t.text.stack.pop()
+  t.text.pop()
 
   M.set_ambiguous_width(width)
   return width

@@ -173,35 +173,35 @@ function Bar:_build_bar_line(width)
 
   local s = Sequence()
   if self.attr then
-    s[#s+1] = function() return text.stack.push_seq(self.attr) end
+    s[#s+1] = function() return text.push_seq(self.attr) end
   end
   s[#s+1] = string.rep(" ", self.margin)
   if self.left_attr then
-    s[#s+1] = function() return text.stack.push_seq(self.left_attr) end
+    s[#s+1] = function() return text.push_seq(self.left_attr) end
     s[#s+1] = left_str
-    s[#s+1] = text.stack.pop_seq
+    s[#s+1] = text.pop_seq
   else
     s[#s+1] = left_str
   end
   s[#s+1] = string.rep(" ", left_center_padding)
   if self.center_attr then
-    s[#s+1] = function() return text.stack.push_seq(self.center_attr) end
+    s[#s+1] = function() return text.push_seq(self.center_attr) end
     s[#s+1] = center_str
-    s[#s+1] = text.stack.pop_seq
+    s[#s+1] = text.pop_seq
   else
     s[#s+1] = center_str
   end
   s[#s+1] = string.rep(" ", center_right_padding)
   if self.right_attr then
-    s[#s+1] = function() return text.stack.push_seq(self.right_attr) end
+    s[#s+1] = function() return text.push_seq(self.right_attr) end
     s[#s+1] = right_str
-    s[#s+1] = text.stack.pop_seq
+    s[#s+1] = text.pop_seq
   else
     s[#s+1] = right_str
   end
   s[#s+1] = string.rep(" ", self.margin)
   if self.attr then
-    s[#s+1] = text.stack.pop_seq
+    s[#s+1] = text.pop_seq
   end
   return s
 end
