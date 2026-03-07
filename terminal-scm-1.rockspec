@@ -46,7 +46,6 @@ build = {
     ["terminal.scroll.stack"] = "src/terminal/scroll/stack.lua",
     ["terminal.cursor.init"] = "src/terminal/cursor/init.lua",
     ["terminal.cursor.visible.init"] = "src/terminal/cursor/visible/init.lua",
-    ["terminal.cursor.visible.stack"] = "src/terminal/cursor/visible/stack.lua",
     ["terminal.cursor.shape.init"] = "src/terminal/cursor/shape/init.lua",
     ["terminal.cursor.position.init"] = "src/terminal/cursor/position/init.lua",
     ["terminal.draw.init"] = "src/terminal/draw/init.lua",
