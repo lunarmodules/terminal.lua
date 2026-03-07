@@ -43,7 +43,6 @@ build = {
     ["terminal.input.init"] = "src/terminal/input/init.lua",
     ["terminal.input.keymap"] = "src/terminal/input/keymap.lua",
     ["terminal.scroll.init"] = "src/terminal/scroll/init.lua",
-    ["terminal.scroll.stack"] = "src/terminal/scroll/stack.lua",
     ["terminal.cursor.init"] = "src/terminal/cursor/init.lua",
     ["terminal.cursor.visible.init"] = "src/terminal/cursor/visible/init.lua",
     ["terminal.cursor.shape.init"] = "src/terminal/cursor/shape/init.lua",

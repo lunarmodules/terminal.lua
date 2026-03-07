@@ -192,7 +192,7 @@ do
     cursor.shape.pop(math.huge)
     cursor.stack.pop(math.huge)
     text.pop(math.huge)
-    scroll.stack.pop(math.huge)
+    scroll.pop(math.huge)
 
     if ok and r then
       cursor.position.set(r,c) -- restore cursor pos
