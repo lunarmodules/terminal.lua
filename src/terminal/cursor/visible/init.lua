@@ -36,24 +36,29 @@ function M.set(visible)
 end
 
 
--- require late, because it calls into functions in this module
-M.stack = require "terminal.cursor.visible.stack"
+
+local _visible_stack = {
+  true
+}
 
 
 
 --- Returns the ansi sequence to show/hide the cursor at the top of the stack without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.cursor.visible.stack.apply_seq
-M.apply_seq = M.stack.apply_seq
+function M.apply_seq()
+  return M.set_seq(_visible_stack[#_visible_stack])
+end
 
 
 
 --- Returns the ansi sequence to show/hide the cursor at the top of the stack, and writes it to the terminal.
 -- @return true
 -- @within Stack
--- @see terminal.cursor.visible.stack.apply
-M.apply = M.stack.apply
+function M.apply()
+  output.write(M.apply_seq())
+  return true
+end
 
 
 
@@ -61,8 +66,10 @@ M.apply = M.stack.apply
 -- @tparam[opt=true] boolean v true to show, false to hide
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.cursor.visible.stack.push_seq
-M.push_seq = M.stack.push_seq
+function M.push_seq(v)
+  _visible_stack[#_visible_stack + 1] = (v ~= false)
+  return M.apply_seq()
+end
 
 
 
@@ -70,8 +77,10 @@ M.push_seq = M.stack.push_seq
 -- @tparam[opt=true] boolean v true to show, false to hide
 -- @return true
 -- @within Stack
--- @see terminal.cursor.visible.stack.push
-M.push = M.stack.push
+function M.push(v)
+  output.write(M.push_seq(v))
+  return true
+end
 
 
 
@@ -79,8 +88,13 @@ M.push = M.stack.push
 -- @tparam[opt=1] number n number of visibilities to pop
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.cursor.visible.stack.pop_seq
-M.pop_seq = M.stack.pop_seq
+function M.pop_seq(n)
+  local new_last = math.max(#_visible_stack - (n or 1), 1)
+  for i = new_last + 1, #_visible_stack do
+    _visible_stack[i] = nil
+  end
+  return M.apply_seq()
+end
 
 
 
@@ -88,8 +102,10 @@ M.pop_seq = M.stack.pop_seq
 -- @tparam[opt=1] number n number of visibilities to pop
 -- @return true
 -- @within Stack
--- @see terminal.cursor.visible.stack.pop
-M.pop = M.stack.pop
+function M.pop(n)
+  output.write(M.pop_seq(n))
+  return true
+end
 
 
 

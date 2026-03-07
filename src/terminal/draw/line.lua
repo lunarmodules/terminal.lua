@@ -110,9 +110,9 @@ function M.title_seq(width, title, char, pre, post, type, title_attr)
     return Sequence(
       M.horizontal_seq(left, char),
       pre,
-      function() return text.stack.push_seq(title_attr) end,
+      function() return text.push_seq(title_attr) end,
       title,
-      text.stack.pop_seq,
+      text.pop_seq,
       post,
       M.horizontal_seq(right, char)
     )

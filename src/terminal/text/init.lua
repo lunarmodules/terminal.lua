@@ -25,12 +25,33 @@ local M = {}
 package.loaded["terminal.text"] = M -- Register the module early to avoid circular dependencies
 
 M.color = require("terminal.text.color")
-M.stack = require("terminal.text.stack")
 M.width = require("terminal.text.width")
 
 local output = require("terminal.output")
 local utils = require("terminal.utils")
 local color = M.color
+
+
+local fg_color_reset = "\27[39m"
+local bg_color_reset = "\27[49m"
+local attribute_reset = "\27[0m"
+
+
+local default_colors = {
+  fg = fg_color_reset, -- reset fg
+  bg = bg_color_reset, -- reset bg
+  brightness = 2, -- normal
+  underline = false,
+  blink = false,
+  reverse = false,
+  ansi = fg_color_reset .. bg_color_reset .. attribute_reset,
+}
+
+
+local _colorstack = {
+  default_colors,
+}
+
 
 
 local underline_on = "\27[4m"
@@ -178,7 +199,7 @@ local _brightness_sequence_after_reset = {
 
 
 function M._newattr(attr)
-  local last = M.stack._colorstack[#M.stack._colorstack]
+  local last = _colorstack[#_colorstack]
   local fg_color = attr.fg or attr.fg_r
   local bg_color = attr.bg or attr.bg_r
   local new = {
@@ -258,8 +279,11 @@ end
 -- @tparam table attr the attributes to set, see `text.attrs` for details.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.text.stack.push_seq
-M.push_seq = M.stack.push_seq
+function M.push_seq(attr)
+  local new = M._newattr(attr)
+  _colorstack[#_colorstack + 1] = new
+  return new.ansi
+end
 
 
 
@@ -269,8 +293,10 @@ M.push_seq = M.stack.push_seq
 -- @tparam table attr the attributes to set, see `text.attrs` for details.
 -- @return true
 -- @within Stack
--- @see terminal.text.stack.push
-M.push = M.stack.push
+function M.push(attr)
+  output.write(M.push_seq(attr))
+  return true
+end
 
 
 
@@ -278,8 +304,14 @@ M.push = M.stack.push
 -- @tparam[opt=1] number n number of attributes to pop
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.text.stack.pop_seq
-M.pop_seq = M.stack.pop_seq
+function M.pop_seq(n)
+  n = n or 1
+  local newtop = math.max(#_colorstack - n, 1)
+  for i = newtop + 1, #_colorstack do
+    _colorstack[i] = nil
+  end
+  return _colorstack[#_colorstack].ansi
+end
 
 
 
@@ -287,8 +319,10 @@ M.pop_seq = M.stack.pop_seq
 -- @tparam[opt=1] number n number of attributes to pop
 -- @return true
 -- @within Stack
--- @see terminal.text.stack.pop
-M.pop = M.stack.pop
+function M.pop(n)
+  output.write(M.pop_seq(n))
+  return true
+end
 
 
 
@@ -296,16 +330,19 @@ M.pop = M.stack.pop
 -- returns the sequence without writing to the terminal.
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.text.stack.apply_seq
-M.apply_seq = M.stack.apply_seq
+function M.apply_seq()
+  return _colorstack[#_colorstack].ansi
+end
 
 
 
 --- Re-applies the current attributes/colors (at the top of the stack), and writes it to the terminal.
 -- @return true
 -- @within Stack
--- @see terminal.text.stack.apply
-M.apply = M.stack.apply
+function M.apply()
+  output.write(_colorstack[#_colorstack].ansi)
+  return true
+end
 
 
 

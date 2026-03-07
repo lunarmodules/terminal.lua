@@ -147,7 +147,7 @@ function TextPanel:_draw_text()
 
   -- Add text attributes if specified
   if self.text_attr then
-    seq[n] = terminal.text.stack.push_seq(self.text_attr)
+    seq[n] = terminal.text.push_seq(self.text_attr)
     n = n + 1
   end
 
@@ -164,7 +164,7 @@ function TextPanel:_draw_text()
 
     -- Add highlight attributes if this line should be highlighted
     if is_highlighted then
-      seq[n] = terminal.text.stack.push_seq(self.highlight_attr)
+      seq[n] = terminal.text.push_seq(self.highlight_attr)
       n = n + 1
     end
 
@@ -174,14 +174,14 @@ function TextPanel:_draw_text()
 
     -- Pop highlight attributes if they were pushed
     if is_highlighted then
-      seq[n] = terminal.text.stack.pop_seq()
+      seq[n] = terminal.text.pop_seq()
       n = n + 1
     end
   end
 
   -- Pop text attributes if they were pushed
   if self.text_attr then
-    seq[n] = terminal.text.stack.pop_seq()
+    seq[n] = terminal.text.pop_seq()
     n = n + 1
   end
 

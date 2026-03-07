@@ -4,7 +4,6 @@
 
 local M = {}
 package.loaded["terminal.cursor.shape"] = M -- Register the module early to avoid circular dependencies
-M.stack = require "terminal.cursor.shape.stack"
 
 local output = require("terminal.output")
 local utils = require("terminal.utils")
@@ -51,19 +50,29 @@ end
 
 
 
+local shape_reset = "\27[0 q"
+local _shapestack = {
+  shape_reset
+}
+
+
+
 --- Re-applies the shape at the top of the stack (returns it, does not write it to the terminal).
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.cursor.shape.stack.apply_seq
-M.apply_seq = M.stack.apply_seq
+function M.apply_seq()
+  return _shapestack[#_shapestack]
+end
 
 
 
 --- Re-applies the shape at the top of the stack, and writes it to the terminal.
 -- @return true
 -- @within Stack
--- @see terminal.cursor.shape.stack.apply
-M.apply = M.stack.apply
+function M.apply()
+  output.write(M.apply_seq())
+  return true
+end
 
 
 
@@ -72,8 +81,10 @@ M.apply = M.stack.apply
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.cursor.shape.stack.push_seq
-M.push_seq = M.stack.push_seq
+function M.push_seq(s)
+  _shapestack[#_shapestack + 1] = M.set_seq(s)
+  return M.apply_seq()
+end
 
 
 
@@ -82,8 +93,10 @@ M.push_seq = M.stack.push_seq
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
 -- @return true
 -- @within Stack
--- @see terminal.cursor.shape.stack.push
-M.push = M.stack.push
+function M.push(s)
+  output.write(M.push_seq(s))
+  return true
+end
 
 
 
@@ -91,8 +104,13 @@ M.push = M.stack.push
 -- @tparam[opt=1] number n number of shapes to pop
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.cursor.shape.stack.pop_seq
-M.pop_seq = M.stack.pop_seq
+function M.pop_seq(n)
+  local new_last = math.max(#_shapestack - (n or 1), 1)
+  for i = new_last + 1, #_shapestack do
+    _shapestack[i] = nil
+  end
+  return M.apply_seq()
+end
 
 
 
@@ -100,8 +118,10 @@ M.pop_seq = M.stack.pop_seq
 -- @tparam[opt=1] number n number of shapes to pop
 -- @return true
 -- @within Stack
--- @see terminal.cursor.shape.stack.pop
-M.pop = M.stack.pop
+function M.pop(n)
+  output.write(M.pop_seq(n))
+  return true
+end
 
 
 

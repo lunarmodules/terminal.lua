@@ -295,14 +295,14 @@ function TabStrip:_build_tab_line(available_width)
 
   -- Apply global attr if specified
   if self.attr then
-    s[#s+1] = function() return text.stack.push_seq(self.attr) end
+    s[#s+1] = function() return text.push_seq(self.attr) end
   end
 
   -- Handle empty items
   if #self.items == 0 then
     s[#s+1] = string.rep(" ", available_width)
     if self.attr then
-      s[#s+1] = text.stack.pop_seq
+      s[#s+1] = text.pop_seq
     end
     return s
   end
@@ -370,11 +370,11 @@ function TabStrip:_build_tab_line(available_width)
 
         -- Apply attributes
         if is_selected and self.selected_attr then
-          s[#s+1] = function() return text.stack.push_seq(self.selected_attr) end
+          s[#s+1] = function() return text.push_seq(self.selected_attr) end
         end
         s[#s+1] = visible_tab_text
         if is_selected and self.selected_attr then
-          s[#s+1] = text.stack.pop_seq
+          s[#s+1] = text.pop_seq
         end
 
         rendered_width = rendered_width + visible_tab_width
@@ -415,7 +415,7 @@ function TabStrip:_build_tab_line(available_width)
 
   -- Pop global attr if specified
   if self.attr then
-    s[#s+1] = text.stack.pop_seq
+    s[#s+1] = text.pop_seq
   end
 
   return s

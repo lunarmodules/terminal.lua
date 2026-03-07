@@ -4,12 +4,15 @@
 
 local M = {}
 package.loaded["terminal.cursor.position"] = M -- Register the module early to avoid circular dependencies
-M.stack = require "terminal.cursor.position.stack"
 
 local terminal = require("terminal")
 local output = require("terminal.output")
 local input = require("terminal.input")
 local utils = require("terminal.utils")
+
+
+
+local _positionstack = {}
 
 
 
@@ -337,8 +340,15 @@ end
 -- @tparam[opt] number new_column
 -- @treturn string ansi sequence to write to the terminal, or an empty string if no position is given
 -- @within Stack
--- @see terminal.cursor.position.stack.push_seq
-M.push_seq = M.stack.push_seq
+function M.push_seq(new_row, new_column)
+  local r, c = M.get()
+  -- ignore the error, since we need to keep the stack in sync for pop/push operations
+  _positionstack[#_positionstack + 1] = { r, c }
+  if new_row or new_column then
+    return M.set_seq(new_row, new_column)
+  end
+  return ""
+end
 
 
 
@@ -347,9 +357,10 @@ M.push_seq = M.stack.push_seq
 -- @tparam[opt] number new_row
 -- @tparam[opt] number new_column
 -- @return true
--- @within Stack
--- @see terminal.cursor.position.stack.push
-M.push = M.stack.push
+function M.push(new_row, new_column)
+  output.write(M.push_seq(new_row, new_column))
+  return true
+end
 
 
 
@@ -358,8 +369,18 @@ M.push = M.stack.push
 -- @tparam[opt=1] number n number of positions to pop
 -- @treturn string ansi sequence to write to the terminal
 -- @within Stack
--- @see terminal.cursor.position.stack.pop_seq
-M.pop_seq = M.stack.pop_seq
+function M.pop_seq(n)
+  n = n or 1
+  local entry
+  while n > 0 do
+    entry = table.remove(_positionstack)
+    n = n - 1
+  end
+  if not entry then
+    return ""
+  end
+  return M.set_seq(entry[1], entry[2])
+end
 
 
 
@@ -367,9 +388,10 @@ M.pop_seq = M.stack.pop_seq
 -- the last one to the terminal.
 -- @tparam[opt=1] number n number of positions to pop
 -- @return true
--- @within Stack
--- @see terminal.cursor.position.stack.pop
-M.pop = M.stack.pop
+function M.pop(n)
+  output.write(M.pop_seq(n))
+  return true
+end
 
 
 
