@@ -43,3 +43,8 @@ luac.out
 *.x86_64
 *.hex
 
+# Ignore generated documentation and coverage files
+/docs/
+.luacov
+luacov.report.out
+
