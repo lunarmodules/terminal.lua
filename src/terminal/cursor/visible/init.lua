@@ -49,7 +49,6 @@ end
 
 --- Returns the ansi sequence to show/hide the cursor at the top of the stack without writing it to the terminal.
 -- @treturn string ansi sequence to write to the terminal
--- @within Sequences
 function M.apply_seq()
   return M.set_seq(_visible_stack[#_visible_stack])
 end
@@ -68,7 +67,6 @@ end
 --- Pushes a cursor visibility onto the stack (and returns it), without writing it to the terminal.
 -- @tparam[opt=true] boolean v true to show, false to hide
 -- @treturn string ansi sequence to write to the terminal
--- @within Sequences
 function M.push_seq(v)
   _visible_stack[#_visible_stack + 1] = (v ~= false)
   return M.apply_seq()
@@ -89,7 +87,6 @@ end
 --- Pops `n` cursor visibility(ies) off the stack (and returns the last one), without writing it to the terminal.
 -- @tparam[opt=1] number n number of visibilities to pop
 -- @treturn string ansi sequence to write to the terminal
--- @within Sequences
 function M.pop_seq(n)
   local new_last = math.max(#_visible_stack - (n or 1), 1)
   for i = new_last + 1, #_visible_stack do

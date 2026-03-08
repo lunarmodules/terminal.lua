@@ -63,7 +63,6 @@ end
 
 --- Re-applies the shape at the top of the stack (returns it, does not write it to the terminal).
 -- @treturn string ansi sequence to write to the terminal
--- @within Sequences
 function M.apply_seq()
   return _shapestack[#_shapestack]
 end
@@ -83,7 +82,6 @@ end
 -- @tparam string s the shape to push, one of the keys `"block"`,
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
 -- @treturn string ansi sequence to write to the terminal
--- @within Sequences
 function M.push_seq(s)
   _shapestack[#_shapestack + 1] = M.set_seq(s)
   return M.apply_seq()
@@ -105,7 +103,6 @@ end
 --- Pops `n` cursor shape(s) off the stack (and returns the last one), without writing it to the terminal.
 -- @tparam[opt=1] number n number of shapes to pop
 -- @treturn string ansi sequence to write to the terminal
--- @within Sequences
 function M.pop_seq(n)
   local new_last = math.max(#_shapestack - (n or 1), 1)
   for i = new_last + 1, #_shapestack do

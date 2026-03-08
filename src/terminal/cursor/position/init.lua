@@ -344,7 +344,6 @@ end
 -- @tparam[opt] number new_row
 -- @tparam[opt] number new_column
 -- @treturn string ansi sequence to write to the terminal, or an empty string if no position is given
--- @within Sequences
 function M.push_seq(new_row, new_column)
   local r, c = M.get()
   -- ignore the error, since we need to keep the stack in sync for pop/push operations
@@ -373,7 +372,6 @@ end
 -- the last one without writing it to the terminal.
 -- @tparam[opt=1] number n number of positions to pop
 -- @treturn string ansi sequence to write to the terminal
--- @within Sequences
 function M.pop_seq(n)
   n = n or 1
   local entry
