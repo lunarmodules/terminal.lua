@@ -1,1 +1,0 @@
-{"lua": {"name": "Lua", "source": "release", "version": "5.1.5", "target": "mingw", "compat": "default", "c flags": "", "location": "C:\\Users\\vinit\\Documents\\Projects_VSCode\\CPP\\dsa\\web dev\\terminal.lua\\.hererocks", "major version": "5.1", "readline": "true", "patched": "false"}, "version": 3, "luarocks": {"name": "LuaRocks", "source": "release", "version": "3.8.0"}}

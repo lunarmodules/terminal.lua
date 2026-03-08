@@ -48,3 +48,4 @@ luac.out
 .luacov
 luacov.report.out
 
+.hererocks/
