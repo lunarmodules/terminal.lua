@@ -39,7 +39,6 @@ local blink_off = "\27[25m"
 local reverse_on = "\27[7m"
 local reverse_off = "\27[27m"
 local attribute_reset = "\27[0m"
-
 local fg_color_reset = "\27[39m"
 local bg_color_reset = "\27[49m"
 
@@ -59,6 +58,7 @@ local _colorstack = {
   default_colors,
 }
 M._colorstack = _colorstack
+
 
 
 --- Creates an ansi sequence to (un)set the underline attribute without writing it to the terminal.

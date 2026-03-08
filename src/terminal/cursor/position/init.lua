@@ -14,6 +14,7 @@ local utils = require("terminal.utils")
 local _positionstack = {}
 
 
+
 --- returns the sequence for requesting cursor position as a string.
 -- If you need to get the current position, use `get` instead.
 -- @treturn string the sequence for requesting cursor position

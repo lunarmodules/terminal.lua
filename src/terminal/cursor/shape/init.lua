@@ -31,6 +31,8 @@ local _shapestack = {
   shape_reset
 }
 
+
+
 --- Returns the ansi sequence for a cursor shape without writing it to the terminal.
 -- @tparam string shape the shape to get, one of the keys `"block"`,
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
@@ -51,9 +53,13 @@ function M.set(shape)
   return true
 end
 
+
+
 --- Stack based functions.
 -- These functions provide direct access to the cursor shape stack.
 -- @section Stack
+
+
 
 --- Re-applies the shape at the top of the stack (returns it, does not write it to the terminal).
 -- @treturn string ansi sequence to write to the terminal
@@ -62,12 +68,16 @@ function M.apply_seq()
   return _shapestack[#_shapestack]
 end
 
+
+
 --- Re-applies the shape at the top of the stack, and writes it to the terminal.
 -- @return true
 function M.apply()
   output.write(M.apply_seq())
   return true
 end
+
+
 
 --- Pushes a cursor shape onto the stack (and returns it), without writing it to the terminal.
 -- @tparam string s the shape to push, one of the keys `"block"`,
@@ -79,6 +89,8 @@ function M.push_seq(s)
   return M.apply_seq()
 end
 
+
+
 --- Pushes a cursor shape onto the stack, and writes it to the terminal.
 -- @tparam string s the shape to push, one of the keys `"block"`,
 -- `"block_blink"`, `"underline"`, `"underline_blink"`, `"bar"`, `"bar_blink"`
@@ -87,6 +99,8 @@ function M.push(s)
   output.write(M.push_seq(s))
   return true
 end
+
+
 
 --- Pops `n` cursor shape(s) off the stack (and returns the last one), without writing it to the terminal.
 -- @tparam[opt=1] number n number of shapes to pop
@@ -99,6 +113,8 @@ function M.pop_seq(n)
   end
   return M.apply_seq()
 end
+
+
 
 --- Pops `n` cursor shape(s) off the stack, and writes the last one to the terminal.
 -- @tparam[opt=1] number n number of shapes to pop

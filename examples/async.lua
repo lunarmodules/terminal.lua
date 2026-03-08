@@ -12,7 +12,7 @@ copas.addthread(function()
 
   local function updatetime(time)
     local dt = os.date(" %H:%M:%S ", time)
-   t.output.write(
+    t.output.write(
       t.cursor.position.push_seq(1, - #dt),
       t.text.push_seq{ fg = "black", bg = "white" },
       dt,
