@@ -16,7 +16,7 @@ local main do
     local row = ("1234567890"):rep(math.floor(c/10) + 1):sub(1, c)
 
     -- push a color on the stack
-    o[#o+1] = t.text.stack.push_seq{
+    o[#o+1] = t.text.push_seq{
       fg = "red",
       brightness = "dim",
     }
@@ -28,7 +28,7 @@ local main do
     end
 
     -- pop the color previously set, restoring the previous setting
-    o[#o+1] = t.text.stack.pop_seq()
+    o[#o+1] = t.text.pop_seq()
   end
 
 

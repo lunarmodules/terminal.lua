@@ -326,7 +326,7 @@ local function main()
 
   screen:calculate_layout()
   screen:render()
-  terminal.cursor.visible.stack.push(false)
+  terminal.cursor.visible.push(false)
 
   tab_select(0)  -- select the first panel by default
   luarocks.test_luarocks()
