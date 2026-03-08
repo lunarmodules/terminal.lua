@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><strong>sequence.lua</strong></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>sequence.lua</h2>
+<pre>
+<span class="comment">-- An example of using <code>sequence</code> to create a reusable sequence of terminal commands.
+</span><span class="comment">-- This example uses the <code>text.stack.push_seq</code> and <code>text.stack.pop_seq</code> functions to change the text color.
+</span><span class="comment">-- By using functions instead of strings the color change is only active during the
+</span><span class="comment">-- execution of the sequence.
+</span>
+<span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Sequence = <span class="global">require</span>(<span class="string">"terminal.sequence"</span>)
+
+<span class="comment">-- print a green checkmark, without changing any other attributes
+</span><span class="keyword">local</span> greencheck = <span class="function-name">Sequence</span>(
+  <span class="keyword">function</span>() <span class="keyword">return</span> t.text.stack.<span class="function-name">push_seq</span>({ fg = <span class="string">"green"</span> }) <span class="keyword">end</span>, <span class="comment">-- set green FG color AT TIME OF WRITING
+</span>  <span class="string">"✔"</span>, <span class="comment">-- write a check mark
+</span>  t.text.stack.pop_seq <span class="comment">-- passing in function is enough, since no parameters needed
+</span>)
+
+
+<span class="comment">-- print a green checkmark at the top of the screen.
+</span><span class="comment">-- doesn't use a stack for cursor pos, but terminal memory
+</span><span class="keyword">local</span> top = <span class="function-name">Sequence</span>(
+  t.cursor.position.backup_seq, <span class="comment">-- save cursor position, no params, so passing function is ok
+</span>  t.cursor.position.<span class="function-name">set_seq</span>(<span class="number">1</span>,<span class="number">1</span>), <span class="comment">-- move to row 1, column 1
+</span>  greencheck, <span class="comment">-- print the green checkmark, injecting another sequence
+</span>  t.cursor.position.restore_seq <span class="comment">-- restore cursor position, no params, so passing function is ok
+</span>)
+
+
+<span class="comment">-- print another one at pos 2,2, but now use the cursor positioning stack
+</span><span class="comment">-- this is safer, if the 'greencheck' sub-sequence would also use the
+</span><span class="comment">-- terminal memory for the cursor position (overwriting ours).
+</span><span class="keyword">local</span> top2 = <span class="function-name">Sequence</span>(
+  <span class="keyword">function</span>() <span class="keyword">return</span> t.cursor.position.stack.<span class="function-name">push_seq</span>(<span class="number">2</span>,<span class="number">2</span>) <span class="keyword">end</span>,
+  greencheck, <span class="comment">-- print the green checkmark
+</span>  t.cursor.position.stack.pop_seq
+)
+
+
+t.<span class="function-name">initialize</span>()
+
+<span class="comment">-- print the green checkmarks, by default this will be on a black background
+</span>t.output.<span class="function-name">write</span>(greencheck, <span class="string">" hello "</span>, greencheck, <span class="string">" world "</span>, greencheck, <span class="string">"\n"</span>) <span class="comment">-- uses normal colors for the text
+</span><span class="comment">-- change background to red, and print again, the same sequence now properly prints on a red background
+</span>t.text.stack.<span class="function-name">push</span>({ bg = <span class="string">"red"</span> })
+t.output.<span class="function-name">write</span>(greencheck, <span class="string">" hello "</span>, greencheck, <span class="string">" world "</span>, greencheck) <span class="comment">-- text is on red background now
+</span>t.text.stack.<span class="function-name">pop</span>() <span class="comment">-- whilst the cursor is still on the same line, otherwise if scrolling the scrolled line will be red!
+</span>t.output.<span class="function-name">write</span>(<span class="string">"\n"</span>) <span class="comment">-- push the newline
+</span><span class="comment">-- print again, and the background is back to black
+</span>t.output.<span class="function-name">write</span>(greencheck, <span class="string">" hello "</span>, greencheck, <span class="string">" world "</span>, greencheck, <span class="string">"\n"</span>) <span class="comment">-- text is back to normal colors
+</span>
+<span class="comment">-- print the green checkmark at the top of the screen
+</span>t.output.<span class="function-name">write</span>(top)
+t.output.<span class="function-name">write</span>(top2) <span class="comment">-- anotheer one at pos 2,2
+</span>
+t.<span class="function-name">shutdown</span>()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

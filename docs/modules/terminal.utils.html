@@ -1,0 +1,565 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Constants">Constants</a></li>
+<li><a href="#Generic">Generic</a></li>
+<li><a href="#Classes">Classes</a></li>
+<li><a href="#Text">Text</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><strong>terminal.utils</strong></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.utils</code></h1>
+<p>Support functions.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Constants">Constants</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#invalid_constant">invalid_constant (value, constants[, prefix="Invalid value: "])</a></td>
+	<td class="summary">Returns an error message for an invalid lookup constant.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#make_lookup">make_lookup ([value_type="value"], t)</a></td>
+	<td class="summary">Converts a lookup table to a constant table with user friendly error reporting.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#throw_invalid_constant">throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</a></td>
+	<td class="summary">Throws an error message for an invalid lookup constant.</td>
+	</tr>
+</table>
+<h2><a href="#Generic">Generic</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#resolve_index">resolve_index (index, max_value[, min_value=1])</a></td>
+	<td class="summary">Resolve indices.</td>
+	</tr>
+</table>
+<h2><a href="#Classes">Classes</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#class">class ([baseclass])</a></td>
+	<td class="summary">Creates a (sub)class.</td>
+	</tr>
+</table>
+<h2><a href="#Text">Text</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#truncate_ellipsis">truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</a></td>
+	<td class="summary">Truncates text to fit within a given width, adding ellipsis as needed.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
+	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8sub_col">utf8sub_col (str, i, j[, no_pad=false])</a></td>
+	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Constants"></a>Constants</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "invalid_constant"></a>
+    <strong>invalid_constant (value, constants[, prefix="Invalid value: "])</strong>
+    </dt>
+    <dd>
+    Returns an error message for an invalid lookup constant.
+ This function is used to generate error messages for invalid arguments.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span> or <a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The value that wasn't found.
+        </li>
+        <li><span class="parameter">constants</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The valid values for the constant.
+        </li>
+        <li><span class="parameter">prefix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the prefix for the message.
+         (<em>default</em> "Invalid value: ")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The error message.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "make_lookup"></a>
+    <strong>make_lookup ([value_type="value"], t)</strong>
+    </dt>
+    <dd>
+    Converts a lookup table to a constant table with user friendly error reporting.
+ The constant table is modified in-place, a metatable with an __index metamethod
+ is added to the table. This metamethod throws an error when an invalid key is
+ accessed.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The type of value looked up, use a singular,
+ eg. "cursor shape", or "foreground color".
+         (<em>default</em> "value")
+        </li>
+        <li><span class="parameter">t</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The lookup table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        The same constant table t, with a metatable added.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> cursor_shape = M.<span class="function-name">make_lookup</span>(<span class="string">"cursor shape"</span>, {
+  block = <span class="number">0</span>,
+  underline = <span class="number">1</span>,
+  bar = <span class="number">2</span>,
+})
+
+<span class="keyword">local</span> value = cursor_shape[<span class="string">"bad-shape"</span>] <span class="comment">-- throws an error;
+</span><span class="comment">-- Invalid cursor shape: "bad-shape". Expected one of: "block", "underline", "bar"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "throw_invalid_constant"></a>
+    <strong>throw_invalid_constant (value, constants[, prefix="Invalid value: "[, err_lvl=1]])</strong>
+    </dt>
+    <dd>
+    Throws an error message for an invalid lookup constant.
+ This function is used to generate error messages for invalid arguments.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span> or <a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The value that wasn't found.
+        </li>
+        <li><span class="parameter">constants</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The valid values for the constant.
+        </li>
+        <li><span class="parameter">prefix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the prefix for the message.
+         (<em>default</em> "Invalid value: ")
+        </li>
+        <li><span class="parameter">err_lvl</span>
+            <span class="types"><span class="type">number</span></span>
+         the error level when throwing the error.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing, throws an error.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Generic"></a>Generic</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "resolve_index"></a>
+    <strong>resolve_index (index, max_value[, min_value=1])</strong>
+    </dt>
+    <dd>
+    Resolve indices.
+ This function resolves negative indices to positive indices.
+ The result will be capped into the range [<code>min_value</code>, <code>max_value</code>].
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">index</span>
+            <span class="types"><span class="type">number</span></span>
+         The index to resolve.
+        </li>
+        <li><span class="parameter">max_value</span>
+            <span class="types"><span class="type">number</span></span>
+         The maximum value for the index.
+        </li>
+        <li><span class="parameter">min_value</span>
+            <span class="types"><span class="type">number</span></span>
+         The minimum value for the index.
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Classes"></a>Classes</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "class"></a>
+    <strong>class ([baseclass])</strong>
+    </dt>
+    <dd>
+
+<p>Creates a (sub)class.
+ This function creates a new class, which is a subclass of the given baseclass.
+ An instance can be created by calling on the class, any parameteres passed in will be passed on
+ to the <code>init</code> method. The <code>init</code> method (if present), will be called upon instantiation.</p>
+
+<p> Every instance will:</p>
+
+<ul>
+    <li>have a <code>super</code> property, which points to the class itself.</li>
+    <li>upon creation call the <code>init</code> method (if present) with the parameters passed when calling on the Class.</li>
+</ul>
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">baseclass</span>
+            <span class="types"><a class="type" href="../modules/terminal.utils.html#class">class</a></span>
+         The base-class to inherit from.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        The new class.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Cat = utils.<span class="function-name">class</span>()
+<span class="keyword">function</span> Cat:<span class="function-name">init</span>(value)
+  self.value = value <span class="keyword">or</span> <span class="number">42</span>
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> Lion = utils.<span class="function-name">class</span>(Cat)
+<span class="keyword">function</span> Lion:<span class="function-name">init</span>(value)
+  <span class="global">assert</span>(self.super == Cat, <span class="string">"Superclass is not a Cat"</span>)
+  Cat.<span class="function-name">init</span>(self, value)   <span class="comment">-- call ancestor initializer
+</span>  self.value = self.value * <span class="number">2</span>
+<span class="keyword">end</span>
+
+<span class="keyword">local</span> instance1 = <span class="function-name">Lion</span>()
+<span class="global">print</span>(instance1.value)      <span class="comment">--&gt; 84
+</span><span class="keyword">local</span> instance2 = <span class="function-name">Lion</span>(<span class="number">10</span>)
+<span class="global">print</span>(instance2.value)      <span class="comment">--&gt; 20</span></pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Text"></a>Text</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "truncate_ellipsis"></a>
+    <strong>truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</strong>
+    </dt>
+    <dd>
+    Truncates text to fit within a given width, adding ellipsis as needed.
+ Shortens text if necessary, adds ellipsis when truncated. Respects UTF-8
+ character boundaries and handles double-width characters correctly.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The available width for the text in columns.
+        </li>
+        <li><span class="parameter">text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The text to truncate.
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">trunc_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The type of truncation to apply:
+   - "right": Truncate from the right, show beginning of text with ellipsis on the right
+   - "left": Truncate from the left, show end of text with ellipsis on the left
+   - "drop": Drop the entire text if it doesn't fit (return empty string).
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">ellipsis</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The ellipsis string to use. Defaults to Unicode ellipsis character "…".
+   Can be a multi-character string or empty string.
+         (<em>default</em> "…")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The truncated text (may be empty string).</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The size of the returned text in columns.</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- Truncate from right (default)
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>)  <span class="comment">-- "Very long…"
+</span><span class="comment">-- Truncate from left
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>)  <span class="comment">-- "…long text"
+</span><span class="comment">-- Drop if too small
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">3</span>, <span class="string">"Very long text"</span>, <span class="string">"drop"</span>)  <span class="comment">-- ""
+</span><span class="comment">-- Custom ellipsis
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"right"</span>, <span class="string">".."</span>)  <span class="comment">-- "Very lon.."
+</span><span class="comment">-- Empty string as ellipsis just truncates the text
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>, <span class="string">""</span>)  <span class="comment">-- " long text"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "utf8sub"></a>
+    <strong>utf8sub (str, i, j)</strong>
+    </dt>
+    <dd>
+    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to take the substring of
+        </li>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         the starting index of the substring
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         the ending index of the substring
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the substring
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- UTF-8 double-width characters (Chinese, etc.)
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">2</span>)       <span class="comment">-- "你好"
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">1</span>)       <span class="comment">-- "你"
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">3</span>)    <span class="comment">-- "好世"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "utf8sub_col"></a>
+    <strong>utf8sub_col (str, i, j[, no_pad=false])</strong>
+    </dt>
+    <dd>
+    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.
+ It uses <a href="../modules/terminal.text.width.html#utf8cwidth">text.width.utf8cwidth</a> to determine the width of each character.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to take the substring of
+        </li>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         the starting column of the substring (can't be negative!)
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         the ending column of the substring (can't be negative!)
+        </li>
+        <li><span class="parameter">no_pad</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to pad the substring with spaces
+ if the first or last column contains half of a double-width character
+         (<em>default</em> false)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the substring
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- UTF-8 double-width characters (2 columns each)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">3</span>, <span class="number">6</span>)  <span class="comment">-- "好世" (columns 3-6)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>)  <span class="comment">-- " 好世 " (columns 2-7 with padding for half of double-width chars)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>, <span class="keyword">true</span>)  <span class="comment">-- "好世" (columns 2-7, no_pad == true)</span></pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

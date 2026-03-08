@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><strong>async.lua</strong></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>async.lua</h2>
+<pre>
+<span class="comment">-- An example of asynchoneous input and output using the <code>copas</code> library.
+</span><span class="comment">-- This example shows how to use the <code>copas</code> library to create a simple
+</span><span class="comment">-- terminal application that displays the current time and waits for keyboard input.
+</span>
+<span class="keyword">local</span> copas = <span class="global">require</span>(<span class="string">"copas"</span>)
+<span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
+
+
+
+<span class="comment">-- add timer display thread
+</span>copas.<span class="function-name">addthread</span>(<span class="keyword">function</span>()
+
+  <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">updatetime</span>(time)
+    <span class="keyword">local</span> dt = <span class="global">os</span>.<span class="function-name">date</span>(<span class="string">" %H:%M:%S "</span>, time)
+    t.output.<span class="function-name">write</span>(
+      t.cursor.position.stack.<span class="function-name">push_seq</span>(<span class="number">1</span>, - #dt),
+      t.text.stack.<span class="function-name">push_seq</span>{ fg = <span class="string">"black"</span>, bg = <span class="string">"white"</span> },
+      dt,
+      t.text.stack.<span class="function-name">pop_seq</span>(),
+      t.cursor.position.stack.<span class="function-name">pop_seq</span>()
+    )
+  <span class="keyword">end</span>
+
+  <span class="keyword">while</span> <span class="keyword">not</span> copas.<span class="function-name">exiting</span>() <span class="keyword">do</span>
+    <span class="keyword">local</span> t = copas.<span class="function-name">gettime</span>()
+    <span class="function-name">updatetime</span>(<span class="global">math</span>.<span class="function-name">floor</span>(t))
+    copas.<span class="function-name">pause</span>(<span class="number">1</span> - (t - <span class="global">math</span>.<span class="function-name">floor</span>(t))) <span class="comment">-- sleep until the next second
+</span>  <span class="keyword">end</span>
+<span class="keyword">end</span>)
+
+
+
+<span class="comment">-- add thread waiting for keyboard input
+</span>copas.<span class="function-name">addthread</span>(<span class="keyword">function</span>()
+  t.output.<span class="global">print</span>(<span class="string">"Press 'q' to exit..."</span>)
+
+  <span class="keyword">while</span> <span class="keyword">not</span> copas.<span class="function-name">exiting</span>() <span class="keyword">do</span>
+    <span class="keyword">local</span> key, keytype = t.input.<span class="function-name">readansi</span>(<span class="global">math</span>.huge)
+    <span class="keyword">if</span> key <span class="keyword">then</span>
+      <span class="keyword">if</span> keytype == <span class="string">"ctrl"</span> <span class="keyword">then</span>
+        key = (<span class="string">"\\%03d"</span>):<span class="function-name">format</span>(key:<span class="function-name">byte</span>())
+      <span class="keyword">end</span>
+      t.output.<span class="global">print</span>(<span class="string">"You pressed: "</span> .. key:<span class="function-name">gsub</span>(<span class="string">"\027"</span>, <span class="string">"\\027"</span>), keytype)
+      <span class="keyword">if</span> key == <span class="string">"q"</span> <span class="keyword">then</span>
+        copas.<span class="function-name">exit</span>()
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>)
+
+
+
+<span class="comment">-- start the copas loop, wrapped in term setup/teardown
+</span>t.<span class="function-name">initwrap</span>(copas.loop,{
+  displaybackup = <span class="keyword">true</span>,
+  filehandle = <span class="global">io</span>.stdout,
+  sleep = copas.pause, <span class="comment">-- ensure readansi is yielding
+</span>})()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

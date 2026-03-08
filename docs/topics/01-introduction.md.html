@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#1_1_Basic_design">1.1 Basic design </a></li>
+<li><a href="#1_2_initialization___shutdown">1.2 initialization & shutdown </a></li>
+<li><a href="#1_3_functions_vs_strings">1.3 functions vs strings </a></li>
+<li><a href="#1_4_stacks">1.4 stacks </a></li>
+</ul>
+
+
+<h2>Topics</h2>
+<ul class="">
+  <li><strong>1. Introduction</strong></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+
+<h1>1. Introduction</h1>
+
+<p>Yet another terminal library, why? Becasue it adds a couple of things not found with other libraries:</p>
+
+<ul>
+    <li>Also works on Windows (since it builds on top of <code>luasystem</code>)</li>
+    <li>Works async with coroutines for keyboard input</li>
+    <li>Has <a href="#14-stacks">stacks</a> to track settings so it becomes possible to revert to previous settings, even if a piece of code has no knowledge about those settings.</li>
+    <li>Remains Lua only, to not fall back to a full curses type implementation (except for the LuaSystem dependency)</li>
+</ul>
+
+<p><a name="1_1_Basic_design"></a></p>
+<h2>1.1 Basic design</h2>
+
+<p>There are a few major concepts implemented in this library:</p>
+
+<p><strong>the core terminal stuff</strong></p>
+
+<p>configuring the terminal and abstractions over ANSI codes;</p>
+
+<ul>
+    <li><a href="#12-initialization--shutdown">initialization &amp; shutdown</a></li>
+    <li><a href="#13-functions-vs-strings">functions vs strings</a></li>
+    <li><a href="#14-stacks">stacks</a></li>
+</ul>
+
+<p><strong>Higher level components</strong></p>
+
+<ul>
+    <li>CLI widgets, see the <code>CLI</code> classes like <a href="../classes/cli.Select.html#">cli.Select</a> and <a href="../classes/cli.Prompt.html#">cli.Prompt</a>.</li>
+    <li>Fullscreen UIs, see the <code>UI</code> classes like <a href="../classes/ui.panel.Screen.html#">ui.panel.Screen</a> and <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a>.</li>
+</ul>
+
+
+<p><a name="1_2_initialization___shutdown"></a></p>
+<h2>1.2 initialization &amp; shutdown</h2>
+
+<p>Before use the terminal should be initialized (<a href="../modules/terminal.html#initialize">terminal.initialize</a>) and finally it should be cleaned up (<a href="../modules/terminal.html#shutdown">terminal.shutdown</a>).
+The most convenient (and preferred) way to do this would be by using the <a href="../modules/terminal.html#initwrap">terminal.initwrap</a> function.</p>
+
+<p>The platform specifics (Windows vs Nix'es) are handled here.</p>
+
+<p><a name="1_3_functions_vs_strings"></a></p>
+<h2>1.3 functions vs strings</h2>
+
+<p>The low-level functions to control the terminal in this library also have a string-counterpart. That would be the same function, but with an extra "_seq" appended to its name. For example;</p>
+
+<ul>
+    <li><a href="../modules/terminal.clear.html#eol">terminal.clear.eol</a> and <a href="../modules/terminal.clear.html#eol_seq">terminal.clear.eol_seq</a></li>
+    <li><a href="../modules/terminal.cursor.shape.html#set">terminal.cursor.shape.set</a> and <a href="../modules/terminal.cursor.shape.html#set_seq">terminal.cursor.shape.set_seq</a></li>
+</ul>
+
+<p>The difference being that the former will write the sequence to the output stream. Where the latter returns the sequence as a string, and leaves writing to the user.</p>
+
+<p>Hence these 2 examples are identical in functionality:</p>
+
+
+<pre>
+<span class="keyword">local</span> t = <span class="global">require</span> <span class="string">"terminal"</span>
+
+<span class="comment">-- directly write
+</span>t.cursor.shape.<span class="function-name">set</span>(<span class="string">"block_blink"</span>)
+
+<span class="comment">-- manually write
+</span>t.output.<span class="function-name">write</span>(t.cursor.shape.<span class="function-name">set_seq</span>(<span class="string">"block_blink"</span>))
+</pre>
+
+<p>In simple cases the regular function will do. However when drawing more complex items on a terminal screen, combining multiple write actions into a single one, can reduce flicker and improve performance.</p>
+
+<p>Here's an example that draws a vertical bar (3 rows high), and clears the lines:</p>
+
+
+<pre>
+t.<span class="function-name">write</span>(
+  t.cursor.position.<span class="function-name">column_seq</span>(<span class="number">1</span>),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">up_seq</span>(<span class="number">2</span>)
+)
+</pre>
+
+<p>And as such it also allows for creating reusable sequences by storing it into a local variable:</p>
+
+
+<pre>
+<span class="keyword">local</span> three_line_box = <span class="global">table</span>.<span class="function-name">concat</span> {
+  t.cursor.position.<span class="function-name">column_seq</span>(<span class="number">1</span>),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">up_seq</span>(<span class="number">2</span>)
+}
+
+t.<span class="function-name">write</span>(three_line_box)
+</pre>
+
+<p>A more advanced version of this is the <a href="../classes/Sequence.html#">Sequence</a> class.</p>
+
+<p><strong>Important</strong>: the stack based functions are not suited for including in reusable strings, because of their dynamic nature. They would restore the state to the state from before the string was <em>created</em>, not to the state from before the stored value is actually <em>used</em>.</p>
+
+<p><a name="1_4_stacks"></a></p>
+<h2>1.4 stacks</h2>
+
+<p>Terminal state is hard to query (the exception being the cursor position). This means that if something is changed in the state of the terminal (eg. foreground or background color) one cannot easily revert it to the previous state. This is what the stacks attempt to resolve.</p>
+
+<p>For each piece of state there is a separate stack to control it. Leading to the following stacks:</p>
+
+<ul>
+    <li><strong>cursor shape</strong>: controls the shape of the cursor and whether it blinks or not.</li>
+    <li><strong>cursor visibility</strong>: controls the visibility of the cursor, which has a separate state in the terminal, and hence has its own stack.</li>
+    <li><strong>cursor position</strong>: controls the position of the cursor. This one is slightly different from the other ones, since this is the only queryable state in the terminal.</li>
+    <li><strong>scroll region</strong>: controls the rows for the scrollable region.</li>
+    <li><strong>text attributes and color</strong>: this controls colors and attributes like <code>reverse</code>, <code>blink</code>, etc.</li>
+</ul>
+
+<p>Each stack has the following operations:</p>
+
+<ul>
+    <li><code>push(values...)</code>: takes value(s) for the specific stack, pushes it onto the stack, and applies it.</li>
+    <li><code>pop(n)</code>: pops <code>n</code> items of the stack, and applies the top of the stack again.</li>
+    <li><code>apply()</code>: applies the item at the top of the stack (eg. undoes any intermediate changes).</li>
+</ul>
+
+<p>The cursor position stack operates slightly different:</p>
+
+<ul>
+    <li><code>push(new_row, new_col)</code>: pushes the current cursor position onto the stack, and moves the cursor to the new position.</li>
+    <li><code>pop(n)</code>: pops <code>n</code> items of the stack, and applies the last item popped.</li>
+</ul>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

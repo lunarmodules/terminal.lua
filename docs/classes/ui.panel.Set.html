@@ -1,0 +1,468 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><strong>ui.panel.Set</strong></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.panel.Set</code></h1>
+<p>Panel set for managing multiple named panels with single selection.</p>
+<p>
+
+
+<p> This class is a Panel that holds a set of content panels (by unique name) of
+ which at most one is visible/active at a time. It can be used in combination
+ with a <a href="../classes/ui.panel.TabStrip.html#">ui.panel.TabStrip</a>.</p>
+
+<p> Example usage:</p>
+
+
+<pre>
+<span class="keyword">local</span> PanelSet = <span class="global">require</span>(<span class="string">"terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="comment">-- Create panels for different views
+</span><span class="keyword">local</span> view1 = <span class="function-name">Panel</span> { name = <span class="string">"view1"</span>, content = <span class="keyword">function</span>(self) <span class="keyword">end</span> }
+<span class="keyword">local</span> view2 = <span class="function-name">Panel</span> { name = <span class="string">"view2"</span>, content = <span class="keyword">function</span>(self) <span class="keyword">end</span> }
+<span class="keyword">local</span> view3 = <span class="function-name">Panel</span> { name = <span class="string">"view3"</span>, content = <span class="keyword">function</span>(self) <span class="keyword">end</span> }
+
+<span class="comment">-- Create a set and add panels
+</span><span class="keyword">local</span> set = <span class="function-name">PanelSet</span> { children = { view1, view2, view3 } }
+
+<span class="comment">-- Switch between panels (e.g., from tab control)
+</span>set:<span class="global">select</span>(<span class="string">"view2"</span>)  <span class="comment">-- Shows view2, hides others
+</span>set:<span class="global">select</span>(<span class="string">"view1"</span>)  <span class="comment">-- Shows view1, hides others
+</span>
+<span class="comment">-- Iterate over all panels
+</span><span class="keyword">for</span> panel <span class="keyword">in</span> set:<span class="function-name">panel_set</span>() <span class="keyword">do</span>
+  <span class="global">print</span>(<span class="string">"Panel:"</span>, panel.name)
+<span class="keyword">end</span>
+</pre>
+
+</p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.set:add">ui.panel.set:add (panel[, jump=false])</a></td>
+	<td class="summary">Add a panel to the set.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.set:get_selected">ui.panel.set:get_selected ()</a></td>
+	<td class="summary">Get the currently selected panel name.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.set:init">ui.panel.set:init (opts)</a></td>
+	<td class="summary">Create a new Set instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.set:panel_set">ui.panel.set:panel_set ()</a></td>
+	<td class="summary">Iterator for traversing panels in the tree.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.set:remove">ui.panel.set:remove (name)</a></td>
+	<td class="summary">Remove a panel from the set by name.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.set:select">ui.panel.set:select (name)</a></td>
+	<td class="summary">Select an existing panel by name (makes it visible).</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel.set:add"></a>
+    <strong>ui.panel.set:add (panel[, jump=false])</strong>
+    </dt>
+    <dd>
+    Add a panel to the set.
+ Accepts the panel; its name is derived from <code>panel.name</code>.
+ When <code>jump</code> is truthy, the newly added panel is selected; otherwise the
+ current selection is preserved. If there was no selection yet,
+ the newly added panel becomes selected regardless of <code>jump</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">panel</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The panel instance to add
+        </li>
+        <li><span class="parameter">jump</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Select the newly added panel when truthy
+         (<em>default</em> false)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> PanelSet = <span class="global">require</span>(<span class="string">"terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="keyword">local</span> set = <span class="function-name">PanelSet</span> {}
+<span class="keyword">local</span> panel1 = <span class="function-name">Panel</span> { name = <span class="string">"panel1"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> }
+<span class="keyword">local</span> panel2 = <span class="function-name">Panel</span> { name = <span class="string">"panel2"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> }
+
+set:<span class="function-name">add</span>(panel1)           <span class="comment">-- panel1 is selected automatically
+</span>set:<span class="function-name">add</span>(panel2, <span class="keyword">true</span>)      <span class="comment">-- panel2 is now selected</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.set:get_selected"></a>
+    <strong>ui.panel.set:get_selected ()</strong>
+    </dt>
+    <dd>
+    Get the currently selected panel name.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        Name of the selected panel
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        If none selected</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        Error message</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> PanelSet = <span class="global">require</span>(<span class="string">"terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="keyword">local</span> set = <span class="function-name">PanelSet</span> {}
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"tab1"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"tab2"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+set:<span class="global">select</span>(<span class="string">"tab2"</span>)
+
+<span class="keyword">local</span> selected = set:<span class="function-name">get_selected</span>()  <span class="comment">-- Returns "tab2"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.set:init"></a>
+    <strong>ui.panel.set:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Set instance.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options (any Panel options that make sense for a divided parent)
+        <ul>
+        <li><span class="parameter">children</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Optional initial array of child panels (0..n)
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">selected</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Optional name to select initially
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.panel.Set.html">Set</a></span>
+        A new Set instance
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> PanelSet = <span class="global">require</span>(<span class="string">"terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="comment">-- Empty set
+</span><span class="keyword">local</span> set = <span class="function-name">PanelSet</span> {}
+
+<span class="comment">-- Set with initial panels
+</span><span class="keyword">local</span> set = <span class="function-name">PanelSet</span> {
+  children = {
+    <span class="function-name">Panel</span> { name = <span class="string">"tab1"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> },
+    <span class="function-name">Panel</span> { name = <span class="string">"tab2"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> },
+  },
+  selected = <span class="string">"tab2"</span>  <span class="comment">-- tab2 will be selected initially
+</span>}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.set:panel_set"></a>
+    <strong>ui.panel.set:panel_set ()</strong>
+    </dt>
+    <dd>
+    Iterator for traversing panels in the tree.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        iterator function that yields panel instances
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> PanelSet = <span class="global">require</span>(<span class="string">"terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="keyword">local</span> set = <span class="function-name">PanelSet</span> {}
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"a"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"b"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"c"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+
+<span class="comment">-- Iterate over all panels
+</span><span class="keyword">for</span> panel <span class="keyword">in</span> set:<span class="function-name">panel_set</span>() <span class="keyword">do</span>
+  <span class="global">print</span>(<span class="string">"Found panel:"</span>, panel.name)
+<span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.set:remove"></a>
+    <strong>ui.panel.set:remove (name)</strong>
+    </dt>
+    <dd>
+    Remove a panel from the set by name.
+ If the removed panel is currently selected, another available panel will be
+ selected automatically (any available panel) or the set becomes empty.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The panel name to remove
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.Panel.html">Panel</a></span>
+        The removed panel
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        If the panel was not found</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        Error message</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> PanelSet = <span class="global">require</span>(<span class="string">"terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="keyword">local</span> set = <span class="function-name">PanelSet</span> {}
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"a"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"b"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+set:<span class="global">select</span>(<span class="string">"b"</span>)
+
+<span class="keyword">local</span> removed = set:<span class="function-name">remove</span>(<span class="string">"b"</span>)  <span class="comment">-- Returns the removed panel
+</span><span class="comment">-- "a" is now automatically selected since "b" was removed
+</span><span class="global">assert</span>.are.<span class="function-name">equal</span>(<span class="string">"a"</span>, set:<span class="function-name">get_selected</span>())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.set:select"></a>
+    <strong>ui.panel.set:select (name)</strong>
+    </dt>
+    <dd>
+    Select an existing panel by name (makes it visible).
+ All other panels are hidden.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Panel name to select
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">true</span></span>
+        If the panel was found and selected
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        If the panel was not found</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        Error message</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> PanelSet = <span class="global">require</span>(<span class="string">"terminal.ui.panel.set"</span>)
+<span class="keyword">local</span> Panel = <span class="global">require</span>(<span class="string">"terminal.ui.panel"</span>)
+
+<span class="keyword">local</span> set = <span class="function-name">PanelSet</span> {}
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"tab1"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+set:<span class="function-name">add</span>(<span class="function-name">Panel</span> { name = <span class="string">"tab2"</span>, content = <span class="keyword">function</span>() <span class="keyword">end</span> })
+
+<span class="keyword">local</span> ok = set:<span class="global">select</span>(<span class="string">"tab2"</span>)  <span class="comment">-- Returns true, tab2 is now visible</span></pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

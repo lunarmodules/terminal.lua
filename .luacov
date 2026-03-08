@@ -1,0 +1,6 @@
+include = {
+   "terminal$",      -- the main module
+   "terminal%/.+$",  -- and everything namespaced underneath it
+}
+
+runreport = true

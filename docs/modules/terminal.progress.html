@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Fields">Fields</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><strong>terminal.progress</strong></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>terminal.progress</code></h1>
+<p>A module for progress updating.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#spinner">spinner (opts)</a></td>
+	<td class="summary">Create a progress spinner.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ticker">ticker (text[, width=40[, text_done=""]])</a></td>
+	<td class="summary">Create a text/led ticker like sprite-sequence for use with a progress spinner.</td>
+	</tr>
+</table>
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#sprites">sprites</a></td>
+	<td class="summary">table with predefined sprites for progress spinners.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    Methods
+    <dl class="function">
+    <dt>
+    <a name = "spinner"></a>
+    <strong>spinner (opts)</strong>
+    </dt>
+    <dd>
+    Create a progress spinner.
+ The returned spinner function can be called as often as needed to update the spinner. It will only update after
+ the <code>stepsize</code> has passed since the last update. So try to call it at least every <code>stepsize</code> seconds, or more often.
+ If <code>row</code> and <code>col</code> are given then terminal memory is used to (re)store the cursor position. If they are not given
+ then the spinner will be printed at the current cursor position, and the cursor will return to the same position
+ after each update.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> a table of options;
+        <ul>
+        <li><span class="parameter">sprites</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         a table of strings to display, one at a time, overwriting the previous one. Index 0 is the "done" message.
+ See <a href="../modules/terminal.progress.html#sprites">sprites</a> for a table of predefined sprites.
+        </li>
+        <li><span class="parameter">stepsize</span>
+            <span class="types"><span class="type">number</span></span>
+         the time in seconds between each step (before printing the next string from the sequence)
+         (<em>default</em> 0.2)
+        </li>
+        <li><span class="parameter">textattr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         a table of text attributes to apply to the text (using the stack), or nil to not change the attributes.
+        </li>
+        <li><span class="parameter">done_textattr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         a table of text attributes to apply to the "done" message, or nil to not change the attributes.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">done_sprite</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the sprite to display when the spinner is done. This overrides <code>sprites[0]</code> if provided.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">row</span>
+            <span class="types"><span class="type">number</span></span>
+         the row to print the spinner (required if <code>col</code> is provided)
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">col</span>
+            <span class="types"><span class="type">number</span></span>
+         the column to print the spinner (required if <code>row</code> is provided)
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">function</span></span>
+        a stepper function that should be called in a loop to update the spinner. Signature: <code>nil = stepper(done)</code> where
+ <code>done</code> is a boolean indicating that the spinner should print the "done" message.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ticker"></a>
+    <strong>ticker (text[, width=40[, text_done=""]])</strong>
+    </dt>
+    <dd>
+    Create a text/led ticker like sprite-sequence for use with a progress spinner.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the text to display
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         the width of the ticker, in characters
+         (<em>default</em> 40)
+        </li>
+        <li><span class="parameter">text_done</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the text to display when the spinner is done
+         (<em>default</em> "")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        a table of sprites to use with a spinner
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "sprites"></a>
+    <strong>sprites</strong>
+    </dt>
+    <dd>
+
+<p>table with predefined sprites for progress spinners.
+ The sprites are tables of strings, where each string is a frame in the spinner animation.
+ The frame at index 0 is optional and is the "done" message, the rest are the animation frames.</p>
+
+<p> Available pre-defined spinners are:</p>
+
+<ul>
+    <li><code>bar_vertical</code> - a vertical bar that grows from the bottom to the top</li>
+    <li><code>bar_horizontal</code> - a horizontal bar that grows from left to right</li>
+    <li><code>square_rotate</code> - a square that rotates clockwise</li>
+    <li><code>moon</code> - a moon that waxes and wanes</li>
+    <li><code>dot_expanding</code> - a dot that expands and contracts</li>
+    <li><code>dot_vertical</code> - a dot that moves up and down</li>
+    <li><code>dot1_snake</code> - a dot that moves in a snake-like pattern</li>
+    <li><code>dot2_snake</code> - 2 dots that move in a snake-like pattern</li>
+    <li><code>dot3_snake</code> - 3 dots that move in a snake-like pattern</li>
+    <li><code>dot4_snake</code> - 4 dots that move in a snake-like pattern</li>
+    <li><code>block_pulsing</code> - a block that pulses in transparency</li>
+    <li><code>bar_rotating</code> - a bar that rotates clockwise</li>
+    <li><a href="../modules/terminal.progress.html#spinner">spinner</a> - a spinner that rotates clockwise</li>
+    <li><code>dot_horizontal</code> - 3 dots growing from left to right</li>
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

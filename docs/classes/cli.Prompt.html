@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><strong>cli.Prompt</strong></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>cli.Prompt</code></h1>
+<p>Prompt input for CLI tools.</p>
+<p> This module provides a simple way to read line input from the terminal. The user can
+ confirm their choices by pressing &lt;Enter&gt; or cancel their choices by pressing &lt;Esc&gt;
+ (when cancellable is enabled).</p>
+
+<p> Features: Prompt, UTF8 support, async input, (to be added: secrets, scrolling and wrapping)</p>
+
+<p> NOTE: you MUST call <a href="../modules/terminal.html#initialize">terminal.initialize</a> before calling this widget's <code>:run()</code> method.</p>
+
+<p> <em>Usage:</em></p>
+
+
+<pre>
+<span class="keyword">local</span> prompt = <span class="function-name">Prompt</span> {
+    prompt = <span class="string">"Enter something: "</span>,
+    value = <span class="string">"Hello, 你-好 World 🚀!"</span>,
+    max_length = <span class="number">62</span>,
+    <span class="comment">-- overflow = "wrap" -- or "scroll"   -- TODO: implement
+</span>    cancellable = <span class="keyword">true</span>,
+    position = <span class="number">2</span>,
+}
+<span class="keyword">local</span> result, err = prompt:<span class="function-name">run</span>()  <span class="comment">--&gt; nil, "cancelled": if cancelled</span>
+</pre>
+
+<p> Alternative short version:</p>
+
+
+<pre>
+<span class="keyword">local</span> result, err = <span class="function-name">Prompt</span>{ prompt = <span class="string">"What's your name: "</span> }()
+</pre>
+
+<p> Note: <code>ctrl-c</code> is handled as a cancellation, just like escape (if the terminal was set up to handle ctrl-c).</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cli.Prompt">cli.Prompt (opts)</a></td>
+	<td class="summary">Create a new Prompt instance.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cli.prompt:run">cli.prompt:run ()</a></td>
+	<td class="summary">Starts the prompt input loop.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    Methods
+    <dl class="function">
+    <dt>
+    <a name = "cli.Prompt"></a>
+    <strong>cli.Prompt (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Prompt instance.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options for the prompt.
+        <ul>
+        <li><span class="parameter">prompt</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <a class="type" href="../classes/EditLine.html#">EditLine</a></span>
+         The prompt text to display.
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <a class="type" href="../classes/EditLine.html#">EditLine</a></span>
+         The initial value of the prompt (truncated if too long).
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">position</span>
+            <span class="types"><span class="type">number</span></span>
+         The initial cursor position (in char) of the input (default at the end).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">max_length</span>
+            <span class="types"><span class="type">number</span></span>
+         The maximum length of the input.
+         (<em>default</em> 80)
+        </li>
+        <li><span class="parameter">word_delimiters</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Word delimiters for word operations.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">text_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes for the prompt (input value only).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">wordwrap</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to wordwrap the input value.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">cancellable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         When true, pressing &lt;Esc&gt; cancels
+ the input and <code>run()</code> returns nil, "cancelled".
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/cli.Prompt.html">Prompt</a></span>
+        A new Prompt instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cli.prompt:run"></a>
+    <strong>cli.prompt:run ()</strong>
+    </dt>
+    <dd>
+    Starts the prompt input loop.
+ Calling on the instance is a short-cut to calling this method.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        The final input value entered by the user, or nil if the input was cancelled.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The error string if cancelled; "cancelled".</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
