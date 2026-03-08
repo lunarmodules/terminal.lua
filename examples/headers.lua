@@ -72,9 +72,9 @@ function TerminalUI:readKey()
 end
 
 function TerminalUI:withStyle(style, callback)
-  t.text.stack.push(style)
+  t.text.push(style)
   callback()
-  t.text.stack.pop()
+  t.text.pop()
 end
 
 function TerminalUI:drawBar(row, style, contentFn)

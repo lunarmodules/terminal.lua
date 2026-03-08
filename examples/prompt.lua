@@ -20,7 +20,7 @@ local pr = Prompt {
 
 
 local main = t.initwrap(function()
-  t.text.stack.push { brightness = "low" }
+  t.text.push { brightness = "low" }
   local result, err = pr()
   if result then
     print("Result (string): '" .. result .. "'")

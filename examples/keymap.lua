@@ -8,7 +8,7 @@ local write = t.output.write
 
 
 local function yellow(str)
-  return t.text.stack.push_seq({fg="yellow"}) .. str .. t.text.stack.pop_seq()
+  return t.text.push_seq({fg="yellow"}) .. str .. t.text.pop_seq()
 end
 
 

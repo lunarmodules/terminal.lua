@@ -20,9 +20,9 @@ local function draw_content(self, text, color)
   local text_col = col + math.floor((width - #text) / 2)
 
   terminal.cursor.position.set(text_row, text_col)
-  terminal.output.write(terminal.text.stack.push_seq({ fg = color }))
+  terminal.output.write(terminal.text.push_seq({ fg = color }))
   terminal.output.write(text)
-  terminal.output.write(terminal.text.stack.pop_seq())
+  terminal.output.write(terminal.text.pop_seq())
 end
 
 

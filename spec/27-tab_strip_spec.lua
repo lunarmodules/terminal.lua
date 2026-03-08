@@ -388,9 +388,9 @@ describe("terminal.ui.panel.tab_strip", function()
       terminal.output.write = function(...)
         table.insert(write_calls, {...})
       end
-      local text_stack = require("terminal.text.stack")
-      local original_push = text_stack.push
-      text_stack.push = function(attr)
+      local text_mod = terminal.text
+      local original_push = text_mod.push
+      text_mod.push = function(attr)
         return original_push(attr)
       end
       local tab_strip = TabStrip {
@@ -404,7 +404,7 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       tab_strip:render()
       -- Restore original
-      text_stack.push = original_push
+      text_mod.push = original_push
       -- Should have applied attributes
       assert.is_true(#write_calls > 0)
     end)
@@ -999,14 +999,14 @@ describe("terminal.ui.panel.tab_strip", function()
     it("manages attribute stack correctly", function()
       local push_seq_count = 0
       local pop_seq_count = 0
-      local text_stack = require("terminal.text.stack")
-      local original_push_seq = text_stack.push_seq
-      local original_pop_seq = text_stack.pop_seq
-      text_stack.push_seq = function(...)
+      local text_mod = terminal.text
+      local original_push_seq = text_mod.push_seq
+      local original_pop_seq = text_mod.pop_seq
+      text_mod.push_seq = function(...)
         push_seq_count = push_seq_count + 1
         return original_push_seq(...)
       end
-      text_stack.pop_seq = function()
+      text_mod.pop_seq = function()
         pop_seq_count = pop_seq_count + 1
         return original_pop_seq()
       end
@@ -1021,8 +1021,8 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       tab_strip:render()
       -- Restore originals
-      text_stack.push_seq = original_push_seq
-      text_stack.pop_seq = original_pop_seq
+      text_mod.push_seq = original_push_seq
+      text_mod.pop_seq = original_pop_seq
       -- Should have pushed and popped attributes
       assert.is_true(push_seq_count > 0)
       assert.is_true(pop_seq_count > 0)

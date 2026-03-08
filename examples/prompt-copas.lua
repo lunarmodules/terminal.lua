@@ -41,7 +41,7 @@ local clock = copas.timer.new{
 
 
 copas.addthread(function()
-  t.text.stack.push { brightness = "low" }
+  t.text.push { brightness = "low" }
   print("Time is ticking in the top-right corner!")
   local result, err = pr()
   if result then

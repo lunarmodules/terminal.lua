@@ -8,6 +8,10 @@ local terminal = require("terminal")
 local output = require("terminal.output")
 local utils = require("terminal.utils")
 
+local _scrollstack = {
+  { 1, -1 } -- first to last row
+}
+
 
 
 --- Function to return the default scroll reset sequence
@@ -126,9 +130,79 @@ end
 
 
 
--- Load stack module **after registering everything** since it will call into
--- this module.
-M.stack = require("terminal.scroll.stack")
+--- Retrieves the current scroll region sequence from the top of the stack.
+-- @treturn string The ANSI sequence representing the current scroll region.
+-- @within Stack
+function M.apply_seq()
+  local entry = _scrollstack[#_scrollstack]
+  return M.set_seq(entry[1], entry[2])
+end
+
+
+
+--- Applies the current scroll region by writing it to the terminal.
+-- @treturn true Always returns true after applying.
+-- @within Stack
+function M.apply()
+  output.write(M.apply_seq())
+  return true
+end
+
+
+
+--- Pushes a new scroll region onto the stack without applying it.
+-- @tparam number top The top line number of the scroll region.
+-- @tparam number bottom The bottom line number of the scroll region.
+-- @treturn string The ANSI sequence representing the pushed scroll region.
+-- @within Stack
+function M.push_seq(top, bottom)
+  _scrollstack[#_scrollstack + 1] = { top, bottom }
+  return M.apply_seq()
+end
+
+
+
+--- Pushes a new scroll region onto the stack and applies it by writing to the terminal.
+-- @tparam number top The top line number of the scroll region.
+-- @tparam number bottom The bottom line number of the scroll region.
+-- @treturn true Always returns true after applying.
+-- @within Stack
+function M.push(top, bottom)
+  output.write(M.push_seq(top, bottom))
+  return true
+end
+
+
+
+--- Pops the specified number of scroll regions from the stack without applying it.
+-- @tparam[opt=1] number n The number of scroll regions to pop.
+-- @treturn string The ANSI sequence representing the new top of the stack.
+-- @within Stack
+function M.pop_seq(n)
+  local new_top = math.max(#_scrollstack - (n or 1), 1)
+  for i = new_top + 1, #_scrollstack do
+    _scrollstack[i] = nil
+  end
+  return M.apply_seq()
+end
+
+
+
+--- Pops the specified number of scroll regions from the stack and applies the new top by writing to the terminal.
+-- @tparam[opt=1] number n The number of scroll regions to pop.
+-- @treturn true Always returns true after applying.
+-- @within Stack
+function M.pop(n)
+  output.write(M.pop_seq(n))
+  return true
+end
+
+
+
+-- Only if we're testing export these internals (under a different name)
+if _G._TEST then
+  M.__scrollstack = _scrollstack
+end
 
 
 

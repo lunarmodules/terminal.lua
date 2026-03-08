@@ -1427,11 +1427,12 @@ describe("terminal.ui.panel", function()
       }
 
       local text_module = require("terminal.text")
-      old_text = text_module.stack
-      text_module.stack = {
-        push = function() end,
-        pop = function() end,
+      old_text = {
+        push = text_module.push,
+        pop = text_module.pop,
       }
+      text_module.push = function() end
+      text_module.pop = function() end
 
       local draw_module = require("terminal.draw")
       old_draw = draw_module.box
@@ -1445,7 +1446,8 @@ describe("terminal.ui.panel", function()
       local terminal = require("terminal")
       terminal.cursor = old_cursor
       local text_module = require("terminal.text")
-      text_module.stack = old_text
+      text_module.push = old_text.push
+      text_module.pop = old_text.pop
       local draw_module = require("terminal.draw")
       draw_module.box = old_draw
       terminal.size = old_terminal_size

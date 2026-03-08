@@ -25,7 +25,6 @@ local M = {}
 package.loaded["terminal.text"] = M -- Register the module early to avoid circular dependencies
 
 M.color = require("terminal.text.color")
-M.stack = require("terminal.text.stack")
 M.width = require("terminal.text.width")
 
 local output = require("terminal.output")
@@ -40,6 +39,25 @@ local blink_off = "\27[25m"
 local reverse_on = "\27[7m"
 local reverse_off = "\27[27m"
 local attribute_reset = "\27[0m"
+
+local fg_color_reset = "\27[39m"
+local bg_color_reset = "\27[49m"
+
+
+local default_colors = {
+  fg = fg_color_reset, -- reset fg
+  bg = bg_color_reset, -- reset bg
+  brightness = 2, -- normal
+  underline = false,
+  blink = false,
+  reverse = false,
+  ansi = fg_color_reset .. bg_color_reset .. attribute_reset,
+}
+
+
+local _colorstack = {
+  default_colors,
+}
 
 
 
@@ -178,7 +196,7 @@ local _brightness_sequence_after_reset = {
 
 
 function M._newattr(attr)
-  local last = M.stack._colorstack[#M.stack._colorstack]
+  local last = _colorstack[#_colorstack]
   local fg_color = attr.fg or attr.fg_r
   local bg_color = attr.bg or attr.bg_r
   local new = {
@@ -247,6 +265,79 @@ end
 -- })
 function M.attr(attr)
   output.write(M.attr_seq(attr))
+  return true
+end
+
+
+
+--- Pushes the given attributes/colors onto the stack, and returns an ansi sequence to set the new
+-- attributes without writing it to the terminal.
+-- Every element omitted in the `attr` table will be taken from the current top of the stack.
+-- @tparam table attr the attributes to set, see `text.attrs` for details.
+-- @treturn string ansi sequence to write to the terminal
+-- @within Stack
+function M.push_seq(attr)
+  local new = M._newattr(attr)
+  _colorstack[#_colorstack + 1] = new
+  return new.ansi
+end
+
+
+
+--- Pushes the given attributes/colors onto the stack, and writes an ansi sequence to set the new
+-- attributes to the terminal.
+-- Every element omitted in the `attr` table will be taken from the current top of the stack.
+-- @tparam table attr the attributes to set, see `text.attrs` for details.
+-- @return true
+-- @within Stack
+function M.push(attr)
+  output.write(M.push_seq(attr))
+  return true
+end
+
+
+
+--- Pops n attributes/colors off the stack (and returns the last one), without writing it to the terminal.
+-- @tparam[opt=1] number n number of attributes to pop
+-- @treturn string ansi sequence to write to the terminal
+-- @within Stack
+function M.pop_seq(n)
+  n = n or 1
+  local newtop = math.max(#_colorstack - n, 1)
+  for i = newtop + 1, #_colorstack do
+    _colorstack[i] = nil
+  end
+  return _colorstack[#_colorstack].ansi
+end
+
+
+
+--- Pops n attributes/colors off the stack, and writes the last one to the terminal.
+-- @tparam[opt=1] number n number of attributes to pop
+-- @return true
+-- @within Stack
+function M.pop(n)
+  output.write(M.pop_seq(n))
+  return true
+end
+
+
+
+--- Re-applies the current attributes/colors (at the top of the stack),
+-- returns the sequence without writing to the terminal.
+-- @treturn string ansi sequence to write to the terminal
+-- @within Stack
+function M.apply_seq()
+  return _colorstack[#_colorstack].ansi
+end
+
+
+
+--- Re-applies the current attributes/colors (at the top of the stack), and writes it to the terminal.
+-- @return true
+-- @within Stack
+function M.apply()
+  output.write(_colorstack[#_colorstack].ansi)
   return true
 end
 
