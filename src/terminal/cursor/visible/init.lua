@@ -7,6 +7,10 @@ package.loaded["terminal.cursor.visible"] = M -- Register the module early to av
 
 local output = require("terminal.output")
 
+local _visible_stack = {
+  true
+}
+
 
 --=============================================================================
 -- cursor visibility
@@ -34,12 +38,6 @@ function M.set(visible)
   output.write(M.set_seq(visible))
   return true
 end
-
-
-
-local _visible_stack = {
-  true
-}
 
 
 

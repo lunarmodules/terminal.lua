@@ -8,6 +8,10 @@ local terminal = require("terminal")
 local output = require("terminal.output")
 local utils = require("terminal.utils")
 
+local _scrollstack = {
+  { 1, -1 } -- first to last row
+}
+
 
 
 --- Function to return the default scroll reset sequence
@@ -123,16 +127,6 @@ function M.vertical(n)
   output.write(M.vertical_seq(n))
   return true
 end
-
-
-
--- Load stack module **after registering everything** since it will call into
--- this module.
-
-
-local _scrollstack = {
-  { 1, -1 } -- first to last row
-}
 
 
 

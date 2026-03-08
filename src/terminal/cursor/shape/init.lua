@@ -8,6 +8,11 @@ package.loaded["terminal.cursor.shape"] = M -- Register the module early to avoi
 local output = require("terminal.output")
 local utils = require("terminal.utils")
 
+local shape_reset = "\27[0 q"
+local _shapestack = {
+  shape_reset
+}
+
 
 
 
@@ -47,13 +52,6 @@ function M.set(shape)
   output.write(M.set_seq(shape))
   return true
 end
-
-
-
-local shape_reset = "\27[0 q"
-local _shapestack = {
-  shape_reset
-}
 
 
 

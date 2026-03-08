@@ -32,9 +32,16 @@ local utils = require("terminal.utils")
 local color = M.color
 
 
+local underline_on = "\27[4m"
+local underline_off = "\27[24m"
+local blink_on = "\27[5m"
+local blink_off = "\27[25m"
+local reverse_on = "\27[7m"
+local reverse_off = "\27[27m"
+local attribute_reset = "\27[0m"
+
 local fg_color_reset = "\27[39m"
 local bg_color_reset = "\27[49m"
-local attribute_reset = "\27[0m"
 
 
 local default_colors = {
@@ -51,16 +58,6 @@ local default_colors = {
 local _colorstack = {
   default_colors,
 }
-
-
-
-local underline_on = "\27[4m"
-local underline_off = "\27[24m"
-local blink_on = "\27[5m"
-local blink_off = "\27[25m"
-local reverse_on = "\27[7m"
-local reverse_off = "\27[27m"
-local attribute_reset = "\27[0m"
 
 
 
