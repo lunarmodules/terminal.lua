@@ -175,7 +175,6 @@ end
 
 
 -- Private method to draw the tab strip content.
--- @return nothing
 function TabStrip:_draw_tabs()
   terminal.output.write(
     terminal.cursor.position.backup_seq(),
@@ -187,7 +186,6 @@ end
 
 
 -- Private method to invalidate cache.
--- @return nothing
 function TabStrip:_invalidate_cache()
   self._cache_valid = false
 end
@@ -203,7 +201,6 @@ function TabStrip:_index_by_id(id)
 end
 
 -- Private method to build cache of tab widths and positions.
--- @return nothing
 function TabStrip:_build_cache()
   if self._cache_valid then
     return
@@ -234,7 +231,6 @@ function TabStrip:_build_cache()
 end
 
 -- Private method to adjust viewport to show selected tab.
--- @return nothing
 function TabStrip:_adjust_viewport_for_selected(ellipsis_width)
   if #self.items == 0 or not self.selected then
     return
@@ -421,13 +417,6 @@ end
 --- Get the currently selected tab id.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
--- @usage
---   local selected_id, err = tab_strip:get_selected()
---   if err then
---     print("No tabs available")
---   else
---     print("Selected tab:", selected_id)
---   end
 function TabStrip:get_selected()
   if #self.items == 0 then
     return nil, "no tabs available"
@@ -440,11 +429,6 @@ end
 -- @tparam any tab_id The id of the tab to select.
 -- @treturn boolean|nil True on success, or nil if id not found.
 -- @treturn string|nil Error message if id not found.
--- @usage
---   local success, err = tab_strip:select("tab2")
---   if not success then
---     print("Error:", err)
---   end
 function TabStrip:select(tab_id)
   if #self.items == 0 then
     return nil, "no tabs available"
@@ -469,11 +453,6 @@ end
 --- Select the next tab.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
--- @usage
---   local selected_id, err = tab_strip:select_next()
---   if err then
---     print("Error:", err)
---   end
 function TabStrip:select_next()
   if #self.items == 0 then
     return self:get_selected()
@@ -503,11 +482,6 @@ end
 --- Select the previous tab.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
--- @usage
---   local selected_id, err = tab_strip:select_prev()
---   if err then
---     print("Error:", err)
---   end
 function TabStrip:select_prev()
   if #self.items == 0 then
     return self:get_selected()
@@ -536,8 +510,6 @@ end
 
 --- Get a copy of the items table.
 -- @treturn table A copy of the items array.
--- @usage
---   local items = tab_strip:get_items()
 function TabStrip:get_items()
   local copy = {}
   for i, item in ipairs(self.items) do
@@ -613,8 +585,6 @@ end
 -- @tparam any id The id of the item to remove.
 -- @treturn boolean|nil True on success, or nil if id not found.
 -- @treturn string|nil Error message if id not found.
--- @usage
---   local success, err = tab_strip:remove_item("tab2")
 function TabStrip:remove_item(id)
   local remove_index = self:_index_by_id(id)
   if not remove_index then
