@@ -17,6 +17,20 @@ local Sequence = require("terminal.sequence")
 local width = require("terminal.text.width")
 local utf8sub_col = utils.utf8sub_col
 
+-- Normalize and validate tab items:
+-- ensures each item has a label and assigns a default id if missing.
+local function normalize_items(items)
+  local out = {}
+  if items then
+    for i, item in ipairs(items) do
+      assert(item.label, "Tab item must have 'label' field")
+      out[#out + 1] = { id = item.id or i, label = item.label }
+    end
+  end
+  return out
+end
+
+
 local TabStrip = utils.class(Panel)
 
 
@@ -79,21 +93,7 @@ function TabStrip:init(opts)
   Panel.init(self, opts)
   self.clear_content = false
 
-  -- Process and validate items
-  local processed_items = {}
-  if items then
-    for i, item in ipairs(items) do
-      -- Validate item has required label field
-      assert(item.label, "Tab item must have 'label' field")
-
-      -- Create processed item with default id if missing
-      local processed_item = {
-        id = item.id or i,
-        label = item.label
-      }
-      table.insert(processed_items, processed_item)
-    end
-  end
+  local normalized = normalize_items(items)
 
   -- Validate option types
   if prefix ~= nil and type(prefix) ~= "string" then
@@ -129,7 +129,7 @@ function TabStrip:init(opts)
   end
 
   -- Set TabStrip-specific properties after parent constructor
-  self.items = processed_items
+  self.items = normalized
   self.prefix = prefix
   self.postfix = postfix
   self.padding = padding
@@ -145,12 +145,12 @@ function TabStrip:init(opts)
   self._total_content_width = 0
 
   -- Handle initial selection
-  if #processed_items == 0 then
+  if #normalized == 0 then
     self.selected = nil
   elseif selected then
     -- Validate selected id exists in items
     local found = false
-    for _, item in ipairs(processed_items) do
+    for _, item in ipairs(normalized) do
       if item.id == selected then
         found = true
         break
@@ -160,11 +160,11 @@ function TabStrip:init(opts)
       self.selected = selected
     else
       -- Default to first tab if selected id not found
-      self.selected = processed_items[1].id
+      self.selected = normalized[1].id
     end
   else
     -- Default to first tab (index 1)
-    self.selected = processed_items[1].id
+    self.selected = normalized[1].id
   end
 
   -- Call select_cb during initialization if provided
@@ -590,38 +590,24 @@ end
 --     { id = "tab2", label = "Tab 2" }
 --   })
 function TabStrip:set_items(items)
-  -- Process and validate items
-  local processed_items = {}
-  if items then
-    for i, item in ipairs(items) do
-      -- Validate item has required label field
-      assert(item.label, "Tab item must have 'label' field")
+  local normalized = normalize_items(items)
 
-      -- Create processed item with default id if missing
-      local processed_item = {
-        id = item.id or i,
-        label = item.label
-      }
-      table.insert(processed_items, processed_item)
-    end
-  end
-
-  self.items = processed_items
+  self.items = normalized
   self:_invalidate_cache()
 
   -- Adjust selection: validate it still exists, or default to first
-  if #processed_items == 0 then
+  if #normalized == 0 then
     self.selected = nil
   else
     local found = false
-    for _, item in ipairs(processed_items) do
+    for _, item in ipairs(normalized) do
       if item.id == self.selected then
         found = true
         break
       end
     end
     if not found then
-      self.selected = processed_items[1].id
+      self.selected = normalized[1].id
     end
   end
 end
