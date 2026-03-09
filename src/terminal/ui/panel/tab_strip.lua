@@ -235,7 +235,7 @@ end
 
 -- Private method to adjust viewport to show selected tab.
 -- @return nothing
-function TabStrip:_adjust_viewport_for_selected()
+function TabStrip:_adjust_viewport_for_selected(ellipsis_width)
   if #self.items == 0 or not self.selected then
     return
   end
@@ -246,10 +246,6 @@ function TabStrip:_adjust_viewport_for_selected()
   if not selected_index then
     return
   end
-
-  -- Get default ellipsis width
-  local ellipsis = "…"
-  local ellipsis_width = width.utf8swidth(ellipsis)
 
   -- Calculate effective width (accounting for overflow indicators)
   local effective_width = self.inner_width
@@ -294,6 +290,8 @@ end
 -- @treturn Sequence The complete tab line sequence.
 function TabStrip:_build_tab_line(available_width)
   local s = Sequence()
+  local ellipsis = "…"
+  local ellipsis_width = width.utf8swidth(ellipsis)
 
   -- Apply global attr if specified
   if self.attr then
@@ -313,11 +311,7 @@ function TabStrip:_build_tab_line(available_width)
   self:_build_cache()
 
   -- Adjust viewport to show selected tab
-  self:_adjust_viewport_for_selected()
-
-  -- Get default ellipsis
-  local ellipsis = "…"
-  local ellipsis_width = width.utf8swidth(ellipsis)
+  self:_adjust_viewport_for_selected(ellipsis_width)
 
   -- Calculate effective width and overflow indicators
   local has_left_overflow = false
