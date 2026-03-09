@@ -192,6 +192,16 @@ function TabStrip:_invalidate_cache()
   self._cache_valid = false
 end
 
+-- Private method to find index of item with given id, or nil.
+function TabStrip:_index_by_id(id)
+  for i, item in ipairs(self.items) do
+    if item.id == id then
+      return i
+    end
+  end
+  return nil
+end
+
 -- Private method to build cache of tab widths and positions.
 -- @return nothing
 function TabStrip:_build_cache()
@@ -232,15 +242,7 @@ function TabStrip:_adjust_viewport_for_selected()
 
   self:_build_cache()
 
-  -- Find selected tab index
-  local selected_index = nil
-  for i, item in ipairs(self.items) do
-    if item.id == self.selected then
-      selected_index = i
-      break
-    end
-  end
-
+  local selected_index = self:_index_by_id(self.selected)
   if not selected_index then
     return
   end
@@ -454,16 +456,7 @@ function TabStrip:select(tab_id)
     return nil, "no tabs available"
   end
 
-  -- Find the tab with the given id
-  local found = false
-  for _, item in ipairs(self.items) do
-    if item.id == tab_id then
-      found = true
-      break
-    end
-  end
-
-  if not found then
+  if not self:_index_by_id(tab_id) then
     return nil, "tab id not found"
   end
 
@@ -492,16 +485,7 @@ function TabStrip:select_next()
     return self:get_selected()
   end
 
-  -- Find current index
-  local current_index = nil
-  for i, item in ipairs(self.items) do
-    if item.id == self.selected then
-      current_index = i
-      break
-    end
-  end
-
-  -- If current_index is nil, something went wrong, default to first
+  local current_index = self:_index_by_id(self.selected)
   if not current_index then
     current_index = 1
   end
@@ -535,16 +519,7 @@ function TabStrip:select_prev()
     return self:get_selected()
   end
 
-  -- Find current index
-  local current_index = nil
-  for i, item in ipairs(self.items) do
-    if item.id == self.selected then
-      current_index = i
-      break
-    end
-  end
-
-  -- If current_index is nil, something went wrong, default to first
+  local current_index = self:_index_by_id(self.selected)
   if not current_index then
     current_index = 1
   end
@@ -599,14 +574,7 @@ function TabStrip:set_items(items)
   if #normalized == 0 then
     self.selected = nil
   else
-    local found = false
-    for _, item in ipairs(normalized) do
-      if item.id == self.selected then
-        found = true
-        break
-      end
-    end
-    if not found then
+    if not self:_index_by_id(self.selected) then
       self.selected = normalized[1].id
     end
   end
@@ -631,15 +599,7 @@ function TabStrip:add_item(item, before_id)
   }
 
   if before_id then
-    -- Find the index of the item with before_id
-    local insert_index = nil
-    for i, existing_item in ipairs(self.items) do
-      if existing_item.id == before_id then
-        insert_index = i
-        break
-      end
-    end
-
+    local insert_index = self:_index_by_id(before_id)
     if insert_index then
       table.insert(self.items, insert_index, processed_item)
     else
@@ -662,23 +622,13 @@ end
 -- @usage
 --   local success, err = tab_strip:remove_item("tab2")
 function TabStrip:remove_item(id)
-  -- Find the item to remove
-  local remove_index = nil
-  local was_selected = false
-
-  for i, item in ipairs(self.items) do
-    if item.id == id then
-      remove_index = i
-      was_selected = (item.id == self.selected)
-      break
-    end
-  end
-
+  local remove_index = self:_index_by_id(id)
   if not remove_index then
     return nil, "tab id not found"
   end
 
-  -- Remove the item
+  local was_selected = (self.selected == id)
+
   table.remove(self.items, remove_index)
   self:_invalidate_cache()
 
