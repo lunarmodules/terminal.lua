@@ -17,17 +17,34 @@ local Sequence = require("terminal.sequence")
 local width = require("terminal.text.width")
 local utf8sub_col = utils.utf8sub_col
 
--- Normalize and validate tab items:
--- ensures each item has a label and assigns a default id if missing.
 local function normalize_items(items)
-  local out = {}
-  if items then
-    for i, item in ipairs(items) do
-      assert(item.label, "Tab item must have 'label' field")
-      out[#out + 1] = { id = item.id or i, label = item.label }
+  if not items then
+    return {}
+  end
+
+  for i, item in ipairs(items) do
+    assert(item.label, "Tab item must have 'label' field")
+    item.id = item.id or i
+  end
+
+  return items
+end
+
+
+local function resolve_initial_selection(items, selected)
+  if #items == 0 then
+    return nil
+  end
+
+  if selected then
+    for _, item in ipairs(items) do
+      if item.id == selected then
+        return selected
+      end
     end
   end
-  return out
+
+  return items[1].id
 end
 
 
@@ -93,7 +110,7 @@ function TabStrip:init(opts)
   Panel.init(self, opts)
   self.clear_content = false
 
-  local normalized = normalize_items(items)
+  local processed_items = normalize_items(items)
 
   -- Validate option types
   if prefix ~= nil and type(prefix) ~= "string" then
@@ -129,7 +146,7 @@ function TabStrip:init(opts)
   end
 
   -- Set TabStrip-specific properties after parent constructor
-  self.items = normalized
+  self.items = processed_items
   self.prefix = prefix
   self.postfix = postfix
   self.padding = padding
@@ -145,27 +162,7 @@ function TabStrip:init(opts)
   self._total_content_width = 0
 
   -- Handle initial selection
-  if #normalized == 0 then
-    self.selected = nil
-  elseif selected then
-    -- Validate selected id exists in items
-    local found = false
-    for _, item in ipairs(normalized) do
-      if item.id == selected then
-        found = true
-        break
-      end
-    end
-    if found then
-      self.selected = selected
-    else
-      -- Default to first tab if selected id not found
-      self.selected = normalized[1].id
-    end
-  else
-    -- Default to first tab (index 1)
-    self.selected = normalized[1].id
-  end
+  self.selected = resolve_initial_selection(processed_items, selected)
 
   -- Call select_cb during initialization if provided
   if self.select_cb then
@@ -175,6 +172,7 @@ end
 
 
 -- Private method to draw the tab strip content.
+-- @return nothing
 function TabStrip:_draw_tabs()
   terminal.output.write(
     terminal.cursor.position.backup_seq(),
@@ -186,6 +184,7 @@ end
 
 
 -- Private method to invalidate cache.
+-- @return nothing
 function TabStrip:_invalidate_cache()
   self._cache_valid = false
 end
@@ -201,6 +200,7 @@ function TabStrip:_index_by_id(id)
 end
 
 -- Private method to build cache of tab widths and positions.
+-- @return nothing
 function TabStrip:_build_cache()
   if self._cache_valid then
     return
@@ -287,7 +287,7 @@ end
 function TabStrip:_build_tab_line(available_width)
   local s = Sequence()
   local ellipsis = "…"
-  local ellipsis_width = width.utf8swidth(ellipsis)
+  local ellipsis_width = width.utf8cwidth(ellipsis)
 
   -- Apply global attr if specified
   if self.attr then
@@ -417,6 +417,13 @@ end
 --- Get the currently selected tab id.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
+-- @usage
+--   local selected_id, err = tab_strip:get_selected()
+--   if err then
+--     print("No tabs available")
+--   else
+--     print("Selected tab:", selected_id)
+--   end
 function TabStrip:get_selected()
   if #self.items == 0 then
     return nil, "no tabs available"
@@ -429,6 +436,11 @@ end
 -- @tparam any tab_id The id of the tab to select.
 -- @treturn boolean|nil True on success, or nil if id not found.
 -- @treturn string|nil Error message if id not found.
+-- @usage
+--   local success, err = tab_strip:select("tab2")
+--   if not success then
+--     print("Error:", err)
+--   end
 function TabStrip:select(tab_id)
   if #self.items == 0 then
     return nil, "no tabs available"
@@ -453,6 +465,11 @@ end
 --- Select the next tab.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
+-- @usage
+--   local selected_id, err = tab_strip:select_next()
+--   if err then
+--     print("Error:", err)
+--   end
 function TabStrip:select_next()
   if #self.items == 0 then
     return self:get_selected()
@@ -482,6 +499,11 @@ end
 --- Select the previous tab.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
+-- @usage
+--   local selected_id, err = tab_strip:select_prev()
+--   if err then
+--     print("Error:", err)
+--   end
 function TabStrip:select_prev()
   if #self.items == 0 then
     return self:get_selected()
@@ -510,6 +532,8 @@ end
 
 --- Get a copy of the items table.
 -- @treturn table A copy of the items array.
+-- @usage
+--   local items = tab_strip:get_items()
 function TabStrip:get_items()
   local copy = {}
   for i, item in ipairs(self.items) do
@@ -531,18 +555,13 @@ end
 --     { id = "tab2", label = "Tab 2" }
 --   })
 function TabStrip:set_items(items)
-  local normalized = normalize_items(items)
-
-  self.items = normalized
+  local old_selected = self.selected
+  self.items = normalize_items(items)
   self:_invalidate_cache()
+  self.selected = resolve_initial_selection(self.items, old_selected)
 
-  -- Adjust selection: validate it still exists, or default to first
-  if #normalized == 0 then
-    self.selected = nil
-  else
-    if not self:_index_by_id(self.selected) then
-      self.selected = normalized[1].id
-    end
+  if self.selected ~= old_selected and self.select_cb then
+    self.select_cb(self, self.selected)
   end
 end
 
@@ -585,6 +604,8 @@ end
 -- @tparam any id The id of the item to remove.
 -- @treturn boolean|nil True on success, or nil if id not found.
 -- @treturn string|nil Error message if id not found.
+-- @usage
+--   local success, err = tab_strip:remove_item("tab2")
 function TabStrip:remove_item(id)
   local remove_index = self:_index_by_id(id)
   if not remove_index then
