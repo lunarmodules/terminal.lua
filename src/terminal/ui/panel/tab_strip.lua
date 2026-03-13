@@ -194,9 +194,7 @@ function TabStrip:_index_by_id(id)
   return nil
 end
 
--- Private method to build cache of tab widths and positions.
--- @return nothing
-function TabStrip:_build_cache()
+local function build_cache(self)
   if self._cache_valid then
     return
   end
@@ -225,13 +223,12 @@ function TabStrip:_build_cache()
   self._cache_valid = true
 end
 
--- Private method to adjust viewport to show selected tab.
-function TabStrip:_adjust_viewport_for_selected(ellipsis_width)
+local function adjust_viewport_for_selected(self, ellipsis_width)
   if #self.items == 0 or not self.selected then
     return
   end
 
-  self:_build_cache()
+  build_cache(self)
 
   local selected_index = self:_index_by_id(self.selected)
   if not selected_index then
@@ -299,10 +296,10 @@ function TabStrip:_build_tab_line(available_width)
   end
 
   -- Build cache
-  self:_build_cache()
+  build_cache(self)
 
   -- Adjust viewport to show selected tab
-  self:_adjust_viewport_for_selected(ellipsis_width)
+  adjust_viewport_for_selected(self, ellipsis_width)
 
   -- Calculate effective width and overflow indicators
   local has_left_overflow = false
