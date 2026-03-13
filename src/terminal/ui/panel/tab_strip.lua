@@ -18,33 +18,28 @@ local width = require("terminal.text.width")
 local utf8sub_col = utils.utf8sub_col
 
 local function normalize_items(items)
-  if not items then
-    return {}
-  end
+  items = items or {}
+  local out = {}
 
   for i, item in ipairs(items) do
-    assert(item.label, "Tab item must have 'label' field")
-    item.id = item.id or i
+    out[i] = {
+      id = item.id or i,
+      label = assert(item.label, "Tab item must have 'label' field"),
+    }
   end
 
-  return items
+  return out
 end
 
 
 local function resolve_initial_selection(items, selected)
-  if #items == 0 then
-    return nil
-  end
-
-  if selected then
-    for _, item in ipairs(items) do
-      if item.id == selected then
-        return selected
-      end
+  for _, item in ipairs(items) do
+    if item.id == selected then
+      return selected
     end
   end
 
-  return items[1].id
+  return (items[1] or {}).id
 end
 
 
@@ -110,7 +105,7 @@ function TabStrip:init(opts)
   Panel.init(self, opts)
   self.clear_content = false
 
-  local processed_items = normalize_items(items)
+  local normalized_items = normalize_items(items)
 
   -- Validate option types
   if prefix ~= nil and type(prefix) ~= "string" then
@@ -146,7 +141,7 @@ function TabStrip:init(opts)
   end
 
   -- Set TabStrip-specific properties after parent constructor
-  self.items = processed_items
+  self.items = normalized_items
   self.prefix = prefix
   self.postfix = postfix
   self.padding = padding
@@ -162,7 +157,7 @@ function TabStrip:init(opts)
   self._total_content_width = 0
 
   -- Handle initial selection
-  self.selected = resolve_initial_selection(processed_items, selected)
+  self.selected = resolve_initial_selection(normalized_items, selected)
 
   -- Call select_cb during initialization if provided
   if self.select_cb then
