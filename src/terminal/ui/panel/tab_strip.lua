@@ -32,11 +32,11 @@ local TabStrip = utils.class(Panel)
 
 
 local default_config = {
-    prefix = "[",
-    postfix = "]",
-    clear_content = false,
-    ellipsis = "…",
-    padding = 1
+  prefix = "[",
+  postfix = "]",
+  clear_content = false,
+  ellipsis = "…",
+  padding = 1,
 }
 
 
@@ -49,22 +49,22 @@ local default_config = {
 -- Each item must have a label
 -- If id is missing, use index as id
 local function validate_items(items)
-    items = items or {}
+  items = items or {}
 
-    local processed_items = {}
+  local processed_items = {}
 
-    for i, item in ipairs(items) do
-        if not item.label then
-            error("Tab item must have 'label' field, at index(" .. tostring(i) .. ")")
-        end
-
-        processed_items[i] = {
-            id = item.id or i,
-            label = item.label
-        }
+  for i, item in ipairs(items) do
+    if not item.label then
+      error("Tab item must have 'label' field, at index(" .. tostring(i) .. ")")
     end
 
-    return processed_items
+    processed_items[i] = {
+      id = item.id or i,
+      label = item.label,
+    }
+  end
+
+  return processed_items
 end
 
 
@@ -421,7 +421,9 @@ function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
 
         -- Apply attributes
         if is_selected and self.selected_attr then
-          s[#s+1] = function() return text.push_seq(self.selected_attr) end
+          s[#s + 1] = function()
+            return text.push_seq(self.selected_attr)
+          end
         end
         s[#s+1] = visible_tab_text
         if is_selected and self.selected_attr then
@@ -434,17 +436,17 @@ function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
 
     -- Add padding if visible
     if i < #self.items then
-        local padding_start = tab_end
-        local padding_end = padding_start + self.padding
-        if padding_end > visible_start and padding_start < visible_end then
-            local padding_visible_start_col = math.max(0, visible_start - padding_start)
-            local padding_visible_end_col = math.min(self.padding, visible_end - padding_start)
-            if padding_visible_end_col > padding_visible_start_col then
-                local padding_width = padding_visible_end_col - padding_visible_start_col
-                s[#s + 1] = string.rep(" ", padding_width)
-                rendered_width = rendered_width + padding_width
-            end
+      local padding_start = tab_end
+      local padding_end = padding_start + self.padding
+      if padding_end > visible_start and padding_start < visible_end then
+        local padding_visible_start_col = math.max(0, visible_start - padding_start)
+        local padding_visible_end_col = math.min(self.padding, visible_end - padding_start)
+        if padding_visible_end_col > padding_visible_start_col then
+          local padding_width = padding_visible_end_col - padding_visible_start_col
+          s[#s + 1] = string.rep(" ", padding_width)
+          rendered_width = rendered_width + padding_width
         end
+      end
     end
 
     -- Stop if we've filled the available width
@@ -465,7 +467,9 @@ function TabStrip:_build_tab_line(available_width)
 
   -- Apply global attr if specified
   if self.attr then
-    s[#s+1] = function() return text.push_seq(self.attr) end
+    s[#s + 1] = function()
+      return text.push_seq(self.attr)
+    end
   end
 
   -- Handle empty items
@@ -484,7 +488,8 @@ function TabStrip:_build_tab_line(available_width)
   self:_adjust_viewport_for_selected()
 
   -- Calculate effective width and overflow indicators
-  local has_left_overflow, has_right_overflow, effective_width = self:_calculate_total_content_width_and_overflow(available_width)
+  local has_left_overflow, has_right_overflow, effective_width =
+    self:_calculate_total_content_width_and_overflow(available_width)
   local ellipsis_width = width.utf8swidth(default_config.ellipsis)
 
   -- Build output with overflow indicators
