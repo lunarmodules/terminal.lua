@@ -34,17 +34,10 @@ local TabStrip = utils.class(Panel)
 local default_config = {
     prefix = "[",
     postfix = "]",
-    padding = 1,
     clear_content = false,
     ellipsis = "…",
-    ellipsis_width = width.utf8swidth("…"),
+    padding = 1
 }
-
-
-
--- Get default ellipsis
-local ellipsis = default_config.ellipsis
-local ellipsis_width = default_config.ellipsis_width
 
 
 
@@ -203,10 +196,11 @@ function TabStrip:init(opts)
   -- Replace empty configurations with defaults
   prefix = prefix or default_config.prefix
   postfix = postfix or default_config.postfix
-  prefix = prefix or default_config.prefix
+  padding = padding or default_config.padding
 
   -- Derive selected_attr from attr if not provided
   if not selected_attr and attr then
+    selected_attr = {}
     for k, v in pairs(attr) do
       selected_attr[k] = v
     end
@@ -323,6 +317,7 @@ function TabStrip:_calculate_total_content_width_and_overflow(available_width)
   local has_left_overflow = false
   local has_right_overflow = false
   local effective_width = available_width
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
 
   if self._total_content_width > available_width then
     -- Need overflow indicators
@@ -378,6 +373,7 @@ function TabStrip:_adjust_viewport_for_selected()
 
   -- Calculate effective width (accounting for overflow indicators)
   local effective_width = self.inner_width
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
 
   if self._total_content_width > self.inner_width then
     -- Need overflow indicators
@@ -425,6 +421,7 @@ end
 -- if we need to start with an ellipsis).
 -- @return number The total width of the rendered content (excluding overflow indicators).
 function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
   local visible_start = self._viewport_offset
   local visible_end = visible_start + effective_width
   local rendered_width = has_left_overflow and ellipsis_width or 0
@@ -513,17 +510,18 @@ function TabStrip:_build_tab_line(available_width)
 
   -- Calculate effective width and overflow indicators
   local has_left_overflow, has_right_overflow, effective_width = self:_calculate_total_content_width_and_overflow(available_width)
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
 
   -- Build output with overflow indicators
   if has_left_overflow then
-    s[#s+1] = ellipsis
+    s[#s+1] = default_config.ellipsis
   end
 
   -- Render visible content with attributes
   local rendered_width = self:_render_visible_content(s, effective_width, has_left_overflow)
 
   if has_right_overflow then
-    s[#s+1] = ellipsis
+    s[#s+1] = default_config.ellipsis
     rendered_width = rendered_width + ellipsis_width
   end
 
