@@ -156,7 +156,7 @@ end
 --     selected_attr = { reverse = true }
 --   }
 function TabStrip:init(opts)
-  if not opts or type(opts) ~= "table" then
+  if type(opts) ~= "table" then
     error("missing argument: options table isn't given")
   end
 
