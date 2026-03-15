@@ -97,30 +97,16 @@ end
 
 
 
-function TabStrip:_handle_initial_selection(processed_items, selected)
-  local found = #filter(processed_items,
-    function(item)
-      return item.id == selected
-    end) > 0
-
-  for _, item in ipairs(processed_items) do
+function TabStrip:_handle_initial_selection(items, selected)
+  for _, item in ipairs(items) do
     if item.id == selected then
-      found = true
-      break
+      self.selected = selected
+      return
     end
   end
 
-  if #processed_items == 0 then
-    self.selected = nil
-
-  elseif selected and found then
-    -- Validate selected id exists in items
-    self.selected = selected
-
-  else
-    -- Default to first tab (index 1)
-    self.selected = processed_items[1].id
-  end
+  -- not found, pick first item, or nil if no items
+  self.selected = (items[1] or {}).id 
 end
 
 
