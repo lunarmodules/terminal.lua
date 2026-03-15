@@ -45,18 +45,19 @@ local default_config = {
 
 
 
+-- Validate and process_items
+-- Each item must have a label
+-- If id is missing, use index as id
 local function validate_items(items)
     items = items or {}
 
     local processed_items = {}
 
     for i, item in ipairs(items) do
-        -- Validate item has required label field
         if not item.label then
             error("Tab item must have 'label' field, at index(" .. tostring(i) .. ")")
         end
 
-        -- Create processed item with default id if missing
         processed_items[i] = {
             id = item.id or i,
             label = item.label
@@ -85,18 +86,6 @@ end
 
 
 
-local function filter(t, predicate)
-  local result = {}
-  for _, v in ipairs(t) do
-    if predicate(v) then
-      table.insert(result, v)
-    end
-  end
-  return result
-end
-
-
-
 function TabStrip:_handle_initial_selection(items, selected)
   for _, item in ipairs(items) do
     if item.id == selected then
@@ -106,7 +95,7 @@ function TabStrip:_handle_initial_selection(items, selected)
   end
 
   -- not found, pick first item, or nil if no items
-  self.selected = (items[1] or {}).id 
+  self.selected = (items[1] or {}).id
 end
 
 
