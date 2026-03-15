@@ -16,8 +16,88 @@ local text = require("terminal.text")
 local Sequence = require("terminal.sequence")
 local width = require("terminal.text.width")
 local utf8sub_col = utils.utf8sub_col
+local MIN_HEIGHT = 1
+local MAX_HEIGHT = 1
+
+
+
+local cursor = terminal.cursor
+local cursor_pos = cursor.position
+local output = terminal.output
+
+
 
 local TabStrip = utils.class(Panel)
+
+
+
+local default_config = {
+  prefix = "[",
+  postfix = "]",
+  clear_content = false,
+  ellipsis = "…",
+  padding = 1,
+}
+
+
+
+-- Local functions
+
+
+
+-- Validate and process_items
+-- Each item must have a label
+-- If id is missing, use index as id
+local function validate_items(items)
+  items = items or {}
+
+  local processed_items = {}
+
+  for i, item in ipairs(items) do
+    if not item.label then
+      error("Tab item must have 'label' field, at index(" .. tostring(i) .. ")")
+    end
+
+    processed_items[i] = {
+      id = item.id or i,
+      label = item.label,
+    }
+  end
+
+  return processed_items
+end
+
+
+
+local function _validate_option_types(opts)
+  if opts.prefix ~= nil and type(opts.prefix) ~= "string" then
+    error("prefix must be a string, got " .. type(opts.prefix))
+  end
+  if opts.postfix ~= nil and type(opts.postfix) ~= "string" then
+    error("postfix must be a string, got " .. type(opts.postfix))
+  end
+  if opts.padding ~= nil and type(opts.padding) ~= "number" then
+    error("padding must be a number, got " .. type(opts.padding))
+  end
+  if opts.select_cb ~= nil and type(opts.select_cb) ~= "function" then
+    error("select_cb must be a function, got " .. type(opts.select_cb))
+  end
+end
+
+
+
+function TabStrip:_handle_initial_selection(items, selected)
+  for _, item in ipairs(items) do
+    if item.id == selected then
+      self.selected = selected
+      return
+    end
+  end
+
+  -- not found, pick first item, or nil if no items
+  self.selected = (items[1] or {}).id
+end
+
 
 
 --- Create a new TabStrip instance.
@@ -44,11 +124,9 @@ local TabStrip = utils.class(Panel)
 --     selected_attr = { reverse = true }
 --   }
 function TabStrip:init(opts)
-  opts = opts or {}
-
-  -- Set fixed height of 1 line
-  opts.min_height = 1
-  opts.max_height = 1
+  if type(opts) ~= "table" then
+    error("missing argument: options table isn't given")
+  end
 
   -- TabStrip-specific properties (extract before calling parent)
   local items = opts.items
@@ -60,6 +138,18 @@ function TabStrip:init(opts)
   local selected_attr = opts.selected_attr
   local select_cb = opts.select_cb
 
+  -- Validate option types
+  _validate_option_types(opts)
+
+  -- Set fixed height of 1 line
+  opts.min_height = MIN_HEIGHT
+  opts.max_height = MAX_HEIGHT
+
+  -- Provide content callback for parent constructor
+  opts.content = function(self)
+    self:_draw_tabs()
+  end
+
   -- Remove TabStrip-specific options from opts to avoid conflicts with Panel
   opts.items = nil
   opts.selected = nil
@@ -70,49 +160,18 @@ function TabStrip:init(opts)
   opts.selected_attr = nil
   opts.select_cb = nil
 
-  -- Provide content callback for parent constructor
-  opts.content = function(self)
-    self:_draw_tabs()
-  end
-
   -- Call parent constructor
   Panel.init(self, opts)
-  self.clear_content = false
+  self.clear_content = default_config.clear_content
+  self._total_content_width = 0
 
   -- Process and validate items
-  local processed_items = {}
-  if items then
-    for i, item in ipairs(items) do
-      -- Validate item has required label field
-      assert(item.label, "Tab item must have 'label' field")
+  local processed_items = validate_items(items)
 
-      -- Create processed item with default id if missing
-      local processed_item = {
-        id = item.id or i,
-        label = item.label
-      }
-      table.insert(processed_items, processed_item)
-    end
-  end
-
-  -- Validate option types
-  if prefix ~= nil and type(prefix) ~= "string" then
-    error("prefix must be a string, got " .. type(prefix))
-  end
-  if postfix ~= nil and type(postfix) ~= "string" then
-    error("postfix must be a string, got " .. type(postfix))
-  end
-  if padding ~= nil and type(padding) ~= "number" then
-    error("padding must be a number, got " .. type(padding))
-  end
-  if select_cb ~= nil and type(select_cb) ~= "function" then
-    error("select_cb must be a function, got " .. type(select_cb))
-  end
-
-  -- Apply defaults for configuration parameters
-  prefix = prefix or "["
-  postfix = postfix or "]"
-  padding = padding or 1
+  -- Replace empty configurations with defaults
+  prefix = prefix or default_config.prefix
+  postfix = postfix or default_config.postfix
+  padding = padding or default_config.padding
 
   -- Derive selected_attr from attr if not provided
   if not selected_attr and attr then
@@ -120,6 +179,7 @@ function TabStrip:init(opts)
     for k, v in pairs(attr) do
       selected_attr[k] = v
     end
+
     -- Invert reverse attribute
     if attr.reverse ~= nil then
       selected_attr.reverse = not attr.reverse
@@ -138,34 +198,11 @@ function TabStrip:init(opts)
   self.select_cb = select_cb
 
   -- Viewport management state
+  self:_reset_viewport_state()
   self._viewport_offset = 0
-  self._cache_valid = false
-  self._tab_widths = {}
-  self._tab_positions = {}
-  self._total_content_width = 0
 
   -- Handle initial selection
-  if #processed_items == 0 then
-    self.selected = nil
-  elseif selected then
-    -- Validate selected id exists in items
-    local found = false
-    for _, item in ipairs(processed_items) do
-      if item.id == selected then
-        found = true
-        break
-      end
-    end
-    if found then
-      self.selected = selected
-    else
-      -- Default to first tab if selected id not found
-      self.selected = processed_items[1].id
-    end
-  else
-    -- Default to first tab (index 1)
-    self.selected = processed_items[1].id
-  end
+  self:_handle_initial_selection(processed_items, selected)
 
   -- Call select_cb during initialization if provided
   if self.select_cb then
@@ -174,16 +211,18 @@ function TabStrip:init(opts)
 end
 
 
+
 -- Private method to draw the tab strip content.
 -- @return nothing
 function TabStrip:_draw_tabs()
-  terminal.output.write(
-    terminal.cursor.position.backup_seq(),
-    terminal.cursor.position.set_seq(self.inner_row, self.inner_col),
+  output.write(
+    cursor_pos.backup_seq(),
+    cursor_pos.set_seq(self.inner_row, self.inner_col),
     self:_build_tab_line(self.inner_width),
-    terminal.cursor.position.restore_seq()
+    cursor_pos.restore_seq()
   )
 end
+
 
 
 -- Private method to invalidate cache.
@@ -192,6 +231,18 @@ function TabStrip:_invalidate_cache()
   self._cache_valid = false
 end
 
+
+
+-- Private method to reset viewport state.
+-- @return nothing
+function TabStrip:_reset_viewport_state()
+  self._tab_widths = {}
+  self._tab_positions = {}
+  self._total_content_width = 0
+end
+
+
+
 -- Private method to build cache of tab widths and positions.
 -- @return nothing
 function TabStrip:_build_cache()
@@ -199,10 +250,19 @@ function TabStrip:_build_cache()
     return
   end
 
-  self._tab_widths = {}
-  self._tab_positions = {}
-  self._total_content_width = 0
+  self:_reset_viewport_state()
 
+  -- Calculate total content width and populate tab widths and positions
+  self:_calculate_total_content_width()
+
+  self._cache_valid = true
+end
+
+
+
+-- Private method to calculate total content width.
+-- @treturn number Total width of all tabs including padding.
+function TabStrip:_calculate_total_content_width()
   for i, item in ipairs(self.items) do
     -- Format tab: prefix + label + postfix
     local tab_text = self.prefix .. item.label .. self.postfix
@@ -219,108 +279,20 @@ function TabStrip:_build_cache()
       self._total_content_width = self._total_content_width + self.padding
     end
   end
-
-  self._cache_valid = true
 end
 
--- Private method to adjust viewport to show selected tab.
--- @return nothing
-function TabStrip:_adjust_viewport_for_selected()
-  if #self.items == 0 or not self.selected then
-    return
-  end
 
-  self:_build_cache()
 
-  -- Find selected tab index
-  local selected_index = nil
-  for i, item in ipairs(self.items) do
-    if item.id == self.selected then
-      selected_index = i
-      break
-    end
-  end
-
-  if not selected_index then
-    return
-  end
-
-  -- Get default ellipsis width
-  local ellipsis = "…"
-  local ellipsis_width = width.utf8swidth(ellipsis)
-
-  -- Calculate effective width (accounting for overflow indicators)
-  local effective_width = self.inner_width
-
-  if self._total_content_width > self.inner_width then
-    -- Need overflow indicators
-    effective_width = self.inner_width - (ellipsis_width * 2)
-  end
-
-  -- Get selected tab position and width
-  local tab_start = self._tab_positions[selected_index]
-  local tab_width = self._tab_widths[selected_index]
-  local tab_end = tab_start + tab_width
-
-  -- Adjust viewport to show selected tab
-  if tab_start < self._viewport_offset then
-    -- Tab is to the left of viewport, move viewport to show it
-    self._viewport_offset = tab_start
-  elseif tab_end > self._viewport_offset + effective_width then
-    -- Tab is to the right of viewport, move viewport to show it
-    if tab_width > effective_width then
-      -- Tab is wider than effective width, left-justify it
-      self._viewport_offset = tab_start
-    else
-      -- Show tab at the right edge
-      self._viewport_offset = tab_end - effective_width
-    end
-  end
-
-  -- Clamp viewport offset
-  if self._viewport_offset < 0 then
-    self._viewport_offset = 0
-  end
-  local max_offset = math.max(0, self._total_content_width - effective_width)
-  if self._viewport_offset > max_offset then
-    self._viewport_offset = max_offset
-  end
-end
-
--- Private method to build the tab line sequence.
+-- Private method to calculate effective width and overflow indicators.
 -- @tparam number available_width Available width for the tab strip.
--- @treturn Sequence The complete tab line sequence.
-function TabStrip:_build_tab_line(available_width)
-  local s = Sequence()
-
-  -- Apply global attr if specified
-  if self.attr then
-    s[#s+1] = function() return text.push_seq(self.attr) end
-  end
-
-  -- Handle empty items
-  if #self.items == 0 then
-    s[#s+1] = string.rep(" ", available_width)
-    if self.attr then
-      s[#s+1] = text.pop_seq
-    end
-    return s
-  end
-
-  -- Build cache
-  self:_build_cache()
-
-  -- Adjust viewport to show selected tab
-  self:_adjust_viewport_for_selected()
-
-  -- Get default ellipsis
-  local ellipsis = "…"
-  local ellipsis_width = width.utf8swidth(ellipsis)
-
-  -- Calculate effective width and overflow indicators
+-- @treturn boolean has_left_overflow Whether there is overflow to the left.
+-- @treturn boolean has_right_overflow Whether there is overflow to the right.
+-- @treturn number effective_width The width available for rendering tabs after accounting for overflow indicators.
+function TabStrip:_calculate_total_content_width_and_overflow(available_width)
   local has_left_overflow = false
   local has_right_overflow = false
   local effective_width = available_width
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
 
   if self._total_content_width > available_width then
     -- Need overflow indicators
@@ -340,12 +312,91 @@ function TabStrip:_build_tab_line(available_width)
     has_right_overflow = (self._viewport_offset + effective_width < self._total_content_width)
   end
 
-  -- Build output with overflow indicators
-  if has_left_overflow then
-    s[#s+1] = ellipsis
+  return has_left_overflow, has_right_overflow, effective_width
+end
+
+
+
+-- Private method to get index of selected tab.
+-- @treturn number|nil Index of selected tab, or nil if not found.
+function TabStrip:_get_selected_index()
+  for i, item in ipairs(self.items) do
+    if item.id == self.selected then
+      return i
+    end
+  end
+  return nil
+end
+
+
+
+-- Private method to adjust viewport to show selected tab.
+-- @return nothing
+function TabStrip:_adjust_viewport_for_selected()
+  if #self.items == 0 or not self.selected then
+    return
   end
 
-  -- Render visible content with attributes
+  self:_build_cache()
+
+  -- Find selected tab index
+  local selected_index = self:_get_selected_index()
+
+  if not selected_index then
+    return
+  end
+
+  -- Calculate effective width (accounting for overflow indicators)
+  local effective_width = self.inner_width
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
+
+  if self._total_content_width > self.inner_width then
+    -- Need overflow indicators
+    effective_width = self.inner_width - (ellipsis_width * 2)
+  end
+
+  -- Get selected tab position and width
+  local tab_start = self._tab_positions[selected_index]
+  local tab_width = self._tab_widths[selected_index]
+  local tab_end = tab_start + tab_width
+
+  -- Adjust viewport to show selected tab
+  if tab_start < self._viewport_offset then
+    -- Tab is to the left of viewport, move viewport to show it
+    self._viewport_offset = tab_start
+
+  elseif tab_end > self._viewport_offset + effective_width then
+    -- Tab is to the right of viewport, move viewport to show it
+    if tab_width > effective_width then
+      -- Tab is wider than effective width, left-justify it
+      self._viewport_offset = tab_start
+
+    else
+      -- Show tab at the right edge
+      self._viewport_offset = tab_end - effective_width
+    end
+  end
+
+  -- Clamp viewport offset
+  if self._viewport_offset < 0 then
+    self._viewport_offset = 0
+  end
+  local max_offset = math.max(0, self._total_content_width - effective_width)
+  if self._viewport_offset > max_offset then
+    self._viewport_offset = max_offset
+  end
+end
+
+
+
+-- Private method to render the tab line sequence based on current viewport.
+-- @tparam Sequence s The sequence to append to.
+-- @tparam number effective_width The width available for rendering tabs after accounting for overflow indicators.
+-- @tparam boolean has_left_overflow Whether there is overflow to the left (used to determine
+-- if we need to start with an ellipsis).
+-- @return number The total width of the rendered content (excluding overflow indicators).
+function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
   local visible_start = self._viewport_offset
   local visible_end = visible_start + effective_width
   local rendered_width = has_left_overflow and ellipsis_width or 0
@@ -370,7 +421,9 @@ function TabStrip:_build_tab_line(available_width)
 
         -- Apply attributes
         if is_selected and self.selected_attr then
-          s[#s+1] = function() return text.push_seq(self.selected_attr) end
+          s[#s + 1] = function()
+            return text.push_seq(self.selected_attr)
+          end
         end
         s[#s+1] = visible_tab_text
         if is_selected and self.selected_attr then
@@ -390,7 +443,7 @@ function TabStrip:_build_tab_line(available_width)
         local padding_visible_end_col = math.min(self.padding, visible_end - padding_start)
         if padding_visible_end_col > padding_visible_start_col then
           local padding_width = padding_visible_end_col - padding_visible_start_col
-          s[#s+1] = string.rep(" ", padding_width)
+          s[#s + 1] = string.rep(" ", padding_width)
           rendered_width = rendered_width + padding_width
         end
       end
@@ -401,9 +454,54 @@ function TabStrip:_build_tab_line(available_width)
       break
     end
   end
+  return rendered_width
+end
+
+
+
+-- Private method to build the tab line sequence.
+-- @tparam number available_width Available width for the tab strip.
+-- @treturn Sequence The complete tab line sequence.
+function TabStrip:_build_tab_line(available_width)
+  local s = Sequence()
+
+  -- Apply global attr if specified
+  if self.attr then
+    s[#s + 1] = function()
+      return text.push_seq(self.attr)
+    end
+  end
+
+  -- Handle empty items
+  if #self.items == 0 then
+    s[#s+1] = string.rep(" ", available_width)
+    if self.attr then
+      s[#s+1] = text.pop_seq
+    end
+    return s
+  end
+
+  -- Build cache
+  self:_build_cache()
+
+  -- Adjust viewport to show selected tab
+  self:_adjust_viewport_for_selected()
+
+  -- Calculate effective width and overflow indicators
+  local has_left_overflow, has_right_overflow, effective_width =
+    self:_calculate_total_content_width_and_overflow(available_width)
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
+
+  -- Build output with overflow indicators
+  if has_left_overflow then
+    s[#s+1] = default_config.ellipsis
+  end
+
+  -- Render visible content with attributes
+  local rendered_width = self:_render_visible_content(s, effective_width, has_left_overflow)
 
   if has_right_overflow then
-    s[#s+1] = ellipsis
+    s[#s+1] = default_config.ellipsis
     rendered_width = rendered_width + ellipsis_width
   end
 
@@ -422,6 +520,7 @@ function TabStrip:_build_tab_line(available_width)
 end
 
 
+
 --- Get the currently selected tab id.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
@@ -438,6 +537,7 @@ function TabStrip:get_selected()
   end
   return self.selected
 end
+
 
 
 --- Select a tab by id.
@@ -479,6 +579,7 @@ function TabStrip:select(tab_id)
 end
 
 
+
 --- Select the next tab.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
@@ -493,13 +594,7 @@ function TabStrip:select_next()
   end
 
   -- Find current index
-  local current_index = nil
-  for i, item in ipairs(self.items) do
-    if item.id == self.selected then
-      current_index = i
-      break
-    end
-  end
+  local current_index = self:_get_selected_index()
 
   -- If current_index is nil, something went wrong, default to first
   if not current_index then
@@ -522,6 +617,7 @@ function TabStrip:select_next()
 end
 
 
+
 --- Select the previous tab.
 -- @treturn any|nil The selected tab id, or nil if no tabs exist.
 -- @treturn string|nil Error message if no tabs exist.
@@ -536,13 +632,7 @@ function TabStrip:select_prev()
   end
 
   -- Find current index
-  local current_index = nil
-  for i, item in ipairs(self.items) do
-    if item.id == self.selected then
-      current_index = i
-      break
-    end
-  end
+  local current_index = self:_get_selected_index()
 
   -- If current_index is nil, something went wrong, default to first
   if not current_index then
@@ -565,6 +655,7 @@ function TabStrip:select_prev()
 end
 
 
+
 --- Get a copy of the items table.
 -- @treturn table A copy of the items array.
 -- @usage
@@ -574,11 +665,12 @@ function TabStrip:get_items()
   for i, item in ipairs(self.items) do
     copy[i] = {
       id = item.id,
-      label = item.label
+      label = item.label,
     }
   end
   return copy
 end
+
 
 
 --- Set the items table.
@@ -591,20 +683,7 @@ end
 --   })
 function TabStrip:set_items(items)
   -- Process and validate items
-  local processed_items = {}
-  if items then
-    for i, item in ipairs(items) do
-      -- Validate item has required label field
-      assert(item.label, "Tab item must have 'label' field")
-
-      -- Create processed item with default id if missing
-      local processed_item = {
-        id = item.id or i,
-        label = item.label
-      }
-      table.insert(processed_items, processed_item)
-    end
-  end
+  local processed_items = validate_items(items)
 
   self.items = processed_items
   self:_invalidate_cache()
@@ -612,6 +691,7 @@ function TabStrip:set_items(items)
   -- Adjust selection: validate it still exists, or default to first
   if #processed_items == 0 then
     self.selected = nil
+
   else
     local found = false
     for _, item in ipairs(processed_items) do
@@ -627,6 +707,7 @@ function TabStrip:set_items(items)
 end
 
 
+
 --- Add a new item to the items list.
 -- @tparam table item The item to add (must have `label` field).
 -- @tparam[opt] any before_id If provided, insert before the item with this id.
@@ -636,12 +717,14 @@ end
 --   tab_strip:add_item({ id = "tab2.5", label = "Tab 2.5" }, "tab3")
 function TabStrip:add_item(item, before_id)
   -- Validate item has required label field
-  assert(item.label, "Tab item must have 'label' field")
+  if not item.label then
+    error("Tab item must have 'label' field")
+  end
 
   -- Process item with default id if missing
   local processed_item = {
     id = item.id or (#self.items + 1),
-    label = item.label
+    label = item.label,
   }
 
   if before_id then
@@ -667,6 +750,7 @@ function TabStrip:add_item(item, before_id)
 
   self:_invalidate_cache()
 end
+
 
 
 --- Remove an item from the items list.
@@ -704,12 +788,14 @@ function TabStrip:remove_item(id)
       if self.select_cb then
         self.select_cb(self, nil)
       end
+
     elseif remove_index == 1 then
       -- First tab removed, move to new first tab
       self.selected = self.items[1].id
       if self.select_cb then
         self.select_cb(self, self.selected)
       end
+
     else
       -- Move selection to left tab
       self.selected = self.items[remove_index - 1].id
@@ -723,5 +809,5 @@ function TabStrip:remove_item(id)
 end
 
 
-return TabStrip
 
+return TabStrip
