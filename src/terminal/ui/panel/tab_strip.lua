@@ -21,7 +21,13 @@ local MAX_HEIGHT = 1
 
 
 
-local tab_strip = utils.class(Panel)
+local cursor = terminal.cursor
+local cursor_pos = cursor.position
+local output = terminal.output
+
+
+
+local TabStrip = utils.class(Panel)
 
 
 
@@ -39,6 +45,91 @@ local default_config = {
 -- Get default ellipsis
 local ellipsis = default_config.ellipsis
 local ellipsis_width = default_config.ellipsis_width
+
+
+
+-- Local functions
+
+
+
+local function validate_items(items)
+    items = items or {}
+
+    local processed_items = {}
+
+    for i, item in ipairs(items) do
+        -- Validate item has required label field
+        if not item.label then
+            error("Tab item must have 'label' field, at index(" .. tostring(i) .. ")")
+        end
+
+        -- Create processed item with default id if missing
+        processed_items[i] = {
+            id = item.id or i,
+            label = item.label
+        }
+    end
+
+    return processed_items
+end
+
+
+
+local function _validate_option_types(opts)
+  if opts.prefix ~= nil and type(opts.prefix) ~= "string" then
+    error("prefix must be a string, got " .. type(opts.prefix))
+  end
+  if opts.postfix ~= nil and type(opts.postfix) ~= "string" then
+    error("postfix must be a string, got " .. type(opts.postfix))
+  end
+  if opts.padding ~= nil and type(opts.padding) ~= "number" then
+    error("padding must be a number, got " .. type(opts.padding))
+  end
+  if opts.select_cb ~= nil and type(opts.select_cb) ~= "function" then
+    error("select_cb must be a function, got " .. type(opts.select_cb))
+  end
+end
+
+
+
+local function filter(t, predicate)
+  local result = {}
+  for _, v in ipairs(t) do
+    if predicate(v) then
+      table.insert(result, v)
+    end
+  end
+  return result
+end
+
+
+
+function TabStrip:_handle_initial_selection(processed_items, selected)
+  local found = #filter(processed_items,
+    function(item)
+      return item.id == selected
+    end) > 0
+
+  for _, item in ipairs(processed_items) do
+    if item.id == selected then
+      found = true
+      break
+    end
+  end
+
+  if #processed_items == 0 then
+    self.selected = nil
+
+  elseif selected and found then
+    -- Validate selected id exists in items
+    self.selected = selected
+
+  else
+    -- Default to first tab (index 1)
+    self.selected = processed_items[1].id
+  end
+end
+
 
 
 --- Create a new TabStrip instance.
@@ -64,100 +155,7 @@ local ellipsis_width = default_config.ellipsis_width
 --     attr = { fg = "white", bg = "black" },
 --     selected_attr = { reverse = true }
 --   }
-
-
-
--- Local functions
-local function clear_opts(opts, keys)
-  for _, key in ipairs(keys) do
-    opts[key] = nil
-  end
-end
-
-
-
-local function shallow_copy_table(tbl)
-    local copy = {}
-    for k, v in pairs(tbl) do
-        copy[k] = v
-    end
-    return copy
-end
-
-
-
-local function process_items(items)
-  local processed_items = {}
-
-  if items then
-    for i, item in ipairs(items) do
-      -- Validate item has required label field
-      if not item.label then
-        error("Tab item must have 'label' field" .. tostring(i))
-      end
-
-      -- Create processed item with default id if missing
-      local processed_item = {
-        id = item.id or i,
-        label = item.label,
-      }
-
-      table.insert( processed_items, processed_item )
-    end
-  end
-
-  return processed_items
-end
-
-
-
-local function _validate_option_types(opts)
-  if opts.prefix ~= nil and type(opts.prefix) ~= "string" then
-    error("prefix must be a string, got " .. type(opts.prefix))
-  end
-  if opts.postfix ~= nil and type(opts.postfix) ~= "string" then
-    error("postfix must be a string, got " .. type(opts.postfix))
-  end
-  if opts.padding ~= nil and type(opts.padding) ~= "number" then
-    error("padding must be a number, got " .. type(opts.padding))
-  end
-  if opts.select_cb ~= nil and type(opts.select_cb) ~= "function" then
-    error("select_cb must be a function, got " .. type(opts.select_cb))
-  end
-end
-
-
-
-function tab_strip:_handle_initial_selection(processed_items, selected)
-  if #processed_items == 0 then
-    self.selected = nil
-
-  elseif selected then
-    -- Validate selected id exists in items
-    local found = false
-    for _, item in ipairs(processed_items) do
-      if item.id == selected then
-        found = true
-        break
-      end
-    end
-    if found then
-      self.selected = selected
-
-    else
-      -- Default to first tab if selected id not found
-      self.selected = processed_items[1].id
-    end
-
-  else
-    -- Default to first tab (index 1)
-    self.selected = processed_items[1].id
-  end
-end
-
-
-
-function tab_strip:init(opts)
+function TabStrip:init(opts)
   if not opts or type(opts) ~= "table" then
     error("missing argument: options table isn't given")
   end
@@ -185,8 +183,14 @@ function tab_strip:init(opts)
   end
 
   -- Remove TabStrip-specific options from opts to avoid conflicts with Panel
-  clear_opts(opts, { "items", "selected", "prefix", "postfix", "padding", "attr",
-                    "selected_attr", "select_cb" })
+  opts.items = nil
+  opts.selected = nil
+  opts.prefix = nil
+  opts.postfix = nil
+  opts.padding = nil
+  opts.attr = nil
+  opts.selected_attr = nil
+  opts.select_cb = nil
 
   -- Call parent constructor
   Panel.init(self, opts)
@@ -194,23 +198,19 @@ function tab_strip:init(opts)
   self._total_content_width = 0
 
   -- Process and validate items
-  local processed_items = process_items(items)
+  local processed_items = validate_items(items)
 
   -- Replace empty configurations with defaults
-  if not prefix then
-    prefix = default_config.prefix
-  end
-  if not postfix then
-    postfix = default_config.postfix
-  end
-  if not padding then
-    padding = default_config.padding
-  end
+  prefix = prefix or default_config.prefix
+  postfix = postfix or default_config.postfix
+  prefix = prefix or default_config.prefix
 
   -- Derive selected_attr from attr if not provided
   if not selected_attr and attr then
-    selected_attr = shallow_copy_table(attr)
-    
+    for k, v in pairs(attr) do
+      selected_attr[k] = v
+    end
+
     -- Invert reverse attribute
     if attr.reverse ~= nil then
       selected_attr.reverse = not attr.reverse
@@ -245,11 +245,7 @@ end
 
 -- Private method to draw the tab strip content.
 -- @return nothing
-function tab_strip:_draw_tabs()
-  local cursor = terminal.cursor
-  local cursor_pos = cursor.position
-  local output = terminal.output
-
+function TabStrip:_draw_tabs()
   output.write(
     cursor_pos.backup_seq(),
     cursor_pos.set_seq(self.inner_row, self.inner_col),
@@ -262,7 +258,7 @@ end
 
 -- Private method to invalidate cache.
 -- @return nothing
-function tab_strip:_invalidate_cache()
+function TabStrip:_invalidate_cache()
   self._cache_valid = false
 end
 
@@ -270,7 +266,7 @@ end
 
 -- Private method to reset viewport state.
 -- @return nothing
-function tab_strip:_reset_viewport_state()
+function TabStrip:_reset_viewport_state()
   self._tab_widths = {}
   self._tab_positions = {}
   self._total_content_width = 0
@@ -280,13 +276,13 @@ end
 
 -- Private method to build cache of tab widths and positions.
 -- @return nothing
-function tab_strip:_build_cache()
+function TabStrip:_build_cache()
   if self._cache_valid then
     return
   end
 
   self:_reset_viewport_state()
-  
+
   -- Calculate total content width and populate tab widths and positions
   self:_calculate_total_content_width()
 
@@ -297,7 +293,7 @@ end
 
 -- Private method to calculate total content width.
 -- @treturn number Total width of all tabs including padding.
-function tab_strip:_calculate_total_content_width()
+function TabStrip:_calculate_total_content_width()
   for i, item in ipairs(self.items) do
     -- Format tab: prefix + label + postfix
     local tab_text = self.prefix .. item.label .. self.postfix
@@ -323,7 +319,7 @@ end
 -- @treturn boolean has_left_overflow Whether there is overflow to the left.
 -- @treturn boolean has_right_overflow Whether there is overflow to the right.
 -- @treturn number effective_width The width available for rendering tabs after accounting for overflow indicators.
-function tab_strip:_calculate_total_content_width_and_overflow(available_width)
+function TabStrip:_calculate_total_content_width_and_overflow(available_width)
   local has_left_overflow = false
   local has_right_overflow = false
   local effective_width = available_width
@@ -353,7 +349,7 @@ end
 
 -- Private method to get index of selected tab.
 -- @treturn number|nil Index of selected tab, or nil if not found.
-function tab_strip:_get_selected_index()
+function TabStrip:_get_selected_index()
   for i, item in ipairs(self.items) do
     if item.id == self.selected then
       return i
@@ -366,7 +362,7 @@ end
 
 -- Private method to adjust viewport to show selected tab.
 -- @return nothing
-function tab_strip:_adjust_viewport_for_selected()
+function TabStrip:_adjust_viewport_for_selected()
   if #self.items == 0 or not self.selected then
     return
   end
@@ -428,7 +424,7 @@ end
 -- @tparam boolean has_left_overflow Whether there is overflow to the left (used to determine
 -- if we need to start with an ellipsis).
 -- @return number The total width of the rendered content (excluding overflow indicators).
-function tab_strip:_render_visible_content(s, effective_width, has_left_overflow)
+function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
   local visible_start = self._viewport_offset
   local visible_end = visible_start + effective_width
   local rendered_width = has_left_overflow and ellipsis_width or 0
@@ -492,7 +488,7 @@ end
 -- Private method to build the tab line sequence.
 -- @tparam number available_width Available width for the tab strip.
 -- @treturn Sequence The complete tab line sequence.
-function tab_strip:_build_tab_line(available_width)
+function TabStrip:_build_tab_line(available_width)
   local s = Sequence()
 
   -- Apply global attr if specified
@@ -557,7 +553,7 @@ end
 --   else
 --     print("Selected tab:", selected_id)
 --   end
-function tab_strip:get_selected()
+function TabStrip:get_selected()
   if #self.items == 0 then
     return nil, "no tabs available"
   end
@@ -575,7 +571,7 @@ end
 --   if not success then
 --     print("Error:", err)
 --   end
-function tab_strip:select(tab_id)
+function TabStrip:select(tab_id)
   if #self.items == 0 then
     return nil, "no tabs available"
   end
@@ -605,7 +601,7 @@ end
 --   if err then
 --     print("Error:", err)
 --   end
-function tab_strip:select_next()
+function TabStrip:select_next()
   if #self.items == 0 then
     return self:get_selected()
   end
@@ -643,7 +639,7 @@ end
 --   if err then
 --     print("Error:", err)
 --   end
-function tab_strip:select_prev()
+function TabStrip:select_prev()
   if #self.items == 0 then
     return self:get_selected()
   end
@@ -677,7 +673,7 @@ end
 -- @treturn table A copy of the items array.
 -- @usage
 --   local items = tab_strip:get_items()
-function tab_strip:get_items()
+function TabStrip:get_items()
   local copy = {}
   for i, item in ipairs(self.items) do
     copy[i] = {
@@ -698,9 +694,9 @@ end
 --     { id = "tab1", label = "Tab 1" },
 --     { id = "tab2", label = "Tab 2" }
 --   })
-function tab_strip:set_items(items)
+function TabStrip:set_items(items)
   -- Process and validate items
-  local processed_items = process_items(items)
+  local processed_items = validate_items(items)
 
   self.items = processed_items
   self:_invalidate_cache()
@@ -733,7 +729,7 @@ end
 -- @usage
 --   tab_strip:add_item({ id = "tab3", label = "Tab 3" })
 --   tab_strip:add_item({ id = "tab2.5", label = "Tab 2.5" }, "tab3")
-function tab_strip:add_item(item, before_id)
+function TabStrip:add_item(item, before_id)
   -- Validate item has required label field
   if not item.label then
     error("Tab item must have 'label' field")
@@ -769,7 +765,7 @@ end
 -- @treturn string|nil Error message if id not found.
 -- @usage
 --   local success, err = tab_strip:remove_item("tab2")
-function tab_strip:remove_item(id)
+function TabStrip:remove_item(id)
   -- Find the item to remove
   local remove_index = nil
   local was_selected = false
@@ -799,7 +795,7 @@ function tab_strip:remove_item(id)
       if self.select_cb then
         self.select_cb(self, nil)
       end
-      
+
     elseif remove_index == 1 then
       -- First tab removed, move to new first tab
       self.selected = self.items[1].id
@@ -821,4 +817,4 @@ end
 
 
 
-return tab_strip
+return TabStrip
