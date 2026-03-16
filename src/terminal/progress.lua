@@ -7,8 +7,6 @@ local t = require("terminal")
 local tw = require("terminal.text.width")
 local Sequence = require("terminal.sequence")
 local utils = require("terminal.utils")
-local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 compatibility
-
 local gettime = require("system").gettime
 
 
@@ -142,29 +140,29 @@ end
 -- @tparam[opt=""] string text_done the text to display when the spinner is done
 -- @treturn table a table of sprites to use with a spinner
 function M.ticker(text, width, text_done)
-  -- TODO: make it UTF-8 aware, and char-display-width aware
   assert(text, "text must be provided")
   width = width or 40
   text_done = text_done or ""
 
   local base = (" "):rep(width) .. text .. (" "):rep(width)
   local result = { [0] = text_done .. (" "):rep(width) }
-  local lengths = { [0] = width + utf8.len(text) }
+  local text_width = tw.utf8swidth(text)
+  local lengths = { [0] = width + text_width }
 
   -- Simultaneously records max of lengths, later on we use this max_len as a standard for other strings
   local max_len = 0
   for i = 1, lengths[0] do
-    result[i] = utils.utf8sub(base, i, i + width - 1)
+    result[i] = utils.utf8sub_col(base, i, i + width - 1)
     lengths[i] = tw.utf8swidth(result[i])
     max_len = math.max(max_len, lengths[i])
   end
-  result[0] = utils.utf8sub(result[0], 1, max_len)
+  result[0] = utils.utf8sub_col(result[0], 1, max_len)
 
   for i = 1, math.floor(lengths[0] / 2) do
     result[i] = (" "):rep(max_len - lengths[i]) .. result[i]
   end
 
-  for i = math.floor(lengths[0] / 2) + 1, (width + utf8.len(text)) do
+  for i = math.floor(lengths[0] / 2) + 1, (width + text_width) do
     result[i] = result[i] .. (" "):rep(max_len - lengths[i])
   end
   return result
