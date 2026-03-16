@@ -55,9 +55,9 @@ Prompt.keyname2actions = {
   ["home"] = "goto_home",
   ["end"] = "goto_end",
   -- emacs keybinding
-  ["ctrl_f"] = "left",
+  ["ctrl_f"] = "right",
   ["alt_b"] = "left_word",
-  ["ctrl_b"] = "right",
+  ["ctrl_b"] = "left",
   ["alt_f"] = "right_word",
   ["ctrl_a"] = "goto_home",
   ["ctrl_e"] = "goto_end",
