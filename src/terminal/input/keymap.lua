@@ -155,6 +155,10 @@ M.default_key_map = { -- to work around some LDoc bug :(
   ["\027[33~"] = "f19",
   ["\027[34~"] = "f20",
 
+  -- Ctrl + Delete/Backspace
+  ["\027[3;5~"] = "ctrl_delete",
+  ["\027\127"]  = "ctrl_backspace",
+
   -- Special sequences
   ["\027[Z"]   = "shift_tab",
   ["\027[200~"] = "bracketed_paste_start",
