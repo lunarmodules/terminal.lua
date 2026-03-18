@@ -11,8 +11,6 @@ local utf8 = require("utf8") -- explicit lua-utf8 library call, for <= Lua 5.3 c
 
 local gettime = require("system").gettime
 
-
-
 --- table with predefined sprites for progress spinners.
 -- The sprites are tables of strings, where each string is a frame in the spinner animation.
 -- The frame at index 0 is optional and is the "done" message, the rest are the animation frames.
@@ -43,14 +41,12 @@ M.sprites = utils.make_lookup("spinner-sprite", {
   dot1_snake = { [0] = " ", "⠁", "⠈", "⠐", "⠠", "⢀", "⡀", "⠄", "⠂" },
   dot2_snake = { [0] = " ", "⠃", "⠉", "⠘", "⠰", "⢠", "⣀", "⡄", "⠆" },
   dot3_snake = { [0] = " ", "⡆", "⠇", "⠋", "⠙", "⠸", "⢰", "⣠", "⣄" },
-  dot4_snake = { [0] = " ", "⡇", "⠏", "⠛", "⠹", "⢸", "⣰", "⣤", "⣆"},
+  dot4_snake = { [0] = " ", "⡇", "⠏", "⠛", "⠹", "⢸", "⣰", "⣤", "⣆" },
   block_pulsing = { [0] = " ", " ", "░", "▒", "▓", "█", "▓", "▒", "░" },
   bar_rotating = { [0] = " ", "┤", "┘", "┴", "└", "├", "┌", "┬", "┐" },
   spinner = { [0] = " ", "|", "/", "-", "\\" },
   dot_horizontal = { [0] = "   ", "   ", ".  ", ".. ", "..." },
 })
-
-
 
 --- Create a progress spinner.
 -- The returned spinner function can be called as often as needed to update the spinner. It will only update after
@@ -82,7 +78,8 @@ function M.spinner(opts)
 
   -- copy sequence to include cursor movement to return to start position.
   -- include character display width check using LuaSystem
-  local steps do
+  local steps
+  do
     local pos_set, pos_restore
     if row then
       pos_set = t.cursor.position.backup_seq() .. t.cursor.position.set_seq(row, col)
@@ -91,26 +88,26 @@ function M.spinner(opts)
 
     local attr_push, attr_pop -- both will remain nil, if no text attr set
     if textattr then
-      attr_push = function() return t.text.push_seq(textattr) end
+      attr_push = t.text.push_seq(textattr)
       attr_pop = t.text.pop_seq
     end
     local attr_push_done = attr_push
     if opts.done_textattr then
-      attr_push_done = function() return t.text.push_seq(opts.done_textattr) end
+      attr_push_done = t.text.push_seq(opts.done_textattr)
     end
 
     steps = {}
-    for i=0, #opts.sprites do
+    for i = 0, #opts.sprites do
       local s = opts.sprites[i] or ""
       if i == 0 then
         s = opts.done_sprite or s
       end
       local sequence = Sequence()
-      sequence[#sequence+1] = pos_set
-      sequence[#sequence+1] = (i == 0 and attr_push_done) or attr_push or nil
-      sequence[#sequence+1] = s .. t.cursor.position.left_seq(tw.utf8swidth(utils.strip_ansi(s)))
-      sequence[#sequence+1] = attr_pop
-      sequence[#sequence+1] = pos_restore
+      sequence[#sequence + 1] = pos_set
+      sequence[#sequence + 1] = (i == 0 and attr_push_done) or attr_push or nil
+      sequence[#sequence + 1] = s .. t.cursor.position.left_seq(tw.utf8swidth(utils.strip_ansi(s)))
+      sequence[#sequence + 1] = attr_pop
+      sequence[#sequence + 1] = pos_restore
       steps[i] = sequence
     end
   end
@@ -134,7 +131,30 @@ function M.spinner(opts)
   end
 end
 
-
+--- Path progress animation where a runner moves left to right through dots.
+-- The runner consumes the dots as progress increases.
+--
+-- Example:
+--   progress_path(40, 20, "📍", "🚙")
+--
+-- Output example:
+--   📍........🚙   40%
+--
+-- @tparam number percent progress 0-100
+-- @tparam[opt=20] number width path width (dots capacity)
+-- @tparam string start_icon icon at the start position
+-- @tparam string runner_icon icon representing the runner/progress
+function M.progress_path(percent, width, start_icon, runner_icon)
+  width = width or 20
+  start_icon = start_icon or ""
+  runner_icon = runner_icon or ">"
+  percent = math.max(0, math.min(100, percent))
+  local remaining = width - math.floor((percent / 100) * width)
+  local dots = string.rep(".", remaining)
+  local bar = table.concat({ start_icon, dots, runner_icon })
+  local percent_str = string.format("%3d%%", percent)
+  return "\27[K" .. bar .. "   " .. percent_str
+end
 
 --- Create a text/led ticker like sprite-sequence for use with a progress spinner.
 -- @tparam string text the text to display
@@ -142,34 +162,36 @@ end
 -- @tparam[opt=""] string text_done the text to display when the spinner is done
 -- @treturn table a table of sprites to use with a spinner
 function M.ticker(text, width, text_done)
-  -- TODO: make it UTF-8 aware, and char-display-width aware
   assert(text, "text must be provided")
   width = width or 40
   text_done = text_done or ""
 
-  local base = (" "):rep(width) .. text .. (" "):rep(width)
-  local result = { [0] = text_done .. (" "):rep(width) }
-  local lengths = { [0] = width + utf8.len(text) }
+  local utf8_len = utf8.len(text)
 
-  -- Simultaneously records max of lengths, later on we use this max_len as a standard for other strings
+  local base = table.concat({ (" "):rep(width), text, (" "):rep(width) })
+  local result = { [0] = text_done .. (" "):rep(width) }
+  local base_len = width + utf8_len
+  local lengths = { [0] = base_len }
+
   local max_len = 0
-  for i = 1, lengths[0] do
+  for i = 1, base_len do
     result[i] = utils.utf8sub(base, i, i + width - 1)
     lengths[i] = tw.utf8swidth(result[i])
     max_len = math.max(max_len, lengths[i])
   end
   result[0] = utils.utf8sub(result[0], 1, max_len)
 
-  for i = 1, math.floor(lengths[0] / 2) do
+  local half_len = math.floor(base_len / 2)
+
+  for i = 1, half_len do
     result[i] = (" "):rep(max_len - lengths[i]) .. result[i]
   end
 
-  for i = math.floor(lengths[0] / 2) + 1, (width + utf8.len(text)) do
+  for i = half_len + 1, base_len do
     result[i] = result[i] .. (" "):rep(max_len - lengths[i])
   end
+
   return result
 end
-
-
 
 return M
