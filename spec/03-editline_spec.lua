@@ -1147,12 +1147,9 @@ describe("EditLine:", function()
     end)
 
 
-    pending("returns an empty string for out-of-bounds indices", function()
-      -- TODO: fix this test
+    it("resolves out-of-bounds indices to the nearest valid position", function()
       local line = EditLine("hello")
-      local exp = tostring(line):sub(10, 15)
-      local val = tostring(line:sub_char(10, 15))
-      assert.are.equal(exp, val)
+      assert.are.equal("o", tostring(line:sub_char(10, 15)))
     end)
 
 
