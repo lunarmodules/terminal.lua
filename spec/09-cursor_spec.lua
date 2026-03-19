@@ -446,7 +446,7 @@ describe("Cursor", function()
     end)
 
 
-    it("resolves negative indices to absolute values", function()
+    it("clamps negative indices beyond the screen width to column 1", function()
       helpers.set_termsize(25, 80)
       assert.are.equal("\27[1G", cursor.position.column_seq(-5000))
     end)
@@ -469,7 +469,7 @@ describe("Cursor", function()
     end)
 
 
-    it("resolves negative indices to absolute values", function()
+    it("clamps negative indices beyond the screen height to row 1", function()
       helpers.set_termsize(25, 80)
       assert.are.equal("\27[1d", cursor.position.row_seq(-5000))
     end)
