@@ -1,3 +1,13 @@
+--- Simple car racing game demonstrating a terminal game loop.
+--
+-- This example shows how to build a game loop using the terminal library.
+-- It demonstrates cursor positioning, 256-color text attributes, non-blocking
+-- key input with a timeout, and the alternate display buffer for clean
+-- full-screen output.
+--
+-- Use the [a] and [d] keys to steer left and right, and avoid the rocks (🪨).
+-- The game speeds up over time. Press [n] at the start screen to quit.
+
 local terminal = require "terminal"
 local write = terminal.output.write
 local read_key = terminal.input.readansi
