@@ -138,7 +138,7 @@ local function run_example_3()
           draw_content(self, "40% - Press any key", "yellow")
         end,
         border = {
-          format = terminal.draw.box_fmt.single,
+          format = terminal.draw.box_fmt.rounded,
           attr = { fg = "yellow" },
           title = "Top Panel"
         },
@@ -148,7 +148,7 @@ local function run_example_3()
           draw_content(self, "60%", "magenta")
         end,
         border = {
-          format = terminal.draw.box_fmt.single,
+          format = terminal.draw.box_fmt.rounded,
           attr = { fg = "magenta" },
           title = "Bottom Panel"
         },

@@ -36,6 +36,18 @@ M.box_fmt = utils.make_lookup("box-format", {
     pre = "┤",
     post = "├",
   },
+  rounded = {
+    t = "─",
+    b = "─",
+    l = "│",
+    r = "│",
+    tl = "╭",
+    tr = "╮",
+    bl = "╰",
+    br = "╯",
+    pre = "┤",
+    post = "├",
+  },
   single_top = {
     t = "─",
     b = "",
