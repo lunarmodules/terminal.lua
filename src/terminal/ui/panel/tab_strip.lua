@@ -50,7 +50,6 @@ local default_config = {
 -- If id is missing, use index as id
 local function validate_items(items)
   items = items or {}
-
   local processed_items = {}
 
   for i, item in ipairs(items) do
@@ -69,7 +68,7 @@ end
 
 
 
-local function _validate_option_types(opts)
+local function validate_option_types(opts)
   if opts.prefix ~= nil and type(opts.prefix) ~= "string" then
     error("prefix must be a string, got " .. type(opts.prefix))
   end
@@ -86,16 +85,20 @@ end
 
 
 
-function TabStrip:_handle_initial_selection(items, selected)
+-- Validate selection against items, returns valid selection
+-- If selected is not found in items, returns first item id, or nil if no items
+-- @tparam table items The array of tab items
+-- @tparam any selected The selected tab ID to validate
+-- @return any|nil The validated selected tab ID. If not found, 1st entry, or nil if there are no items.
+local function set_selection(items, selected)
   for _, item in ipairs(items) do
     if item.id == selected then
-      self.selected = selected
-      return
+      return selected
     end
   end
 
   -- not found, pick first item, or nil if no items
-  self.selected = (items[1] or {}).id
+  return (items[1] or {}).id
 end
 
 
@@ -139,7 +142,7 @@ function TabStrip:init(opts)
   local select_cb = opts.select_cb
 
   -- Validate option types
-  _validate_option_types(opts)
+  validate_option_types(opts)
 
   -- Set fixed height of 1 line
   opts.min_height = MIN_HEIGHT
@@ -202,7 +205,7 @@ function TabStrip:init(opts)
   self._viewport_offset = 0
 
   -- Handle initial selection
-  self:_handle_initial_selection(processed_items, selected)
+  self.selected = set_selection(processed_items, selected)
 
   -- Call select_cb during initialization if provided
   if self.select_cb then
@@ -306,6 +309,7 @@ function TabStrip:_calculate_total_content_width_and_overflow(available_width)
     effective_width = available_width - ellipsis_width
     -- Recalculate has_right_overflow with adjusted effective_width for consistency
     has_right_overflow = (self._viewport_offset + effective_width < self._total_content_width)
+
   elseif has_right_overflow and not has_left_overflow then
     effective_width = available_width - ellipsis_width
     -- Recalculate has_right_overflow with adjusted effective_width for consistency
@@ -317,22 +321,7 @@ end
 
 
 
--- Private method to get index of selected tab.
--- @treturn number|nil Index of selected tab, or nil if not found.
-function TabStrip:_get_selected_index()
-  for i, item in ipairs(self.items) do
-    if item.id == self.selected then
-      return i
-    end
-  end
-  return nil
-end
-
-
-
--- Private method to adjust viewport to show selected tab.
--- @return nothing
-function TabStrip:_adjust_viewport_for_selected()
+function TabStrip:adjust_viewport_for_selected()
   if #self.items == 0 or not self.selected then
     return
   end
@@ -385,6 +374,68 @@ function TabStrip:_adjust_viewport_for_selected()
   if self._viewport_offset > max_offset then
     self._viewport_offset = max_offset
   end
+end
+
+
+
+-- Private method to build the tab line sequence.
+-- @tparam number available_width Available width for the tab strip.
+-- @treturn Sequence The complete tab line sequence.
+function TabStrip:_build_tab_line(available_width)
+  local s = Sequence()
+
+  -- Apply global attr if specified
+  if self.attr then
+    s[#s + 1] = function()
+      return text.push_seq(self.attr)
+    end
+  end
+
+  -- Handle empty items
+  if #self.items == 0 then
+    s[#s+1] = string.rep(" ", available_width)
+    if self.attr then
+      s[#s+1] = text.pop_seq
+    end
+    return s
+  end
+
+  -- Build cache
+  self:_build_cache()
+
+  -- Adjust viewport to show selected tab
+  self:adjust_viewport_for_selected()
+
+  -- Calculate effective width and overflow indicators
+  local has_left_overflow, has_right_overflow, effective_width =
+    self:_calculate_total_content_width_and_overflow(available_width)
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
+
+  -- Build output with overflow indicators
+  if has_left_overflow then
+    s[#s+1] = default_config.ellipsis
+  end
+
+  -- Render visible content with attributes
+  local rendered_width = self:_render_visible_content(s, effective_width, has_left_overflow)
+
+  if has_right_overflow then
+    s[#s+1] = default_config.ellipsis
+    rendered_width = rendered_width + ellipsis_width
+  end
+
+  -- Fill remaining width with spaces
+  local remaining = available_width - rendered_width
+  if remaining > 0 then
+    s[#s+1] = string.rep(" ", remaining)
+  end
+
+  -- Pop global attr if specified
+  if self.attr then
+    s[#s+1] = text.pop_seq
+  end
+
+  return s
 end
 
 
@@ -532,7 +583,7 @@ end
 --     print("Selected tab:", selected_id)
 --   end
 function TabStrip:get_selected()
-  if #self.items == 0 then
+  if not self.selected then
     return nil, "no tabs available"
   end
   return self.selected
@@ -550,20 +601,19 @@ end
 --     print("Error:", err)
 --   end
 function TabStrip:select(tab_id)
-  if #self.items == 0 then
-    return nil, "no tabs available"
+  local new_selection = set_selection(self.items, tab_id)
+
+  if new_selection ~= tab_id then
+    return nil, "tab id not found: '" .. tostring(tab_id) .. "'"
   end
 
-  if not self:_index_by_id(tab_id) then
-    return nil, "tab id not found"
+  if self.selected == tab_id then
+    return true  -- No change, this ID was already selected
   end
 
-  -- Only update and call callback if selection actually changed
-  if self.selected ~= tab_id then
-    self.selected = tab_id
-    if self.select_cb then
-      self.select_cb(self, tab_id)
-    end
+  self.selected = tab_id
+  if self.select_cb then  -- TODO: callabck alwasy set, a NOOp if not provided, to forego on these checks
+    self:select_cb(tab_id)
   end
 
   return true
