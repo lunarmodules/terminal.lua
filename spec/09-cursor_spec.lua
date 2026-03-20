@@ -264,7 +264,7 @@ describe("Cursor", function()
 
 
     it("resolves negative indexes to absolute values", function()
-      -- values -5000 shoudl end up being 1
+      -- values -5000 should end up being 1
       assert.are.equal("\27[1;1H", cursor.position.set_seq(-5000, -5000))
     end)
 
@@ -439,8 +439,16 @@ describe("Cursor", function()
     end)
 
 
-    pending("negative indices", function()
-      -- TODO: implement
+    it("resolves negative indices from the right edge of the screen", function()
+      helpers.set_termsize(25, 80)
+      assert.are.equal("\27[80G", cursor.position.column_seq(-1))
+      assert.are.equal("\27[79G", cursor.position.column_seq(-2))
+    end)
+
+
+    it("clamps negative indices beyond the screen width to column 1", function()
+      helpers.set_termsize(25, 80)
+      assert.are.equal("\27[1G", cursor.position.column_seq(-5000))
     end)
 
   end)
@@ -454,8 +462,16 @@ describe("Cursor", function()
     end)
 
 
-    pending("negative indices", function()
-      -- TODO: implement
+    it("resolves negative indices from the bottom edge of the screen", function()
+      helpers.set_termsize(25, 80)
+      assert.are.equal("\27[25d", cursor.position.row_seq(-1))
+      assert.are.equal("\27[24d", cursor.position.row_seq(-2))
+    end)
+
+
+    it("clamps negative indices beyond the screen height to row 1", function()
+      helpers.set_termsize(25, 80)
+      assert.are.equal("\27[1d", cursor.position.row_seq(-5000))
     end)
 
   end)
