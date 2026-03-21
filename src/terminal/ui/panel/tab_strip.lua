@@ -45,6 +45,19 @@ local default_config = {
 
 
 
+-- Private method to find index of item with given id, or nil.
+-- @return number|nil The index of the item with the given id, or nil if not found.
+function index_by_id(self, id)
+  for i, item in ipairs(self.items) do
+    if item.id == id then
+      return i
+    end
+  end
+  return nil
+end
+
+
+
 -- Validate and process_items
 -- Each item must have a label
 -- If id is missing, use index as id
@@ -69,6 +82,9 @@ end
 
 
 local function validate_option_types(opts)
+  if type(opts) ~= "table" then
+    error("missing argument: options table isn't given, got " .. type(opts))
+  end
   if opts.prefix ~= nil and type(opts.prefix) ~= "string" then
     error("prefix must be a string, got " .. type(opts.prefix))
   end
@@ -113,7 +129,7 @@ end
 -- @tparam[opt=1] number opts.padding Number of spaces between tabs.
 -- @tparam[opt] table opts.attr Text attributes for the entire strip.
 -- @tparam[opt] table opts.selected_attr Text attributes for the selected tab.
--- @tparam[opt] function opts.select_cb Callback function called when selection changes: `select_cb(self, id)`.
+-- @tparam[opt] function opts.select_cb Callback function called when selection changes: `TabStrip:select_cb(id)`.
 -- @treturn TabStrip A new TabStrip instance.
 -- @usage
 --   local TabStrip = require("terminal.ui.panel.tab_strip")
@@ -127,22 +143,17 @@ end
 --     selected_attr = { reverse = true }
 --   }
 function TabStrip:init(opts)
-  if type(opts) ~= "table" then
-    error("missing argument: options table isn't given")
-  end
+  validate_option_types(opts)
 
   -- TabStrip-specific properties (extract before calling parent)
-  local items = opts.items
+  local items = validate_items(opts.items)
   local selected = opts.selected
-  local prefix = opts.prefix
-  local postfix = opts.postfix
-  local padding = opts.padding
+  local prefix = opts.prefix or default_config.prefix
+  local postfix = opts.postfix or default_config.postfix
+  local padding = opts.padding or default_config.padding
   local attr = opts.attr
   local selected_attr = opts.selected_attr
-  local select_cb = opts.select_cb
-
-  -- Validate option types
-  validate_option_types(opts)
+  local select_cb = opts.select_cb or function() end
 
   -- Set fixed height of 1 line
   opts.min_height = MIN_HEIGHT
@@ -165,16 +176,8 @@ function TabStrip:init(opts)
 
   -- Call parent constructor
   Panel.init(self, opts)
-  self.clear_content = default_config.clear_content
-  self._total_content_width = 0
-
-  -- Process and validate items
-  local processed_items = validate_items(items)
-
-  -- Replace empty configurations with defaults
-  prefix = prefix or default_config.prefix
-  postfix = postfix or default_config.postfix
-  padding = padding or default_config.padding
+  self.clear_content = default_config.clear_content -- TODO: is this option useful here?
+  self._total_content_width = 0  -- TODO: remove _ property, can go in _cache?
 
   -- Derive selected_attr from attr if not provided
   if not selected_attr and attr then
@@ -184,33 +187,25 @@ function TabStrip:init(opts)
     end
 
     -- Invert reverse attribute
-    if attr.reverse ~= nil then
-      selected_attr.reverse = not attr.reverse
-    else
-      selected_attr.reverse = true
-    end
+    selected_attr.reverse = not selected_attr.reverse
   end
 
   -- Set TabStrip-specific properties after parent constructor
-  self.items = normalized_items
+  self.items = items
   self.prefix = prefix
   self.postfix = postfix
   self.padding = padding
   self.attr = attr
   self.selected_attr = selected_attr
   self.select_cb = select_cb
+  self.selected = set_selection(items, selected) -- sets default if selected is invalid
 
   -- Viewport management state
   self:_reset_viewport_state()
-  self._viewport_offset = 0
+  self._viewport_offset = 0  -- TODO: remove _ property, can go in _cache?
 
-  -- Handle initial selection
-  self.selected = set_selection(processed_items, selected)
-
-  -- Call select_cb during initialization if provided
-  if self.select_cb then
-    self.select_cb(self, self.selected)
-  end
+  -- Call select_cb during initialization
+  self:select_cb(self.selected)
 end
 
 
@@ -231,14 +226,14 @@ end
 -- Private method to invalidate cache.
 -- @return nothing
 function TabStrip:_invalidate_cache()
-  self._cache_valid = false
+  self._cache_valid = false  -- TODO: remove _ property, can go in _cache?
 end
 
 
 
 -- Private method to reset viewport state.
 -- @return nothing
-function TabStrip:_reset_viewport_state()
+function TabStrip:_reset_viewport_state()  -- TODO: remove _ property, can go in _cache?
   self._tab_widths = {}
   self._tab_positions = {}
   self._total_content_width = 0
@@ -328,9 +323,7 @@ function TabStrip:adjust_viewport_for_selected()
 
   self:_build_cache()
 
-  -- Find selected tab index
-  local selected_index = self:_get_selected_index()
-
+  local selected_index = index_by_id(self, self.selected)
   if not selected_index then
     return
   end
@@ -612,9 +605,7 @@ function TabStrip:select(tab_id)
   end
 
   self.selected = tab_id
-  if self.select_cb then  -- TODO: callabck alwasy set, a NOOp if not provided, to forego on these checks
-    self:select_cb(tab_id)
-  end
+  self:select_cb(tab_id)
 
   return true
 end
@@ -631,16 +622,10 @@ end
 --   end
 function TabStrip:select_next()
   if #self.items == 0 then
-    return self:get_selected()
+    return nil, "no tabs available"
   end
 
-  -- Find current index
-  local current_index = self:_get_selected_index()
-
-  -- If current_index is nil, something went wrong, default to first
-  if not current_index then
-    current_index = 1
-  end
+  local current_index = index_by_id(self, self.selected)
 
   -- Increment index, clamp to last tab
   local next_index = math.min(current_index + 1, #self.items)
@@ -649,9 +634,7 @@ function TabStrip:select_next()
   -- Only update and call callback if selection actually changed
   if self.selected ~= next_id then
     self.selected = next_id
-    if self.select_cb then
-      self.select_cb(self, next_id)
-    end
+    self:select_cb(next_id)
   end
 
   return self:get_selected()
@@ -669,16 +652,10 @@ end
 --   end
 function TabStrip:select_prev()
   if #self.items == 0 then
-    return self:get_selected()
+    return nil, "no tabs available"
   end
 
-  -- Find current index
-  local current_index = self:_get_selected_index()
-
-  -- If current_index is nil, something went wrong, default to first
-  if not current_index then
-    current_index = 1
-  end
+  local current_index = index_by_id(self, self.selected)
 
   -- Decrement index, clamp to first tab
   local prev_index = math.max(current_index - 1, 1)
@@ -687,12 +664,10 @@ function TabStrip:select_prev()
   -- Only update and call callback if selection actually changed
   if self.selected ~= prev_id then
     self.selected = prev_id
-    if self.select_cb then
-      self.select_cb(self, prev_id)
-    end
+    self:select_cb(prev_id)
   end
 
-  return self:get_selected()
+  return self.selected
 end
 
 
@@ -723,28 +698,20 @@ end
 --     { id = "tab2", label = "Tab 2" }
 --   })
 function TabStrip:set_items(items)
-  -- Process and validate items
-  local processed_items = validate_items(items)
+  -- validate items
+  items = validate_items(items)
+  self.items = items
 
-  self.items = processed_items
+  local old_selected = self.selected
   self:_invalidate_cache()
   self.selected = resolve_initial_selection(self.items, old_selected)
 
   -- Adjust selection: validate it still exists, or default to first
-  if #processed_items == 0 then
-    self.selected = nil
+  self.selected = set_selection(items, self.selected)
 
-  else
-    local found = false
-    for _, item in ipairs(processed_items) do
-      if item.id == self.selected then
-        found = true
-        break
-      end
-    end
-    if not found then
-      self.selected = processed_items[1].id
-    end
+  if self.selected ~= old_selected then
+    -- selection changed, so call callback
+    self:select_cb(self.selected)
   end
 end
 
@@ -753,7 +720,7 @@ end
 --- Add a new item to the items list.
 -- @tparam table item The item to add (must have `label` field).
 -- @tparam[opt] any before_id If provided, insert before the item with this id.
--- @return nothing
+-- @return true
 -- @usage
 --   tab_strip:add_item({ id = "tab3", label = "Tab 3" })
 --   tab_strip:add_item({ id = "tab2.5", label = "Tab 2.5" }, "tab3")
@@ -764,25 +731,26 @@ function TabStrip:add_item(item, before_id)
   end
 
   -- Process item with default id if missing
-  local processed_item = {
+  local new_item = {
     id = item.id or (#self.items + 1),
     label = item.label,
   }
 
   if before_id then
-    local insert_index = self:_index_by_id(before_id)
+    local insert_index = index_by_id(self, before_id)
     if insert_index then
-      table.insert(self.items, insert_index, processed_item)
+      table.insert(self.items, insert_index, new_item)
     else
       -- If before_id not found, append to end
-      table.insert(self.items, processed_item)
+      table.insert(self.items, new_item)
     end
   else
     -- Append to end
-    table.insert(self.items, processed_item)
+    table.insert(self.items, new_item)
   end
 
   self:_invalidate_cache()
+  return true
 end
 
 
@@ -794,18 +762,7 @@ end
 -- @usage
 --   local success, err = tab_strip:remove_item("tab2")
 function TabStrip:remove_item(id)
-  -- Find the item to remove
-  local remove_index = nil
-  local was_selected = false
-
-  for i, item in ipairs(self.items) do
-    if item.id == id then
-      remove_index = i
-      was_selected = (item.id == self.selected)
-      break
-    end
-  end
-
+  local remove_index = index_by_id(self, id)
   if not remove_index then
     return nil, "tab id not found"
   end
@@ -815,30 +772,25 @@ function TabStrip:remove_item(id)
   table.remove(self.items, remove_index)
   self:_invalidate_cache()
 
-  -- Adjust selection if needed
-  if was_selected then
-    if #self.items == 0 then
-      -- All tabs removed
-      self.selected = nil
-      if self.select_cb then
-        self.select_cb(self, nil)
-      end
-
-    elseif remove_index == 1 then
-      -- First tab removed, move to new first tab
-      self.selected = self.items[1].id
-      if self.select_cb then
-        self.select_cb(self, self.selected)
-      end
-
-    else
-      -- Move selection to left tab
-      self.selected = self.items[remove_index - 1].id
-      if self.select_cb then
-        self.select_cb(self, self.selected)
-      end
-    end
+  if not was_selected then
+    return true  -- No change to selection, so we're done
   end
+
+  -- selected tab was removed, need to update selection
+  if #self.items == 0 then
+    -- No tabs left, clear selection
+    self.selected = nil
+
+  elseif remove_index == 1 then
+    -- First tab removed, move to new first tab
+    self.selected = self.items[1].id
+
+  else
+    -- Move selection one to the left
+    self.selected = self.items[remove_index - 1].id
+  end
+
+  self:select_cb(self.selected)
 
   return true
 end

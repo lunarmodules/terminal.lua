@@ -310,15 +310,6 @@ describe("terminal.ui.panel.tab_strip", function()
       assert.is_nil(callback_id)
     end)
 
-
-    it("does not call select_cb when not provided", function()
-      local tab_strip = TabStrip {
-        items = { { label = "Tab 1" } }
-        -- No select_cb provided
-      }
-      assert.is_nil(tab_strip.select_cb)
-    end)
-
   end)
 
 
