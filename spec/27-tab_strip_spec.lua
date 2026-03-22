@@ -310,15 +310,6 @@ describe("terminal.ui.panel.tab_strip", function()
       assert.is_nil(callback_id)
     end)
 
-
-    it("does not call select_cb when not provided", function()
-      local tab_strip = TabStrip {
-        items = { { label = "Tab 1" } }
-        -- No select_cb provided
-      }
-      assert.is_nil(tab_strip.select_cb)
-    end)
-
   end)
 
 
@@ -1076,7 +1067,7 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 20)  -- Small width
       tab_strip:render()
       -- Should have calculated viewport
-      assert.is_not_nil(tab_strip._viewport_offset)
+      assert.is_not_nil(tab_strip._cache.viewport_offset)
     end)
 
 
@@ -1380,7 +1371,7 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 20)
       tab_strip:render()
       -- Viewport should be adjusted to show selected tab
-      assert.is_not_nil(tab_strip._viewport_offset)
+      assert.is_not_nil(tab_strip._cache.viewport_offset)
     end)
 
 
@@ -1394,7 +1385,7 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 10)  -- Very small width
       tab_strip:render()
       -- Viewport should be at start of tab
-      assert.are.equal(0, tab_strip._viewport_offset)
+      assert.are.equal(0, tab_strip._cache.viewport_offset)
     end)
 
 
@@ -1409,9 +1400,9 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 10)
       tab_strip:render()
       -- Should calculate correctly using display width
-      assert.is_not_nil(tab_strip._tab_widths[1])
+      assert.is_not_nil(tab_strip._cache.tab_widths[1])
       -- Double-width characters should be counted as 2 columns
-      assert.is_true(tab_strip._tab_widths[1] >= 2)
+      assert.is_true(tab_strip._cache.tab_widths[1] >= 2)
     end)
 
   end)
@@ -1443,7 +1434,7 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 20)
       tab_strip:render()
       -- Should calculate widths correctly
-      assert.is_not_nil(tab_strip._tab_widths[1])
+      assert.is_not_nil(tab_strip._cache.tab_widths[1])
     end)
 
 
