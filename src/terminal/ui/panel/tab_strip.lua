@@ -47,7 +47,7 @@ local default_config = {
 
 -- Private method to find index of item with given id, or nil.
 -- @return number|nil The index of the item with the given id, or nil if not found.
-function index_by_id(self, id)
+local function index_by_id(self, id)
   for i, item in ipairs(self.items) do
     if item.id == id then
       return i
@@ -177,7 +177,6 @@ function TabStrip:init(opts)
   -- Call parent constructor
   Panel.init(self, opts)
   self.clear_content = default_config.clear_content -- TODO: is this option useful here?
-  self._total_content_width = 0  -- TODO: remove _ property, can go in _cache?
 
   -- Derive selected_attr from attr if not provided
   if not selected_attr and attr then
@@ -201,8 +200,7 @@ function TabStrip:init(opts)
   self.selected = set_selection(items, selected) -- sets default if selected is invalid
 
   -- Viewport management state
-  self:_reset_viewport_state()
-  self._viewport_offset = 0  -- TODO: remove _ property, can go in _cache?
+  self:_invalidate_cache()
 
   -- Call select_cb during initialization
   self:select_cb(self.selected)
@@ -226,34 +224,22 @@ end
 -- Private method to invalidate cache.
 -- @return nothing
 function TabStrip:_invalidate_cache()
-  self._cache_valid = false  -- TODO: remove _ property, can go in _cache?
+  self._cache = nil
 end
 
 
 
--- Private method to reset viewport state.
--- @return nothing
-function TabStrip:_reset_viewport_state()  -- TODO: remove _ property, can go in _cache?
-  self._tab_widths = {}
-  self._tab_positions = {}
-  self._total_content_width = 0
-end
-
-
-
--- Private method to build cache of tab widths and positions.
--- @return nothing
-function TabStrip:_build_cache()
-  if self._cache_valid then
-    return
+-- Private method to get (and build) cache of tab widths and positions.
+-- @return cache
+function TabStrip:_get_cache()
+  if not self._cache then
+    self._cache = {
+      viewport_offset = 0,
+    }
+    self:_calculate_total_content_width()
   end
 
-  self:_reset_viewport_state()
-
-  -- Calculate total content width and populate tab widths and positions
-  self:_calculate_total_content_width()
-
-  self._cache_valid = true
+  return self._cache
 end
 
 
@@ -261,22 +247,33 @@ end
 -- Private method to calculate total content width.
 -- @treturn number Total width of all tabs including padding.
 function TabStrip:_calculate_total_content_width()
+  local cache = self:_get_cache()
+  local total_content_width = 0
+  local tab_widths = {}
+  cache.tab_widths = tab_widths
+  local tab_positions = {}
+  cache.tab_positions = tab_positions
+
+  local pre_width = width.utf8swidth(self.prefix)
+  local post_width = width.utf8swidth(self.postfix)
+
   for i, item in ipairs(self.items) do
     -- Format tab: prefix + label + postfix
-    local tab_text = self.prefix .. item.label .. self.postfix
-    local tab_width = width.utf8swidth(tab_text)
+    local tab_width = pre_width + width.utf8swidth(item.label) + post_width
 
-    self._tab_widths[i] = tab_width
-    self._tab_positions[i] = self._total_content_width
+    tab_widths[i] = tab_width
+    tab_positions[i] = total_content_width
 
-    -- Add tab width
-    self._total_content_width = self._total_content_width + tab_width
-
-    -- Add padding (except after last tab)
-    if i < #self.items then
-      self._total_content_width = self._total_content_width + self.padding
-    end
+    -- Add tab width and padding
+    total_content_width = total_content_width + tab_width + self.padding
   end
+
+  -- remove final padding (if there are any tabs)
+  if self.items[1] then
+    total_content_width = total_content_width - self.padding
+  end
+
+  cache.total_content_width = total_content_width
 end
 
 
@@ -291,24 +288,26 @@ function TabStrip:_calculate_total_content_width_and_overflow(available_width)
   local has_right_overflow = false
   local effective_width = available_width
   local ellipsis_width = width.utf8swidth(default_config.ellipsis)
+  local cache = self:_get_cache()
+  local total_content_width = cache.total_content_width
 
-  if self._total_content_width > available_width then
+  if cache.total_content_width > available_width then
     -- Need overflow indicators
     effective_width = available_width - (ellipsis_width * 2)
-    has_left_overflow = (self._viewport_offset > 0)
-    has_right_overflow = (self._viewport_offset + effective_width < self._total_content_width)
+    has_left_overflow = (cache.viewport_offset > 0)
+    has_right_overflow = (cache.viewport_offset + effective_width < total_content_width)
   end
 
   -- Adjust effective width if only one indicator is needed
   if has_left_overflow and not has_right_overflow then
     effective_width = available_width - ellipsis_width
     -- Recalculate has_right_overflow with adjusted effective_width for consistency
-    has_right_overflow = (self._viewport_offset + effective_width < self._total_content_width)
+    has_right_overflow = (cache.viewport_offset + effective_width < total_content_width)
 
   elseif has_right_overflow and not has_left_overflow then
     effective_width = available_width - ellipsis_width
     -- Recalculate has_right_overflow with adjusted effective_width for consistency
-    has_right_overflow = (self._viewport_offset + effective_width < self._total_content_width)
+    has_right_overflow = (cache.viewport_offset + effective_width < total_content_width)
   end
 
   return has_left_overflow, has_right_overflow, effective_width
@@ -317,11 +316,11 @@ end
 
 
 function TabStrip:adjust_viewport_for_selected()
-  if #self.items == 0 or not self.selected then
+  if not self.selected then
     return
   end
 
-  self:_build_cache()
+  local cache = self:_get_cache()
 
   local selected_index = index_by_id(self, self.selected)
   if not selected_index then
@@ -332,40 +331,40 @@ function TabStrip:adjust_viewport_for_selected()
   local effective_width = self.inner_width
   local ellipsis_width = width.utf8swidth(default_config.ellipsis)
 
-  if self._total_content_width > self.inner_width then
+  if cache.total_content_width > self.inner_width then
     -- Need overflow indicators
     effective_width = self.inner_width - (ellipsis_width * 2)
   end
 
   -- Get selected tab position and width
-  local tab_start = self._tab_positions[selected_index]
-  local tab_width = self._tab_widths[selected_index]
+  local tab_start = cache.tab_positions[selected_index]
+  local tab_width = cache.tab_widths[selected_index]
   local tab_end = tab_start + tab_width
 
   -- Adjust viewport to show selected tab
-  if tab_start < self._viewport_offset then
+  if tab_start < cache.viewport_offset then
     -- Tab is to the left of viewport, move viewport to show it
-    self._viewport_offset = tab_start
+    cache.viewport_offset = tab_start
 
-  elseif tab_end > self._viewport_offset + effective_width then
+  elseif tab_end > cache.viewport_offset + effective_width then
     -- Tab is to the right of viewport, move viewport to show it
     if tab_width > effective_width then
       -- Tab is wider than effective width, left-justify it
-      self._viewport_offset = tab_start
+      cache.viewport_offset = tab_start
 
     else
       -- Show tab at the right edge
-      self._viewport_offset = tab_end - effective_width
+      cache.viewport_offset = tab_end - effective_width
     end
   end
 
   -- Clamp viewport offset
-  if self._viewport_offset < 0 then
-    self._viewport_offset = 0
+  if cache.viewport_offset < 0 then
+    cache.viewport_offset = 0
   end
-  local max_offset = math.max(0, self._total_content_width - effective_width)
-  if self._viewport_offset > max_offset then
-    self._viewport_offset = max_offset
+  local max_offset = math.max(0, cache.total_content_width - effective_width)
+  if cache.viewport_offset > max_offset then
+    cache.viewport_offset = max_offset
   end
 end
 
@@ -392,9 +391,6 @@ function TabStrip:_build_tab_line(available_width)
     end
     return s
   end
-
-  -- Build cache
-  self:_build_cache()
 
   -- Adjust viewport to show selected tab
   self:adjust_viewport_for_selected()
@@ -441,14 +437,15 @@ end
 -- @return number The total width of the rendered content (excluding overflow indicators).
 function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
   local ellipsis_width = width.utf8swidth(default_config.ellipsis)
-  local visible_start = self._viewport_offset
-  local visible_end = visible_start + effective_width
   local rendered_width = has_left_overflow and ellipsis_width or 0
+  local cache = self:_get_cache()
+  local visible_start = cache.viewport_offset
+  local visible_end = visible_start + effective_width
 
   for i, item in ipairs(self.items) do
     local tab_text = self.prefix .. item.label .. self.postfix
-    local tab_start = self._tab_positions[i]
-    local tab_end = tab_start + self._tab_widths[i]
+    local tab_start = cache.tab_positions[i]
+    local tab_end = tab_start + cache.tab_widths[i]
 
     -- Check if this tab is visible
     if tab_end > visible_start and tab_start < visible_end then
@@ -456,7 +453,7 @@ function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
 
       -- Calculate what portion of this tab is visible
       local tab_visible_start_col = math.max(0, visible_start - tab_start)
-      local tab_visible_end_col = math.min(self._tab_widths[i], visible_end - tab_start)
+      local tab_visible_end_col = math.min(cache.tab_widths[i], visible_end - tab_start)
 
       if tab_visible_end_col > tab_visible_start_col then
         -- Extract visible portion of tab
