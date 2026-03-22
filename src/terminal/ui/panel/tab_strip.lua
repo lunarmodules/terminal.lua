@@ -201,7 +201,7 @@ function TabStrip:init(opts)
   self.selected = selection(items, selected) -- sets default if selected is invalid
 
   -- Viewport management state
-  self:_invalidate_cache()
+  self:_clear_cache()
 
   -- Call select_cb during initialization
   self:select_cb(self.selected)
@@ -224,7 +224,7 @@ end
 
 -- Private method to invalidate cache.
 -- @return nothing
-function TabStrip:_invalidate_cache()
+function TabStrip:_clear_cache()
   self._cache = nil
 end
 
@@ -701,8 +701,7 @@ function TabStrip:set_items(items)
   self.items = items
 
   local old_selected = self.selected
-  self:_invalidate_cache()
-  self.selected = resolve_initial_selection(self.items, old_selected)
+  self:_clear_cache()
 
   -- Adjust selection: validate it still exists, or default to first
   self.selected = selection(items, self.selected)
@@ -747,7 +746,7 @@ function TabStrip:add_item(item, before_id)
     table.insert(self.items, new_item)
   end
 
-  self:_invalidate_cache()
+  self:_clear_cache()
   return true
 end
 
@@ -768,7 +767,7 @@ function TabStrip:remove_item(id)
   local was_selected = (self.selected == id)
 
   table.remove(self.items, remove_index)
-  self:_invalidate_cache()
+  self:_clear_cache()
 
   if not was_selected then
     return true  -- No change to selection, so we're done
