@@ -290,6 +290,61 @@ end
 
 
 
+local function adjust_viewport_for_selected(self)
+  if not self.selected then
+    return
+  end
+
+  local cache = get_cache(self)
+
+  local selected_index = index_by_id(self, self.selected)
+  if not selected_index then
+    return
+  end
+
+  -- Calculate effective width (accounting for overflow indicators)
+  local effective_width = self.inner_width
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
+
+  if cache.total_content_width > self.inner_width then
+    -- Need overflow indicators
+    effective_width = self.inner_width - (ellipsis_width * 2)
+  end
+
+  -- Get selected tab position and width
+  local tab_start = cache.tab_positions[selected_index]
+  local tab_width = cache.tab_widths[selected_index]
+  local tab_end = tab_start + tab_width
+
+  -- Adjust viewport to show selected tab
+  if tab_start < cache.viewport_offset then
+    -- Tab is to the left of viewport, move viewport to show it
+    cache.viewport_offset = tab_start
+
+  elseif tab_end > cache.viewport_offset + effective_width then
+    -- Tab is to the right of viewport, move viewport to show it
+    if tab_width > effective_width then
+      -- Tab is wider than effective width, left-justify it
+      cache.viewport_offset = tab_start
+
+    else
+      -- Show tab at the right edge
+      cache.viewport_offset = tab_end - effective_width
+    end
+  end
+
+  -- Clamp viewport offset
+  if cache.viewport_offset < 0 then
+    cache.viewport_offset = 0
+  end
+  local max_offset = math.max(0, cache.total_content_width - effective_width)
+  if cache.viewport_offset > max_offset then
+    cache.viewport_offset = max_offset
+  end
+end
+
+
+
 -- Private method to build the tab line sequence.
 -- @tparam number available_width Available width for the tab strip.
 -- @treturn Sequence The complete tab line sequence.
@@ -313,7 +368,7 @@ local function build_tab_line(self, available_width)
   end
 
   -- Adjust viewport to show selected tab
-  self:adjust_viewport_for_selected()
+  adjust_viewport_for_selected(self)
 
   -- Calculate effective width and overflow indicators
   local has_left_overflow, has_right_overflow, effective_width =
@@ -447,61 +502,6 @@ function TabStrip:init(opts)
 
   -- Call select_cb during initialization
   self:select_cb(self.selected)
-end
-
-
-
-function TabStrip:adjust_viewport_for_selected()
-  if not self.selected then
-    return
-  end
-
-  local cache = get_cache(self)
-
-  local selected_index = index_by_id(self, self.selected)
-  if not selected_index then
-    return
-  end
-
-  -- Calculate effective width (accounting for overflow indicators)
-  local effective_width = self.inner_width
-  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
-
-  if cache.total_content_width > self.inner_width then
-    -- Need overflow indicators
-    effective_width = self.inner_width - (ellipsis_width * 2)
-  end
-
-  -- Get selected tab position and width
-  local tab_start = cache.tab_positions[selected_index]
-  local tab_width = cache.tab_widths[selected_index]
-  local tab_end = tab_start + tab_width
-
-  -- Adjust viewport to show selected tab
-  if tab_start < cache.viewport_offset then
-    -- Tab is to the left of viewport, move viewport to show it
-    cache.viewport_offset = tab_start
-
-  elseif tab_end > cache.viewport_offset + effective_width then
-    -- Tab is to the right of viewport, move viewport to show it
-    if tab_width > effective_width then
-      -- Tab is wider than effective width, left-justify it
-      cache.viewport_offset = tab_start
-
-    else
-      -- Show tab at the right edge
-      cache.viewport_offset = tab_end - effective_width
-    end
-  end
-
-  -- Clamp viewport offset
-  if cache.viewport_offset < 0 then
-    cache.viewport_offset = 0
-  end
-  local max_offset = math.max(0, cache.total_content_width - effective_width)
-  if cache.viewport_offset > max_offset then
-    cache.viewport_offset = max_offset
-  end
 end
 
 
