@@ -58,9 +58,9 @@ end
 
 
 
--- Validate and process_items
+-- Validate items
 -- Each item must have a label
--- If id is missing, use index as id
+-- If id is missing, will set index as id
 local function validate_items(items)
   items = items or {}
   local processed_items = {}
@@ -81,6 +81,7 @@ end
 
 
 
+-- validate the options when createing a new instance, throw error if invalid
 local function validate_option_types(opts)
   if type(opts) ~= "table" then
     error("missing argument: options table isn't given, got " .. type(opts))
@@ -106,7 +107,7 @@ end
 -- @tparam table items The array of tab items
 -- @tparam any selected The selected tab ID to validate
 -- @return any|nil The validated selected tab ID. If not found, 1st entry, or nil if there are no items.
-local function set_selection(items, selected)
+local function selection(items, selected)
   for _, item in ipairs(items) do
     if item.id == selected then
       return selected
@@ -197,7 +198,7 @@ function TabStrip:init(opts)
   self.attr = attr
   self.selected_attr = selected_attr
   self.select_cb = select_cb
-  self.selected = set_selection(items, selected) -- sets default if selected is invalid
+  self.selected = selection(items, selected) -- sets default if selected is invalid
 
   -- Viewport management state
   self:_invalidate_cache()
@@ -591,7 +592,7 @@ end
 --     print("Error:", err)
 --   end
 function TabStrip:select(tab_id)
-  local new_selection = set_selection(self.items, tab_id)
+  local new_selection = selection(self.items, tab_id)
 
   if new_selection ~= tab_id then
     return nil, "tab id not found: '" .. tostring(tab_id) .. "'"
@@ -704,7 +705,7 @@ function TabStrip:set_items(items)
   self.selected = resolve_initial_selection(self.items, old_selected)
 
   -- Adjust selection: validate it still exists, or default to first
-  self.selected = set_selection(items, self.selected)
+  self.selected = selection(items, self.selected)
 
   if self.selected ~= old_selected then
     -- selection changed, so call callback
