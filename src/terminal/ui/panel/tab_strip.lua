@@ -27,10 +27,6 @@ local output = terminal.output
 
 
 
-local TabStrip = utils.class(Panel)
-
-
-
 local default_config = {
   prefix = "[",
   postfix = "]",
@@ -414,6 +410,11 @@ local function draw_tabs(self)
     cursor_pos.restore_seq()
   )
 end
+
+
+
+-- TabStrip class definition
+local TabStrip = utils.class(Panel)
 
 
 
