@@ -120,124 +120,19 @@ end
 
 
 
---- Create a new TabStrip instance.
--- Do not call this method directly, call on the class instead.
--- @tparam table opts Configuration options (see `Panel:init` for inherited properties)
--- @tparam table opts.items Array of tab items, each with `label` field (required) and optional `id` field.
--- @tparam[opt] any opts.selected Initial selected tab id.
--- @tparam[opt="["] string opts.prefix Prefix string for tab labels.
--- @tparam[opt="["] string opts.postfix Postfix string for tab labels.
--- @tparam[opt=1] number opts.padding Number of spaces between tabs.
--- @tparam[opt] table opts.attr Text attributes for the entire strip.
--- @tparam[opt] table opts.selected_attr Text attributes for the selected tab.
--- @tparam[opt] function opts.select_cb Callback function called when selection changes: `TabStrip:select_cb(id)`.
--- @treturn TabStrip A new TabStrip instance.
--- @usage
---   local TabStrip = require("terminal.ui.panel.tab_strip")
---   local tab_strip = TabStrip {
---     items = {
---       { id = "tab1", label = "Tab 1" },
---       { id = "tab2", label = "Tab 2" }
---     },
---     selected = "tab1",
---     attr = { fg = "white", bg = "black" },
---     selected_attr = { reverse = true }
---   }
-function TabStrip:init(opts)
-  validate_option_types(opts)
-
-  -- TabStrip-specific properties (extract before calling parent)
-  local items = validate_items(opts.items)
-  local selected = opts.selected
-  local prefix = opts.prefix or default_config.prefix
-  local postfix = opts.postfix or default_config.postfix
-  local padding = opts.padding or default_config.padding
-  local attr = opts.attr
-  local selected_attr = opts.selected_attr
-  local select_cb = opts.select_cb or function() end
-
-  -- Set fixed height of 1 line
-  opts.min_height = MIN_HEIGHT
-  opts.max_height = MAX_HEIGHT
-
-  -- Provide content callback for parent constructor
-  opts.content = function(self)
-    self:_draw_tabs()
-  end
-
-  -- Remove TabStrip-specific options from opts to avoid conflicts with Panel
-  opts.items = nil
-  opts.selected = nil
-  opts.prefix = nil
-  opts.postfix = nil
-  opts.padding = nil
-  opts.attr = nil
-  opts.selected_attr = nil
-  opts.select_cb = nil
-
-  -- Call parent constructor
-  Panel.init(self, opts)
-  self.clear_content = default_config.clear_content -- TODO: is this option useful here?
-
-  -- Derive selected_attr from attr if not provided
-  if not selected_attr and attr then
-    selected_attr = {}
-    for k, v in pairs(attr) do
-      selected_attr[k] = v
-    end
-
-    -- Invert reverse attribute
-    selected_attr.reverse = not selected_attr.reverse
-  end
-
-  -- Set TabStrip-specific properties after parent constructor
-  self.items = items
-  self.prefix = prefix
-  self.postfix = postfix
-  self.padding = padding
-  self.attr = attr
-  self.selected_attr = selected_attr
-  self.select_cb = select_cb
-  self.selected = selection(items, selected) -- sets default if selected is invalid
-
-  -- Viewport management state
-  self:_clear_cache()
-
-  -- Call select_cb during initialization
-  self:select_cb(self.selected)
-end
-
-
-
--- Private method to draw the tab strip content.
--- @return nothing
-function TabStrip:_draw_tabs()
-  output.write(
-    cursor_pos.backup_seq(),
-    cursor_pos.set_seq(self.inner_row, self.inner_col),
-    self:_build_tab_line(self.inner_width),
-    cursor_pos.restore_seq()
-  )
-end
-
-
-
--- Private method to invalidate cache.
--- @return nothing
-function TabStrip:_clear_cache()
-  self._cache = nil
-end
+-- forward declaration needed for mutual recursion between get_cache and calculate_total_content_width
+local calculate_total_content_width
 
 
 
 -- Private method to get (and build) cache of tab widths and positions.
 -- @return cache
-function TabStrip:_get_cache()
+local function get_cache(self)
   if not self._cache then
     self._cache = {
       viewport_offset = 0,
     }
-    self:_calculate_total_content_width()
+    calculate_total_content_width(self)
   end
 
   return self._cache
@@ -247,8 +142,8 @@ end
 
 -- Private method to calculate total content width.
 -- @treturn number Total width of all tabs including padding.
-function TabStrip:_calculate_total_content_width()
-  local cache = self:_get_cache()
+calculate_total_content_width = function(self)
+  local cache = get_cache(self)
   local total_content_width = 0
   local tab_widths = {}
   cache.tab_widths = tab_widths
@@ -279,17 +174,25 @@ end
 
 
 
+-- Private method to invalidate cache.
+-- @return nothing
+local function clear_cache(self)
+  self._cache = nil
+end
+
+
+
 -- Private method to calculate effective width and overflow indicators.
 -- @tparam number available_width Available width for the tab strip.
 -- @treturn boolean has_left_overflow Whether there is overflow to the left.
 -- @treturn boolean has_right_overflow Whether there is overflow to the right.
 -- @treturn number effective_width The width available for rendering tabs after accounting for overflow indicators.
-function TabStrip:_calculate_total_content_width_and_overflow(available_width)
+local function calculate_total_content_width_and_overflow(self, available_width)
   local has_left_overflow = false
   local has_right_overflow = false
   local effective_width = available_width
   local ellipsis_width = width.utf8swidth(default_config.ellipsis)
-  local cache = self:_get_cache()
+  local cache = get_cache(self)
   local total_content_width = cache.total_content_width
 
   if cache.total_content_width > available_width then
@@ -316,130 +219,16 @@ end
 
 
 
-function TabStrip:adjust_viewport_for_selected()
-  if not self.selected then
-    return
-  end
-
-  local cache = self:_get_cache()
-
-  local selected_index = index_by_id(self, self.selected)
-  if not selected_index then
-    return
-  end
-
-  -- Calculate effective width (accounting for overflow indicators)
-  local effective_width = self.inner_width
-  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
-
-  if cache.total_content_width > self.inner_width then
-    -- Need overflow indicators
-    effective_width = self.inner_width - (ellipsis_width * 2)
-  end
-
-  -- Get selected tab position and width
-  local tab_start = cache.tab_positions[selected_index]
-  local tab_width = cache.tab_widths[selected_index]
-  local tab_end = tab_start + tab_width
-
-  -- Adjust viewport to show selected tab
-  if tab_start < cache.viewport_offset then
-    -- Tab is to the left of viewport, move viewport to show it
-    cache.viewport_offset = tab_start
-
-  elseif tab_end > cache.viewport_offset + effective_width then
-    -- Tab is to the right of viewport, move viewport to show it
-    if tab_width > effective_width then
-      -- Tab is wider than effective width, left-justify it
-      cache.viewport_offset = tab_start
-
-    else
-      -- Show tab at the right edge
-      cache.viewport_offset = tab_end - effective_width
-    end
-  end
-
-  -- Clamp viewport offset
-  if cache.viewport_offset < 0 then
-    cache.viewport_offset = 0
-  end
-  local max_offset = math.max(0, cache.total_content_width - effective_width)
-  if cache.viewport_offset > max_offset then
-    cache.viewport_offset = max_offset
-  end
-end
-
-
-
--- Private method to build the tab line sequence.
--- @tparam number available_width Available width for the tab strip.
--- @treturn Sequence The complete tab line sequence.
-function TabStrip:_build_tab_line(available_width)
-  local s = Sequence()
-
-  -- Apply global attr if specified
-  if self.attr then
-    s[#s + 1] = function()
-      return text.push_seq(self.attr)
-    end
-  end
-
-  -- Handle empty items
-  if #self.items == 0 then
-    s[#s+1] = string.rep(" ", available_width)
-    if self.attr then
-      s[#s+1] = text.pop_seq
-    end
-    return s
-  end
-
-  -- Adjust viewport to show selected tab
-  self:adjust_viewport_for_selected()
-
-  -- Calculate effective width and overflow indicators
-  local has_left_overflow, has_right_overflow, effective_width =
-    self:_calculate_total_content_width_and_overflow(available_width)
-  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
-
-  -- Build output with overflow indicators
-  if has_left_overflow then
-    s[#s+1] = default_config.ellipsis
-  end
-
-  -- Render visible content with attributes
-  local rendered_width = self:_render_visible_content(s, effective_width, has_left_overflow)
-
-  if has_right_overflow then
-    s[#s+1] = default_config.ellipsis
-    rendered_width = rendered_width + ellipsis_width
-  end
-
-  -- Fill remaining width with spaces
-  local remaining = available_width - rendered_width
-  if remaining > 0 then
-    s[#s+1] = string.rep(" ", remaining)
-  end
-
-  -- Pop global attr if specified
-  if self.attr then
-    s[#s+1] = text.pop_seq
-  end
-
-  return s
-end
-
-
-
 -- Private method to render the tab line sequence based on current viewport.
 -- @tparam Sequence s The sequence to append to.
 -- @tparam number effective_width The width available for rendering tabs after accounting for overflow indicators.
 -- @tparam boolean has_left_overflow Whether there is overflow to the left (used to determine
 -- if we need to start with an ellipsis).
 -- @return number The total width of the rendered content (excluding overflow indicators).
-function TabStrip:_render_visible_content(s, effective_width, has_left_overflow)
+local function render_visible_content(self, s, effective_width, has_left_overflow)
   local ellipsis_width = width.utf8swidth(default_config.ellipsis)
   local rendered_width = has_left_overflow and ellipsis_width or 0
-  local cache = self:_get_cache()
+  local cache = get_cache(self)
   local visible_start = cache.viewport_offset
   local visible_end = visible_start + effective_width
 
@@ -504,7 +293,7 @@ end
 -- Private method to build the tab line sequence.
 -- @tparam number available_width Available width for the tab strip.
 -- @treturn Sequence The complete tab line sequence.
-function TabStrip:_build_tab_line(available_width)
+local function build_tab_line(self, available_width)
   local s = Sequence()
 
   -- Apply global attr if specified
@@ -523,15 +312,12 @@ function TabStrip:_build_tab_line(available_width)
     return s
   end
 
-  -- Build cache
-  self:_build_cache()
-
   -- Adjust viewport to show selected tab
-  self:_adjust_viewport_for_selected()
+  self:adjust_viewport_for_selected()
 
   -- Calculate effective width and overflow indicators
   local has_left_overflow, has_right_overflow, effective_width =
-    self:_calculate_total_content_width_and_overflow(available_width)
+    calculate_total_content_width_and_overflow(self, available_width)
   local ellipsis_width = width.utf8swidth(default_config.ellipsis)
 
   -- Build output with overflow indicators
@@ -540,7 +326,7 @@ function TabStrip:_build_tab_line(available_width)
   end
 
   -- Render visible content with attributes
-  local rendered_width = self:_render_visible_content(s, effective_width, has_left_overflow)
+  local rendered_width = render_visible_content(self, s, effective_width, has_left_overflow)
 
   if has_right_overflow then
     s[#s+1] = default_config.ellipsis
@@ -559,6 +345,163 @@ function TabStrip:_build_tab_line(available_width)
   end
 
   return s
+end
+
+
+
+-- Private method to draw the tab strip content.
+-- @return nothing
+local function draw_tabs(self)
+  output.write(
+    cursor_pos.backup_seq(),
+    cursor_pos.set_seq(self.inner_row, self.inner_col),
+    build_tab_line(self, self.inner_width),
+    cursor_pos.restore_seq()
+  )
+end
+
+
+
+--- Create a new TabStrip instance.
+-- Do not call this method directly, call on the class instead.
+-- @tparam table opts Configuration options (see `Panel:init` for inherited properties)
+-- @tparam table opts.items Array of tab items, each with `label` field (required) and optional `id` field.
+-- @tparam[opt] any opts.selected Initial selected tab id.
+-- @tparam[opt="["] string opts.prefix Prefix string for tab labels.
+-- @tparam[opt="["] string opts.postfix Postfix string for tab labels.
+-- @tparam[opt=1] number opts.padding Number of spaces between tabs.
+-- @tparam[opt] table opts.attr Text attributes for the entire strip.
+-- @tparam[opt] table opts.selected_attr Text attributes for the selected tab.
+-- @tparam[opt] function opts.select_cb Callback function called when selection changes: `TabStrip:select_cb(id)`.
+-- @treturn TabStrip A new TabStrip instance.
+-- @usage
+--   local TabStrip = require("terminal.ui.panel.tab_strip")
+--   local tab_strip = TabStrip {
+--     items = {
+--       { id = "tab1", label = "Tab 1" },
+--       { id = "tab2", label = "Tab 2" }
+--     },
+--     selected = "tab1",
+--     attr = { fg = "white", bg = "black" },
+--     selected_attr = { reverse = true }
+--   }
+function TabStrip:init(opts)
+  validate_option_types(opts)
+
+  -- TabStrip-specific properties (extract before calling parent)
+  local items = validate_items(opts.items)
+  local selected = opts.selected
+  local prefix = opts.prefix or default_config.prefix
+  local postfix = opts.postfix or default_config.postfix
+  local padding = opts.padding or default_config.padding
+  local attr = opts.attr
+  local selected_attr = opts.selected_attr
+  local select_cb = opts.select_cb or function() end
+
+  -- Set fixed height of 1 line
+  opts.min_height = MIN_HEIGHT
+  opts.max_height = MAX_HEIGHT
+
+  -- Provide content callback for parent constructor
+  opts.content = function(self)
+    draw_tabs(self)
+  end
+
+  -- Remove TabStrip-specific options from opts to avoid conflicts with Panel
+  opts.items = nil
+  opts.selected = nil
+  opts.prefix = nil
+  opts.postfix = nil
+  opts.padding = nil
+  opts.attr = nil
+  opts.selected_attr = nil
+  opts.select_cb = nil
+
+  -- Call parent constructor
+  Panel.init(self, opts)
+  self.clear_content = default_config.clear_content -- TODO: is this option useful here?
+
+  -- Derive selected_attr from attr if not provided
+  if not selected_attr and attr then
+    selected_attr = {}
+    for k, v in pairs(attr) do
+      selected_attr[k] = v
+    end
+
+    -- Invert reverse attribute
+    selected_attr.reverse = not selected_attr.reverse
+  end
+
+  -- Set TabStrip-specific properties after parent constructor
+  self.items = items
+  self.prefix = prefix
+  self.postfix = postfix
+  self.padding = padding
+  self.attr = attr
+  self.selected_attr = selected_attr
+  self.select_cb = select_cb
+  self.selected = selection(items, selected) -- sets default if selected is invalid
+
+  -- Viewport management state
+  clear_cache(self)
+
+  -- Call select_cb during initialization
+  self:select_cb(self.selected)
+end
+
+
+
+function TabStrip:adjust_viewport_for_selected()
+  if not self.selected then
+    return
+  end
+
+  local cache = get_cache(self)
+
+  local selected_index = index_by_id(self, self.selected)
+  if not selected_index then
+    return
+  end
+
+  -- Calculate effective width (accounting for overflow indicators)
+  local effective_width = self.inner_width
+  local ellipsis_width = width.utf8swidth(default_config.ellipsis)
+
+  if cache.total_content_width > self.inner_width then
+    -- Need overflow indicators
+    effective_width = self.inner_width - (ellipsis_width * 2)
+  end
+
+  -- Get selected tab position and width
+  local tab_start = cache.tab_positions[selected_index]
+  local tab_width = cache.tab_widths[selected_index]
+  local tab_end = tab_start + tab_width
+
+  -- Adjust viewport to show selected tab
+  if tab_start < cache.viewport_offset then
+    -- Tab is to the left of viewport, move viewport to show it
+    cache.viewport_offset = tab_start
+
+  elseif tab_end > cache.viewport_offset + effective_width then
+    -- Tab is to the right of viewport, move viewport to show it
+    if tab_width > effective_width then
+      -- Tab is wider than effective width, left-justify it
+      cache.viewport_offset = tab_start
+
+    else
+      -- Show tab at the right edge
+      cache.viewport_offset = tab_end - effective_width
+    end
+  end
+
+  -- Clamp viewport offset
+  if cache.viewport_offset < 0 then
+    cache.viewport_offset = 0
+  end
+  local max_offset = math.max(0, cache.total_content_width - effective_width)
+  if cache.viewport_offset > max_offset then
+    cache.viewport_offset = max_offset
+  end
 end
 
 
@@ -701,7 +644,7 @@ function TabStrip:set_items(items)
   self.items = items
 
   local old_selected = self.selected
-  self:_clear_cache()
+  clear_cache(self)
 
   -- Adjust selection: validate it still exists, or default to first
   self.selected = selection(items, self.selected)
@@ -746,7 +689,7 @@ function TabStrip:add_item(item, before_id)
     table.insert(self.items, new_item)
   end
 
-  self:_clear_cache()
+  clear_cache(self)
   return true
 end
 
@@ -767,7 +710,7 @@ function TabStrip:remove_item(id)
   local was_selected = (self.selected == id)
 
   table.remove(self.items, remove_index)
-  self:_clear_cache()
+  clear_cache(self)
 
   if not was_selected then
     return true  -- No change to selection, so we're done
