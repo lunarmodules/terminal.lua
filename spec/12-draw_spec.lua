@@ -17,6 +17,23 @@ describe("terminal.draw", function()
 
 
 
+  describe("vertical_seq()", function()
+
+    it("does not generate negative cursor-left movement at lastcolumn", function()
+      local result = line.vertical_seq(3, "|", true)
+      assert.are.equal("|\27[1B|\27[1B|", result)
+    end)
+
+
+    it("keeps regular cursor-left movement when not at lastcolumn", function()
+      local result = line.vertical_seq(3, "|", false)
+      assert.are.equal("|\27[1D\27[1B|\27[1D\27[1B|", result)
+    end)
+
+  end)
+
+
+
   describe("title_seq()", function()
 
     it("creates title sequence with empty title", function()
