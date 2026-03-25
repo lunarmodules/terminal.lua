@@ -54,7 +54,7 @@ function M.vertical_seq(n, char, lastcolumn)
   char = char or "│"
   lastcolumn = lastcolumn and 1 or 0
   local w = text.width.utf8cwidth(char)
-  local back = w - lastcolumn * 2
+  local back = w - lastcolumn
   if back < 0 then
     back = 0
   end

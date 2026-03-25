@@ -25,6 +25,12 @@ describe("terminal.draw", function()
     end)
 
 
+    it("keeps alignment for double-width characters at lastcolumn", function()
+      local result = line.vertical_seq(3, "界", true)
+      assert.are.equal("界\27[1D\27[1B界\27[1D\27[1B界", result)
+    end)
+
+
     it("keeps regular cursor-left movement when not at lastcolumn", function()
       local result = line.vertical_seq(3, "|", false)
       assert.are.equal("|\27[1D\27[1B|\27[1D\27[1B|", result)
