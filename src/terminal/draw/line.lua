@@ -55,9 +55,6 @@ function M.vertical_seq(n, char, lastcolumn)
   lastcolumn = lastcolumn and 1 or 0
   local w = text.width.utf8cwidth(char)
   local back = w - lastcolumn
-  if back < 0 then
-    back = 0
-  end
   return (char .. cursor.position.left_seq(back) .. cursor.position.down_seq(1)):rep(n-1) .. char
 end
 
