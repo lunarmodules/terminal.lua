@@ -53,8 +53,8 @@ function M.vertical_seq(n, char, lastcolumn)
   char = char or "│"
   lastcolumn = lastcolumn and 1 or 0
   local w = text.width.utf8cwidth(char)
-  -- TODO: why do we need 'lastcolumn*2' here???
-  return (char .. cursor.position.left_seq(w-lastcolumn*2) .. cursor.position.down_seq(1)):rep(n-1) .. char
+  local back = w - lastcolumn
+  return (char .. cursor.position.left_seq(back) .. cursor.position.down_seq(1)):rep(n-1) .. char
 end
 
 
