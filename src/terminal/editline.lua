@@ -420,8 +420,21 @@ end
 -- @treturn EditLine A new EditLine instance containing the substring.
 function EditLine:sub_char(i, j)
   assert(i, "expected argument #1 to be a number")
-  i = utils.resolve_index(i, #self.chars, 1)
-  j = utils.resolve_index(j or -1, #self.chars, 1)
+
+  local len = #self.chars
+  j = j or -1
+
+  if i > len then
+    return EditLine("")
+  end
+
+  i = utils.resolve_index(i, len, 1)
+  j = utils.resolve_index(j, len, 1)
+
+  if i > j then
+    return EditLine("")
+  end
+
   return EditLine(table.concat(self.chars, "", i, j))
 end
 
