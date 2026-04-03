@@ -1147,8 +1147,7 @@ describe("EditLine:", function()
     end)
 
 
-    pending("returns an empty string for out-of-bounds indices", function()
-      -- TODO: fix this test
+    it("returns an empty string for out-of-bounds indices", function()
       local line = EditLine("hello")
       local exp = tostring(line):sub(10, 15)
       local val = tostring(line:sub_char(10, 15))
