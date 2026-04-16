@@ -77,22 +77,46 @@ end
 
 
 
---- Prints to the stream.
--- A `print` compatible function that safely writes output to the stream.
--- Arguments are separated by a tab character, and a newline is added at the end.
--- @param ... the values to write
-function M.print(...)
-  local args = pack(...)
-  for i = 1, args.n do
-    args[i] = tostring(args[i])
+do
+  -- Prints to the stream with a terminator specified.
+  -- A `print` compatible function that safely writes output to the stream.
+  -- Arguments are separated by a tab character, and the terminator is added at the end.
+  -- @param ... the values to write
+  local function tprint(terminator, ...)
+    local args = pack(...)
+    for i = 1, args.n do
+      args[i] = tostring(args[i])
+    end
+
+    t:write(table.concat(args, "\t"), terminator)
+    t:flush()
+
+    return true
   end
 
-  t:write(table.concat(args, "\t"), "\n")
-  t:flush()
 
-  return true
+
+  --- Prints to the stream.
+  -- A `print` compatible function that safely writes output to the stream.
+  -- Arguments are separated by a tab character, and a newline is added at the end.
+  -- @param ... the values to write
+  function M.print(...)
+    return tprint("\n", ...)
+  end
+
+
+
+  local clear_eol_term = require("terminal.clear").eol_seq() .. "\n"
+
+  --- Prints to the stream, and clears the remainder of the line.
+  -- A `print` compatible function that safely writes output to the stream.
+  -- Arguments are separated by a tab character, and a clear-eol and newline are added at the end.
+  -- @param ... the values to write
+  function M.printcl(...)
+    return tprint(clear_eol_term, ...)
+  end
+
 end
-
 
 
 --- Flushes the stream.
