@@ -1,7 +1,23 @@
---- Test helper for Busted specs: load and unload the terminal library (and LuaSystem)
+--- Helper functions for testing the `terminal.lua` library.
+--
+-- This module has no use for the library user, only for the developers.
+--
+-- Test helper for Busted specs: load and unload the terminal library (and LuaSystem)
 -- for test isolation. Cleans from `package.loaded`: `"terminal"`, any `"terminal.*"`,
--- and `"system"`. Intended for use from Busted setup/teardown or before_each/after_each.
+-- and `"system"`. Intended for use from Busted `setup`/`teardown` or `before_each`/`after_each`.
+--
 -- This module does not require terminal or system at load time.
+--
+-- Overview
+--
+-- - `load` loads the terminal and system modules, whilst patching the required functions to
+--   enable the mocks. Returns the terminal module. Also sets the `_TEST` global to true, which
+--   can be used to export some internals (only when testing).
+--
+-- - `unload` removes terminal and system from `package.loaded`, and does some cleanup. Idempotent.
+--
+-- - The functions provided by this module can set terminal size, push keyboard input, and
+--   collect output to make it easier to test functionality.
 -- @module spec.helpers
 
 
@@ -23,7 +39,7 @@ local get_config do
   -- this config table holds config values as configured for the mock functions.
   -- the key is the terminal module-table, the value a hash-table of config values.
   -- Because it is set to weak-key, the table is only kept alive if the terminal module
-  -- is still in use, aftre a reload it will be a fresh copy again.
+  -- is still in use, after a reload it will be a fresh copy again.
   local config = setmetatable({}, { __mode = "k" })
 
 
@@ -56,7 +72,8 @@ end
 
 
 
--- Sets the terminal size.
+--- Sets the terminal size.
+-- If not set, the defaults size will be 25 x 80.
 -- @tparam number rows number of rows
 -- @tparam number columns number of columns
 function M.set_termsize(rows, columns)
@@ -71,7 +88,7 @@ end
 
 
 
---- Gets the terminal size.
+-- Gets the terminal size.
 -- This is the mock function for `system.termsize()`.
 -- If the terminal size wasn't set yet, returns 25x80.
 -- @treturn number rows number of rows
@@ -83,7 +100,7 @@ end
 
 
 
---- Reads a single byute from the keyboard buffer, which is mocked.
+-- Reads a single byte from the keyboard buffer, which is mocked.
 -- This is the mock for `system._readkey()`
 -- @treturn number the byte read from the keyboard buffer, or nil if the buffer is empty
 function M._readkey()
@@ -97,6 +114,7 @@ end
 --- Pushes input into the keyboard buffer mock.
 -- @tparam string seq the sequence of input, individual bytes of this string will be returned
 -- @tparam string err an eror to return, in this case `seq` MUST be nil.
+-- @within input
 -- @usage
 -- helper.push_kb_input(helper.keys.esc)                -- push a specific named key
 -- helper.push_kb_input(helper.keys.up)                 -- push an ansi sequence for the "up" arrow key
@@ -124,9 +142,10 @@ end
 
 
 
--- Gets the output written to the output stream.
+--- Gets the output written to the output stream.
 -- @treturn string the output written to the output stream, empty string if no output
 -- was written yet.
+-- @within output
 function M.get_output()
   local cfg = get_config()
   if not cfg.output.filename then
@@ -139,6 +158,7 @@ end
 
 --- Clears the output written to the output stream.
 -- and recreates an empty output file.
+-- @within output
 function M.clear_output()
   local cfg = get_config()
 
@@ -164,6 +184,7 @@ end
 
 --- A lookup table for key sequences to push into the keyboard buffer.
 -- @table keys
+-- @within input
 -- @usage
 -- helper.push_kb_input(helper.keys.esc)
 -- helper.push_kb_input(helper.keys.ctrl_c)
@@ -235,10 +256,32 @@ end
 
 
 --- Load the main terminal and system modules after cleaning package.loaded.
--- Cleans terminal and LuaSystem from `package.loaded`, then requires the main
--- `terminal` module. Will patch both libraries to enable the mocks.
--- Call from Busted setup or before_each.
+-- First calls `helpers.unload`, then requires the main `terminal` module (which
+-- requires `system` in turn). Will patch both libraries to enable the mocks.
+-- Call from Busted `setup` or `before_each`.
 -- @treturn table the main terminal module
+-- @within setup
+-- @usage
+-- local helpers = require "spec.helpers"
+--
+-- describe("some test", function()
+--
+--   local terminal
+--
+--   setup(function()
+--     terminal = helpers.load()
+--   end)
+--
+--   teardown(function()
+--     helpers.unload()
+--   end)
+--
+--   -- tests can use the `terminal` variable here
+--   it("does something", function(
+--     -- use terminal here
+--   end)
+--
+-- end)
 function M.load()
   M.unload()
 
@@ -253,10 +296,10 @@ function M.load()
 end
 
 
-
---- Remove terminal and LuaSystem from package.loaded.
--- Does not load them again. Call from Busted teardown or after_each so the
--- next load() gets a fresh terminal. Idempotent.
+--- Removes terminal and LuaSystem from `package.loaded`.
+-- Does not load them again. Call from Busted `teardown` or `after_each` so the
+-- next `helpers.load` gets a fresh terminal. Idempotent.
+-- @within teardown
 function M.unload()
   -- clean up package.loaded
   for key, _ in pairs(package.loaded) do
