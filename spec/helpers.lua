@@ -72,6 +72,26 @@ end
 
 
 
+--- Sets what `terminal.output.isatty()` returns.
+-- If not set, defaults to `true`.
+-- @tparam boolean value the value to return
+-- @within output
+function M.set_output_isatty(value)
+  get_config().isatty.output = not not value
+end
+
+
+
+--- Sets what `terminal.input.isatty()` returns.
+-- If not set, defaults to `true`.
+-- @tparam boolean value the value to return
+-- @within input
+function M.set_input_isatty(value)
+  get_config().isatty.input = not not value
+end
+
+
+
 --- Sets the terminal size.
 -- If not set, the defaults size will be 25 x 80.
 -- @tparam number rows number of rows
@@ -233,6 +253,16 @@ local function patch_terminal()
     end
     -- only set it if it matches the mocked filehandle
     return set_stream(filehandle)
+  end
+
+  -- mock output.isatty
+  terminal.output.isatty = function()
+    return get_config().isatty.output ~= false
+  end
+
+  -- mock input.isatty
+  terminal.input.isatty = function()
+    return get_config().isatty.input ~= false
   end
 end
 

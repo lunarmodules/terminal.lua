@@ -166,6 +166,50 @@ describe("Spec helpers", function()
 
 
 
+  describe("isatty mocks", function()
+
+    it("output.isatty defaults to true", function()
+      local terminal = helpers.load()
+      assert.is_true(terminal.output.isatty())
+    end)
+
+
+    it("output.isatty returns the value set by set_output_isatty", function()
+      local terminal = helpers.load()
+      helpers.set_output_isatty(false)
+      assert.is_false(terminal.output.isatty())
+    end)
+
+
+    it("input.isatty defaults to true", function()
+      local terminal = helpers.load()
+      assert.is_true(terminal.input.isatty())
+    end)
+
+
+    it("input.isatty returns the value set by set_input_isatty", function()
+      local terminal = helpers.load()
+      helpers.set_input_isatty(false)
+      assert.is_false(terminal.input.isatty())
+    end)
+
+
+    it("isatty mocks reset to true after reload", function()
+      helpers.load()
+      helpers.set_output_isatty(false)
+      helpers.set_input_isatty(false)
+
+      helpers.unload()
+      local terminal = helpers.load()
+
+      assert.is_true(terminal.output.isatty())
+      assert.is_true(terminal.input.isatty())
+    end)
+
+  end)
+
+
+
   describe("keys lookup", function()
 
     it("is read-only", function()
