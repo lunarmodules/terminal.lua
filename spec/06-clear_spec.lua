@@ -3,6 +3,7 @@ describe("Clear Module Tests", function()
   local clear
 
   setup(function()
+    require "terminal"
     clear = require "terminal.clear"
   end)
 
