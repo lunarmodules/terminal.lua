@@ -61,6 +61,7 @@ build = {
     ["terminal.ui.panel.set"] = "src/terminal/ui/panel/set.lua",
     ["terminal.ui.panel.tab_strip"] = "src/terminal/ui/panel/tab_strip.lua",
     ["terminal.ui.panel.key_bar"] = "src/terminal/ui/panel/key_bar.lua",
+    ["terminal.ui.canvas"] = "src/terminal/ui/canvas.lua",
   },
 
   copy_directories = {
