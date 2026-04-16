@@ -6,7 +6,7 @@ format='markdown'
 use_markdown_titles = true
 style="./doc_topics/"
 
-file={'./src/'}
+file={'./src/', './spec/helpers.lua'}
 topics={'./doc_topics/', './LICENSE.md', './CHANGELOG.md', './CONTRIBUTING.md'}
 examples = {'./examples'}
 
