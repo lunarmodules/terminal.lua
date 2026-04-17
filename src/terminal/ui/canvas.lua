@@ -7,24 +7,25 @@
 local t = require "terminal"
 local utils = t.utils
 local position = t.cursor.position
+local sys = require "system"
 
 
 
 -- Dot bit positions within a braille cell:
---   col 0 (left):  row 0=0x01, row 1=0x02, row 2=0x04, row 3=0x40
---   col 1 (right): row 0=0x08, row 1=0x10, row 2=0x20, row 3=0x80
+--   col 0 (left):  row 0=1, row 1=2, row 2=4, row 3=64
+--   col 1 (right): row 0=8, row 1=16, row 2=32, row 3=128
 -- Row 0 is the TOP pixel in the cell.
 local DOT_BIT = {
-  [0] = { [0] = 0x01, [1] = 0x02, [2] = 0x04, [3] = 0x40 },
-  [1] = { [0] = 0x08, [1] = 0x10, [2] = 0x20, [3] = 0x80 },
+  [0] = { [0] = 1, [1] = 2,  [2] = 4,  [3] = 64 },
+  [1] = { [0] = 8, [1] = 16, [2] = 32, [3] = 128 },
 }
 
 
 
 -- Encode a braille dot-pattern index (0–255) as a UTF-8 string.
--- U+2800+i: byte1=0xE2, byte2=0xA0+(i>>6), byte3=0x80+(i&0x3F)
+-- U+2800+i: byte1=226, byte2=160+(i//64), byte3=128+(i%64)
 local function braille(i)
-  return string.char(0xE2, 0xA0 + (i >> 6), 0x80 + (i & 0x3F))
+  return string.char(226, 160 + math.floor(i / 64), 128 + (i % 64))
 end
 
 
@@ -39,12 +40,13 @@ local UNSET_LUT = {}
 
 for i = 0, 255 do
   local ch = braille(i)
+  local fi = sys.bitflag(i)
   for col = 0, 1 do
     for row = 0, 3 do
-      local bit = DOT_BIT[col][row]
+      local fb = sys.bitflag(DOT_BIT[col][row])
       local key = ch .. string.char(col, row)
-      SET_LUT[key]   = braille(i | bit) -- TODO: fix this for all Lua versions
-      UNSET_LUT[key] = braille(i & ~bit)
+      SET_LUT[key]   = braille((fi + fb):value())
+      UNSET_LUT[key] = braille((fi - fb):value())
     end
   end
 end
@@ -52,7 +54,7 @@ end
 
 
 local BLANK   = braille(0)    -- U+2800, all dots off
-local FILLED  = braille(0xFF) -- U+28FF, all dots on
+local FILLED  = braille(255)  -- U+28FF, all dots on
 
 
 
