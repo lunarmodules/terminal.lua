@@ -195,8 +195,9 @@ end
 -- @tparam number cx centre pixel column, 0-based
 -- @tparam number cy centre pixel row, 0-based
 -- @tparam number r  radius in pixels
+-- @tparam[opt=false] boolean fill if truthy, fill the interior
 -- @tparam[opt=false] boolean clear if truthy, unset pixels instead of setting them
-function Canvas:circle(cx, cy, r, clear)
+function Canvas:circle(cx, cy, r, fill, clear)
   local op = clear and self.unset or self.set
   local x  = 0
   local y  = r
@@ -223,6 +224,75 @@ function Canvas:circle(cx, cy, r, clear)
       p = p + 2 * (x - y) + 1
     end
     octants(x, y)
+  end
+
+  if fill then
+    for dy = -r, r do
+      local dx = math.floor(math.sqrt(r * r - dy * dy))
+      for fx = cx - dx, cx + dx do
+        op(self, fx, cy + dy)
+      end
+    end
+  end
+end
+
+
+
+--- Draw a polygon from an array of `{x, y}` points.
+-- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon.
+-- With `fill`, the interior is flood-filled using a scanline algorithm.
+-- @tparam table points array of `{x, y}` pixel coordinate pairs, 0-based
+-- @tparam[opt=false] boolean fill if truthy, fill the interior of the polygon
+-- @tparam[opt=false] boolean clear if truthy, unset pixels instead of setting them
+function Canvas:polygon(points, fill, clear)
+  local op = clear and self.unset or self.set
+  local n  = #points
+
+  if n == 0 then
+    return
+  end
+
+  if n == 1 then
+    op(self, points[1][1], points[1][2])
+    return
+  end
+
+  -- draw edges; for n >= 3 the last edge closes back to points[1]
+  local limit = n == 2 and 1 or n
+  for i = 1, limit do
+    local a = points[i]
+    local b = points[(i % n) + 1]
+    self:line(a[1], a[2], b[1], b[2], clear)
+  end
+
+  if not fill or n < 3 then
+    return
+  end
+
+  -- scanline fill using the even-odd rule
+  local y_min, y_max = points[1][2], points[1][2]
+  for i = 2, n do
+    local y = points[i][2]
+    if y < y_min then y_min = y end
+    if y > y_max then y_max = y end
+  end
+
+  for y = y_min, y_max do
+    local xs = {}
+    for i = 1, n do
+      local x1, y1 = points[i][1], points[i][2]
+      local x2, y2 = points[(i % n) + 1][1], points[(i % n) + 1][2]
+      -- count edge only on the lower endpoint to avoid double-counting at vertices
+      if (y1 <= y and y < y2) or (y2 <= y and y < y1) then
+        xs[#xs + 1] = x1 + (y - y1) * (x2 - x1) / (y2 - y1)
+      end
+    end
+    table.sort(xs)
+    for i = 1, #xs - 1, 2 do
+      for x = math.floor(xs[i]), math.ceil(xs[i + 1]) do
+        op(self, x, y)
+      end
+    end
   end
 end
 
