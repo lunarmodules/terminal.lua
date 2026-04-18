@@ -97,9 +97,15 @@ end
 
 --- Set (illuminate) a pixel.
 -- Coordinates are 0-based; origin (0, 0) is at the top-left.
+-- Out-of-bounds coordinates are ignored (no error).
 -- @tparam number x pixel column, 0-based, left to right
 -- @tparam number y pixel row, 0-based, top to bottom
 function Canvas:set(x, y)
+  if x < 0 or x >= self.px_w or
+     y < 0 or y >= self.px_h then
+    return
+  end
+
   local cell_col = math.floor(x / 2) + 1
   local cell_row = math.floor(y / 4) + 1
   local c = self.cells[cell_row][cell_col]
@@ -110,9 +116,15 @@ end
 
 --- Clear (extinguish) a pixel.
 -- Coordinates are 0-based; origin (0, 0) is at the top-left.
+-- Out-of-bounds coordinates are ignored (no error).
 -- @tparam number x pixel column, 0-based, left to right
 -- @tparam number y pixel row, 0-based, top to bottom
 function Canvas:unset(x, y)
+  if x < 0 or x >= self.px_w or
+     y < 0 or y >= self.px_h then
+    return
+  end
+
   local cell_col = math.floor(x / 2) + 1
   local cell_row = math.floor(y / 4) + 1
   local c = self.cells[cell_row][cell_col]
