@@ -15,7 +15,6 @@ local ceil = math.ceil
 local sys = require "system"
 local abs = math.abs
 
--- TODO: rename the clear option in drawing primitives to 'erase' for clarity
 
 
 -- Dot bit positions within a braille cell:
@@ -199,13 +198,13 @@ end
 -- @tparam number opts.y1 start pixel row, 0-based
 -- @tparam number opts.x2 end pixel column, 0-based
 -- @tparam number opts.y2 end pixel row, 0-based
--- @tparam[opt=false] boolean opts.clear if truthy, unset pixels instead of setting them
+-- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
 function Canvas:line(opts)
   local x1 = opts.x1
   local y1 = opts.y1
   local x2 = opts.x2
   local y2 = opts.y2
-  local op = opts.clear and self.unset or self.set
+  local op = opts.erase and self.unset or self.set
   local dx = abs(x2 - x1)
   local dy = abs(y2 - y1)
   local sx = x1 < x2 and 1 or -1
@@ -237,14 +236,14 @@ end
 -- @tparam number opts.y centre pixel row, 0-based
 -- @tparam number opts.r radius in pixels
 -- @tparam[opt=false] boolean opts.fill if truthy, fill the interior
--- @tparam[opt=false] boolean opts.clear if truthy, unset pixels instead of setting them
+-- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
 function Canvas:circle(opts)
   local cx = opts.x
   local cy = opts.y
   local r = opts.r
   local fill = opts.fill
-  local clear = opts.clear
-  local op = clear and self.unset or self.set
+  local erase = opts.erase
+  local op = erase and self.unset or self.set
   local x = 0
   local y = r
   local p = 1 - r
@@ -290,12 +289,12 @@ end
 -- @tparam table opts
 -- @tparam table opts.points array of `{x, y}` pixel coordinate pairs, 0-based
 -- @tparam[opt=false] boolean opts.fill if truthy, fill the interior of the polygon
--- @tparam[opt=false] boolean opts.clear if truthy, unset pixels instead of setting them
+-- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
 function Canvas:polygon(opts) -- TODO: add an option to keep it open instead of closing the last point to the first?
   local points = opts.points
-  local clear = opts.clear
+  local erase = opts.erase
   local fill = opts.fill
-  local op = clear and self.unset or self.set
+  local op = erase and self.unset or self.set
   local n = #points
 
   if n == 0 then
@@ -312,7 +311,7 @@ function Canvas:polygon(opts) -- TODO: add an option to keep it open instead of 
   for i = 1, limit do
     local a = points[i]
     local b = points[(i % n) + 1]
-    self:line({ x1 = a[1], y1 = a[2], x2 = b[1], y2 = b[2], clear = clear })
+    self:line({ x1 = a[1], y1 = a[2], x2 = b[1], y2 = b[2], erase = erase })
   end
 
   if not fill or n < 3 then

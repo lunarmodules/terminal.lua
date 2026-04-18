@@ -39,7 +39,7 @@ dashed_circle(c, 60, 60, 58, 12, 8)
 c:circle({ x = 60, y = 60, r = 45, fill = true })
 
 -- White "moon" highlight — erase a circle from the upper-right of the blue circle
-c:circle({ x = 79, y = 37, r = 11, fill = true, clear = true })
+c:circle({ x = 79, y = 37, r = 11, fill = true, erase = true })
 
 -- Small satellite dot, upper-right between the two circles
 c:circle({ x = 103, y = 14, r = 11, fill = true })
