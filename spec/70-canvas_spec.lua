@@ -240,6 +240,46 @@ describe("terminal.ui.canvas", function()
 
 
 
+  describe("clone()", function()
+
+    it("returns a new canvas with the same dimensions", function()
+      local c = Canvas({ width = 3, height = 2 })
+      local d = c:clone()
+      assert.are.equal(c.cols, d.cols)
+      assert.are.equal(c.rows, d.rows)
+    end)
+
+
+    it("cloned canvas has identical cell state", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(0, 0)
+      c:set(3, 3)
+      local d = c:clone()
+      assert.are.equal(c.cells[1][1], d.cells[1][1])
+      assert.are.equal(c.cells[1][2], d.cells[1][2])
+    end)
+
+
+    it("cloned canvas is independent: changes do not affect the original", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(0, 0)
+      local d = c:clone()
+      d:unset(0, 0)
+      assert.are_not.equal(BLANK, c.cells[1][1])
+      assert.are.equal(BLANK, d.cells[1][1])
+    end)
+
+
+    it("preserves the invert option", function()
+      local c = Canvas({ width = 1, height = 1, invert = true })
+      local d = c:clone()
+      assert.are.equal(c._blank, d._blank)
+    end)
+
+  end)
+
+
+
   describe("render()", function()
 
     it("returns a string", function()

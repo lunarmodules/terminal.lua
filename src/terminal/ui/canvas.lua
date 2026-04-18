@@ -198,6 +198,29 @@ end
 
 
 
+--- Return a deep copy of this canvas with identical dimensions and pixel state.
+-- @treturn Canvas Copy of the canvas
+function Canvas:clone()
+  local c = Canvas({ width = self.cols, height = self.rows })
+  for k, v in pairs(self) do
+    c[k] = v
+  end
+  c.cells = {}
+
+  for r = 1, self.rows do
+    local src = self.cells[r]
+    local dst = {}
+    for col = 1, self.cols do
+      dst[col] = src[col]
+    end
+    c.cells[r] = dst
+  end
+
+  return c
+end
+
+
+
 --- Clear the entire canvas.
 -- Fills all cells with the blank state (respects the `invert` option passed upon instantiation).
 function Canvas:clear()
