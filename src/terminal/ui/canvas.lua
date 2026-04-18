@@ -293,18 +293,25 @@ end
 
 
 --- Draw a polygon from an array of `{x, y}` points.
--- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon.
--- With `fill`, the interior is flood-filled using a scanline algorithm.
+-- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon by default.
+-- With `open`, the last point is not connected back to the first (polyline).
+-- With `fill`, the interior is filled using a scanline algorithm; requires a closed path.
 -- @tparam table opts
 -- @tparam table opts.points array of `{x, y}` pixel coordinate pairs, 0-based
+-- @tparam[opt=false] boolean opts.open if truthy, do not close the path back to the first point
 -- @tparam[opt=false] boolean opts.fill if truthy, fill the interior of the polygon
 -- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
-function Canvas:polygon(opts) -- TODO: add an option to keep it open instead of closing the last point to the first?
+function Canvas:polygon(opts)
   local points = opts.points
   local erase = opts.erase
+  local open = opts.open
   local fill = opts.fill
   local op = erase and self.unset or self.set
   local n = #points
+
+  if open and fill then
+    error("fill requires a closed path (open and fill cannot both be true)", 2)
+  end
 
   if n == 0 then
     return
@@ -315,8 +322,8 @@ function Canvas:polygon(opts) -- TODO: add an option to keep it open instead of 
     return
   end
 
-  -- draw edges; for n >= 3 the last edge closes back to points[1]
-  local limit = n == 2 and 1 or n
+  -- draw edges; closed path connects last point back to first
+  local limit = (open or n == 2) and n - 1 or n
   for i = 1, limit do
     local a = points[i]
     local b = points[(i % n) + 1]

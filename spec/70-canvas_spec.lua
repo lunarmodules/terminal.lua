@@ -598,6 +598,38 @@ describe("terminal.ui.canvas", function()
         assert.are_not.equal(BLANK, c.cells[1][1])
       end)
 
+
+      it("open=true does not draw the closing edge", function()
+        -- triangle (0,0),(3,0),(0,3): closed draws 3 edges; open draws only 2
+        local closed = Canvas({ width = 2, height = 1 })
+        closed:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }} })
+
+        local opened = Canvas({ width = 2, height = 1 })
+        opened:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }}, open = true })
+
+        -- the closing edge (0,3)→(0,0) sets pixels in cell[1][1] that open skips
+        assert.are_not.equal(closed.cells[1][1], opened.cells[1][1])
+      end)
+
+
+      it("open=true with two points draws a single line (same as closed)", function()
+        -- for 2 points open and closed are identical: one segment
+        local c_open   = Canvas({ width = 2, height = 1 })
+        local c_closed = Canvas({ width = 2, height = 1 })
+        c_open:polygon({ points = {{ 0, 0 }, { 3, 0 }}, open = true })
+        c_closed:polygon({ points = {{ 0, 0 }, { 3, 0 }} })
+        assert.are.equal(c_closed.cells[1][1], c_open.cells[1][1])
+        assert.are.equal(c_closed.cells[1][2], c_open.cells[1][2])
+      end)
+
+
+      it("errors when open and fill are both true", function()
+        local c = Canvas({ width = 2, height = 1 })
+        assert.has_error(function()
+          c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }}, open = true, fill = true })
+        end)
+      end)
+
     end)
 
   end)
