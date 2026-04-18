@@ -267,6 +267,33 @@ describe("terminal.ui.canvas", function()
       assert.are.equal(BLANK .. position.left_seq(1), c:render())
     end)
 
+
+    describe("print mode", function()
+
+      it("separates rows with newlines instead of cursor movements", function()
+        -- 2×2: expect row1_cells + "\n" + row2_cells, no escape sequences
+        local c = Canvas({ width = 2, height = 2 })
+        local expected = BLANK .. BLANK .. "\n" .. BLANK .. BLANK
+        assert.are.equal(expected, c:render(true))
+      end)
+
+
+      it("does not append a trailing newline after the last row", function()
+        local c = Canvas({ width = 2, height = 2 })
+        local result = c:render(true)
+        assert.are_not.equal("\n", result:sub(-1))
+      end)
+
+
+      it("emits no cursor-movement sequences", function()
+        local c = Canvas({ width = 2, height = 2 })
+        local result = c:render(true)
+        -- stripping ANSI sequences from a clean output leaves it unchanged
+        assert.are.equal(result, require("terminal").utils.strip_ansi(result))
+      end)
+
+    end)
+
   end)
 
 

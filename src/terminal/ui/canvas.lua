@@ -121,24 +121,38 @@ end
 
 
 
---- Render the canvas to a single string with embedded cursor movements.
--- Each row is followed by down+left to reach the start of the next row.
--- After the last row the cursor returns to the top-left of the canvas.
+--- Render the canvas to a single string.
+-- Without `print`: each row is followed by cursor down+left to reach the next row,
+-- and after the last row the cursor returns to the top-left of the canvas.
+-- With `print`: rows are separated by newlines and no cursor movement is emitted,
+-- nor a trailing newline.
+-- suitable for plain `io.write` / `print` output without pre-allocated screen space.
+-- @tparam[opt=false] boolean print if truthy, use newline separators with no return sequence
 -- @treturn string
-function Canvas:render()
+function Canvas:render(print)
   local parts = {}
   local p = 1
 
-  for r = 1, self.rows do
-    parts[p] = table.concat(self.cells[r])
-    p = p + 1
-    parts[p] = self._seq_between
-    p = p + 1
-  end
+  if print then
+    for r = 1, self.rows do
+      parts[p] = table.concat(self.cells[r])
+      p = p + 1
+      parts[p] = "\n"
+      p = p + 1
+    end
+    parts[p-1] = nil  -- drop trailing newline after last row
+  else
+    for r = 1, self.rows do
+      parts[p] = table.concat(self.cells[r])
+      p = p + 1
+      parts[p] = self._seq_between
+      p = p + 1
+    end
 
-  -- cursor is at end of last row; go back to top-left of canvas
-  -- overwrite the last _seq_between with the return-to-top-left sequence
-  parts[p-1] = self._seq_return
+    -- cursor is at end of last row; go back to top-left of canvas
+    -- overwrite the last _seq_between with the return-to-top-left sequence
+    parts[p-1] = self._seq_return
+  end
 
   return table.concat(parts)
 end

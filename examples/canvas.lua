@@ -47,7 +47,13 @@ c:circle(103, 14, 11, true)
 
 
 -- Make room and render in place
+t.output.print("drawn:")
 t.output.write(("\n"):rep(30))
 t.cursor.position.up(30)
 t.output.write(c:render())
 t.cursor.position.down(30)
+
+
+-- Output again, 'printable' format, no to create space
+print("printed:")
+print(c:render(true))
