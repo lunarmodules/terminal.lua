@@ -447,6 +447,17 @@ describe("terminal.ui.canvas", function()
       end)
 
 
+      it("draws the same pixels regardless of direction", function()
+        -- (3,3)→(0,0) must produce identical cells to (0,0)→(3,3)
+        local forward  = Canvas({ width = 2, height = 1 })
+        local reversed = Canvas({ width = 2, height = 1 })
+        forward:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 3 })
+        reversed:line({ x1 = 3, y1 = 3, x2 = 0, y2 = 0 })
+        assert.are.equal(forward.cells[1][1], reversed.cells[1][1])
+        assert.are.equal(forward.cells[1][2], reversed.cells[1][2])
+      end)
+
+
       it("draws a single-pixel line (x1==x2, y1==y2)", function()
         -- (0,0)→(0,0): only pixel (0,0), col=0,row=0,bit=1 → braille(1)
         local c = Canvas({ width = 1, height = 1 })

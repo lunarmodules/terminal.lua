@@ -3,6 +3,13 @@
 --
 -- Pixel coordinates are 0-based. The origin (0, 0) is at the top-left corner,
 -- with x increasing to the right and y increasing downward.
+--
+-- Example usage:
+--     local Canvas = require "terminal.ui.canvas"
+--     local c = Canvas({ width = 60, height = 30 })
+--     c:set(10, 5)  -- set a pixel at (10, 5)
+--     print(c:render({ print = true }))  -- render the canvas for printing
+-- @classmod ui.Canvas
 
 local position = require "terminal.cursor.position"
 local concat = table.concat
@@ -69,10 +76,14 @@ local Canvas = utils.class()
 
 
 --- Create a new canvas.
+-- Do not call this method directly, call on the class instead.
 -- @tparam table opts
 -- @tparam number opts.width   Width in display columns (each column is 2 pixels wide)
 -- @tparam number opts.height  Height in display rows (each row is 4 pixels tall)
 -- @tparam[opt=false] boolean opts.invert  If true, cleared cells are fully lit instead of empty
+-- @usage
+-- local Canvas = require "terminal.ui.canvas"
+-- local c = Canvas({ width = 60, height = 30 })  -- call on the class to invoke the constructor
 function Canvas:init(opts)
   opts = opts or {}
   assert(opts.width and opts.height, "width and height must be provided")
@@ -177,8 +188,7 @@ function Canvas:render(opts)
     parts[p] = seq_between
     p = p + 1
   end
-  -- overwrite the last seq_between with the return-to-top-left sequence
-  -- (empty string for print mode, dropping the trailing newline)
+  -- overwrite the last seq_between with the 'return' sequence
   parts[p-1] = seq_return
 
   return concat(parts)
@@ -187,7 +197,7 @@ end
 
 
 --- Clear the entire canvas.
--- Fills all cells with the blank state (respects the `invert` option).
+-- Fills all cells with the blank state (respects the `invert` option passed upon instantiation).
 function Canvas:clear()
   local cells = self.cells
   local blank = self._blank
@@ -201,7 +211,7 @@ end
 
 
 
---- Draw a line between two pixels using Bresenham's algorithm.
+--- Draw a line between two pixels.
 -- @tparam table opts
 -- @tparam number opts.x1 start pixel column, 0-based
 -- @tparam number opts.y1 start pixel row, 0-based
@@ -294,8 +304,6 @@ end
 
 --- Draw a polygon from an array of `{x, y}` points.
 -- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon by default.
--- With `open`, the last point is not connected back to the first (polyline).
--- With `fill`, the interior is filled using a scanline algorithm; requires a closed path.
 -- @tparam table opts
 -- @tparam table opts.points array of `{x, y}` pixel coordinate pairs, 0-based
 -- @tparam[opt=false] boolean opts.open if truthy, do not close the path back to the first point
@@ -364,7 +372,6 @@ end
 
 
 --- Returns the canvas size in pixels.
--- Return order matches `terminal.size`: width, height.
 -- @treturn number pixel width
 -- @treturn number pixel height
 function Canvas:get_pixels()
@@ -374,7 +381,6 @@ end
 
 
 --- Returns the canvas size in display rows and columns.
--- Return order matches `terminal.size`: rows first, then columns.
 -- @treturn number rows
 -- @treturn number columns
 function Canvas:get_size()
