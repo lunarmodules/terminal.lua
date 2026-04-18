@@ -36,13 +36,13 @@ end
 dashed_circle(c, 60, 60, 58, 12, 8)
 
 -- Large filled blue circle, offset slightly lower-left of centre
-c:circle(60, 60, 45, true)
+c:circle({ x = 60, y = 60, r = 45, fill = true })
 
 -- White "moon" highlight — erase a circle from the upper-right of the blue circle
-c:circle(79, 37, 11, true, true)
+c:circle({ x = 79, y = 37, r = 11, fill = true, clear = true })
 
 -- Small satellite dot, upper-right between the two circles
-c:circle(103, 14, 11, true)
+c:circle({ x = 103, y = 14, r = 11, fill = true })
 
 
 
@@ -54,6 +54,6 @@ t.output.write(c:render())
 t.cursor.position.down(30)
 
 
--- Output again, 'printable' format, no to create space
+-- Output again, 'printable' format, no need to create space
 print("printed:")
 print(c:render(true))

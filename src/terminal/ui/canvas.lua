@@ -9,7 +9,8 @@ local utils = t.utils
 local position = t.cursor.position
 local sys = require "system"
 
-
+-- TODO: more locals for math functions, etc.?
+-- TODO: rename the clear option in drawing primitives to 'erase' for clarity
 
 -- Dot bit positions within a braille cell:
 --   col 0 (left):  row 0=1, row 1=2, row 2=4, row 3=64
@@ -141,7 +142,7 @@ end
 -- suitable for plain `io.write` / `print` output without pre-allocated screen space.
 -- @tparam[opt=false] boolean print if truthy, use newline separators with no return sequence
 -- @treturn string
-function Canvas:render(print)
+function Canvas:render(print) -- TODO: add option to render a viewport
   local parts = {}
   local p = 1
 
@@ -187,17 +188,22 @@ end
 
 
 --- Draw a line between two pixels using Bresenham's algorithm.
--- @tparam number x1 start pixel column, 0-based
--- @tparam number y1 start pixel row, 0-based
--- @tparam number x2 end pixel column, 0-based
--- @tparam number y2 end pixel row, 0-based
--- @tparam[opt=false] boolean clear if truthy, unset pixels instead of setting them
-function Canvas:line(x1, y1, x2, y2, clear)
-  local op  = clear and self.unset or self.set
-  local dx  = math.abs(x2 - x1)
-  local dy  = math.abs(y2 - y1)
-  local sx  = x1 < x2 and 1 or -1
-  local sy  = y1 < y2 and 1 or -1
+-- @tparam table opts
+-- @tparam number opts.x1 start pixel column, 0-based
+-- @tparam number opts.y1 start pixel row, 0-based
+-- @tparam number opts.x2 end pixel column, 0-based
+-- @tparam number opts.y2 end pixel row, 0-based
+-- @tparam[opt=false] boolean opts.clear if truthy, unset pixels instead of setting them
+function Canvas:line(opts)
+  local x1 = opts.x1
+  local y1 = opts.y1
+  local x2 = opts.x2
+  local y2 = opts.y2
+  local op = opts.clear and self.unset or self.set
+  local dx = math.abs(x2 - x1)
+  local dy = math.abs(y2 - y1)
+  local sx = x1 < x2 and 1 or -1
+  local sy = y1 < y2 and 1 or -1
   local err = dx - dy
 
   while true do
@@ -220,16 +226,22 @@ end
 
 
 --- Draw a circle using the midpoint circle algorithm.
--- @tparam number cx centre pixel column, 0-based
--- @tparam number cy centre pixel row, 0-based
--- @tparam number r  radius in pixels
--- @tparam[opt=false] boolean fill if truthy, fill the interior
--- @tparam[opt=false] boolean clear if truthy, unset pixels instead of setting them
-function Canvas:circle(cx, cy, r, fill, clear)
+-- @tparam table opts
+-- @tparam number opts.x centre pixel column, 0-based
+-- @tparam number opts.y centre pixel row, 0-based
+-- @tparam number opts.r radius in pixels
+-- @tparam[opt=false] boolean opts.fill if truthy, fill the interior
+-- @tparam[opt=false] boolean opts.clear if truthy, unset pixels instead of setting them
+function Canvas:circle(opts)
+  local cx = opts.x
+  local cy = opts.y
+  local r = opts.r
+  local fill = opts.fill
+  local clear = opts.clear
   local op = clear and self.unset or self.set
-  local x  = 0
-  local y  = r
-  local p  = 1 - r
+  local x = 0
+  local y = r
+  local p = 1 - r
 
   local function octants(px, py)
     op(self, cx + px, cy + py)
@@ -269,12 +281,16 @@ end
 --- Draw a polygon from an array of `{x, y}` points.
 -- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon.
 -- With `fill`, the interior is flood-filled using a scanline algorithm.
--- @tparam table points array of `{x, y}` pixel coordinate pairs, 0-based
--- @tparam[opt=false] boolean fill if truthy, fill the interior of the polygon
--- @tparam[opt=false] boolean clear if truthy, unset pixels instead of setting them
-function Canvas:polygon(points, fill, clear)
+-- @tparam table opts
+-- @tparam table opts.points array of `{x, y}` pixel coordinate pairs, 0-based
+-- @tparam[opt=false] boolean opts.fill if truthy, fill the interior of the polygon
+-- @tparam[opt=false] boolean opts.clear if truthy, unset pixels instead of setting them
+function Canvas:polygon(opts) -- TODO: add an option to keep it open instead of closing the last point to the first?
+  local points = opts.points
+  local clear = opts.clear
+  local fill = opts.fill
   local op = clear and self.unset or self.set
-  local n  = #points
+  local n = #points
 
   if n == 0 then
     return
@@ -290,7 +306,7 @@ function Canvas:polygon(points, fill, clear)
   for i = 1, limit do
     local a = points[i]
     local b = points[(i % n) + 1]
-    self:line(a[1], a[2], b[1], b[2], clear)
+    self:line({ x1 = a[1], y1 = a[2], x2 = b[1], y2 = b[2], clear = clear })
   end
 
   if not fill or n < 3 then
