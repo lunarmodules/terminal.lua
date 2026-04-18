@@ -301,22 +301,83 @@ describe("terminal.ui.canvas", function()
         -- 2×2: expect row1_cells + "\n" + row2_cells, no escape sequences
         local c = Canvas({ width = 2, height = 2 })
         local expected = BLANK .. BLANK .. "\n" .. BLANK .. BLANK
-        assert.are.equal(expected, c:render(true))
+        assert.are.equal(expected, c:render({ print = true }))
       end)
 
 
       it("does not append a trailing newline after the last row", function()
         local c = Canvas({ width = 2, height = 2 })
-        local result = c:render(true)
+        local result = c:render({ print = true })
         assert.are_not.equal("\n", result:sub(-1))
       end)
 
 
       it("emits no cursor-movement sequences", function()
         local c = Canvas({ width = 2, height = 2 })
-        local result = c:render(true)
+        local result = c:render({ print = true })
         -- stripping ANSI sequences from a clean output leaves it unchanged
         assert.are.equal(result, require("terminal").utils.strip_ansi(result))
+      end)
+
+    end)
+
+
+    describe("viewport option", function()
+
+      it("renders only the specified columns", function()
+        -- 3×1: set a pixel in cell[1][1]; render only the middle cell (col 2)
+        local c = Canvas({ width = 3, height = 1 })
+        c:set(0, 0)  -- sets cell[1][1] to braille(1); cell[1][2] stays BLANK
+        local result = c:render({ col = 2, cols = 1 })
+        assert.are.equal(BLANK .. position.left_seq(1), result)
+      end)
+
+
+      it("renders only the specified rows", function()
+        -- 1×3: set a pixel in row 1; render only rows 2-3 (both BLANK)
+        local c = Canvas({ width = 1, height = 3 })
+        c:set(0, 0)  -- sets cell[1][1]; cells[2][1] and [3][1] stay BLANK
+        local seq_between = position.down_seq(1) .. position.left_seq(1)
+        local seq_return  = position.left_seq(1) .. position.up_seq(1)
+        local expected = BLANK .. seq_between .. BLANK .. seq_return
+        assert.are.equal(expected, c:render({ row = 2, rows = 2 }))
+      end)
+
+
+      it("cursor sequences are sized for the viewport, not the full canvas", function()
+        -- 3×3 canvas, render 2×2 viewport
+        local c = Canvas({ width = 3, height = 3 })
+        local result = c:render({ row = 2, col = 2, rows = 2, cols = 2 })
+        local seq_return = position.left_seq(2) .. position.up_seq(1)
+        assert.are.equal(seq_return, result:sub(-#seq_return))
+      end)
+
+
+      it("viewport with print mode renders only viewport cells with newlines", function()
+        -- 3×2 canvas, render cols 2-3 of both rows
+        local c = Canvas({ width = 3, height = 2 })
+        local result = c:render({ col = 2, cols = 2, print = true })
+        assert.are.equal(BLANK .. BLANK .. "\n" .. BLANK .. BLANK, result)
+      end)
+
+
+      it("omitting viewport renders the full canvas", function()
+        local c = Canvas({ width = 2, height = 2 })
+        assert.are.equal(c:render(), c:render({}))
+      end)
+
+
+      it("errors when row is out of bounds", function()
+        local c = Canvas({ width = 2, height = 2 })
+        assert.has_error(function() c:render({ row = 0 }) end)
+        assert.has_error(function() c:render({ row = 2, rows = 2 }) end)  -- r2 = 3 > self.rows
+      end)
+
+
+      it("errors when col is out of bounds", function()
+        local c = Canvas({ width = 2, height = 2 })
+        assert.has_error(function() c:render({ col = 0 }) end)
+        assert.has_error(function() c:render({ col = 2, cols = 2 }) end)  -- c2 = 3 > self.cols
       end)
 
     end)

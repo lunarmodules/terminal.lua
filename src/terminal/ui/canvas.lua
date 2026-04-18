@@ -86,9 +86,6 @@ function Canvas:init(opts)
   self.px_h   = opts.height * 4
   self._blank = opts.invert and FILLED or BLANK
 
-  self._seq_between = position.down_seq(1) .. position.left_seq(self.cols)
-  self._seq_return  = position.left_seq(self.cols) .. position.up_seq(self.rows - 1)
-
   self.cells = {}
   for r = 1, self.rows do
     local row = {}
@@ -140,37 +137,49 @@ end
 
 
 --- Render the canvas to a single string.
--- Without `print`: each row is followed by cursor down+left to reach the next row,
--- and after the last row the cursor returns to the top-left of the canvas.
--- With `print`: rows are separated by newlines and no cursor movement is emitted,
--- nor a trailing newline.
--- suitable for plain `io.write` / `print` output without pre-allocated screen space.
--- @tparam[opt=false] boolean print if truthy, use newline separators with no return sequence
+-- Without `opts.print`: each row is followed by cursor down+left, and after the last
+-- row the cursor returns to the top-left of the rendered area.
+-- With `opts.print`: rows are separated by newlines with no cursor movement sequences
+-- and no trailing newline; suitable for plain `io.write` / `print` output.
+-- @tparam[opt={}] table opts
+-- @tparam[opt=false] boolean opts.print if truthy, use newline separators with no return sequence
+-- @tparam[opt=1] number opts.row  first cell row of the viewport (1-based)
+-- @tparam[opt=1] number opts.col  first cell column of the viewport (1-based)
+-- @tparam[opt=self.rows] number opts.rows  number of rows to render
+-- @tparam[opt=self.cols] number opts.cols  number of columns to render
 -- @treturn string
-function Canvas:render(print) -- TODO: add option to render a viewport
+function Canvas:render(opts)
+  opts = opts or {}
+  local r1    = opts.row  or 1
+  local c1    = opts.col  or 1
+  local vrows = opts.rows or self.rows
+  local vcols = opts.cols or self.cols
+  local r2 = r1 + vrows - 1
+  local c2 = c1 + vcols - 1
+  if r1 < 1 or c1 < 1 or r2 > self.rows or c2 > self.cols then
+    error("viewport out of bounds", 2)
+  end
+
+  local seq_between, seq_return
+  if opts.print then
+    seq_between = "\n"
+    seq_return  = ""
+  else
+    seq_between = position.down_seq(1) .. position.left_seq(vcols)
+    seq_return  = position.left_seq(vcols) .. position.up_seq(vrows - 1)
+  end
+
   local parts = {}
   local p = 1
-
-  if print then
-    for r = 1, self.rows do
-      parts[p] = concat(self.cells[r])
-      p = p + 1
-      parts[p] = "\n"
-      p = p + 1
-    end
-    parts[p-1] = nil  -- drop trailing newline after last row
-  else
-    for r = 1, self.rows do
-      parts[p] = concat(self.cells[r])
-      p = p + 1
-      parts[p] = self._seq_between
-      p = p + 1
-    end
-
-    -- cursor is at end of last row; go back to top-left of canvas
-    -- overwrite the last _seq_between with the return-to-top-left sequence
-    parts[p-1] = self._seq_return
+  for r = r1, r2 do
+    parts[p] = concat(self.cells[r], "", c1, c2)
+    p = p + 1
+    parts[p] = seq_between
+    p = p + 1
   end
+  -- overwrite the last seq_between with the return-to-top-left sequence
+  -- (empty string for print mode, dropping the trailing newline)
+  parts[p-1] = seq_return
 
   return concat(parts)
 end

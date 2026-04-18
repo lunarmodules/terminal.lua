@@ -54,6 +54,6 @@ t.output.write(c:render())
 t.cursor.position.down(30)
 
 
--- Output again, 'printable' format, no need to create space
-print("printed:")
-print(c:render(true))
+-- Output again, 'printable' format, top-right quadrant only
+print("printed (top-right quadrant):")
+print(c:render({ print = true, row = 1, col = 31, rows = 15, cols = 30 }))
