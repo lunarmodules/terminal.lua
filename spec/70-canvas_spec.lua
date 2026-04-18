@@ -147,6 +147,18 @@ describe("terminal.ui.canvas", function()
       assert.are.equal(BLANK, c.cells[2][2])
     end)
 
+
+    it("ignores pixels outside canvas bounds", function()
+      -- 2×1 canvas: valid x=[0,3], valid y=[0,3]
+      local c = Canvas({ width = 2, height = 1 })
+      assert.has_no_error(function() c:set(-1,  0) end)  -- x too small
+      assert.has_no_error(function() c:set( 4,  0) end)  -- x too large
+      assert.has_no_error(function() c:set( 0, -1) end)  -- y too small
+      assert.has_no_error(function() c:set( 0,  4) end)  -- y too large
+      assert.are.equal(BLANK, c.cells[1][1])
+      assert.are.equal(BLANK, c.cells[1][2])
+    end)
+
   end)
 
 
@@ -177,6 +189,21 @@ describe("terminal.ui.canvas", function()
       assert.are.equal(braille(1 + 8), c.cells[1][1])
       c:unset(0, 0)
       assert.are.equal(braille(8), c.cells[1][1])
+    end)
+
+
+    it("ignores pixels outside canvas bounds", function()
+      -- 2×1 canvas: valid x=[0,3], valid y=[0,3]; pre-fill to detect unwanted changes
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(0, 0)
+      local before1 = c.cells[1][1]
+      local before2 = c.cells[1][2]
+      assert.has_no_error(function() c:unset(-1,  0) end)
+      assert.has_no_error(function() c:unset( 4,  0) end)
+      assert.has_no_error(function() c:unset( 0, -1) end)
+      assert.has_no_error(function() c:unset( 0,  4) end)
+      assert.are.equal(before1, c.cells[1][1])
+      assert.are.equal(before2, c.cells[1][2])
     end)
 
   end)
@@ -377,6 +404,15 @@ describe("terminal.ui.canvas", function()
         assert.are.equal(BLANK, c.cells[1][2])
       end)
 
+
+      it("ignores the out-of-bounds portion of a line", function()
+        -- line from inside to well outside; in-bounds pixels must be set, no error
+        local c = Canvas({ width = 1, height = 1 })
+        assert.has_no_error(function() c:line(0, 0, 20, 20) end)
+        -- pixel (0,0) is in-bounds and must be set
+        assert.are_not.equal(BLANK, c.cells[1][1])
+      end)
+
     end)
 
 
@@ -426,6 +462,13 @@ describe("terminal.ui.canvas", function()
             assert.are.equal(BLANK, c.cells[r][col])
           end
         end
+      end)
+
+
+      it("ignores out-of-bounds pixels when circle extends beyond canvas edge", function()
+        -- circle centred near edge so part of the outline falls outside
+        local c = Canvas({ width = 2, height = 2 })
+        assert.has_no_error(function() c:circle(0, 0, 3) end)
       end)
 
     end)
@@ -483,6 +526,15 @@ describe("terminal.ui.canvas", function()
         c:polygon({{ 0, 0 }, { 3, 0 }, { 0, 3 }}, false, true)
         assert.are.equal(BLANK, c.cells[1][1])
         assert.are.equal(BLANK, c.cells[1][2])
+      end)
+
+
+      it("ignores out-of-bounds pixels when polygon extends beyond canvas edge", function()
+        -- triangle with one vertex well outside the canvas
+        local c = Canvas({ width = 1, height = 1 })
+        assert.has_no_error(function() c:polygon({{ 0, 0 }, { 20, 0 }, { 0, 20 }}) end)
+        -- the in-bounds vertex (0,0) must still be drawn
+        assert.are_not.equal(BLANK, c.cells[1][1])
       end)
 
     end)
