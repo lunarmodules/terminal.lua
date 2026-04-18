@@ -466,7 +466,7 @@ describe("terminal.ui.canvas", function()
       end)
 
 
-      it("clears pixels when the clear flag is set", function()
+      it("erases pixels when the erase flag is set", function()
         local c = Canvas({ width = 2, height = 1 })
         c:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 0 })
         assert.are_not.equal(BLANK, c.cells[1][1])
@@ -525,7 +525,7 @@ describe("terminal.ui.canvas", function()
       end)
 
 
-      it("clears pixels when the clear flag is set", function()
+      it("erases pixels when the erase flag is set", function()
         local c = Canvas({ width = 3, height = 2 })
         c:circle({ x = 2, y = 4, r = 1 })
         c:circle({ x = 2, y = 4, r = 1, erase = true })
@@ -592,7 +592,7 @@ describe("terminal.ui.canvas", function()
       end)
 
 
-      it("clears pixels when the clear flag is set", function()
+      it("erases pixels when the erase flag is set", function()
         local c = Canvas({ width = 2, height = 1 })
         c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }} })
         c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }}, erase = true })

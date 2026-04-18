@@ -167,7 +167,9 @@ function Canvas:render(opts)
   local vcols = opts.cols or self.cols
   local r2 = r1 + vrows - 1
   local c2 = c1 + vcols - 1
-  if r1 < 1 or c1 < 1 or r2 > self.rows or c2 > self.cols then
+  if r1 < 1 or c1 < 1 or
+     r2 > self.rows or c2 > self.cols or
+     r1 > r2 or c1 > c2 then
     error("viewport out of bounds", 2)
   end
 
@@ -372,8 +374,8 @@ end
 
 
 --- Returns the canvas size in pixels.
--- @treturn number pixel width
 -- @treturn number pixel height
+-- @treturn number pixel width
 function Canvas:get_pixels()
   return self.px_h, self.px_w
 end
