@@ -4,13 +4,19 @@
 -- Pixel coordinates are 0-based. The origin (0, 0) is at the top-left corner,
 -- with x increasing to the right and y increasing downward.
 
-local t = require "terminal"
-local utils = t.utils
-local position = t.cursor.position
+local position = require "terminal.cursor.position"
+local concat = table.concat
+local utils = require "terminal.utils"
+local floor = math.floor
+local char = string.char
+local sort = table.sort
+local sqrt = math.sqrt
+local ceil = math.ceil
 local sys = require "system"
+local abs = math.abs
 
--- TODO: more locals for math functions, etc.?
 -- TODO: rename the clear option in drawing primitives to 'erase' for clarity
+
 
 -- Dot bit positions within a braille cell:
 --   col 0 (left):  row 0=1, row 1=2, row 2=4, row 3=64
@@ -26,7 +32,7 @@ local DOT_BIT = {
 -- Encode a braille dot-pattern index (0–255) as a UTF-8 string.
 -- U+2800+i: byte1=226, byte2=160+(i//64), byte3=128+(i%64)
 local function braille(i)
-  return string.char(226, 160 + math.floor(i / 64), 128 + (i % 64))
+  return char(226, 160 + floor(i / 64), 128 + (i % 64))
 end
 
 
@@ -45,7 +51,7 @@ for i = 0, 255 do
   for col = 0, 1 do
     for row = 0, 3 do
       local fb = sys.bitflag(DOT_BIT[col][row])
-      local key = ch .. string.char(col, row)
+      local key = ch .. char(col, row)
       SET_LUT[key]   = braille((fi + fb):value())
       UNSET_LUT[key] = braille((fi - fb):value())
     end
@@ -107,10 +113,10 @@ function Canvas:set(x, y)
     return
   end
 
-  local cell_col = math.floor(x / 2) + 1
-  local cell_row = math.floor(y / 4) + 1
+  local cell_col = floor(x / 2) + 1
+  local cell_row = floor(y / 4) + 1
   local c = self.cells[cell_row][cell_col]
-  self.cells[cell_row][cell_col] = SET_LUT[c .. string.char(x % 2, y % 4)]
+  self.cells[cell_row][cell_col] = SET_LUT[c .. char(x % 2, y % 4)]
 end
 
 
@@ -126,10 +132,10 @@ function Canvas:unset(x, y)
     return
   end
 
-  local cell_col = math.floor(x / 2) + 1
-  local cell_row = math.floor(y / 4) + 1
+  local cell_col = floor(x / 2) + 1
+  local cell_row = floor(y / 4) + 1
   local c = self.cells[cell_row][cell_col]
-  self.cells[cell_row][cell_col] = UNSET_LUT[c .. string.char(x % 2, y % 4)]
+  self.cells[cell_row][cell_col] = UNSET_LUT[c .. char(x % 2, y % 4)]
 end
 
 
@@ -148,7 +154,7 @@ function Canvas:render(print) -- TODO: add option to render a viewport
 
   if print then
     for r = 1, self.rows do
-      parts[p] = table.concat(self.cells[r])
+      parts[p] = concat(self.cells[r])
       p = p + 1
       parts[p] = "\n"
       p = p + 1
@@ -156,7 +162,7 @@ function Canvas:render(print) -- TODO: add option to render a viewport
     parts[p-1] = nil  -- drop trailing newline after last row
   else
     for r = 1, self.rows do
-      parts[p] = table.concat(self.cells[r])
+      parts[p] = concat(self.cells[r])
       p = p + 1
       parts[p] = self._seq_between
       p = p + 1
@@ -167,7 +173,7 @@ function Canvas:render(print) -- TODO: add option to render a viewport
     parts[p-1] = self._seq_return
   end
 
-  return table.concat(parts)
+  return concat(parts)
 end
 
 
@@ -200,8 +206,8 @@ function Canvas:line(opts)
   local x2 = opts.x2
   local y2 = opts.y2
   local op = opts.clear and self.unset or self.set
-  local dx = math.abs(x2 - x1)
-  local dy = math.abs(y2 - y1)
+  local dx = abs(x2 - x1)
+  local dy = abs(y2 - y1)
   local sx = x1 < x2 and 1 or -1
   local sy = y1 < y2 and 1 or -1
   local err = dx - dy
@@ -268,7 +274,7 @@ function Canvas:circle(opts)
 
   if fill then
     for dy = -r, r do
-      local dx = math.floor(math.sqrt(r * r - dy * dy))
+      local dx = floor(sqrt(r * r - dy * dy))
       for fx = cx - dx, cx + dx do
         op(self, fx, cy + dy)
       end
@@ -331,9 +337,9 @@ function Canvas:polygon(opts) -- TODO: add an option to keep it open instead of 
         xs[#xs + 1] = x1 + (y - y1) * (x2 - x1) / (y2 - y1)
       end
     end
-    table.sort(xs)
+    sort(xs)
     for i = 1, #xs - 1, 2 do
-      for x = math.floor(xs[i]), math.ceil(xs[i + 1]) do
+      for x = floor(xs[i]), ceil(xs[i + 1]) do
         op(self, x, y)
       end
     end
