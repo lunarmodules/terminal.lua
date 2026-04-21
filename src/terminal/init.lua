@@ -118,8 +118,9 @@ do
 
   local function restore_without_console_flags(backup)
     -- Best-effort fallback for Windows pseudo terminals where restoring Win32
-    -- console flags fails, but POSIX-ish tty settings/non-block mode can still
-    -- be restored.
+    -- console flags fails (eg. "invalid flags"), but POSIX-ish tty settings,
+    -- non-block mode, and codepages can still be restored.
+    -- This keeps shutdown from leaving the shell in a degraded state.
     if backup.term_in then pcall(sys.tcsetattr, io.stdin, sys.TCSANOW, backup.term_in) end
     if backup.term_out then pcall(sys.tcsetattr, io.stdout, sys.TCSANOW, backup.term_out) end
     if backup.term_err then pcall(sys.tcsetattr, io.stderr, sys.TCSANOW, backup.term_err) end
@@ -210,6 +211,8 @@ do
         -- console flag changes. Keep this best-effort.
         -- We only try to enable VTP/VTI here. Input still works because
         -- luasystem `getch` already reads single key presses on Windows.
+        -- If this fails we continue; failing hard here would break otherwise
+        -- usable hosts such as VS Code/Git Bash terminals.
         pcall(sys.setconsoleflags, io.stdout, new_out)
         pcall(sys.setconsoleflags, io.stdin, new_in)
       end
@@ -240,6 +243,7 @@ do
           pcall(sys.setconsoleflags, io.stdin, cflags_sig - sys.CIF_PROCESSED_INPUT)
         else
           -- Best effort for pseudo terminals where Win32 console flags are unavailable.
+          -- Some emulated terminals expose POSIX signal control via stty.
           try_stty("intr ''")
         end
       end
@@ -285,6 +289,8 @@ do
       -- restoring Win32 console flags captured by `termbackup`.
       -- Fall back to restoring non-console state to avoid leaving tty mode in
       -- a broken state for the shell session.
+      -- Only this known compatibility error is suppressed; unexpected restore
+      -- errors still bubble up below.
       restore_without_console_flags(termbackup)
     elseif not ok_restore then
       error(restore_err, 2)
