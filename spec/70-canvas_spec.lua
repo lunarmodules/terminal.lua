@@ -280,6 +280,110 @@ describe("terminal.ui.canvas", function()
 
 
 
+  describe("resize()", function()
+
+    it("reports the new size via get_size()", function()
+      local c = Canvas({ width = 2, height = 2 })
+      c:resize(4, 5)
+      local rows, cols = c:get_size()
+      assert.are.equal(4, rows)
+      assert.are.equal(5, cols)
+    end)
+
+
+    it("updates pixel dimensions via get_pixels()", function()
+      local c = Canvas({ width = 2, height = 2 })
+      c:resize(3, 4)
+      local ph, pw = c:get_pixels()
+      assert.are.equal(3 * 4, ph)
+      assert.are.equal(4 * 2, pw)
+    end)
+
+
+    it("growing rows adds blank rows at the bottom", function()
+      local c = Canvas({ width = 1, height = 1 })
+      c:resize(3, 1)
+      assert.are.equal(BLANK, c.cells[2][1])
+      assert.are.equal(BLANK, c.cells[3][1])
+    end)
+
+
+    it("growing cols adds blank cells to the right of every row", function()
+      local c = Canvas({ width = 1, height = 2 })
+      c:resize(2, 3)
+      for r = 1, 2 do
+        assert.are.equal(BLANK, c.cells[r][2])
+        assert.are.equal(BLANK, c.cells[r][3])
+      end
+    end)
+
+
+    it("shrinking rows removes rows from the bottom", function()
+      local c = Canvas({ width = 1, height = 3 })
+      c:resize(1, 1)
+      assert.is_nil(c.cells[2])
+      assert.is_nil(c.cells[3])
+    end)
+
+
+    it("shrinking cols removes cells from the right of every row", function()
+      local c = Canvas({ width = 3, height = 2 })
+      c:resize(2, 1)
+      for r = 1, 2 do
+        assert.is_nil(c.cells[r][2])
+        assert.is_nil(c.cells[r][3])
+      end
+    end)
+
+
+    it("preserves existing content within the new bounds", function()
+      local c = Canvas({ width = 3, height = 3 })
+      c:set(0, 0)  -- cells[1][1]
+      c:set(1, 1)  -- cells[1][1] (same cell, different dot)
+      local original = c.cells[1][1]
+      c:resize(2, 2)
+      assert.are.equal(original, c.cells[1][1])
+    end)
+
+
+    it("new cells respect the invert option", function()
+      local c = Canvas({ width = 1, height = 1, invert = true })
+      c:resize(2, 2)
+      assert.are.equal(FILLED, c.cells[1][2])
+      assert.are.equal(FILLED, c.cells[2][1])
+      assert.are.equal(FILLED, c.cells[2][2])
+    end)
+
+
+    it("same dimensions is a no-op", function()
+      local c = Canvas({ width = 2, height = 2 })
+      c:set(0, 0)
+      local before = c.cells[1][1]
+      c:resize(2, 2)
+      local rows, cols = c:get_size()
+      assert.are.equal(2, rows)
+      assert.are.equal(2, cols)
+      assert.are.equal(before, c.cells[1][1])
+    end)
+
+
+    it("errors when rows is not positive", function()
+      local c = Canvas({ width = 2, height = 2 })
+      assert.has_error(function() c:resize( 0, 2) end)
+      assert.has_error(function() c:resize(-1, 2) end)
+    end)
+
+
+    it("errors when cols is not positive", function()
+      local c = Canvas({ width = 2, height = 2 })
+      assert.has_error(function() c:resize(2,  0) end)
+      assert.has_error(function() c:resize(2, -1) end)
+    end)
+
+  end)
+
+
+
   describe("render()", function()
 
     it("returns a string", function()

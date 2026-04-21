@@ -236,6 +236,83 @@ end
 
 
 
+--- Resize the canvas to the given dimensions.
+-- Columns are added or removed on the right; rows are added or removed at the bottom.
+-- New cells are filled with the blank state. Existing content within the new bounds is preserved.
+-- Dimensions are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
+-- @tparam integer rows new height in display rows (1 row = 4 pixels)
+-- @tparam integer cols new width in display columns (1 column = 2 pixels)
+function Canvas:resize(rows, cols)
+  rows = floor(rows)
+  cols = floor(cols)
+  if rows <= 0 or cols <= 0 then
+    error("canvas dimensions must be positive", 2)
+  end
+
+  local blank = self._blank
+
+  -- adjust columns: add to or truncate from the right of every existing row
+  if cols > self.cols then
+    for _, row in ipairs(self.cells) do
+      for c = self.cols + 1, cols do
+        row[c] = blank
+      end
+    end
+
+  elseif cols < self.cols then
+    for _, row in ipairs(self.cells) do
+      for c = cols + 1, self.cols do
+        row[c] = nil
+      end
+    end
+  end
+
+  self.cols = cols
+  self.px_w = cols * 2
+
+  -- adjust rows: add to or truncate from the bottom
+  if rows > self.rows then
+    for r = self.rows + 1, rows do
+      local row = {}
+      for c = 1, self.cols do
+        row[c] = blank
+      end
+      self.cells[r] = row
+    end
+
+  elseif rows < self.rows then
+    for r = rows + 1, self.rows do
+      self.cells[r] = nil
+    end
+  end
+
+  self.rows = rows
+  self.px_h = rows * 4
+end
+
+
+
+--- Shift canvas content, dropping pixels that move beyond the edges.
+-- Positive `rows` shifts content downward; positive `cols` shifts content to the right.
+-- Vacated cells are filled with the blank state.
+-- Offsets are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
+-- @tparam integer rows cell rows to shift (negative = up, positive = down; 1 row = 4 pixels)
+-- @tparam integer cols cell columns to shift (negative = left, positive = right; 1 column = 2 pixels)
+function Canvas:scroll(rows, cols)
+end
+
+
+
+--- Shift canvas content, wrapping pixels that move beyond one edge onto the opposite edge.
+-- Positive `rows` rolls content downward; positive `cols` rolls content to the right.
+-- Offsets are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
+-- @tparam integer rows cell rows to roll (negative = up, positive = down; 1 row = 4 pixels)
+-- @tparam integer cols cell columns to roll (negative = left, positive = right; 1 column = 2 pixels)
+function Canvas:roll(rows, cols)
+end
+
+
+
 --- Draw a line between two pixels.
 -- @tparam table opts
 -- @tparam integer opts.x1 start pixel column, 0-based
