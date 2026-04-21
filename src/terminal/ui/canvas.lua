@@ -420,7 +420,104 @@ end
 
 
 
---- Draw a circle using the midpoint circle algorithm.
+--- Draw an ellipse using the midpoint ellipse algorithm.
+-- @tparam table opts
+-- @tparam integer opts.x centre pixel column, 0-based
+-- @tparam integer opts.y centre pixel row, 0-based
+-- @tparam integer opts.rx horizontal radius in pixels
+-- @tparam integer opts.ry vertical radius in pixels
+-- @tparam[opt=false] boolean opts.fill if truthy, fill the interior
+-- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
+function Canvas:ellipse(opts)
+  local cx = opts.x
+  local cy = opts.y
+  local rx = floor(opts.rx)
+  local ry = floor(opts.ry)
+  local fill = opts.fill
+  local op = opts.erase and self.unset or self.set
+
+  -- degenerate cases
+  if rx == 0 and ry == 0 then
+    op(self, cx, cy)
+    return
+  end
+
+  if ry == 0 then
+    for px = cx - rx, cx + rx do
+      op(self, px, cy)
+    end
+    return
+  end
+
+  if rx == 0 then
+    for py = cy - ry, cy + ry do
+      op(self, cx, py)
+    end
+    return
+  end
+
+  local rx2 = rx * rx
+  local ry2 = ry * ry
+  local two_rx2 = 2 * rx2
+  local two_ry2 = 2 * ry2
+
+  -- plot all four symmetric points around the centre
+  local function quadrants(px, py)
+    op(self, cx + px, cy + py)
+    op(self, cx - px, cy + py)
+    op(self, cx + px, cy - py)
+    op(self, cx - px, cy - py)
+  end
+
+  local x  = 0
+  local y  = ry
+  local dx = 0
+  local dy = two_rx2 * ry
+
+  -- Region 1: step in x while the slope magnitude < 1 (dx < dy)
+  local p = ry2 - rx2 * ry + floor(rx2 / 4)
+  while dx < dy do
+    quadrants(x, y)
+    x  = x + 1
+    dx = dx + two_ry2
+    if p < 0 then
+      p = p + ry2 + dx
+    else
+      y  = y - 1
+      dy = dy - two_rx2
+      p  = p + ry2 + dx - dy
+    end
+  end
+
+  -- Region 2: step in y until y reaches 0
+  p = ry2 * x * x + rx2 * (y - 1) * (y - 1) - rx2 * ry2
+  while y >= 0 do
+    quadrants(x, y)
+    y  = y - 1
+    dy = dy - two_rx2
+    if p > 0 then
+      p = p + rx2 - dy
+    else
+      x  = x + 1
+      dx = dx + two_ry2
+      p  = p + rx2 - dy + dx
+    end
+  end
+
+  if fill then
+    for fy = -ry, ry do
+      local fx = floor(rx * sqrt(1 - (fy * fy) / ry2))
+      for px = cx - fx, cx + fx do
+        op(self, px, cy + fy)
+      end
+    end
+  end
+end
+
+
+
+--- Draw a circle.
+-- Convenience wrapper around `ellipse` with equal horizontal and vertical radii.
 -- @tparam table opts
 -- @tparam integer opts.x centre pixel column, 0-based
 -- @tparam integer opts.y centre pixel row, 0-based
@@ -428,47 +525,7 @@ end
 -- @tparam[opt=false] boolean opts.fill if truthy, fill the interior
 -- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
 function Canvas:circle(opts)
-  local cx = opts.x
-  local cy = opts.y
-  local r = opts.r
-  local fill = opts.fill
-  local erase = opts.erase
-  local op = erase and self.unset or self.set
-  local x = 0
-  local y = r
-  local p = 1 - r
-
-  local function octants(px, py)
-    op(self, cx + px, cy + py)
-    op(self, cx - px, cy + py)
-    op(self, cx + px, cy - py)
-    op(self, cx - px, cy - py)
-    op(self, cx + py, cy + px)
-    op(self, cx - py, cy + px)
-    op(self, cx + py, cy - px)
-    op(self, cx - py, cy - px)
-  end
-
-  octants(x, y)
-  while x < y do
-    x = x + 1
-    if p < 0 then
-      p = p + 2 * x + 1
-    else
-      y = y - 1
-      p = p + 2 * (x - y) + 1
-    end
-    octants(x, y)
-  end
-
-  if fill then
-    for dy = -r, r do
-      local dx = floor(sqrt(r * r - dy * dy))
-      for fx = cx - dx, cx + dx do
-        op(self, fx, cy + dy)
-      end
-    end
-  end
+  self:ellipse({ x = opts.x, y = opts.y, rx = opts.r, ry = opts.r, fill = opts.fill, erase = opts.erase })
 end
 
 
