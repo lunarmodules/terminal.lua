@@ -25,7 +25,7 @@ local abs = math.abs
 
 
 -- Dot bit positions within a braille cell:
---   col 0 (left):  row 0=1, row 1=2, row 2=4, row 3=64
+--   col 0 (left) : row 0=1, row 1= 2, row 2= 4, row 3= 64
 --   col 1 (right): row 0=8, row 1=16, row 2=32, row 3=128
 -- Row 0 is the TOP pixel in the cell.
 local DOT_BIT = {
@@ -48,7 +48,7 @@ end
 --
 -- Flat LUTs keyed by: current_utf8_char (3 bytes) .. col_byte .. row_byte (2 bytes)
 -- 256 cell states × 2 cols × 4 rows = 2048 entries each.
-local SET_LUT   = {}
+local SET_LUT = {}
 local UNSET_LUT = {}
 
 for i = 0, 255 do
@@ -58,7 +58,7 @@ for i = 0, 255 do
     for row = 0, 3 do
       local fb = sys.bitflag(DOT_BIT[col][row])
       local key = ch .. char(col, row)
-      SET_LUT[key]   = braille((fi + fb):value())
+      SET_LUT[key] = braille((fi + fb):value())
       UNSET_LUT[key] = braille((fi - fb):value())
     end
   end
@@ -66,8 +66,8 @@ end
 
 
 
-local BLANK   = braille(0)    -- U+2800, all dots off
-local FILLED  = braille(255)  -- U+28FF, all dots on
+local BLANK = braille(0)     -- U+2800, all dots off
+local FILLED = braille(255)  -- U+28FF, all dots on
 
 
 
@@ -78,9 +78,9 @@ local Canvas = utils.class()
 --- Create a new canvas.
 -- Do not call this method directly, call on the class instead.
 -- @tparam table opts
--- @tparam number opts.width   Width in display columns (each column is 2 pixels wide)
--- @tparam number opts.height  Height in display rows (each row is 4 pixels tall)
--- @tparam[opt=false] boolean opts.invert  If true, cleared cells are fully lit instead of empty
+-- @tparam number opts.width Width in display columns (each column is 2 pixels wide)
+-- @tparam number opts.height Height in display rows (each row is 4 pixels tall)
+-- @tparam[opt=false] boolean opts.invert If true, cleared cells are fully lit instead of empty
 -- @usage
 -- local Canvas = require "terminal.ui.canvas"
 -- local c = Canvas({ width = 60, height = 30 })  -- call on the class to invoke the constructor
@@ -91,10 +91,10 @@ function Canvas:init(opts)
     error("canvas dimensions must be positive")
   end
 
-  self.cols   = opts.width
-  self.rows   = opts.height
-  self.px_w   = opts.width * 2
-  self.px_h   = opts.height * 4
+  self.cols = opts.width
+  self.rows = opts.height
+  self.px_w = opts.width * 2
+  self.px_h = opts.height * 4
   self._blank = opts.invert and FILLED or BLANK
 
   self.cells = {}
@@ -154,15 +154,15 @@ end
 -- and no trailing newline; suitable for plain `io.write` / `print` output.
 -- @tparam[opt={}] table opts
 -- @tparam[opt=false] boolean opts.print if truthy, use newline separators with no return sequence
--- @tparam[opt=1] number opts.row  first cell row of the viewport (1-based)
--- @tparam[opt=1] number opts.col  first cell column of the viewport (1-based)
--- @tparam[opt=self.rows] number opts.rows  number of rows to render
--- @tparam[opt=self.cols] number opts.cols  number of columns to render
+-- @tparam[opt=1] number opts.row first cell row of the viewport (1-based)
+-- @tparam[opt=1] number opts.col first cell column of the viewport (1-based)
+-- @tparam[opt=self.rows] number opts.rows number of rows to render
+-- @tparam[opt=self.cols] number opts.cols number of columns to render
 -- @treturn string
 function Canvas:render(opts)
   opts = opts or {}
-  local r1    = opts.row  or 1
-  local c1    = opts.col  or 1
+  local r1 = opts.row or 1
+  local c1 = opts.col or 1
   local vrows = opts.rows or self.rows
   local vcols = opts.cols or self.cols
   local r2 = r1 + vrows - 1
@@ -176,10 +176,10 @@ function Canvas:render(opts)
   local seq_between, seq_return
   if opts.print then
     seq_between = "\n"
-    seq_return  = ""
+    seq_return = ""
   else
     seq_between = position.down_seq(1) .. position.left_seq(vcols)
-    seq_return  = position.left_seq(vcols) .. position.up_seq(vrows - 1)
+    seq_return = position.left_seq(vcols) .. position.up_seq(vrows - 1)
   end
 
   local parts = {}
@@ -263,11 +263,11 @@ function Canvas:line(opts)
     local e2 = 2 * err
     if e2 > -dy then
       err = err - dy
-      x1  = x1 + sx
+      x1 = x1 + sx
     end
     if e2 < dx then
       err = err + dx
-      y1  = y1 + sy
+      y1 = y1 + sy
     end
   end
 end
