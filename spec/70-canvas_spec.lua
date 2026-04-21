@@ -384,6 +384,191 @@ describe("terminal.ui.canvas", function()
 
 
 
+  describe("scroll()", function()
+
+    it("shifts content down, blanking the vacated top rows", function()
+      local c = Canvas({ width = 1, height = 2 })
+      c:set(0, 0)  -- cells[1][1]
+      local original = c.cells[1][1]
+      c:scroll(1, 0)
+      assert.are.equal(BLANK,    c.cells[1][1])  -- vacated
+      assert.are.equal(original, c.cells[2][1])  -- content moved down
+    end)
+
+
+    it("shifts content up, blanking the vacated bottom rows", function()
+      local c = Canvas({ width = 1, height = 2 })
+      c:set(0, 4)  -- y=4 → cell_row=2; cells[2][1]
+      local original = c.cells[2][1]
+      c:scroll(-1, 0)
+      assert.are.equal(original, c.cells[1][1])  -- content moved up
+      assert.are.equal(BLANK,    c.cells[2][1])  -- vacated
+    end)
+
+
+    it("shifts content right, blanking the vacated left cols", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(0, 0)  -- cells[1][1]
+      local original = c.cells[1][1]
+      c:scroll(0, 1)
+      assert.are.equal(BLANK,    c.cells[1][1])  -- vacated
+      assert.are.equal(original, c.cells[1][2])  -- content moved right
+    end)
+
+
+    it("shifts content left, blanking the vacated right cols", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(2, 0)  -- x=2 → cell_col=2; cells[1][2]
+      local original = c.cells[1][2]
+      c:scroll(0, -1)
+      assert.are.equal(original, c.cells[1][1])  -- content moved left
+      assert.are.equal(BLANK,    c.cells[1][2])  -- vacated
+    end)
+
+
+    it("row shift >= height clears all rows", function()
+      local c = Canvas({ width = 1, height = 2 })
+      c:set(0, 0)
+      c:set(0, 4)
+      c:scroll(2, 0)
+      assert.are.equal(BLANK, c.cells[1][1])
+      assert.are.equal(BLANK, c.cells[2][1])
+    end)
+
+
+    it("col shift >= width clears all cols", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(0, 0)
+      c:set(2, 0)
+      c:scroll(0, 2)
+      assert.are.equal(BLANK, c.cells[1][1])
+      assert.are.equal(BLANK, c.cells[1][2])
+    end)
+
+
+    it("applies row and col shifts together", function()
+      local c = Canvas({ width = 2, height = 2 })
+      c:set(0, 0)  -- cells[1][1]
+      local original = c.cells[1][1]
+      c:scroll(1, 1)
+      assert.are.equal(BLANK,    c.cells[1][1])
+      assert.are.equal(BLANK,    c.cells[1][2])
+      assert.are.equal(BLANK,    c.cells[2][1])
+      assert.are.equal(original, c.cells[2][2])  -- moved down+right
+    end)
+
+
+    it("scroll(0, 0) is a no-op", function()
+      local c = Canvas({ width = 2, height = 2 })
+      c:set(0, 0)
+      local before = c.cells[1][1]
+      c:scroll(0, 0)
+      assert.are.equal(before, c.cells[1][1])
+    end)
+
+
+    it("does not change canvas dimensions", function()
+      local c = Canvas({ width = 3, height = 2 })
+      c:scroll(1, 1)
+      local rows, cols = c:get_size()
+      assert.are.equal(2, rows)
+      assert.are.equal(3, cols)
+    end)
+
+  end)
+
+
+
+  describe("roll()", function()
+
+    it("rolls content down, wrapping the bottom row to the top", function()
+      local c = Canvas({ width = 1, height = 2 })
+      c:set(0, 4)  -- y=4 → cell_row=2; cells[2][1]
+      local original = c.cells[2][1]
+      c:roll(1, 0)
+      assert.are.equal(original, c.cells[1][1])  -- wrapped to top
+      assert.are.equal(BLANK,    c.cells[2][1])  -- moved up (was blank)
+    end)
+
+
+    it("rolls content up, wrapping the top row to the bottom", function()
+      local c = Canvas({ width = 1, height = 2 })
+      c:set(0, 0)  -- cells[1][1]
+      local original = c.cells[1][1]
+      c:roll(-1, 0)
+      assert.are.equal(BLANK,    c.cells[1][1])  -- moved down (was blank)
+      assert.are.equal(original, c.cells[2][1])  -- wrapped to bottom
+    end)
+
+
+    it("rolls content right, wrapping the last col to the left", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(2, 0)  -- x=2 → cell_col=2; cells[1][2]
+      local original = c.cells[1][2]
+      c:roll(0, 1)
+      assert.are.equal(original, c.cells[1][1])  -- wrapped to left
+      assert.are.equal(BLANK,    c.cells[1][2])  -- moved right (was blank)
+    end)
+
+
+    it("rolls content left, wrapping the first col to the right", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(0, 0)  -- cells[1][1]
+      local original = c.cells[1][1]
+      c:roll(0, -1)
+      assert.are.equal(BLANK,    c.cells[1][1])  -- moved left (was blank)
+      assert.are.equal(original, c.cells[1][2])  -- wrapped to right
+    end)
+
+
+    it("rolling by the canvas height is a no-op", function()
+      local c = Canvas({ width = 1, height = 2 })
+      c:set(0, 0)
+      local before = c.cells[1][1]
+      c:roll(2, 0)
+      assert.are.equal(before, c.cells[1][1])
+    end)
+
+
+    it("rolling by the canvas width is a no-op", function()
+      local c = Canvas({ width = 2, height = 1 })
+      c:set(0, 0)
+      local before = c.cells[1][1]
+      c:roll(0, 2)
+      assert.are.equal(before, c.cells[1][1])
+    end)
+
+
+    it("roll(0, 0) is a no-op", function()
+      local c = Canvas({ width = 2, height = 2 })
+      c:set(0, 0)
+      local before = c.cells[1][1]
+      c:roll(0, 0)
+      assert.are.equal(before, c.cells[1][1])
+    end)
+
+
+    it("applies row and col rolls together", function()
+      local c = Canvas({ width = 2, height = 2 })
+      c:set(0, 0)  -- cells[1][1]
+      local original = c.cells[1][1]
+      c:roll(1, 1)
+      assert.are.equal(original, c.cells[2][2])  -- wrapped down+right
+    end)
+
+
+    it("does not change canvas dimensions", function()
+      local c = Canvas({ width = 3, height = 2 })
+      c:roll(1, 1)
+      local rows, cols = c:get_size()
+      assert.are.equal(2, rows)
+      assert.are.equal(3, cols)
+    end)
+
+  end)
+
+
+
   describe("render()", function()
 
     it("returns a string", function()

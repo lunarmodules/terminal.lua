@@ -1,5 +1,6 @@
 local t = require "terminal"
 local Canvas = require "terminal.ui.canvas"
+local sys = require "system"
 
 -- 60 cols x 30 rows = 120 x 120 pixels (square: each braille pixel is ~4x4 real pixels)
 local c = Canvas({ width = 60, height = 30 })
@@ -46,14 +47,15 @@ c:circle({ x = 103, y = 14, r = 11, fill = true })
 
 
 
--- Make room and render in place
-t.output.print("drawn:")
+-- Make room and animate
+t.output.print("Lua logo:")
 t.output.write(("\n"):rep(30))
 t.cursor.position.up(30)
-t.output.write(c:render())
+
+for _ = 1, 61 do
+  t.output.write(c:render())
+  c:roll(1, 1)
+  sys.sleep(0.05)
+end
+
 t.cursor.position.down(30)
-
-
--- Output again, 'printable' format, top-right quadrant only
-print("printed (top-right quadrant):")
-print(c:render({ print = true, row = 1, col = 31, rows = 15, cols = 30 }))

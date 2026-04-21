@@ -240,11 +240,11 @@ end
 -- Columns are added or removed on the right; rows are added or removed at the bottom.
 -- New cells are filled with the blank state. Existing content within the new bounds is preserved.
 -- Dimensions are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
--- @tparam integer rows new height in display rows (1 row = 4 pixels)
--- @tparam integer cols new width in display columns (1 column = 2 pixels)
+-- @tparam[opt] integer rows new height in display rows (1 row = 4 pixels)
+-- @tparam[opt] integer cols new width in display columns (1 column = 2 pixels)
 function Canvas:resize(rows, cols)
-  rows = floor(rows)
-  cols = floor(cols)
+  rows = floor(rows or self.rows)
+  cols = floor(cols or self.cols)
   if rows <= 0 or cols <= 0 then
     error("canvas dimensions must be positive", 2)
   end
@@ -296,9 +296,53 @@ end
 -- Positive `rows` shifts content downward; positive `cols` shifts content to the right.
 -- Vacated cells are filled with the blank state.
 -- Offsets are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
--- @tparam integer rows cell rows to shift (negative = up, positive = down; 1 row = 4 pixels)
--- @tparam integer cols cell columns to shift (negative = left, positive = right; 1 column = 2 pixels)
+-- @tparam[opt=0] integer rows cell rows to shift (negative = up, positive = down; 1 row = 4 pixels)
+-- @tparam[opt=0] integer cols cell columns to shift (negative = left, positive = right; 1 column = 2 pixels)
 function Canvas:scroll(rows, cols)
+  rows = floor(rows or 0)
+  cols = floor(cols or 0)
+
+  local blank = self._blank
+
+  -- shift rows: positive = down (content moves toward higher indices)
+  if rows > 0 then
+    for _ = 1, math.min(rows, self.rows) do
+      local row = table.remove(self.cells)        -- grap the last row
+      for c = 1, self.cols do row[c] = blank end  -- clear it
+      table.insert(self.cells, 1, row)            -- reinsert at the top
+    end
+
+  elseif rows < 0 then
+    for _ = 1, math.min(-rows, self.rows) do
+      local row = table.remove(self.cells, 1)     -- grab the first row
+      for c = 1, self.cols do row[c] = blank end  -- clear it
+      table.insert(self.cells, row)               -- reinsert at the bottom
+    end
+  end
+
+  -- shift cols: positive = right (content moves toward higher indices)
+  if cols > 0 then
+    local dc = math.min(cols, self.cols)
+    for _, row in ipairs(self.cells) do
+      for c = self.cols, dc + 1, -1 do
+        row[c] = row[c - dc]
+      end
+      for c = 1, dc do
+        row[c] = blank
+      end
+    end
+
+  elseif cols < 0 then
+    local dc = math.min(-cols, self.cols)
+    for _, row in ipairs(self.cells) do
+      for c = 1, self.cols - dc do
+        row[c] = row[c + dc]
+      end
+      for c = self.cols - dc + 1, self.cols do
+        row[c] = blank
+      end
+    end
+  end
 end
 
 
@@ -306,9 +350,34 @@ end
 --- Shift canvas content, wrapping pixels that move beyond one edge onto the opposite edge.
 -- Positive `rows` rolls content downward; positive `cols` rolls content to the right.
 -- Offsets are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
--- @tparam integer rows cell rows to roll (negative = up, positive = down; 1 row = 4 pixels)
--- @tparam integer cols cell columns to roll (negative = left, positive = right; 1 column = 2 pixels)
+-- @tparam[opt=0] integer rows cell rows to roll (negative = up, positive = down; 1 row = 4 pixels)
+-- @tparam[opt=0] integer cols cell columns to roll (negative = left, positive = right; 1 column = 2 pixels)
 function Canvas:roll(rows, cols)
+  rows = floor(rows or 0) % self.rows
+  cols = floor(cols or 0) % self.cols
+
+  -- roll rows: positive = down (last row wraps to top)
+  if rows > 0 then
+    for _ = 1, rows do
+      table.insert(self.cells, 1, table.remove(self.cells))
+    end
+  end
+
+  -- roll cols: positive = right (last cols wrap to left)
+  if cols > 0 then
+    for _, row in ipairs(self.cells) do
+      local saved = {}
+      for c = self.cols - cols + 1, self.cols do
+        saved[#saved + 1] = row[c]
+      end
+      for c = self.cols, cols + 1, -1 do
+        row[c] = row[c - cols]
+      end
+      for c = 1, cols do
+        row[c] = saved[c]
+      end
+    end
+  end
 end
 
 
