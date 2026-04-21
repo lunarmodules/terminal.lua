@@ -78,8 +78,8 @@ local Canvas = utils.class()
 --- Create a new canvas.
 -- Do not call this method directly, call on the class instead.
 -- @tparam table opts
--- @tparam number opts.width Width in display columns (each column is 2 pixels wide)
--- @tparam number opts.height Height in display rows (each row is 4 pixels tall)
+-- @tparam integer opts.width Width in display columns (each column is 2 pixels wide)
+-- @tparam integer opts.height Height in display rows (each row is 4 pixels tall)
 -- @tparam[opt=false] boolean opts.invert If true, cleared cells are fully lit instead of empty
 -- @usage
 -- local Canvas = require "terminal.ui.canvas"
@@ -91,10 +91,10 @@ function Canvas:init(opts)
     error("canvas dimensions must be positive")
   end
 
-  self.cols = opts.width
-  self.rows = opts.height
-  self.px_w = opts.width * 2
-  self.px_h = opts.height * 4
+  self.cols = floor(opts.width)
+  self.rows = floor(opts.height)
+  self.px_w = self.cols * 2
+  self.px_h = self.rows * 4
   self._blank = opts.invert and FILLED or BLANK
 
   self.cells = {}
@@ -112,8 +112,8 @@ end
 --- Set (illuminate) a pixel.
 -- Coordinates are 0-based; origin (0, 0) is at the top-left.
 -- Out-of-bounds coordinates are ignored (no error).
--- @tparam number x pixel column, 0-based, left to right
--- @tparam number y pixel row, 0-based, top to bottom
+-- @tparam integer x pixel column, 0-based, left to right
+-- @tparam integer y pixel row, 0-based, top to bottom
 function Canvas:set(x, y)
   if x < 0 or x >= self.px_w or
      y < 0 or y >= self.px_h then
@@ -131,8 +131,8 @@ end
 --- Clear (extinguish) a pixel.
 -- Coordinates are 0-based; origin (0, 0) is at the top-left.
 -- Out-of-bounds coordinates are ignored (no error).
--- @tparam number x pixel column, 0-based, left to right
--- @tparam number y pixel row, 0-based, top to bottom
+-- @tparam integer x pixel column, 0-based, left to right
+-- @tparam integer y pixel row, 0-based, top to bottom
 function Canvas:unset(x, y)
   if x < 0 or x >= self.px_w or
      y < 0 or y >= self.px_h then
@@ -238,10 +238,10 @@ end
 
 --- Draw a line between two pixels.
 -- @tparam table opts
--- @tparam number opts.x1 start pixel column, 0-based
--- @tparam number opts.y1 start pixel row, 0-based
--- @tparam number opts.x2 end pixel column, 0-based
--- @tparam number opts.y2 end pixel row, 0-based
+-- @tparam integer opts.x1 start pixel column, 0-based
+-- @tparam integer opts.y1 start pixel row, 0-based
+-- @tparam integer opts.x2 end pixel column, 0-based
+-- @tparam integer opts.y2 end pixel row, 0-based
 -- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
 function Canvas:line(opts)
   local x1 = opts.x1
@@ -276,9 +276,9 @@ end
 
 --- Draw a circle using the midpoint circle algorithm.
 -- @tparam table opts
--- @tparam number opts.x centre pixel column, 0-based
--- @tparam number opts.y centre pixel row, 0-based
--- @tparam number opts.r radius in pixels
+-- @tparam integer opts.x centre pixel column, 0-based
+-- @tparam integer opts.y centre pixel row, 0-based
+-- @tparam integer opts.r radius in pixels
 -- @tparam[opt=false] boolean opts.fill if truthy, fill the interior
 -- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
 function Canvas:circle(opts)
@@ -330,7 +330,7 @@ end
 --- Draw a polygon from an array of `{x, y}` points.
 -- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon by default.
 -- @tparam table opts
--- @tparam table opts.points array of `{x, y}` pixel coordinate pairs, 0-based
+-- @tparam table opts.points array of `{x, y}` pixel coordinate pairs (integer), 0-based
 -- @tparam[opt=false] boolean opts.open if truthy, do not close the path back to the first point
 -- @tparam[opt=false] boolean opts.fill if truthy, fill the interior of the polygon
 -- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
