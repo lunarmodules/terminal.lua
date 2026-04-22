@@ -15,9 +15,9 @@
 -- **Virtual coordinate space:**
 -- Coordinates are 0-based, with origin (0, 0) at the top-left, x increasing
 -- to the right and y increasing downward — matching the Canvas pixel convention.
--- The virtual space has a fixed logical size (`virt_width` × `virt_height`)
--- set at construction. Drawing calls use these logical coordinates regardless
--- of the physical canvas dimensions.
+-- The virtual space has a fixed logical size (`width` × `height`) set at
+-- construction. Drawing calls use these logical coordinates regardless of the
+-- physical canvas dimensions.
 --
 -- **Scale modes:**
 -- When the virtual aspect ratio does not match the physical canvas pixel aspect
@@ -33,9 +33,8 @@
 --
 -- **Resize handling:**
 -- The viewport holds a reference to a Canvas. When the panel is resized, the
--- caller should replace the canvas (`viewport:set_canvas(new_canvas)`) and then
--- re-issue all drawing calls. The scale factors are recomputed lazily on the
--- next draw call.
+-- caller should replace the canvas via `set_canvas` and then re-issue all
+-- drawing calls. Scale factors are recomputed lazily on the next draw call.
 --
 -- Example usage:
 --     local Canvas = require "terminal.ui.canvas"
@@ -50,6 +49,7 @@
 -- @classmod ui.CanvasViewport
 
 local utils = require "terminal.utils"
+local floor = math.floor
 
 local CanvasViewport = utils.class()
 
@@ -65,6 +65,15 @@ CanvasViewport.scale_modes = utils.make_lookup("scale_mode", {
 
 
 
+--- Anchor constants.
+-- @field ui.CanvasViewport.anchors table lookup table for anchor constants.
+CanvasViewport.anchors = utils.make_lookup("anchor", {
+  center = "center",
+  top_left = "top_left",
+})
+
+
+
 --- Create a new CanvasViewport.
 -- Do not call this method directly, call on the class instead.
 -- @tparam table opts
@@ -73,19 +82,70 @@ CanvasViewport.scale_modes = utils.make_lookup("scale_mode", {
 -- @tparam number opts.height Virtual space height in logical pixels.
 -- @tparam[opt="stretch"] string opts.scale_mode One of `CanvasViewport.scale_modes`.
 -- @tparam[opt="center"] string opts.anchor Alignment of the virtual space within the
---   canvas when `scale_mode` is `"fit"`. One of `"center"` or `"top_left"`.
+--   canvas when `scale_mode` is `"fit"` or `"fill"`. One of `CanvasViewport.anchors`.
 -- @usage
 -- local vp = CanvasViewport({ canvas = c, width = 300, height = 300, scale_mode = "fit" })
 function CanvasViewport:init(opts)
+  assert(opts and opts.canvas, "canvas is required")
+  assert(opts.width and opts.height, "width and height are required")
+  assert(opts.width > 0 and opts.height > 0, "width and height must be positive")
+
+  self._canvas = opts.canvas
+  self._virt_w = opts.width
+  self._virt_h = opts.height
+  self._scale_mode = CanvasViewport.scale_modes[opts.scale_mode or "stretch"]
+  self._anchor = CanvasViewport.anchors[opts.anchor or "center"]
+  self:_compute()
 end
 
 
 
 --- Replace the underlying canvas.
 -- Call this when the panel has been resized and a new Canvas has been created
--- with updated dimensions. The next draw call will recompute scale factors.
+-- with updated dimensions. Scale factors are recomputed immediately.
 -- @tparam Canvas canvas The new Canvas instance.
 function CanvasViewport:set_canvas(canvas)
+  self._canvas = canvas
+  self:_compute()
+end
+
+
+
+-- Recompute cached scale factors and offsets from the current canvas dimensions.
+function CanvasViewport:_compute()
+
+  local ph, pw = self._canvas:get_pixels()
+  local vw = self._virt_w
+  local vh = self._virt_h
+  local sx, sy, ox, oy
+
+  if self._scale_mode == "stretch" then
+    sx = pw / vw
+    sy = ph / vh
+    ox = 0
+    oy = 0
+  else
+    local s
+    if self._scale_mode == "fit" then
+      s = math.min(pw / vw, ph / vh)
+    else -- fill
+      s = math.max(pw / vw, ph / vh)
+    end
+    sx = s
+    sy = s
+    if self._anchor == CanvasViewport.anchors.center then
+      ox = floor((pw - vw * s) / 2)
+      oy = floor((ph - vh * s) / 2)
+    else -- top_left
+      ox = 0
+      oy = 0
+    end
+  end
+
+  self._sx = sx
+  self._sy = sy
+  self._ox = ox
+  self._oy = oy
 end
 
 
@@ -96,6 +156,7 @@ end
 -- @treturn number sx  Scale factor applied to x (physical_px / virtual_px).
 -- @treturn number sy  Scale factor applied to y (physical_px / virtual_px).
 function CanvasViewport:get_scale()
+  return self._sx, self._sy
 end
 
 
@@ -105,6 +166,7 @@ end
 -- @tparam number x Virtual pixel column, 0-based.
 -- @tparam number y Virtual pixel row, 0-based.
 function CanvasViewport:set(x, y)
+  self._canvas:set(floor(x * self._sx) + self._ox, floor(y * self._sy) + self._oy)
 end
 
 
@@ -114,6 +176,7 @@ end
 -- @tparam number x Virtual pixel column, 0-based.
 -- @tparam number y Virtual pixel row, 0-based.
 function CanvasViewport:unset(x, y)
+  self._canvas:unset(floor(x * self._sx) + self._ox, floor(y * self._sy) + self._oy)
 end
 
 
@@ -126,6 +189,14 @@ end
 -- @tparam number opts.y2 End virtual pixel row, 0-based.
 -- @tparam[opt=false] boolean opts.erase If truthy, unset pixels instead of setting them.
 function CanvasViewport:line(opts)
+  local sx, sy, ox, oy = self._sx, self._sy, self._ox, self._oy
+  self._canvas:line({
+    x1 = floor(opts.x1 * sx) + ox,
+    y1 = floor(opts.y1 * sy) + oy,
+    x2 = floor(opts.x2 * sx) + ox,
+    y2 = floor(opts.y2 * sy) + oy,
+    erase = opts.erase,
+  })
 end
 
 
@@ -141,6 +212,15 @@ end
 -- @tparam[opt=false] boolean opts.fill If truthy, fill the interior.
 -- @tparam[opt=false] boolean opts.erase If truthy, unset pixels instead of setting them.
 function CanvasViewport:ellipse(opts)
+  local sx, sy, ox, oy = self._sx, self._sy, self._ox, self._oy
+  self._canvas:ellipse({
+    x = floor(opts.x * sx) + ox,
+    y = floor(opts.y * sy) + oy,
+    rx = floor(opts.rx * sx),
+    ry = floor(opts.ry * sy),
+    fill = opts.fill,
+    erase = opts.erase,
+  })
 end
 
 
@@ -156,6 +236,7 @@ end
 -- @tparam[opt=false] boolean opts.fill If truthy, fill the interior.
 -- @tparam[opt=false] boolean opts.erase If truthy, unset pixels instead of setting them.
 function CanvasViewport:circle(opts)
+  self:ellipse({ x = opts.x, y = opts.y, rx = opts.r, ry = opts.r, fill = opts.fill, erase = opts.erase })
 end
 
 
@@ -168,6 +249,17 @@ end
 -- @tparam[opt=false] boolean opts.fill If truthy, fill the interior of the polygon.
 -- @tparam[opt=false] boolean opts.erase If truthy, unset pixels instead of setting them.
 function CanvasViewport:polygon(opts)
+  local sx, sy, ox, oy = self._sx, self._sy, self._ox, self._oy
+  local transformed = {}
+  for i, p in ipairs(opts.points) do
+    transformed[i] = { floor(p[1] * sx) + ox, floor(p[2] * sy) + oy }
+  end
+  self._canvas:polygon({
+    points = transformed,
+    open = opts.open,
+    fill = opts.fill,
+    erase = opts.erase,
+  })
 end
 
 
