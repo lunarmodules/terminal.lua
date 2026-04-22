@@ -91,13 +91,13 @@ describe("terminal.ui.timeseriesgraph", function()
     it("expands dynamic max to the next nice boundary", function()
       local g = TimeSeriesGraph()
       g:push(73)
-      assert.are.equal(80, g:get_max())  -- nice_ceil(73) = 80
+      assert.are.equal(100, g:get_max())  -- nice_ceil(73) = 100
     end)
 
     it("expands dynamic min to the next nice boundary", function()
       local g = TimeSeriesGraph()
       g:push(-37)
-      assert.are.equal(-40, g:get_min())  -- nice_floor(-37) = -40
+      assert.are.equal(-50, g:get_min())  -- nice_floor(-37) = -50
     end)
 
     it("does not expand a fixed min below a new value", function()
@@ -146,14 +146,14 @@ describe("terminal.ui.timeseriesgraph", function()
     it("returns the snapped min after a push expands the lower bound", function()
       local g = TimeSeriesGraph()
       g:push(-37)
-      assert.are.equal(-40, g:get_min())
+      assert.are.equal(-50, g:get_min())
     end)
 
     it("does not change when a push is within the current bounds", function()
       local g = TimeSeriesGraph()
-      g:push(-40)
-      g:push(-20)
-      assert.are.equal(-40, g:get_min())
+      g:push(-20)   -- nice_floor(-20) = -20
+      g:push(-10)   -- within bounds, min stays -20
+      assert.are.equal(-20, g:get_min())
     end)
 
   end)
@@ -175,14 +175,14 @@ describe("terminal.ui.timeseriesgraph", function()
     it("returns the snapped max after a push expands the upper bound", function()
       local g = TimeSeriesGraph()
       g:push(73)
-      assert.are.equal(80, g:get_max())
+      assert.are.equal(100, g:get_max())
     end)
 
     it("does not change when a push is within the current bounds", function()
       local g = TimeSeriesGraph()
-      g:push(73)   -- snaps max to 80
-      g:push(50)   -- within bounds, max stays 80
-      assert.are.equal(80, g:get_max())
+      g:push(47)   -- nice_ceil(47) = 50
+      g:push(20)   -- within bounds, max stays 50
+      assert.are.equal(50, g:get_max())
     end)
 
   end)

@@ -59,9 +59,18 @@ local function nice_ceil(v)
   local exp = floor(log(abs(v)) / log(10))
   local mag = 10 ^ exp
   if v > 0 then
-    return ceil(v / mag) * mag
+    local n = v / mag
+    if n <= 1 then return 1 * mag
+    elseif n <= 2 then return 2 * mag
+    elseif n <= 5 then return 5 * mag
+    else return 10 * mag
+    end
   else
-    return -floor(-v / mag) * mag
+    local n = (-v) / mag  -- positive normalised value of abs(v)
+    if n >= 5 then return -5 * mag
+    elseif n >= 2 then return -2 * mag
+    else return -1 * mag
+    end
   end
 end
 
@@ -73,9 +82,18 @@ local function nice_floor(v)
   local exp = floor(log(abs(v)) / log(10))
   local mag = 10 ^ exp
   if v > 0 then
-    return floor(v / mag) * mag
+    local n = v / mag
+    if n >= 5 then return 5 * mag
+    elseif n >= 2 then return 2 * mag
+    else return 1 * mag
+    end
   else
-    return -ceil(-v / mag) * mag
+    local n = (-v) / mag  -- positive normalised value of abs(v)
+    if n <= 1 then return -1 * mag
+    elseif n <= 2 then return -2 * mag
+    elseif n <= 5 then return -5 * mag
+    else return -10 * mag
+    end
   end
 end
 
@@ -296,9 +314,17 @@ function TimeSeriesGraph:render(opts)
   local graph_attr = opts.graph_attr
   local label_attr = opts.label_attr
 
-  local lbl_max = string.format(fmt, self._max)
-  local lbl_min = string.format(fmt, self._min)
-  local label_width = max(utf8swidth(lbl_max), utf8swidth(lbl_min))
+  local has_range = self._min < self._max
+
+  local lbl_max = ""
+  local lbl_min = ""
+  local label_width = 0
+
+  if fmt ~= "" and has_range then
+    lbl_max = string.format(fmt, self._max)
+    lbl_min = string.format(fmt, self._min)
+    label_width = max(utf8swidth(lbl_max), utf8swidth(lbl_min))
+  end
 
   if rows < 2 or cols <= (label_width + 1) then
     -- Not enough space for graph content, drop the labels
