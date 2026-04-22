@@ -143,10 +143,10 @@ function TimeSeriesGraph:init(opts)
 
   -- Sentinel values signal that the bound is dynamic.
   -- huge / -huge compare correctly against any pushed value.
-  self._dynamic_min = opts.min == nil
-  self._dynamic_max = opts.max == nil
-  self._min = opts.min ~= nil and opts.min or huge
-  self._max = opts.max ~= nil and opts.max or -huge
+  self._dynamic_min = not opts.min
+  self._dynamic_max = not opts.max
+  self._min = opts.min or huge
+  self._max = opts.max or -huge
 
   if not self._dynamic_min and not self._dynamic_max then
     assert(self._max > self._min, "max must be greater than min")
@@ -178,6 +178,7 @@ end
 -- value falls outside the current bounds.
 -- @tparam number value
 function TimeSeriesGraph:push(value)
+  assert(type(value) == "number", "value must be a number")
   self._samples[#self._samples + 1] = value
   if #self._samples > self._history_size then
     table.remove(self._samples, 1)

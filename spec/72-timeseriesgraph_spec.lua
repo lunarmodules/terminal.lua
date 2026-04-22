@@ -20,28 +20,39 @@ describe("terminal.ui.timeseriesgraph", function()
 
   describe("init()", function()
 
-    pending("creates a graph with default options", function()
-      -- TODO: implement
+    it("creates a graph with default options", function()
+      local g = TimeSeriesGraph()
+      assert.is_not_nil(g)
+      assert.are.equal(math.huge,  g:get_min())
+      assert.are.equal(-math.huge, g:get_max())
     end)
 
-    pending("creates a graph with explicit min and max", function()
-      -- TODO: implement
+    it("creates a graph with explicit min and max", function()
+      local g = TimeSeriesGraph({ min = -50, max = 50 })
+      assert.are.equal(-50, g:get_min())
+      assert.are.equal( 50, g:get_max())
     end)
 
-    pending("creates a graph with explicit ticks", function()
-      -- TODO: implement
+    it("creates a graph with explicit ticks", function()
+      local ticks = { 25, 50, 75 }
+      local g = TimeSeriesGraph({ min = 0, max = 100, ticks = ticks })
+      assert.is_not_nil(g)
     end)
 
-    pending("creates a graph with explicit history size", function()
-      -- TODO: implement
+    it("creates a graph with explicit history size", function()
+      local g = TimeSeriesGraph({ history = 50, min = 0, max = 1 })
+      for i = 1, 60 do g:push(i % 2) end
+      assert.are.equal(50, #g._samples)
     end)
 
-    pending("errors when opts is not a table", function()
-      -- TODO: implement
+    it("errors when opts is not a table", function()
+      assert.has_error(function() TimeSeriesGraph("bad") end)
+      assert.has_error(function() TimeSeriesGraph(42) end)
     end)
 
-    pending("errors when max is not greater than min", function()
-      -- TODO: implement
+    it("errors when max is not greater than min", function()
+      assert.has_error(function() TimeSeriesGraph({ min = 10, max = 10 }) end)
+      assert.has_error(function() TimeSeriesGraph({ min = 10, max =  5 }) end)
     end)
 
   end)
@@ -50,54 +61,121 @@ describe("terminal.ui.timeseriesgraph", function()
 
   describe("push()", function()
 
-    pending("adds a sample to the history", function()
-      -- TODO: implement
+    it("adds a sample to the history", function()
+      local g = TimeSeriesGraph({ min = 0, max = 100 })
+      g:push(10)
+      g:push(20)
+      assert.are.equal(2, #g._samples)
+      assert.are.equal(10, g._samples[1])
+      assert.are.equal(20, g._samples[2])
     end)
 
-    pending("drops the oldest sample when history is full", function()
-      -- TODO: implement
+    it("drops the oldest sample when history is full", function()
+      local g = TimeSeriesGraph({ history = 3, min = 0, max = 100 })
+      g:push(1)
+      g:push(2)
+      g:push(3)
+      g:push(4)
+      assert.are.equal(3, #g._samples)
+      assert.are.equal(2, g._samples[1])
+      assert.are.equal(4, g._samples[3])
     end)
 
-    pending("expands dynamic max to the next nice boundary", function()
-      -- TODO: implement
+    it("expands dynamic max to the next nice boundary", function()
+      local g = TimeSeriesGraph()
+      g:push(73)
+      assert.are.equal(80, g:get_max())  -- nice_ceil(73) = 80
     end)
 
-    pending("expands dynamic min to the next nice boundary", function()
-      -- TODO: implement
+    it("expands dynamic min to the next nice boundary", function()
+      local g = TimeSeriesGraph()
+      g:push(-37)
+      assert.are.equal(-40, g:get_min())  -- nice_floor(-37) = -40
     end)
 
-    pending("does not expand a fixed min below a new value", function()
-      -- TODO: implement
+    it("does not expand a fixed min below a new value", function()
+      local g = TimeSeriesGraph({ min = 0, max = 100 })
+      g:push(-50)
+      assert.are.equal(0, g:get_min())
     end)
 
-    pending("does not expand a fixed max above a new value", function()
-      -- TODO: implement
+    it("does not expand a fixed max above a new value", function()
+      local g = TimeSeriesGraph({ min = 0, max = 100 })
+      g:push(150)
+      assert.are.equal(100, g:get_max())
     end)
 
-    pending("handles the edge case where value lands exactly on a nice boundary", function()
-      -- TODO: implement
+    it("errors when value is not a number", function()
+      local g = TimeSeriesGraph({ min = 0, max = 100 })
+      assert.has_error(function() g:push("bad") end)
+      assert.has_error(function() g:push(nil) end)
+      assert.has_error(function() g:push(true) end)
+    end)
+
+    it("handles the edge case where value lands exactly on a nice boundary", function()
+      -- nice_floor(10) == nice_ceil(10) == 10, so min would equal max
+      -- the implementation forces a 1-unit gap in that case
+      local g = TimeSeriesGraph()
+      g:push(10)
+      assert.is_true(g:get_max() > g:get_min())
     end)
 
   end)
 
 
 
-  describe("get_min() / get_max()", function()
+  describe("get_min()", function()
 
-    pending("returns the fixed min/max when set explicitly", function()
-      -- TODO: implement
+    it("returns the fixed min when set explicitly", function()
+      local g = TimeSeriesGraph({ min = -10, max = 10 })
+      assert.are.equal(-10, g:get_min())
     end)
 
-    pending("returns huge/-huge before any push for dynamic range", function()
-      -- TODO: implement
+    it("returns huge before any push for dynamic range", function()
+      local g = TimeSeriesGraph()
+      assert.are.equal(math.huge, g:get_min())
     end)
 
-    pending("returns the snapped min after a push expands the lower bound", function()
-      -- TODO: implement
+    it("returns the snapped min after a push expands the lower bound", function()
+      local g = TimeSeriesGraph()
+      g:push(-37)
+      assert.are.equal(-40, g:get_min())
     end)
 
-    pending("returns the snapped max after a push expands the upper bound", function()
-      -- TODO: implement
+    it("does not change when a push is within the current bounds", function()
+      local g = TimeSeriesGraph()
+      g:push(-40)
+      g:push(-20)
+      assert.are.equal(-40, g:get_min())
+    end)
+
+  end)
+
+
+
+  describe("get_max()", function()
+
+    it("returns the fixed max when set explicitly", function()
+      local g = TimeSeriesGraph({ min = -10, max = 10 })
+      assert.are.equal(10, g:get_max())
+    end)
+
+    it("returns -huge before any push for dynamic range", function()
+      local g = TimeSeriesGraph()
+      assert.are.equal(-math.huge, g:get_max())
+    end)
+
+    it("returns the snapped max after a push expands the upper bound", function()
+      local g = TimeSeriesGraph()
+      g:push(73)
+      assert.are.equal(80, g:get_max())
+    end)
+
+    it("does not change when a push is within the current bounds", function()
+      local g = TimeSeriesGraph()
+      g:push(73)   -- snaps max to 80
+      g:push(50)   -- within bounds, max stays 80
+      assert.are.equal(80, g:get_max())
     end)
 
   end)
@@ -106,16 +184,29 @@ describe("terminal.ui.timeseriesgraph", function()
 
   describe("clear()", function()
 
-    pending("empties the sample history", function()
-      -- TODO: implement
+    it("empties the sample history", function()
+      local g = TimeSeriesGraph({ min = 0, max = 100 })
+      g:push(10)
+      g:push(20)
+      g:clear()
+      assert.are.equal(0, #g._samples)
     end)
 
-    pending("resets dynamic min/max to sentinel values", function()
-      -- TODO: implement
+    it("resets dynamic min/max to sentinel values", function()
+      local g = TimeSeriesGraph()
+      g:push(73)
+      g:push(-37)
+      g:clear()
+      assert.are.equal(math.huge,  g:get_min())
+      assert.are.equal(-math.huge, g:get_max())
     end)
 
-    pending("does not reset fixed min/max", function()
-      -- TODO: implement
+    it("does not reset fixed min/max", function()
+      local g = TimeSeriesGraph({ min = -50, max = 50 })
+      g:push(10)
+      g:clear()
+      assert.are.equal(-50, g:get_min())
+      assert.are.equal( 50, g:get_max())
     end)
 
   end)
