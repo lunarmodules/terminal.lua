@@ -2,11 +2,15 @@
 -- Each cell is 2 pixels wide, 4 pixels tall (8 dots per braille character).
 --
 -- Pixel coordinates are 0-based. The origin (0, 0) is at the top-left corner,
--- with x increasing to the right and y increasing downward.
+-- with x increasing to the right and y increasing downward. Drawing outside
+-- the canvas bounds is ignored (no error).
 --
 -- Example usage:
 --     local Canvas = require "terminal.ui.canvas"
---     local c = Canvas({ width = 60, height = 30 })
+--     local c = Canvas({
+--       width = 60,
+--       height = 30,
+--     })
 --     c:set(10, 5)  -- set a pixel at (10, 5)
 --     print(c:render({ print = true }))  -- render the canvas for printing
 -- @classmod ui.Canvas
@@ -83,7 +87,12 @@ local Canvas = utils.class()
 -- @tparam[opt=false] boolean opts.invert If true, cleared cells are fully lit instead of empty
 -- @usage
 -- local Canvas = require "terminal.ui.canvas"
--- local c = Canvas({ width = 60, height = 30 })  -- call on the class to invoke the constructor
+-- local c = Canvas({
+--   width = 60,
+--   height = 30,
+--   invert = false,      -- optional, default is false
+-- })
+-- print(c:get_pixels())  --> 120, 120 (each cell is 2x4 pixels)
 function Canvas:init(opts)
   opts = opts or {}
   assert(opts.width and opts.height, "width and height must be provided")
@@ -148,23 +157,23 @@ end
 
 
 --- Render the canvas to a single string.
--- Without `opts.print`: each row is followed by cursor down+left, and after the last
--- row the cursor returns to the top-left of the rendered area.
--- With `opts.print`: rows are separated by newlines with no cursor movement sequences
--- and no trailing newline; suitable for plain `io.write` / `print` output.
+-- Use `opts.print = true` when writing to a plain terminal or file (e.g. with `print` or
+-- `io.write`) where cursor positioning is not needed.
+-- Omit `opts.print` (or set it to false) when rendering into a TUI layout where the
+-- cursor must return to the top-left of the canvas area after rendering.
 -- @tparam[opt={}] table opts
 -- @tparam[opt=false] boolean opts.print if truthy, use newline separators with no return sequence
--- @tparam[opt=1] number opts.row first cell row of the viewport (1-based)
--- @tparam[opt=1] number opts.col first cell column of the viewport (1-based)
--- @tparam[opt=self.rows] number opts.rows number of rows to render
--- @tparam[opt=self.cols] number opts.cols number of columns to render
+-- @tparam[opt=1] number opts.row first cell row of the viewport (1-based), must be valid
+-- @tparam[opt=1] number opts.col first cell column of the viewport (1-based), must be valid
+-- @tparam[opt] number opts.rows number of rows to render (defaults to all rows from `opts.row` to the bottom)
+-- @tparam[opt] number opts.cols number of columns to render (defaults to all columns from `opts.col` to the right)
 -- @treturn string
 function Canvas:render(opts)
   opts = opts or {}
   local r1 = opts.row or 1
   local c1 = opts.col or 1
-  local vrows = opts.rows or self.rows
-  local vcols = opts.cols or self.cols
+  local vrows = opts.rows or (self.rows - r1 + 1)
+  local vcols = opts.cols or (self.cols - c1 + 1)
   local r2 = r1 + vrows - 1
   local c2 = c1 + vcols - 1
   if r1 < 1 or c1 < 1 or
@@ -198,7 +207,7 @@ end
 
 
 
---- Return a deep copy of this canvas with identical dimensions and pixel state.
+--- Return a copy of this canvas with identical dimensions and pixel state.
 -- @treturn Canvas Copy of the canvas
 function Canvas:clone()
   local c = Canvas({ width = self.cols, height = self.rows })
@@ -420,7 +429,7 @@ end
 
 
 
---- Draw an ellipse using the midpoint ellipse algorithm.
+--- Draw an ellipse.
 -- @tparam table opts
 -- @tparam integer opts.x centre pixel column, 0-based
 -- @tparam integer opts.y centre pixel row, 0-based

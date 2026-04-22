@@ -1,5 +1,11 @@
 --- A viewport that maps a virtual coordinate space onto a Canvas.
 --
+-- This viewport is useful if a canvas is displayed in a TUI panel for example
+-- and you want to draw using a fixed logical coordinate system that is independent
+-- of the actual canvas pixel dimensions. The viewport applies a linear transformation
+-- to map virtual coordinates to the underlying canvas pixel coordinates, optionally
+-- preserving aspect ratio with letterboxing/pillarboxing.
+--
 -- **Responsibility:** pure coordinate transformation. This class translates
 -- drawing calls expressed in a user-defined virtual pixel space into the
 -- underlying Canvas's physical pixel space. It owns no scene data and records
@@ -34,7 +40,7 @@
 -- **Resize handling:**
 -- The viewport holds a reference to a Canvas. When the panel is resized, the
 -- caller should replace the canvas via `set_canvas` and then re-issue all
--- drawing calls. Scale factors are recomputed lazily on the next draw call.
+-- drawing calls.
 --
 -- Example usage:
 --     local Canvas = require "terminal.ui.canvas"
@@ -45,6 +51,7 @@
 --     local vp = CanvasViewport({
 --       canvas = c, width = 300, height = 300,
 --       scale_mode = CanvasViewport.scale_modes.fit,
+--       anchor = CanvasViewport.anchors.center,
 --     })
 --     vp:line({ x1 = 0, y1 = 0, x2 = 299, y2 = 299 })  -- diagonal in virtual space
 --     -- position cursor and write c:render() as usual
@@ -53,12 +60,15 @@
 
 local utils = require "terminal.utils"
 local floor = math.floor
+local min = math.min
+local max = math.max
 
 local CanvasViewport = utils.class()
 
 
 
---- Scale mode constants.
+--- Scale mode constants; `strech`, `fit`, or `fill` determine how the virtual
+-- coordinate space is mapped to the underlying canvas when their aspect ratios do not match.
 -- @field ui.CanvasViewport.scale_modes table lookup table for scale mode constants.
 CanvasViewport.scale_modes = utils.make_lookup("scale_mode", {
   stretch = "stretch",
@@ -68,7 +78,11 @@ CanvasViewport.scale_modes = utils.make_lookup("scale_mode", {
 
 
 
---- Anchor constants.
+--- Anchor constants; `center` or `top_left` determine the alignment of the virtual space within the
+-- canvas when `scale_mode` is `fit` or `fill`. With `center` the virtual space is centered in the
+-- canvas, and with `top_left` the virtual space is aligned to the top-left corner of the canvas.
+-- This has no effect when `scale_mode` is `stretch` since the virtual space always fills the canvas
+-- in that mode.
 -- @field ui.CanvasViewport.anchors table lookup table for anchor constants.
 CanvasViewport.anchors = utils.make_lookup("anchor", {
   center = "center",
@@ -92,9 +106,9 @@ local function compute_scales(self)
   else
     local s
     if self._scale_mode == CanvasViewport.scale_modes.fit then
-      s = math.min(pw / vw, ph / vh)
+      s = min(pw / vw, ph / vh)
     else -- fill
-      s = math.max(pw / vw, ph / vh)
+      s = max(pw / vw, ph / vh)
     end
     sx = s
     sy = s
@@ -130,6 +144,7 @@ end
 --   width = 300,
 --   height = 300,
 --   scale_mode = CanvasViewport.scale_modes.fit,
+--   anchor = CanvasViewport.anchors.center,
 -- })
 function CanvasViewport:init(opts)
   assert(opts and opts.canvas, "canvas is required")
