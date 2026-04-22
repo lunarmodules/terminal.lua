@@ -320,18 +320,15 @@ function TimeSeriesGraph:render(opts)
   local lbl_min = ""
   local label_width = 0
 
+  if rows < 2 or cols <= (label_width + 1) then
+    -- Not enough space for graph content, drop the labels
+    fmt = ""
+  end
+
   if fmt ~= "" and has_range then
     lbl_max = string.format(fmt, self._max)
     lbl_min = string.format(fmt, self._min)
     label_width = max(utf8swidth(lbl_max), utf8swidth(lbl_min))
-  end
-
-  if rows < 2 or cols <= (label_width + 1) then
-    -- Not enough space for graph content, drop the labels
-    -- fmt = ""
-    lbl_max = ""
-    lbl_min = ""
-    label_width = 0
   end
 
   local blank_label_line = (" "):rep(label_width) .. position.down_seq(1) .. position.left_seq(label_width)
