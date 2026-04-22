@@ -23,11 +23,11 @@
 -- When the virtual aspect ratio does not match the physical canvas pixel aspect
 -- ratio, the viewport applies one of the following scale modes:
 --
--- - `"stretch"`: x and y are scaled independently to fill the canvas exactly.
+-- - `scale_modes.stretch`: x and y are scaled independently to fill the canvas exactly.
 --   The image may be distorted.
--- - `"fit"`: uniform scale so the virtual space fits entirely within the canvas.
+-- - `scale_modes.fit`: uniform scale so the virtual space fits entirely within the canvas.
 --   Unused bands (letterbox / pillarbox) are left blank. No clipping.
--- - `"fill"`: uniform scale so the virtual space fills the canvas completely.
+-- - `scale_modes.fill`: uniform scale so the virtual space fills the canvas completely.
 --   Content that falls outside the canvas bounds is clipped (silently ignored,
 --   matching Canvas out-of-bounds behaviour).
 --
@@ -42,7 +42,10 @@
 --
 --     -- Inside a Panel content callback, called on every render (including resize):
 --     local c = Canvas({ width = panel.inner_width, height = panel.inner_height })
---     local vp = CanvasViewport({ canvas = c, width = 300, height = 300, scale_mode = "fit" })
+--     local vp = CanvasViewport({
+--       canvas = c, width = 300, height = 300,
+--       scale_mode = CanvasViewport.scale_modes.fit,
+--     })
 --     vp:line({ x1 = 0, y1 = 0, x2 = 299, y2 = 299 })  -- diagonal in virtual space
 --     -- position cursor and write c:render() as usual
 --
@@ -74,59 +77,21 @@ CanvasViewport.anchors = utils.make_lookup("anchor", {
 
 
 
---- Create a new CanvasViewport.
--- Do not call this method directly, call on the class instead.
--- @tparam table opts
--- @tparam Canvas opts.canvas The underlying Canvas to draw into.
--- @tparam number opts.width  Virtual space width in logical pixels.
--- @tparam number opts.height Virtual space height in logical pixels.
--- @tparam[opt="stretch"] string opts.scale_mode One of `CanvasViewport.scale_modes`.
--- @tparam[opt="center"] string opts.anchor Alignment of the virtual space within the
---   canvas when `scale_mode` is `"fit"` or `"fill"`. One of `CanvasViewport.anchors`.
--- @usage
--- local vp = CanvasViewport({ canvas = c, width = 300, height = 300, scale_mode = "fit" })
-function CanvasViewport:init(opts)
-  assert(opts and opts.canvas, "canvas is required")
-  assert(opts.width and opts.height, "width and height are required")
-  assert(opts.width > 0 and opts.height > 0, "width and height must be positive")
-
-  self._canvas = opts.canvas
-  self._virt_w = opts.width
-  self._virt_h = opts.height
-  self._scale_mode = CanvasViewport.scale_modes[opts.scale_mode or "stretch"]
-  self._anchor = CanvasViewport.anchors[opts.anchor or "center"]
-  self:_compute()
-end
-
-
-
---- Replace the underlying canvas.
--- Call this when the panel has been resized and a new Canvas has been created
--- with updated dimensions. Scale factors are recomputed immediately.
--- @tparam Canvas canvas The new Canvas instance.
-function CanvasViewport:set_canvas(canvas)
-  self._canvas = canvas
-  self:_compute()
-end
-
-
-
 -- Recompute cached scale factors and offsets from the current canvas dimensions.
-function CanvasViewport:_compute()
-
+local function compute_scales(self)
   local ph, pw = self._canvas:get_pixels()
   local vw = self._virt_w
   local vh = self._virt_h
   local sx, sy, ox, oy
 
-  if self._scale_mode == "stretch" then
+  if self._scale_mode == CanvasViewport.scale_modes.stretch then
     sx = pw / vw
     sy = ph / vh
     ox = 0
     oy = 0
   else
     local s
-    if self._scale_mode == "fit" then
+    if self._scale_mode == CanvasViewport.scale_modes.fit then
       s = math.min(pw / vw, ph / vh)
     else -- fill
       s = math.max(pw / vw, ph / vh)
@@ -146,6 +111,48 @@ function CanvasViewport:_compute()
   self._sy = sy
   self._ox = ox
   self._oy = oy
+end
+
+
+
+--- Create a new CanvasViewport.
+-- Do not call this method directly, call on the class instead.
+-- @tparam table opts
+-- @tparam Canvas opts.canvas The underlying Canvas to draw into.
+-- @tparam number opts.width  Virtual space width in logical pixels.
+-- @tparam number opts.height Virtual space height in logical pixels.
+-- @tparam[opt=scale_modes.stretch] string opts.scale_mode One of `CanvasViewport.scale_modes`.
+-- @tparam[opt=anchors.center] string opts.anchor Alignment of the virtual space within the
+--   canvas when `scale_mode` is `scale_modes.fit` or `scale_modes.fill`. One of `CanvasViewport.anchors`.
+-- @usage
+-- local vp = CanvasViewport({
+--   canvas = c,
+--   width = 300,
+--   height = 300,
+--   scale_mode = CanvasViewport.scale_modes.fit,
+-- })
+function CanvasViewport:init(opts)
+  assert(opts and opts.canvas, "canvas is required")
+  assert(opts.width and opts.height, "width and height are required")
+  assert(opts.width > 0 and opts.height > 0, "width and height must be positive")
+
+  self._canvas = opts.canvas
+  self._virt_w = opts.width
+  self._virt_h = opts.height
+  self._scale_mode = CanvasViewport.scale_modes[opts.scale_mode or CanvasViewport.scale_modes.stretch]
+  self._anchor = CanvasViewport.anchors[opts.anchor or CanvasViewport.anchors.center]
+  compute_scales(self)
+end
+
+
+
+--- Replace the underlying canvas.
+-- Call this when the panel has been resized and a new Canvas has been created
+-- with updated dimensions. Scale factors are recomputed immediately.
+-- @tparam Canvas canvas The new Canvas instance.
+function CanvasViewport:set_canvas(canvas)
+  self._canvas = canvas
+  compute_scales(self)
 end
 
 
@@ -203,7 +210,7 @@ end
 
 --- Draw an ellipse using virtual-space coordinates.
 -- The virtual radii are scaled independently per axis, so a circle in virtual
--- space becomes an ellipse on the canvas when `scale_mode` is `"stretch"`.
+-- space becomes an ellipse on the canvas when `scale_mode` is `scale_modes.stretch`.
 -- @tparam table opts
 -- @tparam number opts.x Centre virtual pixel column, 0-based.
 -- @tparam number opts.y Centre virtual pixel row, 0-based.
@@ -227,8 +234,8 @@ end
 
 --- Draw a circle using virtual-space coordinates.
 -- Convenience wrapper around `ellipse` with equal horizontal and vertical radii.
--- With `scale_mode = "fit"` or `"fill"` the uniform scale preserves the circular shape.
--- With `scale_mode = "stretch"` the circle maps to an ellipse on the canvas.
+-- With `scale_modes.fit` or `scale_modes.fill` the uniform scale preserves the circular shape.
+-- With `scale_modes.stretch` the circle maps to an ellipse on the canvas.
 -- @tparam table opts
 -- @tparam number opts.x Centre virtual pixel column, 0-based.
 -- @tparam number opts.y Centre virtual pixel row, 0-based.
