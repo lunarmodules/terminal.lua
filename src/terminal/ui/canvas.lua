@@ -96,12 +96,12 @@ local Canvas = utils.class()
 function Canvas:init(opts)
   opts = opts or {}
   assert(opts.width and opts.height, "width and height must be provided")
-  if opts.width <= 0 or opts.height <= 0 then
-    error("canvas dimensions must be positive")
-  end
 
   self.cols = floor(opts.width)
   self.rows = floor(opts.height)
+  if self.cols <= 0 or self.rows <= 0 then
+    error("canvas dimensions must be positive")
+  end
   self.px_w = self.cols * 2
   self.px_h = self.rows * 4
   self._blank = opts.invert and FILLED or BLANK
@@ -316,7 +316,7 @@ function Canvas:scroll(rows, cols)
   -- shift rows: positive = down (content moves toward higher indices)
   if rows > 0 then
     for _ = 1, math.min(rows, self.rows) do
-      local row = table.remove(self.cells)        -- grap the last row
+      local row = table.remove(self.cells)        -- grab the last row
       for c = 1, self.cols do row[c] = blank end  -- clear it
       table.insert(self.cells, 1, row)            -- reinsert at the top
     end

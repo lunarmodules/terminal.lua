@@ -45,6 +45,13 @@ describe("terminal.ui.timeseriesgraph", function()
       assert.are.equal(50, #g._samples)
     end)
 
+    it("errors when history is not a positive integer", function()
+      assert.has_error(function() TimeSeriesGraph({ history = 0 }) end)
+      assert.has_error(function() TimeSeriesGraph({ history = -1 }) end)
+      assert.has_error(function() TimeSeriesGraph({ history = 1.5 }) end)
+      assert.has_error(function() TimeSeriesGraph({ history = "bad" }) end)
+    end)
+
     it("errors when opts is not a table", function()
       assert.has_error(function() TimeSeriesGraph("bad") end)
       assert.has_error(function() TimeSeriesGraph(42) end)

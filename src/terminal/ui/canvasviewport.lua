@@ -67,7 +67,7 @@ local CanvasViewport = utils.class()
 
 
 
---- Scale mode constants; `strech`, `fit`, or `fill` determine how the virtual
+--- Scale mode constants; `stretch`, `fit`, or `fill` determine how the virtual
 -- coordinate space is mapped to the underlying canvas when their aspect ratios do not match.
 -- @field ui.CanvasViewport.scale_modes table lookup table for scale mode constants.
 CanvasViewport.scale_modes = utils.make_lookup("scale_mode", {

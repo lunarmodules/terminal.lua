@@ -106,7 +106,8 @@ end
 
 -- Map a data value to a physical Y pixel coordinate on the canvas.
 local function data_to_py(value, min_val, range, px_h)
-  return floor((min_val + range - value) / range * px_h)
+  if px_h <= 1 then return 0 end
+  return floor((min_val + range - value) / range * (px_h - 1))
 end
 
 
@@ -133,11 +134,18 @@ local TimeSeriesGraph = utils.class()
 --   ticks = { 25, 50, 75, 100 },  -- explicit tick values in data units
 -- })
 -- graph:push(42)
--- local output = graph:render(60, 15)
+-- local output = graph:render({ cols = 60, rows = 15 })
 function TimeSeriesGraph:init(opts)
   opts = opts or {}
   assert(type(opts) == "table", "opts must be a table")
-  self._history_size = opts.history or 100
+  local history = opts.history
+  if history == nil then
+    history = 100
+  else
+    assert(type(history) == "number" and history > 0 and history % 1 == 0,
+      "history must be a positive integer")
+  end
+  self._history_size = history
   self._ticks = opts.ticks -- nil → auto-generate per draw
   self._samples = {}
 
@@ -222,11 +230,12 @@ function TimeSeriesGraph:draw(canvas)
   local range = max_v - min_v
 
   -- 1. Data line through viewport (scales with the canvas).
-  --    Virtual space: x = sample index 0..history-1, y = 0..100 (0 = top).
+  --    Virtual space: x = sample index 0..history-1, y = 0..100 inclusive
+  --    (0 = top), so the viewport height must be 101.
   local vp = CVP({
     canvas = canvas,
     width = self._history_size,
-    height = 100,
+    height = 101,
     scale_mode = "stretch",
   })
 
@@ -330,7 +339,7 @@ function TimeSeriesGraph:render(opts)
     c:render(),
     graph_attr and text.pop_seq or "",
     -- return to start column after graph render
-    position.left_seq(cols)
+    position.left_seq(label_width)
   )
 
   return s
