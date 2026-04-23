@@ -61,6 +61,9 @@ build = {
     ["terminal.ui.panel.set"] = "src/terminal/ui/panel/set.lua",
     ["terminal.ui.panel.tab_strip"] = "src/terminal/ui/panel/tab_strip.lua",
     ["terminal.ui.panel.key_bar"] = "src/terminal/ui/panel/key_bar.lua",
+    ["terminal.ui.canvas"] = "src/terminal/ui/canvas.lua",
+    ["terminal.ui.canvasviewport"] = "src/terminal/ui/canvasviewport.lua",
+    ["terminal.ui.timeseriesgraph"] = "src/terminal/ui/timeseriesgraph.lua",
   },
 
   copy_directories = {
