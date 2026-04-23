@@ -287,14 +287,13 @@ end
 
 
 --- Convenience wrapper: create a Canvas, draw, and return the render string.
--- Do not call this method directly, call on the class instead.
--- When `opts.fmt` is given, tick labels are drawn to the left of the graph;
+-- When `opts.fmt` is given, min/max labels are drawn to the left of the graph;
 -- the canvas is narrowed automatically to keep the total width equal to `opts.cols`.
 -- @tparam table opts
--- @tparam number opts.cols total width in braille character columns (labels + graph)
--- @tparam number opts.rows canvas height in braille character rows
+-- @tparam number opts.cols total width in display-columns (labels + graph)
+-- @tparam number opts.rows total height in display-rows
 -- @tparam[opt] string opts.fmt `string.format` pattern for the min/max labels (e.g. `"%g"` or `"%d%%"`);
---   when given, labels are drawn to the left of the graph and `opts.cols` is split accordingly
+-- when given, labels are drawn to the left of the graph
 -- @tparam[opt] table opts.graph_attr text attributes for the graph area (e.g. `{ fg = "cyan" }`)
 -- @tparam[opt] table opts.label_attr text attributes for the min/max labels (e.g. `{ fg = "white" }`)
 -- @treturn Sequence terminal escape sequence string ready for `output.write`
@@ -328,7 +327,11 @@ function TimeSeriesGraph:render(opts)
   if fmt ~= "" and has_range then
     lbl_max = string.format(fmt, self._max)
     lbl_min = string.format(fmt, self._min)
-    label_width = max(utf8swidth(lbl_max), utf8swidth(lbl_min))
+    local max_w, min_w = utf8swidth(lbl_max), utf8swidth(lbl_min)
+    label_width = max(max_w, min_w)
+    -- align labels right
+    lbl_max = (" "):rep(label_width - max_w) .. lbl_max
+    lbl_min = (" "):rep(label_width - min_w) .. lbl_min
   end
 
   local blank_label_line = (" "):rep(label_width) .. position.down_seq(1) .. position.left_seq(label_width)
@@ -344,15 +347,13 @@ function TimeSeriesGraph:render(opts)
   local s = Sequence(
     -- format the labels
     label_attr and function() return text.push_seq(label_attr) end or "",
-    -- max-label, right aligned
-    (" "):rep(label_width - utf8swidth(lbl_max)),
+    -- max-label
     lbl_max,
     position.down_seq(1),
     position.left_seq(label_width),
     -- clear inbetween lines
     blank_label_line:rep(rows - 2),
-    -- min-label, right aligned
-    (" "):rep(label_width - utf8swidth(lbl_min)),
+    -- min-label
     lbl_min,
     -- move up for the graph render, undo attributes
     position.up_seq(rows - 1),
