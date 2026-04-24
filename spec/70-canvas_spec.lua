@@ -1,4 +1,5 @@
 local helpers = require "spec.helpers"
+local lines = require("pl.stringx").splitlines
 
 -- Mirror of canvas's internal braille() encoder, for computing expected cell values.
 -- DOT_BIT (col, row) → bit: (0,0)=1, (0,1)=2, (0,2)=4, (0,3)=64,
@@ -870,6 +871,194 @@ describe("terminal.ui.canvas", function()
         -- circle centred near edge so part of the outline falls outside
         local c = Canvas({ width = 2, height = 2 })
         assert.has_no_error(function() c:circle({ x = 0, y = 0, r = 3 }) end)
+      end)
+
+    end)
+
+
+
+    describe("arc()", function()
+
+      -- Helper: render canvas to a table of braille-string lines.
+      local function render_lines(c)
+        return lines(c:render({ print = true }))
+      end
+
+      local pi = math.pi
+
+
+      it("draws a single pixel when rx and ry are both zero", function()
+        -- rx=ry=0: degenerate point at (cx, cy) regardless of angles.
+        -- cx=0,cy=0 on 1×1 canvas: pixel (0,0) → col=0,row=0,bit=1 → ⠁
+        local c = Canvas({ width = 1, height = 1 })
+        c:arc({ x = 0, y = 0, rx = 0, ry = 0, angle_start = 0, angle_end = 0 })
+        assert.are.same({ "⠁" }, render_lines(c))
+      end)
+
+
+      it("always plots the start-angle pixel", function()
+        -- angle_start = angle_end = 0: arc degenerates to a single point.
+        -- cx=4, cy=4, r=4 on 5×3 canvas (px_w=10, px_h=12).
+        -- At θ=0: x=floor(4+4+0.5)=8, y=4 → cell[2][5], dot_col=0,row=0, bit=1 → ⠁
+        local c = Canvas({ width = 5, height = 3 })
+        c:arc({ x = 4, y = 4, rx = 4, ry = 4, angle_start = 0, angle_end = 0 })
+        assert.are.same(
+          { "⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠁",
+            "⠀⠀⠀⠀⠀" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("always plots the end-angle pixel", function()
+        -- angle_start = angle_end = pi/2: arc degenerates to a single point at the bottom.
+        -- At θ=pi/2: x=4, y=floor(4+4+0.5)=8 → cell[3][3], dot_col=0,row=0, bit=1 → ⠁
+        local c = Canvas({ width = 5, height = 3 })
+        c:arc({ x = 4, y = 4, rx = 4, ry = 4, angle_start = pi/2, angle_end = pi/2 })
+        assert.are.same(
+          { "⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀",
+            "⠀⠀⠁⠀⠀" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("a full revolution produces the expected closed outline", function()
+        -- cx=4, cy=4, r=4 on 5×3 canvas; one full revolution via parametric walk.
+        local c = Canvas({ width = 5, height = 3 })
+        c:arc({ x = 4, y = 4, rx = 4, ry = 4, angle_start = 0, angle_end = 2*pi })
+        assert.are.same(
+          { "⡰⠉⠉⠲⡀",
+            "⢧⠀⠀⣀⠇",
+            "⠀⠉⠉⠀⠀" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("a quarter arc (pi/2) only sets pixels in the expected quadrant", function()
+        -- 0..pi/2 sweeps clockwise from the right to the bottom of the circle.
+        -- All pixels lie in the bottom-right quadrant of the canvas; the top row
+        -- and the left two columns stay entirely blank.
+        -- cx=4, cy=4, r=4 on 5×3 canvas.
+        local c = Canvas({ width = 5, height = 3 })
+        c:arc({ x = 4, y = 4, rx = 4, ry = 4, angle_start = 0, angle_end = pi/2 })
+        assert.are.same(
+          { "⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⣀⠇",
+            "⠀⠀⠉⠀⠀" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("a half arc (pi) only sets pixels on one side of the centre", function()
+        -- 0..pi sweeps the bottom half of the circle; the top row is entirely blank.
+        -- cx=4, cy=4, r=4 on 5×3 canvas.
+        local c = Canvas({ width = 5, height = 3 })
+        c:arc({ x = 4, y = 4, rx = 4, ry = 4, angle_start = 0, angle_end = pi })
+        assert.are.same(
+          { "⠀⠀⠀⠀⠀",
+            "⢧⠀⠀⣀⠇",
+            "⠀⠉⠉⠀⠀" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("rx=0 draws a vertical segment for the given angle range", function()
+        -- rx=0 forces x=cx for every angle; only ry*sin(θ) varies.
+        -- cx=2, cy=6, ry=4 on 2×3 canvas (px_h=12); arc from -pi/2 to pi/2
+        -- spans y=6-4=2 to y=6+4=10 at x=2 (right column, cell_col=2).
+        -- row1[2]: y=2(bit4)+y=3(bit64)=68 → ⡄
+        -- row2[2]: y=4(bit1)+y=5(bit2)+y=6(bit4)+y=7(bit64)=71 → ⡇
+        -- row3[2]: y=8(bit1)+y=9(bit2)+y=10(bit4)=7 → ⠇
+        local c = Canvas({ width = 2, height = 3 })
+        c:arc({ x = 2, y = 6, rx = 0, ry = 4, angle_start = -pi/2, angle_end = pi/2 })
+        assert.are.same(
+          { "⠀⡄",
+            "⠀⡇",
+            "⠀⠇" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("ry=0 draws a horizontal segment for the given angle range", function()
+        -- ry=0 forces y=cy for every angle; only rx*cos(θ) varies.
+        -- cx=4, cy=2, rx=4 on 3×1 canvas (px_w=6); arc from -pi to 0
+        -- spans x=4-4=0 to x=4+4=8 at y=2, clipped to x=0..5.
+        -- All three cells: y=2 → cell_row=1, dot_row=2; left bit=4, right bit=32;
+        -- each cell has bits 4+32=36 → ⠤
+        local c = Canvas({ width = 3, height = 1 })
+        c:arc({ x = 4, y = 2, rx = 4, ry = 0, angle_start = -pi, angle_end = 0 })
+        assert.are.same({ "⠤⠤⠤" }, render_lines(c))
+      end)
+
+
+      it("erases pixels when the erase flag is set", function()
+        -- Use an inverted canvas (starts fully lit) so that erasing the arc cuts
+        -- visible holes in the solid background, making the effect directly observable.
+        -- Restoring with a plain arc fills the holes and returns the canvas to all-lit.
+        local c = Canvas({ width = 5, height = 3, invert = true })
+        c:arc({ x = 4, y = 4, rx = 4, ry = 4, angle_start = 0, angle_end = pi/2, erase = true })
+        assert.are.same(
+          { "⣿⣿⣿⣿⣿",
+            "⣿⣿⣿⠿⣸",
+            "⣿⣿⣶⣿⣿" },
+          render_lines(c)
+        )
+        c:arc({ x = 4, y = 4, rx = 4, ry = 4, angle_start = 0, angle_end = pi/2 })
+        assert.are.same(
+          { "⣿⣿⣿⣿⣿",
+            "⣿⣿⣿⣿⣿",
+            "⣿⣿⣿⣿⣿" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("ignores out-of-bounds pixels when the arc extends beyond the canvas edge", function()
+        -- Circle centred at the top-left corner so most of it falls outside.
+        -- No error; the in-bounds pixels are still drawn.
+        local c = Canvas({ width = 2, height = 2 })
+        assert.has_no_error(function()
+          c:arc({ x = 0, y = 0, rx = 4, ry = 4, angle_start = 0, angle_end = 2*pi })
+        end)
+        assert.are.same(
+          { "⠀⣀",
+            "⠉⠀" },
+          render_lines(c)
+        )
+      end)
+
+
+      it("errors when angle_end is less than angle_start", function()
+        local c = Canvas({ width = 2, height = 2 })
+        assert.has_error(
+          function() c:arc({ x = 2, y = 4, rx = 2, ry = 2, angle_start = pi, angle_end = 0 }) end,
+          "angle_end must be >= angle_start"
+        )
+      end)
+
+
+      it("errors when rx or ry is negative", function()
+        -- negative radii produce a non-positive step denominator, causing an infinite loop
+        local c = Canvas({ width = 2, height = 2 })
+        assert.has_error(
+          function() c:arc({ x = 2, y = 2, rx = -1, ry =  1, angle_start = 0, angle_end = pi }) end,
+          "rx and ry must be >= 0"
+        )
+        assert.has_error(
+          function() c:arc({ x = 2, y = 2, rx =  1, ry = -1, angle_start = 0, angle_end = pi }) end,
+          "rx and ry must be >= 0"
+        )
+        assert.has_error(
+          function() c:arc({ x = 2, y = 2, rx = -1, ry = -1, angle_start = 0, angle_end = pi }) end,
+          "rx and ry must be >= 0"
+        )
       end)
 
     end)
