@@ -1,12 +1,19 @@
 local helpers = require "spec.helpers"
 local lines = require("pl.stringx").splitlines
 
+
+local function render_lines(c)
+  return lines(c:render({ print = true }))
+end
+
+
 -- Mirror of canvas's internal braille() encoder, for computing expected cell values.
 -- DOT_BIT (col, row) → bit: (0,0)=1, (0,1)=2, (0,2)=4, (0,3)=64,
 --                           (1,0)=8, (1,1)=16, (1,2)=32, (1,3)=128
 local function braille(i)
   return string.char(226, 160 + math.floor(i / 64), 128 + (i % 64))
 end
+
 
 local BLANK  = braille(0)    -- U+2800, all dots off
 local FILLED = braille(255)  -- U+28FF, all dots on
@@ -80,21 +87,21 @@ describe("terminal.ui.canvas", function()
 
     it("defaults to blank (all-dots-off) cells", function()
       local c = Canvas({ width = 3, height = 2 })
-      for r = 1, 2 do
-        for col = 1, 3 do
-          assert.are.equal(BLANK, c.cells[r][col])
-        end
-      end
+      assert.are.same(
+        { "⠀⠀⠀",
+          "⠀⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("uses filled (all-dots-on) cells when invert option is set", function()
       local c = Canvas({ width = 3, height = 2, invert = true })
-      for r = 1, 2 do
-        for col = 1, 3 do
-          assert.are.equal(FILLED, c.cells[r][col])
-        end
-      end
+      assert.are.same(
+        { "⣿⣿⣿",
+          "⣿⣿⣿" },
+        render_lines(c)
+      )
     end)
 
   end)
@@ -104,60 +111,59 @@ describe("terminal.ui.canvas", function()
   describe("set()", function()
 
     it("illuminates a pixel", function()
+      -- pixel (0,1): dot_col=0, dot_row=1, bit=2 → second dot of left column
       local c = Canvas({ width = 2, height = 1 })
-      -- pixel (0,1): col=0, row=1, bit=2 → braille(2)
       c:set(0, 1)
-      assert.are.equal(braille(2), c.cells[1][1])
+      assert.are.same({ "⠂⠀" }, render_lines(c))
     end)
 
 
     it("on an already-set pixel is idempotent", function()
       local c = Canvas({ width = 2, height = 1 })
       c:set(0, 0)
-      local after_first = c.cells[1][1]
+      local after_first = render_lines(c)
       c:set(0, 0)
-      assert.are.equal(after_first, c.cells[1][1])
+      assert.are.same(after_first, render_lines(c))
     end)
 
 
     it("handles the top-left corner pixel (0, 0)", function()
+      -- pixel (0,0): dot_col=0, dot_row=0, bit=1 → top-left dot
       local c = Canvas({ width = 2, height = 1 })
-      -- pixel (0,0): col=0, row=0, bit=1 → braille(1)
       c:set(0, 0)
-      assert.are.equal(braille(1), c.cells[1][1])
+      assert.are.same({ "⠁⠀" }, render_lines(c))
     end)
 
 
     it("handles the bottom-right corner pixel", function()
-      local c = Canvas({ width = 2, height = 1 })
       -- px_w=4, px_h=4; bottom-right pixel is (3,3)
-      -- cell_col=floor(3/2)+1=2, cell_row=floor(3/4)+1=1
-      -- col=3%2=1, row=3%4=3, bit=128 → braille(128)
+      -- dot_col=1, dot_row=3, bit=128 → bottom-right dot of second cell
+      local c = Canvas({ width = 2, height = 1 })
       c:set(3, 3)
-      assert.are.equal(braille(128), c.cells[1][2])
+      assert.are.same({ "⠀⢀" }, render_lines(c))
     end)
 
 
     it("affects only the correct braille cell", function()
+      -- pixel (0,0) lands in cell [1][1]; all other cells stay blank
       local c = Canvas({ width = 2, height = 2 })
-      -- pixel (0,0) maps to cells[1][1] only
       c:set(0, 0)
-      assert.are_not.equal(BLANK, c.cells[1][1])
-      assert.are.equal(BLANK, c.cells[1][2])
-      assert.are.equal(BLANK, c.cells[2][1])
-      assert.are.equal(BLANK, c.cells[2][2])
+      assert.are.same(
+        { "⠁⠀",
+          "⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("ignores pixels outside canvas bounds", function()
-      -- 2×1 canvas: valid x=[0,3], valid y=[0,3]
+      -- 2×1 canvas: valid x=[0,3], valid y=[0,3]; all out-of-bounds sets are no-ops
       local c = Canvas({ width = 2, height = 1 })
       assert.has_no_error(function() c:set(-1,  0) end)  -- x too small
       assert.has_no_error(function() c:set( 4,  0) end)  -- x too large
       assert.has_no_error(function() c:set( 0, -1) end)  -- y too small
       assert.has_no_error(function() c:set( 0,  4) end)  -- y too large
-      assert.are.equal(BLANK, c.cells[1][1])
-      assert.are.equal(BLANK, c.cells[1][2])
+      assert.are.same({ "⠀⠀" }, render_lines(c))
     end)
 
   end)
@@ -169,42 +175,39 @@ describe("terminal.ui.canvas", function()
     it("extinguishes a pixel", function()
       local c = Canvas({ width = 2, height = 1 })
       c:set(0, 0)
-      assert.are_not.equal(BLANK, c.cells[1][1])
+      assert.are.same({ "⠁⠀" }, render_lines(c))
       c:unset(0, 0)
-      assert.are.equal(BLANK, c.cells[1][1])
+      assert.are.same({ "⠀⠀" }, render_lines(c))
     end)
 
 
     it("on an already-unset pixel is idempotent", function()
       local c = Canvas({ width = 2, height = 1 })
       c:unset(0, 0)
-      assert.are.equal(BLANK, c.cells[1][1])
+      assert.are.same({ "⠀⠀" }, render_lines(c))
     end)
 
 
     it("in the same cell as set() is independent per dot", function()
+      -- (0,0): dot_col=0, dot_row=0, bit=1; (1,0): dot_col=1, dot_row=0, bit=8 — same cell
       local c = Canvas({ width = 2, height = 1 })
-      -- (0,0): col=0, row=0, bit=1; (1,0): col=1, row=0, bit=8 — same cell (1,1)
       c:set(0, 0)
       c:set(1, 0)
-      assert.are.equal(braille(1 + 8), c.cells[1][1])
+      assert.are.same({ "⠉⠀" }, render_lines(c))
       c:unset(0, 0)
-      assert.are.equal(braille(8), c.cells[1][1])
+      assert.are.same({ "⠈⠀" }, render_lines(c))
     end)
 
 
     it("ignores pixels outside canvas bounds", function()
-      -- 2×1 canvas: valid x=[0,3], valid y=[0,3]; pre-fill to detect unwanted changes
+      -- 2×1 canvas: valid x=[0,3], valid y=[0,3]; out-of-bounds unsets are no-ops
       local c = Canvas({ width = 2, height = 1 })
       c:set(0, 0)
-      local before1 = c.cells[1][1]
-      local before2 = c.cells[1][2]
       assert.has_no_error(function() c:unset(-1,  0) end)
       assert.has_no_error(function() c:unset( 4,  0) end)
       assert.has_no_error(function() c:unset( 0, -1) end)
       assert.has_no_error(function() c:unset( 0,  4) end)
-      assert.are.equal(before1, c.cells[1][1])
-      assert.are.equal(before2, c.cells[1][2])
+      assert.are.same({ "⠁⠀" }, render_lines(c))
     end)
 
   end)
@@ -215,14 +218,14 @@ describe("terminal.ui.canvas", function()
 
     it("resets all cells to blank after pixels were set", function()
       local c = Canvas({ width = 3, height = 2 })
-      c:set(0, 0)   -- cells[1][1]
+      c:set(0, 0)   -- top-left
       c:set(3, 5)   -- cell_col=2, cell_row=2
       c:clear()
-      for r = 1, 2 do
-        for col = 1, 3 do
-          assert.are.equal(BLANK, c.cells[r][col])
-        end
-      end
+      assert.are.same(
+        { "⠀⠀⠀",
+          "⠀⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
@@ -230,11 +233,11 @@ describe("terminal.ui.canvas", function()
       local c = Canvas({ width = 3, height = 2, invert = true })
       c:unset(0, 0)  -- extinguish one dot from the initially filled cell
       c:clear()
-      for r = 1, 2 do
-        for col = 1, 3 do
-          assert.are.equal(FILLED, c.cells[r][col])
-        end
-      end
+      assert.are.same(
+        { "⣿⣿⣿",
+          "⣿⣿⣿" },
+        render_lines(c)
+      )
     end)
 
   end)
@@ -252,12 +255,12 @@ describe("terminal.ui.canvas", function()
 
 
     it("cloned canvas has identical cell state", function()
+      -- set(0,0)→bit1 in cell[1][1], set(3,3)→bit128 in cell[1][2]
       local c = Canvas({ width = 2, height = 1 })
       c:set(0, 0)
       c:set(3, 3)
       local d = c:clone()
-      assert.are.equal(c.cells[1][1], d.cells[1][1])
-      assert.are.equal(c.cells[1][2], d.cells[1][2])
+      assert.are.same(render_lines(c), render_lines(d))
     end)
 
 
@@ -266,8 +269,8 @@ describe("terminal.ui.canvas", function()
       c:set(0, 0)
       local d = c:clone()
       d:unset(0, 0)
-      assert.are_not.equal(BLANK, c.cells[1][1])
-      assert.are.equal(BLANK, d.cells[1][1])
+      assert.are.same({ "⠁⠀" }, render_lines(c))
+      assert.are.same({ "⠀⠀" }, render_lines(d))
     end)
 
 
@@ -304,67 +307,81 @@ describe("terminal.ui.canvas", function()
     it("growing rows adds blank rows at the bottom", function()
       local c = Canvas({ width = 1, height = 1 })
       c:resize(3, 1)
-      assert.are.equal(BLANK, c.cells[2][1])
-      assert.are.equal(BLANK, c.cells[3][1])
+      assert.are.same(
+        { "⠀",
+          "⠀",
+          "⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("growing cols adds blank cells to the right of every row", function()
       local c = Canvas({ width = 1, height = 2 })
       c:resize(2, 3)
-      for r = 1, 2 do
-        assert.are.equal(BLANK, c.cells[r][2])
-        assert.are.equal(BLANK, c.cells[r][3])
-      end
+      assert.are.same(
+        { "⠀⠀⠀",
+          "⠀⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("shrinking rows removes rows from the bottom", function()
       local c = Canvas({ width = 1, height = 3 })
       c:resize(1, 1)
-      assert.is_nil(c.cells[2])
-      assert.is_nil(c.cells[3])
+      assert.are.same({ "⠀" }, render_lines(c))
     end)
 
 
     it("shrinking cols removes cells from the right of every row", function()
       local c = Canvas({ width = 3, height = 2 })
       c:resize(2, 1)
-      for r = 1, 2 do
-        assert.is_nil(c.cells[r][2])
-        assert.is_nil(c.cells[r][3])
-      end
+      assert.are.same(
+        { "⠀",
+          "⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("preserves existing content within the new bounds", function()
+      -- set(0,0)→bit1, set(1,1)→bit16; same cell[1][1], total bits 1+16=17 → "⠑"
       local c = Canvas({ width = 3, height = 3 })
-      c:set(0, 0)  -- cells[1][1]
-      c:set(1, 1)  -- cells[1][1] (same cell, different dot)
-      local original = c.cells[1][1]
+      c:set(0, 0)
+      c:set(1, 1)
       c:resize(2, 2)
-      assert.are.equal(original, c.cells[1][1])
+      assert.are.same(
+        { "⠑⠀",
+          "⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("new cells respect the invert option", function()
       local c = Canvas({ width = 1, height = 1, invert = true })
       c:resize(2, 2)
-      assert.are.equal(FILLED, c.cells[1][2])
-      assert.are.equal(FILLED, c.cells[2][1])
-      assert.are.equal(FILLED, c.cells[2][2])
+      assert.are.same(
+        { "⣿⣿",
+          "⣿⣿" },
+        render_lines(c)
+      )
     end)
 
 
     it("same dimensions is a no-op", function()
       local c = Canvas({ width = 2, height = 2 })
       c:set(0, 0)
-      local before = c.cells[1][1]
       c:resize(2, 2)
       local rows, cols = c:get_size()
       assert.are.equal(2, rows)
       assert.are.equal(2, cols)
-      assert.are.equal(before, c.cells[1][1])
+      assert.are.same(
+        { "⠁⠀",
+          "⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
@@ -388,42 +405,46 @@ describe("terminal.ui.canvas", function()
   describe("scroll()", function()
 
     it("shifts content down, blanking the vacated top rows", function()
+      -- set(0,0)→bit1 in cell[1][1]; after scroll(1,0) it moves to cell[2][1]
       local c = Canvas({ width = 1, height = 2 })
-      c:set(0, 0)  -- cells[1][1]
-      local original = c.cells[1][1]
+      c:set(0, 0)
       c:scroll(1, 0)
-      assert.are.equal(BLANK,    c.cells[1][1])  -- vacated
-      assert.are.equal(original, c.cells[2][1])  -- content moved down
+      assert.are.same(
+        { "⠀",
+          "⠁" },
+        render_lines(c)
+      )
     end)
 
 
     it("shifts content up, blanking the vacated bottom rows", function()
+      -- set(0,4)→y=4→cell_row=2, bit1 in cell[2][1]; after scroll(-1,0) moves to cell[1][1]
       local c = Canvas({ width = 1, height = 2 })
-      c:set(0, 4)  -- y=4 → cell_row=2; cells[2][1]
-      local original = c.cells[2][1]
+      c:set(0, 4)
       c:scroll(-1, 0)
-      assert.are.equal(original, c.cells[1][1])  -- content moved up
-      assert.are.equal(BLANK,    c.cells[2][1])  -- vacated
+      assert.are.same(
+        { "⠁",
+          "⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("shifts content right, blanking the vacated left cols", function()
+      -- set(0,0)→bit1 in cell[1][1]; after scroll(0,1) moves to cell[1][2]
       local c = Canvas({ width = 2, height = 1 })
-      c:set(0, 0)  -- cells[1][1]
-      local original = c.cells[1][1]
+      c:set(0, 0)
       c:scroll(0, 1)
-      assert.are.equal(BLANK,    c.cells[1][1])  -- vacated
-      assert.are.equal(original, c.cells[1][2])  -- content moved right
+      assert.are.same({ "⠀⠁" }, render_lines(c))
     end)
 
 
     it("shifts content left, blanking the vacated right cols", function()
+      -- set(2,0)→x=2→cell_col=2, bit1 in cell[1][2]; after scroll(0,-1) moves to cell[1][1]
       local c = Canvas({ width = 2, height = 1 })
-      c:set(2, 0)  -- x=2 → cell_col=2; cells[1][2]
-      local original = c.cells[1][2]
+      c:set(2, 0)
       c:scroll(0, -1)
-      assert.are.equal(original, c.cells[1][1])  -- content moved left
-      assert.are.equal(BLANK,    c.cells[1][2])  -- vacated
+      assert.are.same({ "⠁⠀" }, render_lines(c))
     end)
 
 
@@ -432,8 +453,11 @@ describe("terminal.ui.canvas", function()
       c:set(0, 0)
       c:set(0, 4)
       c:scroll(2, 0)
-      assert.are.equal(BLANK, c.cells[1][1])
-      assert.are.equal(BLANK, c.cells[2][1])
+      assert.are.same(
+        { "⠀",
+          "⠀" },
+        render_lines(c)
+      )
     end)
 
 
@@ -442,29 +466,32 @@ describe("terminal.ui.canvas", function()
       c:set(0, 0)
       c:set(2, 0)
       c:scroll(0, 2)
-      assert.are.equal(BLANK, c.cells[1][1])
-      assert.are.equal(BLANK, c.cells[1][2])
+      assert.are.same({ "⠀⠀" }, render_lines(c))
     end)
 
 
     it("applies row and col shifts together", function()
+      -- set(0,0)→bit1 in cell[1][1]; after scroll(1,1) moves to cell[2][2]
       local c = Canvas({ width = 2, height = 2 })
-      c:set(0, 0)  -- cells[1][1]
-      local original = c.cells[1][1]
+      c:set(0, 0)
       c:scroll(1, 1)
-      assert.are.equal(BLANK,    c.cells[1][1])
-      assert.are.equal(BLANK,    c.cells[1][2])
-      assert.are.equal(BLANK,    c.cells[2][1])
-      assert.are.equal(original, c.cells[2][2])  -- moved down+right
+      assert.are.same(
+        { "⠀⠀",
+          "⠀⠁" },
+        render_lines(c)
+      )
     end)
 
 
     it("scroll(0, 0) is a no-op", function()
       local c = Canvas({ width = 2, height = 2 })
       c:set(0, 0)
-      local before = c.cells[1][1]
       c:scroll(0, 0)
-      assert.are.equal(before, c.cells[1][1])
+      assert.are.same(
+        { "⠁⠀",
+          "⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
@@ -483,78 +510,91 @@ describe("terminal.ui.canvas", function()
   describe("roll()", function()
 
     it("rolls content down, wrapping the bottom row to the top", function()
+      -- set(0,4)→y=4→cell_row=2, bit1 in cell[2][1]; after roll(1,0) wraps to cell[1][1]
       local c = Canvas({ width = 1, height = 2 })
-      c:set(0, 4)  -- y=4 → cell_row=2; cells[2][1]
-      local original = c.cells[2][1]
+      c:set(0, 4)
       c:roll(1, 0)
-      assert.are.equal(original, c.cells[1][1])  -- wrapped to top
-      assert.are.equal(BLANK,    c.cells[2][1])  -- moved up (was blank)
+      assert.are.same(
+        { "⠁",
+          "⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("rolls content up, wrapping the top row to the bottom", function()
+      -- set(0,0)→bit1 in cell[1][1]; after roll(-1,0) wraps to cell[2][1]
       local c = Canvas({ width = 1, height = 2 })
-      c:set(0, 0)  -- cells[1][1]
-      local original = c.cells[1][1]
+      c:set(0, 0)
       c:roll(-1, 0)
-      assert.are.equal(BLANK,    c.cells[1][1])  -- moved down (was blank)
-      assert.are.equal(original, c.cells[2][1])  -- wrapped to bottom
+      assert.are.same(
+        { "⠀",
+          "⠁" },
+        render_lines(c)
+      )
     end)
 
 
     it("rolls content right, wrapping the last col to the left", function()
+      -- set(2,0)→x=2→cell_col=2, bit1 in cell[1][2]; after roll(0,1) wraps to cell[1][1]
       local c = Canvas({ width = 2, height = 1 })
-      c:set(2, 0)  -- x=2 → cell_col=2; cells[1][2]
-      local original = c.cells[1][2]
+      c:set(2, 0)
       c:roll(0, 1)
-      assert.are.equal(original, c.cells[1][1])  -- wrapped to left
-      assert.are.equal(BLANK,    c.cells[1][2])  -- moved right (was blank)
+      assert.are.same({ "⠁⠀" }, render_lines(c))
     end)
 
 
     it("rolls content left, wrapping the first col to the right", function()
+      -- set(0,0)→bit1 in cell[1][1]; after roll(0,-1) wraps to cell[1][2]
       local c = Canvas({ width = 2, height = 1 })
-      c:set(0, 0)  -- cells[1][1]
-      local original = c.cells[1][1]
+      c:set(0, 0)
       c:roll(0, -1)
-      assert.are.equal(BLANK,    c.cells[1][1])  -- moved left (was blank)
-      assert.are.equal(original, c.cells[1][2])  -- wrapped to right
+      assert.are.same({ "⠀⠁" }, render_lines(c))
     end)
 
 
     it("rolling by the canvas height is a no-op", function()
       local c = Canvas({ width = 1, height = 2 })
       c:set(0, 0)
-      local before = c.cells[1][1]
       c:roll(2, 0)
-      assert.are.equal(before, c.cells[1][1])
+      assert.are.same(
+        { "⠁",
+          "⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("rolling by the canvas width is a no-op", function()
       local c = Canvas({ width = 2, height = 1 })
       c:set(0, 0)
-      local before = c.cells[1][1]
       c:roll(0, 2)
-      assert.are.equal(before, c.cells[1][1])
+      assert.are.same({ "⠁⠀" }, render_lines(c))
     end)
 
 
     it("roll(0, 0) is a no-op", function()
       local c = Canvas({ width = 2, height = 2 })
       c:set(0, 0)
-      local before = c.cells[1][1]
       c:roll(0, 0)
-      assert.are.equal(before, c.cells[1][1])
+      assert.are.same(
+        { "⠁⠀",
+          "⠀⠀" },
+        render_lines(c)
+      )
     end)
 
 
     it("applies row and col rolls together", function()
+      -- set(0,0)→bit1 in cell[1][1]; after roll(1,1) wraps to cell[2][2]
       local c = Canvas({ width = 2, height = 2 })
-      c:set(0, 0)  -- cells[1][1]
-      local original = c.cells[1][1]
+      c:set(0, 0)
       c:roll(1, 1)
-      assert.are.equal(original, c.cells[2][2])  -- wrapped down+right
+      assert.are.same(
+        { "⠀⠀",
+          "⠀⠁" },
+        render_lines(c)
+      )
     end)
 
 
@@ -747,72 +787,65 @@ describe("terminal.ui.canvas", function()
     describe("line()", function()
 
       it("draws a horizontal line", function()
-        -- (0,0)→(3,0): pixels (0,0),(1,0) in cell (1,1); (2,0),(3,0) in cell (1,2)
-        -- col=0,row=0,bit=1 and col=1,row=0,bit=8 → braille(1+8) in each cell
+        -- (0,0)→(3,0): both braille cells get left+right top-row dots lit
         local c = Canvas({ width = 2, height = 1 })
         c:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 0 })
-        assert.are.equal(braille(1 + 8), c.cells[1][1])
-        assert.are.equal(braille(1 + 8), c.cells[1][2])
+        assert.are.same({ "⠉⠉" }, render_lines(c))
       end)
 
 
       it("draws a vertical line", function()
-        -- (0,0)→(0,7): col=0, all 4 left-column bits set in each of 2 cell rows
-        -- bits 1+2+4+64 = 71 (rows 0-3 of the left dot column)
+        -- (0,0)→(0,7): left dot column fully lit in both cell rows
         local c = Canvas({ width = 1, height = 2 })
         c:line({ x1 = 0, y1 = 0, x2 = 0, y2 = 7 })
-        assert.are.equal(braille(1 + 2 + 4 + 64), c.cells[1][1])
-        assert.are.equal(braille(1 + 2 + 4 + 64), c.cells[2][1])
+        assert.are.same(
+          { "⡇",
+            "⡇" },
+          render_lines(c)
+        )
       end)
 
 
       it("draws a diagonal line", function()
-        -- (0,0)→(3,3): Bresenham gives (0,0),(1,1),(2,2),(3,3)
-        -- cells[1][1]: (0,0)=bit1, (1,1)=bit16 → braille(17)
-        -- cells[1][2]: (2,2)=bit4, (3,3)=bit128 → braille(132)
+        -- (0,0)→(3,3): Bresenham visits (0,0),(1,1),(2,2),(3,3)
         local c = Canvas({ width = 2, height = 1 })
         c:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 3 })
-        assert.are.equal(braille(1 + 16),  c.cells[1][1])
-        assert.are.equal(braille(4 + 128), c.cells[1][2])
+        assert.are.same({ "⠑⢄" }, render_lines(c))
       end)
 
 
       it("draws the same pixels regardless of direction", function()
-        -- (3,3)→(0,0) must produce identical cells to (0,0)→(3,3)
         local forward  = Canvas({ width = 2, height = 1 })
         local reversed = Canvas({ width = 2, height = 1 })
         forward:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 3 })
         reversed:line({ x1 = 3, y1 = 3, x2 = 0, y2 = 0 })
-        assert.are.equal(forward.cells[1][1], reversed.cells[1][1])
-        assert.are.equal(forward.cells[1][2], reversed.cells[1][2])
+        assert.are.same(render_lines(forward), render_lines(reversed))
       end)
 
 
       it("draws a single-pixel line (x1==x2, y1==y2)", function()
-        -- (0,0)→(0,0): only pixel (0,0), col=0,row=0,bit=1 → braille(1)
         local c = Canvas({ width = 1, height = 1 })
         c:line({ x1 = 0, y1 = 0, x2 = 0, y2 = 0 })
-        assert.are.equal(braille(1), c.cells[1][1])
+        assert.are.same({ "⠁" }, render_lines(c))
       end)
 
 
       it("erases pixels when the erase flag is set", function()
-        local c = Canvas({ width = 2, height = 1 })
-        c:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 0 })
-        assert.are_not.equal(BLANK, c.cells[1][1])
-        assert.are_not.equal(BLANK, c.cells[1][2])
+        -- Inverted canvas (starts fully lit) makes the erase directly visible.
+        local c = Canvas({ width = 2, height = 1, invert = true })
         c:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 0, erase = true })
-        assert.are.equal(BLANK, c.cells[1][1])
-        assert.are.equal(BLANK, c.cells[1][2])
+        assert.are.same({ "⣶⣶" }, render_lines(c))
+        c:line({ x1 = 0, y1 = 0, x2 = 3, y2 = 0 })
+        assert.are.same({ "⣿⣿" }, render_lines(c))
       end)
 
 
       it("ignores the out-of-bounds portion of a line", function()
-        -- line from inside to well outside; in-bounds pixels must be set, no error
+        -- Line from inside to well outside; in-bounds pixels are still set.
+        -- The 1×1 canvas is 2×4 physical pixels; the diagonal sets (0,0) and (1,1).
         local c = Canvas({ width = 1, height = 1 })
         assert.has_no_error(function() c:line({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 }) end)
-        -- pixel (0,0) is in-bounds and must be set
-        assert.are_not.equal(BLANK, c.cells[1][1])
+        assert.are.same({ "⠑" }, render_lines(c))
       end)
 
     end)
@@ -822,53 +855,56 @@ describe("terminal.ui.canvas", function()
     describe("circle()", function()
 
       it("handles radius zero (single pixel)", function()
-        -- circle(cx=0,cy=0,r=0) on 1×1: only pixel (0,0), col=0,row=0,bit=1
         local c = Canvas({ width = 1, height = 1 })
         c:circle({ x = 0, y = 0, r = 0 })
-        assert.are.equal(braille(1), c.cells[1][1])
+        assert.are.same({ "⠁" }, render_lines(c))
       end)
 
 
       it("draws a circle outline", function()
-        -- circle(cx=2,cy=4,r=1) on 3×2 (px_w=6,px_h=8); center at cells[2][2]
+        -- circle(cx=2,cy=4,r=1) on 3×2: top dot of centre cell lit above, centre
+        -- and left neighbour lit in row 2.
         local c = Canvas({ width = 3, height = 2 })
         c:circle({ x = 2, y = 4, r = 1 })
-        assert.are.equal(braille( 0), c.cells[1][1])
-        assert.are.equal(braille(64), c.cells[1][2])
-        assert.are.equal(braille( 0), c.cells[1][3])
-        assert.are.equal(braille( 8), c.cells[2][1])
-        assert.are.equal(braille(10), c.cells[2][2])
-        assert.are.equal(braille( 0), c.cells[2][3])
+        assert.are.same(
+          { "⠀⡀⠀",
+            "⠈⠊⠀" },
+          render_lines(c)
+        )
       end)
 
 
       it("fills a circle when fill is true", function()
-        -- same as outline but center cell gains the interior pixel (2,4)→bit=1: 10+1=11
+        -- same geometry; interior pixel (2,4) is additionally lit in row 2.
         local c = Canvas({ width = 3, height = 2 })
         c:circle({ x = 2, y = 4, r = 1, fill = true })
-        assert.are.equal(braille( 0), c.cells[1][1])
-        assert.are.equal(braille(64), c.cells[1][2])
-        assert.are.equal(braille( 0), c.cells[1][3])
-        assert.are.equal(braille( 8), c.cells[2][1])
-        assert.are.equal(braille(11), c.cells[2][2])  -- center pixel added
-        assert.are.equal(braille( 0), c.cells[2][3])
+        assert.are.same(
+          { "⠀⡀⠀",
+            "⠈⠋⠀" },
+          render_lines(c)
+        )
       end)
 
 
       it("erases pixels when the erase flag is set", function()
-        local c = Canvas({ width = 3, height = 2 })
-        c:circle({ x = 2, y = 4, r = 1 })
+        -- Inverted canvas makes the erase directly visible.
+        local c = Canvas({ width = 3, height = 2, invert = true })
         c:circle({ x = 2, y = 4, r = 1, erase = true })
-        for r = 1, 2 do
-          for col = 1, 3 do
-            assert.are.equal(BLANK, c.cells[r][col])
-          end
-        end
+        assert.are.same(
+          { "⣿⢿⣿",
+            "⣷⣵⣿" },
+          render_lines(c)
+        )
+        c:circle({ x = 2, y = 4, r = 1 })
+        assert.are.same(
+          { "⣿⣿⣿",
+            "⣿⣿⣿" },
+          render_lines(c)
+        )
       end)
 
 
       it("ignores out-of-bounds pixels when circle extends beyond canvas edge", function()
-        -- circle centred near edge so part of the outline falls outside
         local c = Canvas({ width = 2, height = 2 })
         assert.has_no_error(function() c:circle({ x = 0, y = 0, r = 3 }) end)
       end)
@@ -878,11 +914,6 @@ describe("terminal.ui.canvas", function()
 
 
     describe("arc()", function()
-
-      -- Helper: render canvas to a table of braille-string lines.
-      local function render_lines(c)
-        return lines(c:render({ print = true }))
-      end
 
       local pi = math.pi
 
@@ -1070,25 +1101,22 @@ describe("terminal.ui.canvas", function()
       it("draws nothing for an empty points table", function()
         local c = Canvas({ width = 2, height = 1 })
         c:polygon({ points = {} })
-        assert.are.equal(BLANK, c.cells[1][1])
-        assert.are.equal(BLANK, c.cells[1][2])
+        assert.are.same({ "⠀⠀" }, render_lines(c))
       end)
 
 
       it("draws a single dot for one point", function()
-        -- polygon({points={{0,0}}}) on 1×1: pixel (0,0), col=0,row=0,bit=1
         local c = Canvas({ width = 1, height = 1 })
         c:polygon({ points = {{ 0, 0 }} })
-        assert.are.equal(braille(1), c.cells[1][1])
+        assert.are.same({ "⠁" }, render_lines(c))
       end)
 
 
       it("draws a line for two points", function()
-        -- polygon({points={{0,0},{3,0}}}) = horizontal line, same as line() test
+        -- polygon with 2 points is equivalent to a line()
         local c = Canvas({ width = 2, height = 1 })
         c:polygon({ points = {{ 0, 0 }, { 3, 0 }} })
-        assert.are.equal(braille(9), c.cells[1][1])
-        assert.are.equal(braille(9), c.cells[1][2])
+        assert.are.same({ "⠉⠉" }, render_lines(c))
       end)
 
 
@@ -1096,59 +1124,54 @@ describe("terminal.ui.canvas", function()
         -- triangle (0,0),(3,0),(0,3) on 2×1; interior pixel (1,1) NOT set
         local c = Canvas({ width = 2, height = 1 })
         c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }} })
-        assert.are.equal(braille(111), c.cells[1][1])
-        assert.are.equal(braille( 11), c.cells[1][2])
+        assert.are.same({ "⡯⠋" }, render_lines(c))
       end)
 
 
       it("fills a polygon when fill is true", function()
-        -- same triangle; interior pixel (1,1)→bit=16 added: 111+16=127
+        -- same triangle; interior pixel (1,1) additionally lit
         local c = Canvas({ width = 2, height = 1 })
         c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }}, fill = true })
-        assert.are.equal(braille(127), c.cells[1][1])
-        assert.are.equal(braille( 11), c.cells[1][2])
+        assert.are.same({ "⡿⠋" }, render_lines(c))
       end)
 
 
       it("erases pixels when the erase flag is set", function()
-        local c = Canvas({ width = 2, height = 1 })
-        c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }} })
+        -- Inverted canvas makes the erase directly visible.
+        local c = Canvas({ width = 2, height = 1, invert = true })
         c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }}, erase = true })
-        assert.are.equal(BLANK, c.cells[1][1])
-        assert.are.equal(BLANK, c.cells[1][2])
+        assert.are.same({ "⢐⣴" }, render_lines(c))
+        c:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }} })
+        assert.are.same({ "⣿⣿" }, render_lines(c))
       end)
 
 
       it("ignores out-of-bounds pixels when polygon extends beyond canvas edge", function()
-        -- triangle with one vertex well outside the canvas
+        -- Triangle with vertices outside; in-bounds pixels along each edge are still drawn.
+        -- The 1×1 canvas is 2×4 physical pixels; edges through (0,0)–(1,0) and (0,0)–(0,3) are set.
         local c = Canvas({ width = 1, height = 1 })
         assert.has_no_error(function() c:polygon({ points = {{ 0, 0 }, { 20, 0 }, { 0, 20 }} }) end)
-        -- the in-bounds vertex (0,0) must still be drawn
-        assert.are_not.equal(BLANK, c.cells[1][1])
+        assert.are.same({ "⡏" }, render_lines(c))
       end)
 
 
       it("open=true does not draw the closing edge", function()
-        -- triangle (0,0),(3,0),(0,3): closed draws 3 edges; open draws only 2
+        -- closed draws 3 edges; open skips the (0,3)→(0,0) closing edge
         local closed = Canvas({ width = 2, height = 1 })
         closed:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }} })
-
         local opened = Canvas({ width = 2, height = 1 })
         opened:polygon({ points = {{ 0, 0 }, { 3, 0 }, { 0, 3 }}, open = true })
-
-        -- the closing edge (0,3)→(0,0) sets pixels in cell[1][1] that open skips
-        assert.are_not.equal(closed.cells[1][1], opened.cells[1][1])
+        assert.are.same({ "⡯⠋" }, render_lines(closed))
+        assert.are.same({ "⡩⠋" }, render_lines(opened))
       end)
 
 
       it("open=true with two points draws a single line (same as closed)", function()
-        -- for 2 points open and closed are identical: one segment
         local c_open   = Canvas({ width = 2, height = 1 })
         local c_closed = Canvas({ width = 2, height = 1 })
         c_open:polygon({ points = {{ 0, 0 }, { 3, 0 }}, open = true })
         c_closed:polygon({ points = {{ 0, 0 }, { 3, 0 }} })
-        assert.are.equal(c_closed.cells[1][1], c_open.cells[1][1])
-        assert.are.equal(c_closed.cells[1][2], c_open.cells[1][2])
+        assert.are.same(render_lines(c_closed), render_lines(c_open))
       end)
 
 
