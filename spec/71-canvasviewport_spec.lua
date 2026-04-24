@@ -1,4 +1,5 @@
 local helpers = require "spec.helpers"
+local lines = require("pl.stringx").splitlines
 
 -- Mirror of canvas's internal braille() encoder, for computing expected cell values.
 local function braille(i)
@@ -365,6 +366,66 @@ describe("terminal.ui.canvasviewport", function()
       vp:polygon({ points = {} })
       assert.are.equal(BLANK, c.cells[1][1])
       assert.are.equal(BLANK, c.cells[1][2])
+    end)
+
+  end)
+
+
+
+  describe("arc()", function()
+
+    local pi = math.pi
+
+    local function render_lines(c)
+      return lines(c:render({ print = true }))
+    end
+
+
+    it("transforms centre and radii into physical pixel space", function()
+      -- Canvas 2x1 = 4x4px, virtual 8x8, stretch → sx=sy=0.5
+      -- arc at virtual (4,4), rx=2, ry=2, 0..pi/2
+      -- physical: centre (2,2), rx=1, ry=1, same angles
+      local c = Canvas({ width = 2, height = 1 })
+      local vp = CanvasViewport({ canvas = c, width = 8, height = 8, scale_mode = "stretch" })
+      vp:arc({ x = 4, y = 4, rx = 2, ry = 2, angle_start = 0, angle_end = pi / 2 })
+      assert.are.same({ "⠀⣠" }, render_lines(c))
+    end)
+
+
+    it("angles are not scaled by the scale factor", function()
+      -- Canvas 2x1 = 4x4px, virtual 8x8, stretch → sx=sy=0.5
+      -- half arc 0..pi: if angles were scaled by sx the arc would be 0..pi/2 and
+      -- the left endpoint pixel would be absent; a full half-arc includes it.
+      local c = Canvas({ width = 2, height = 1 })
+      local vp = CanvasViewport({ canvas = c, width = 8, height = 8, scale_mode = "stretch" })
+      vp:arc({ x = 4, y = 4, rx = 2, ry = 2, angle_start = 0, angle_end = pi })
+      assert.are.same({ "⠠⣠" }, render_lines(c))
+    end)
+
+
+    it("stretch mode scales rx and ry independently, leaving angles unchanged", function()
+      -- Canvas 4x2 = 8x8px, virtual 4x8, stretch → sx=2, sy=1
+      -- arc at virtual (2,4), rx=1, ry=1, 0..pi/2
+      -- physical: centre (4,4), rx=2, ry=1 — circular arc maps to elliptic arc
+      local c = Canvas({ width = 4, height = 2 })
+      local vp = CanvasViewport({ canvas = c, width = 4, height = 8, scale_mode = "stretch" })
+      vp:arc({ x = 2, y = 4, rx = 1, ry = 1, angle_start = 0, angle_end = pi / 2 })
+      assert.are.same(
+        { "⠀⠀⠀⠀",
+          "⠀⠀⠒⠁" },
+        render_lines(c)
+      )
+    end)
+
+
+    it("erase flag is forwarded to canvas", function()
+      -- Use an inverted canvas so erasing is directly visible as holes in solid background.
+      local c = Canvas({ width = 2, height = 1, invert = true })
+      local vp = CanvasViewport({ canvas = c, width = 8, height = 8, scale_mode = "stretch" })
+      vp:arc({ x = 4, y = 4, rx = 2, ry = 2, angle_start = 0, angle_end = pi / 2, erase = true })
+      assert.are.same({ "⣿⠟" }, render_lines(c))
+      vp:arc({ x = 4, y = 4, rx = 2, ry = 2, angle_start = 0, angle_end = pi / 2 })
+      assert.are.same({ "⣿⣿" }, render_lines(c))
     end)
 
   end)

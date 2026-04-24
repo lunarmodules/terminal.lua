@@ -23,27 +23,20 @@ local anchor_idx = 1
 
 
 
--- Draw a dashed circle through the viewport by walking arc-length (~1 pixel per step).
+-- Draw a dashed circle as a sequence of arcs.
+-- dash and gap are lengths in virtual pixels; each maps to an angular extent via r.
 local function dashed_circle(vp, cx, cy, r, dash, gap)
-  local step = 1.0 / r
-  local drawing = true
-  local toggle = dash
-  local px, py
-
-  local angle = 0
-  while angle < 2 * math.pi + step do
-    local x = math.floor(cx + r * math.cos(angle) + 0.5)
-    local y = math.floor(cy + r * math.sin(angle) + 0.5)
-    if drawing and (x ~= px or y ~= py) then
-      vp:set(x, y)
-      px, py = x, y
-    end
-    toggle = toggle - 1
-    if toggle <= 0 then
-      drawing = not drawing
-      toggle = drawing and dash or gap
-    end
-    angle = angle + step
+  local dash_angle = dash / r
+  local cycle_angle = (dash + gap) / r
+  local two_pi = 2 * math.pi
+  local theta = 0
+  while theta < two_pi do
+    vp:arc({
+      x = cx, y = cy, rx = r, ry = r,
+      angle_start = theta,
+      angle_end = math.min(theta + dash_angle, two_pi),
+    })
+    theta = theta + cycle_angle
   end
 end
 

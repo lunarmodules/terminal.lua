@@ -539,6 +539,68 @@ end
 
 
 
+--- Draw an arc (a portion of an ellipse outline).
+-- Walks the ellipse parametrically from `angle_start` to `angle_end` (both in radians),
+-- always in the direction of increasing angle.
+--
+-- **Angle convention:** Because the canvas origin is top-left and y increases downward,
+-- positive angles go clockwise on screen: 0 points right, pi/2 points down, pi points
+-- left, 3*pi/2 points up. This is the opposite of the standard mathematical convention.
+--
+-- **Range:** `angle_end` must be >= `angle_start`. For a full ellipse use
+-- `angle_end = angle_start + 2*math.pi`. Ranges larger than `2*pi` are accepted but
+-- cause the arc to be traced more than once; since `set`/`unset` are idempotent this
+-- produces the correct pixels but wastes proportional compute time.
+-- @tparam table opts
+-- @tparam integer opts.x centre pixel column, 0-based
+-- @tparam integer opts.y centre pixel row, 0-based
+-- @tparam integer opts.rx horizontal radius in pixels
+-- @tparam integer opts.ry vertical radius in pixels
+-- @tparam number opts.angle_start start angle in radians
+-- @tparam number opts.angle_end end angle in radians (must be >= angle_start)
+-- @tparam[opt=false] boolean opts.erase if truthy, unset pixels instead of setting them
+function Canvas:arc(opts)
+  local cx = opts.x
+  local cy = opts.y
+  local rx = floor(opts.rx)
+  local ry = floor(opts.ry)
+  local a1 = opts.angle_start
+  local a2 = opts.angle_end
+  local op = opts.erase and self.unset or self.set
+
+  if rx < 0 or ry < 0 then
+    error("rx and ry must be >= 0", 2)
+  end
+
+  if a2 < a1 then
+    error("angle_end must be >= angle_start", 2)
+  end
+
+  if rx == 0 and ry == 0 then
+    op(self, cx, cy)
+    return
+  end
+
+  local step = 1.0 / math.max(rx, ry)
+  local px, py  -- previous pixel, for deduplication
+  local theta = a1
+
+  while true do
+    -- clamp to a2 on the final step to always plot the exact endpoint
+    local t = theta < a2 and theta or a2
+    local x = floor(cx + rx * math.cos(t) + 0.5)
+    local y = floor(cy + ry * math.sin(t) + 0.5)
+    if x ~= px or y ~= py then
+      op(self, x, y)
+      px, py = x, y
+    end
+    if t >= a2 then break end
+    theta = theta + step
+  end
+end
+
+
+
 --- Draw a polygon from an array of `{x, y}` points.
 -- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon by default.
 -- @tparam table opts

@@ -263,6 +263,35 @@ end
 
 
 
+--- Draw an arc using virtual-space coordinates.
+-- Scales the centre and radii into physical canvas pixels, then delegates to `Canvas:arc`.
+-- Angles are passed through unchanged; they describe the same geometric direction
+-- regardless of scale.
+--
+-- Note: angles are drawn clockwise, see `Canvas:arc` for details.
+-- @tparam table opts
+-- @tparam number opts.x Centre virtual pixel column, 0-based.
+-- @tparam number opts.y Centre virtual pixel row, 0-based.
+-- @tparam number opts.rx Horizontal radius in virtual pixels.
+-- @tparam number opts.ry Vertical radius in virtual pixels.
+-- @tparam number opts.angle_start Start angle in radians.
+-- @tparam number opts.angle_end End angle in radians (must be >= angle_start).
+-- @tparam[opt=false] boolean opts.erase If truthy, unset pixels instead of setting them.
+function CanvasViewport:arc(opts)
+  local sx, sy, ox, oy = self._sx, self._sy, self._ox, self._oy
+  self._canvas:arc({
+    x = floor(opts.x * sx) + ox,
+    y = floor(opts.y * sy) + oy,
+    rx = floor(opts.rx * sx),
+    ry = floor(opts.ry * sy),
+    angle_start = opts.angle_start,
+    angle_end = opts.angle_end,
+    erase = opts.erase,
+  })
+end
+
+
+
 --- Draw a polygon from an array of virtual-space `{x, y}` points.
 -- 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon by default.
 -- @tparam table opts
