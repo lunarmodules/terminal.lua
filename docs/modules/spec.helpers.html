@@ -1,0 +1,448 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#output">output</a></li>
+<li><a href="#input">input</a></li>
+<li><a href="#setup">setup</a></li>
+<li><a href="#teardown">teardown</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>spec.helpers</strong></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>spec.helpers</code></h1>
+<p>Helper functions for testing the <code>terminal.lua</code> library.</p>
+<p>
+
+
+<p> This module has no use for the library user, only for the developers.</p>
+
+<p> Test helper for Busted specs: load and unload the terminal library (and LuaSystem)
+ for test isolation. Cleans from <a href="https://www.lua.org/manual/5.4/manual.html#pdf-package.loaded">package.loaded</a>: <code>&quot;terminal&quot;</code>, any <code>&quot;terminal.*&quot;</code>,
+ and <code>&quot;system&quot;</code>. Intended for use from Busted <code>setup</code>/<code>teardown</code> or <code>before_each</code>/<code>after_each</code>.</p>
+
+<p> This module does not require terminal or system at load time.</p>
+
+<p> Overview</p>
+
+<ul>
+    <li><p><a href="../modules/spec.helpers.html#load">load</a> loads the terminal and system modules, whilst patching the required functions to
+    enable the mocks. Returns the terminal module. Also sets the <code>_TEST</code> global to true, which
+    can be used to export some internals (only when testing).</p></li>
+    <li><p><a href="../modules/spec.helpers.html#unload">unload</a> removes terminal and system from <a href="https://www.lua.org/manual/5.4/manual.html#pdf-package.loaded">package.loaded</a>, and does some cleanup. Idempotent.</p></li>
+    <li><p>The functions provided by this module can set terminal size, push keyboard input, and
+    collect output to make it easier to test functionality.</p></li>
+</ul>
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#set_termsize">set_termsize (rows, columns)</a></td>
+	<td class="summary">Sets the terminal size.</td>
+	</tr>
+</table>
+<h2><a href="#output">output</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#clear_output">clear_output ()</a></td>
+	<td class="summary">Clears the output written to the output stream.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#get_output">get_output ()</a></td>
+	<td class="summary">Gets the output written to the output stream.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_output_isatty">set_output_isatty (value)</a></td>
+	<td class="summary">Sets what <code>terminal.output.isatty()</code> returns.</td>
+	</tr>
+</table>
+<h2><a href="#input">input</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#keys">keys</a></td>
+	<td class="summary">A lookup table for key sequences to push into the keyboard buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#push_kb_input">push_kb_input (seq, err)</a></td>
+	<td class="summary">Pushes input into the keyboard buffer mock.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_input_isatty">set_input_isatty (value)</a></td>
+	<td class="summary">Sets what <code>terminal.input.isatty()</code> returns.</td>
+	</tr>
+</table>
+<h2><a href="#setup">setup</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#load">load ()</a></td>
+	<td class="summary">Load the main terminal and system modules after cleaning package.loaded.</td>
+	</tr>
+</table>
+<h2><a href="#teardown">teardown</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#unload">unload ()</a></td>
+	<td class="summary">Removes terminal and LuaSystem from <a href="https://www.lua.org/manual/5.4/manual.html#pdf-package.loaded">package.loaded</a>.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "set_termsize"></a>
+    <strong>set_termsize (rows, columns)</strong>
+    </dt>
+    <dd>
+    Sets the terminal size.
+ If not set, the defaults size will be 25 x 80.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows
+        </li>
+        <li><span class="parameter">columns</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="output"></a>output</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "clear_output"></a>
+    <strong>clear_output ()</strong>
+    </dt>
+    <dd>
+    Clears the output written to the output stream.
+ and recreates an empty output file.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "get_output"></a>
+    <strong>get_output ()</strong>
+    </dt>
+    <dd>
+    Gets the output written to the output stream.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the output written to the output stream, empty string if no output
+ was written yet.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_output_isatty"></a>
+    <strong>set_output_isatty (value)</strong>
+    </dt>
+    <dd>
+    Sets what <code>terminal.output.isatty()</code> returns.
+ If not set, defaults to <code>true</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">boolean</span></span>
+         the value to return
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="input"></a>input</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "keys"></a>
+    <strong>keys</strong>
+    </dt>
+    <dd>
+    A lookup table for key sequences to push into the keyboard buffer.
+
+
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">helper.<span class="function-name">push_kb_input</span>(helper.keys.esc)
+helper.<span class="function-name">push_kb_input</span>(helper.keys.ctrl_c)
+helper.<span class="function-name">push_kb_input</span>(helper.keys.enter)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "push_kb_input"></a>
+    <strong>push_kb_input (seq, err)</strong>
+    </dt>
+    <dd>
+    Pushes input into the keyboard buffer mock.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">seq</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the sequence of input, individual bytes of this string will be returned
+        </li>
+        <li><span class="parameter">err</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         an eror to return, in this case <code>seq</code> MUST be nil.
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">helper.<span class="function-name">push_kb_input</span>(helper.keys.esc)                <span class="comment">-- push a specific named key
+</span>helper.<span class="function-name">push_kb_input</span>(helper.keys.up)                 <span class="comment">-- push an ansi sequence for the "up" arrow key
+</span>helper.<span class="function-name">push_kb_input</span>(<span class="keyword">nil</span>, <span class="string">"fail reading keyboard"</span>)   <span class="comment">-- push an error
+</span>helper.<span class="function-name">push_kb_input</span>(<span class="string">"some text to type"</span>)            <span class="comment">-- push a string of bytes</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "set_input_isatty"></a>
+    <strong>set_input_isatty (value)</strong>
+    </dt>
+    <dd>
+    Sets what <code>terminal.input.isatty()</code> returns.
+ If not set, defaults to <code>true</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">boolean</span></span>
+         the value to return
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="setup"></a>setup</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "load"></a>
+    <strong>load ()</strong>
+    </dt>
+    <dd>
+    Load the main terminal and system modules after cleaning package.loaded.
+ First calls <a href="../modules/spec.helpers.html#unload">helpers.unload</a>, then requires the main <a href="../modules/terminal.html#">terminal</a> module (which
+ requires <code>system</code> in turn). Will patch both libraries to enable the mocks.
+ Call from Busted <code>setup</code> or <code>before_each</code>.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+        the main terminal module
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> helpers = <span class="global">require</span> <span class="string">"spec.helpers"</span>
+
+<span class="function-name">describe</span>(<span class="string">"some test"</span>, <span class="keyword">function</span>()
+
+  <span class="keyword">local</span> terminal
+
+  <span class="function-name">setup</span>(<span class="keyword">function</span>()
+    terminal = helpers.<span class="global">load</span>()
+  <span class="keyword">end</span>)
+
+  <span class="function-name">teardown</span>(<span class="keyword">function</span>()
+    helpers.<span class="function-name">unload</span>()
+  <span class="keyword">end</span>)
+
+  <span class="comment">-- tests can use the <a href="../modules/terminal.html#">terminal</a> variable here
+</span>  <span class="function-name">it</span>(<span class="string">"does something"</span>, <span class="keyword">function</span>(
+    <span class="comment">-- use terminal here
+</span>  <span class="keyword">end</span>)
+
+<span class="keyword">end</span>)</pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="teardown"></a>teardown</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "unload"></a>
+    <strong>unload ()</strong>
+    </dt>
+    <dd>
+    Removes terminal and LuaSystem from <a href="https://www.lua.org/manual/5.4/manual.html#pdf-package.loaded">package.loaded</a>.
+ Does not load them again. Call from Busted <code>teardown</code> or <code>after_each</code> so the
+ next <a href="../modules/spec.helpers.html#load">helpers.load</a> gets a fresh terminal. Idempotent.
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

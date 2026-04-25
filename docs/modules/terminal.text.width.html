@@ -34,21 +34,19 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
-<li><a href="#Testing">Testing</a></li>
+<li><a href="#Text">Text</a></li>
 </ul>
 
 
 <h2>Modules</h2>
 <ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
   <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
-  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
-  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -56,10 +54,8 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><strong>terminal.text.width</strong></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
 </ul>
@@ -69,7 +65,10 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -89,8 +88,11 @@
 <h2>Examples</h2>
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
@@ -98,6 +100,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -109,7 +112,7 @@
 <div id="content">
 
 <h1>Module <code>terminal.text.width</code></h1>
-<p>Module to check and validate character display widths.</p>
+<p>Module for character and string display width in terminal columns.</p>
 <p> Not all characters are displayed with the same width on the terminal.
  The Unicode standard defines the width of many characters, but not all.
  Especially the <a href="https://www.unicode.org/Public/UCD/latest/ucd/EastAsianWidth.txt">'ambiguous width'</a>
@@ -118,34 +121,40 @@
  The only way to truly know their display width is to write them to the terminal
  and measure the cursor position change.</p>
 
-<p> This module implements a cache of character widths as they have been measured.</p>
+<p> This module implements ambiguous-width configuration and detection (default 1).
+ Preferably, ambiguous width is detected once during terminal initialization.</p>
 
-<p> To populate the cache with tested widths use <a href="../modules/terminal.text.width.html#test">test</a> and <a href="../modules/terminal.text.width.html#test_write">test_write</a>.</p>
-
-<p> To check width, using the cached widths, use <a href="../modules/terminal.text.width.html#utf8cwidth">utf8cwidth</a> and <a href="../modules/terminal.text.width.html#utf8swidth">utf8swidth</a>. Any
- character not in the cache will be passed to <code>system.utf8cwidth</code> to determine the width.</p>
+<p> The functions <a href="../modules/terminal.text.width.html#utf8cwidth">utf8cwidth</a> and <a href="../modules/terminal.text.width.html#utf8swidth">utf8swidth</a> can be used to get the display width of characters and strings, respectively.</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#detect_ambiguous_width">detect_ambiguous_width ()</a></td>
+	<td class="summary">Detects and sets the width of the abiguous width characters.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#get_ambiguous_width">get_ambiguous_width ()</a></td>
+	<td class="summary">Returns the current width used for ambiguous-width characters.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_ambiguous_width">set_ambiguous_width (n)</a></td>
+	<td class="summary">Sets the width used for ambiguous-width characters.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#utf8cwidth">utf8cwidth (char)</a></td>
-	<td class="summary">Returns the width of a character in columns, matches <code>system.utf8cwidth</code> signature.</td>
+	<td class="summary">Returns the width of a character in columns.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#utf8swidth">utf8swidth (str)</a></td>
-	<td class="summary">Returns the width of a string in columns, matches <code>system.utf8swidth</code> signature.</td>
+	<td class="summary">Returns the width of a string in columns.</td>
 	</tr>
 </table>
-<h2><a href="#Testing">Testing</a></h2>
+<h2><a href="#Text">Text</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#test">test (str)</a></td>
-	<td class="summary">Returns the width of the string, by test writing.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#test_write">test_write (str)</a></td>
-	<td class="summary">Returns the width of the string, and writes it to the terminal.</td>
+	<td class="name" nowrap><a href="#truncate_ellipsis">truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</a></td>
+	<td class="summary">Truncates text to fit within a given width, adding ellipsis as needed.</td>
 	</tr>
 </table>
 
@@ -154,16 +163,79 @@
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-    Methods
+
     <dl class="function">
+    <dt>
+    <a name = "detect_ambiguous_width"></a>
+    <strong>detect_ambiguous_width ()</strong>
+    </dt>
+    <dd>
+    Detects and sets the width of the abiguous width characters.
+ Writes a test character and queries the cursor position. Returns (and sets) the default value 1 if detection fails.</p>
+
+<p> The preferred way to call this function is during terminal initialization, see <a href="../modules/terminal.html#initialize">terminal.initialize</a>.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        1 or 2
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "get_ambiguous_width"></a>
+    <strong>get_ambiguous_width ()</strong>
+    </dt>
+    <dd>
+    Returns the current width used for ambiguous-width characters.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        1 or 2
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_ambiguous_width"></a>
+    <strong>set_ambiguous_width (n)</strong>
+    </dt>
+    <dd>
+    Sets the width used for ambiguous-width characters.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+            <span class="types"><span class="type">number</span></span>
+         1 or 2
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
     <dt>
     <a name = "utf8cwidth"></a>
     <strong>utf8cwidth (char)</strong>
     </dt>
     <dd>
-    Returns the width of a character in columns, matches <code>system.utf8cwidth</code> signature.
- This will check the cache of recorded widths first, and if not found,
- use <code>system.utf8cwidth</code> to determine the width. It will not test the width.
+    Returns the width of a character in columns.
+ Calculates character width, using the configured ambiguous width for ambiguous characters.
 
 
     <h3>Parameters:</h3>
@@ -190,9 +262,8 @@
     <strong>utf8swidth (str)</strong>
     </dt>
     <dd>
-    Returns the width of a string in columns, matches <code>system.utf8swidth</code> signature.
- It will use the cached widths, if no cached width is available it falls back on <code>system.utf8cwidth</code>.
- It will not test the width.
+    Returns the width of a string in columns.
+ Calculates string width, using the configured ambiguous width for ambiguous characters.
 
 
     <h3>Parameters:</h3>
@@ -215,89 +286,71 @@
 
 </dd>
 </dl>
-    <h2 class="section-header "><a name="Testing"></a>Testing</h2>
+    <h2 class="section-header "><a name="Text"></a>Text</h2>
 
     <dl class="function">
     <dt>
-    <a name = "test"></a>
-    <strong>test (str)</strong>
+    <a name = "truncate_ellipsis"></a>
+    <strong>truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</strong>
     </dt>
     <dd>
-
-<p>Returns the width of the string, by test writing.
- Characters will be written 'invisible', so it does not show on the terminal, but it does need
- room to print them. The cursor is returned to its original position.
- It will read many character-widths at once, and hence is a lot faster than checking
- each character individually. The width of each character measured is recorded in the cache.</p>
-
-<ul>
-    <li>the text stack is used to set the brightness to 0 before, and restore colors/attributes after the test.</li>
-    <li>the test will be done at the current cursor position, and hence content there might be overwritten. Since
-    a character is either 1 or 2 columns wide. The content of those 2 columns might have to be restored.</li>
-</ul>
-
+    Truncates text to fit within a given width, adding ellipsis as needed.
+ Shortens text if necessary, adds ellipsis when truncated. Respects UTF-8
+ character boundaries and handles double-width characters correctly.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">str</span>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The available width for the text in columns.
+        </li>
+        <li><span class="parameter">text</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the string of characters to test
+         The text to truncate.
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">trunc_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The type of truncation to apply:
+   - "right": Truncate from the right, show beginning of text with ellipsis on the right
+   - "left": Truncate from the left, show end of text with ellipsis on the left
+   - "drop": Drop the entire text if it doesn't fit (return empty string).
+         (<em>default</em> "right")
+        </li>
+        <li><span class="parameter">ellipsis</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The ellipsis string to use. Defaults to Unicode ellipsis character "…".
+   Can be a multi-character string or empty string.
+         (<em>default</em> "…")
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
-
-           <span class="types"><span class="type">number</span></span>
-        width in columns of the string
-    </ol>
-     <h3>Or</h3>
-    <ol>
-        <li>
-           <span class="types"><span class="type">nil</span></span>
-
-
-</li>
         <li>
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        error message</li>
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "test_write"></a>
-    <strong>test_write (str)</strong>
-    </dt>
-    <dd>
-    Returns the width of the string, and writes it to the terminal.
- Writes the string to the terminal, visible, whilst at the same time injecting cursor-position queries
- to detect the width of the unknown characters in the string.
- It will read many character-widths at once, and hence is a lot faster than checking
- each character individually.
- The width of each character measured is recorded in the cache.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">str</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the string of characters to write and test
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
+        The truncated text (may be empty string).</li>
+        <li>
            <span class="types"><span class="type">number</span></span>
-        the width of the string in columns
+        The size of the returned text in columns.</li>
     </ol>
 
 
 
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- Truncate from right (default)
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>)  <span class="comment">-- "Very long…"
+</span><span class="comment">-- Truncate from left
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>)  <span class="comment">-- "…long text"
+</span><span class="comment">-- Drop if too small
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">3</span>, <span class="string">"Very long text"</span>, <span class="string">"drop"</span>)  <span class="comment">-- ""
+</span><span class="comment">-- Custom ellipsis
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"right"</span>, <span class="string">".."</span>)  <span class="comment">-- "Very lon.."
+</span><span class="comment">-- Empty string as ellipsis just truncates the text
+</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>, <span class="string">""</span>)  <span class="comment">-- " long text"</span></pre>
+    </ul>
 
 </dd>
 </dl>
@@ -306,7 +359,7 @@
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

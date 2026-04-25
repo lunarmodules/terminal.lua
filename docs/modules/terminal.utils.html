@@ -33,24 +33,22 @@
 
 <h2>Contents</h2>
 <ul>
+<li><a href="#Text">Text</a></li>
 <li><a href="#Constants">Constants</a></li>
 <li><a href="#Generic">Generic</a></li>
 <li><a href="#Classes">Classes</a></li>
-<li><a href="#Text">Text</a></li>
 </ul>
 
 
 <h2>Modules</h2>
 <ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
   <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
-  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
-  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -58,10 +56,8 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><strong>terminal.utils</strong></li>
 </ul>
@@ -71,7 +67,10 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -91,8 +90,11 @@
 <h2>Examples</h2>
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
@@ -100,6 +102,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -117,6 +120,21 @@
 </p>
 
 
+<h2><a href="#Text">Text</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#strip_ansi">strip_ansi (str)</a></td>
+	<td class="summary">Strips all ANSI escape sequences from a string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
+	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#utf8sub_col">utf8sub_col (str, i, j[, no_pad=false])</a></td>
+	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.</td>
+	</tr>
+</table>
 <h2><a href="#Constants">Constants</a></h2>
 <table class="function_list">
 	<tr>
@@ -146,26 +164,140 @@
 	<td class="summary">Creates a (sub)class.</td>
 	</tr>
 </table>
-<h2><a href="#Text">Text</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#truncate_ellipsis">truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</a></td>
-	<td class="summary">Truncates text to fit within a given width, adding ellipsis as needed.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#utf8sub">utf8sub (str, i, j)</a></td>
-	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#utf8sub_col">utf8sub_col (str, i, j[, no_pad=false])</a></td>
-	<td class="summary">Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.</td>
-	</tr>
-</table>
 
 <br/>
 <br/>
 
 
+    <h2 class="section-header "><a name="Text"></a>Text</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "strip_ansi"></a>
+    <strong>strip_ansi (str)</strong>
+    </dt>
+    <dd>
+    Strips all ANSI escape sequences from a string.
+ Removes CSI (e.g. colors, cursor movement, SGR), OSC, DCS, SOS, PM, APC,
+ two-byte sequences, and C1 control codes. Use when you need plain text
+ without terminal control sequences.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The string that may contain ANSI sequences.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        The string with all ANSI sequences removed.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="function-name">strip_ansi</span>(<span class="string">"\27[31mred\27[0m"</span>)  <span class="comment">-- "red"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "utf8sub"></a>
+    <strong>utf8sub (str, i, j)</strong>
+    </dt>
+    <dd>
+    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to take the substring of
+        </li>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         the starting index of the substring
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         the ending index of the substring
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the substring
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- UTF-8 double-width characters (Chinese, etc.)
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">2</span>)       <span class="comment">-- "你好"
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">1</span>)       <span class="comment">-- "你"
+</span><span class="function-name">utf8sub</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">3</span>)    <span class="comment">-- "好世"</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "utf8sub_col"></a>
+    <strong>utf8sub_col (str, i, j[, no_pad=false])</strong>
+    </dt>
+    <dd>
+    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.
+ It uses <a href="../modules/terminal.text.width.html#utf8cwidth">text.width.utf8cwidth</a> to determine the width of each character.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the string to take the substring of
+        </li>
+        <li><span class="parameter">i</span>
+            <span class="types"><span class="type">number</span></span>
+         the starting column of the substring (can't be negative!)
+        </li>
+        <li><span class="parameter">j</span>
+            <span class="types"><span class="type">number</span></span>
+         the ending column of the substring (can't be negative!)
+        </li>
+        <li><span class="parameter">no_pad</span>
+            <span class="types"><span class="type">boolean</span></span>
+         whether to pad the substring with spaces
+ if the first or last column contains half of a double-width character
+         (<em>default</em> false)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        the substring
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- UTF-8 double-width characters (2 columns each)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">3</span>, <span class="number">6</span>)  <span class="comment">-- "好世" (columns 3-6)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>)  <span class="comment">-- " 好世 " (columns 2-7 with padding for half of double-width chars)
+</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>, <span class="keyword">true</span>)  <span class="comment">-- "好世" (columns 2-7, no_pad == true)</span></pre>
+    </ul>
+
+</dd>
+</dl>
     <h2 class="section-header "><a name="Constants"></a>Constants</h2>
 
     <dl class="function">
@@ -394,171 +526,12 @@
 
 </dd>
 </dl>
-    <h2 class="section-header "><a name="Text"></a>Text</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "truncate_ellipsis"></a>
-    <strong>truncate_ellipsis (width[, text=""[, trunc_type="right"[, ellipsis="…"]]])</strong>
-    </dt>
-    <dd>
-    Truncates text to fit within a given width, adding ellipsis as needed.
- Shortens text if necessary, adds ellipsis when truncated. Respects UTF-8
- character boundaries and handles double-width characters correctly.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">width</span>
-            <span class="types"><span class="type">number</span></span>
-         The available width for the text in columns.
-        </li>
-        <li><span class="parameter">text</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         The text to truncate.
-         (<em>default</em> "")
-        </li>
-        <li><span class="parameter">trunc_type</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         The type of truncation to apply:
-   - "right": Truncate from the right, show beginning of text with ellipsis on the right
-   - "left": Truncate from the left, show end of text with ellipsis on the left
-   - "drop": Drop the entire text if it doesn't fit (return empty string).
-         (<em>default</em> "right")
-        </li>
-        <li><span class="parameter">ellipsis</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         The ellipsis string to use. Defaults to Unicode ellipsis character "…".
-   Can be a multi-character string or empty string.
-         (<em>default</em> "…")
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-        <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        The truncated text (may be empty string).</li>
-        <li>
-           <span class="types"><span class="type">number</span></span>
-        The size of the returned text in columns.</li>
-    </ol>
-
-
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="comment">-- Truncate from right (default)
-</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>)  <span class="comment">-- "Very long…"
-</span><span class="comment">-- Truncate from left
-</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>)  <span class="comment">-- "…long text"
-</span><span class="comment">-- Drop if too small
-</span><span class="function-name">truncate_ellipsis</span>(<span class="number">3</span>, <span class="string">"Very long text"</span>, <span class="string">"drop"</span>)  <span class="comment">-- ""
-</span><span class="comment">-- Custom ellipsis
-</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"right"</span>, <span class="string">".."</span>)  <span class="comment">-- "Very lon.."
-</span><span class="comment">-- Empty string as ellipsis just truncates the text
-</span><span class="function-name">truncate_ellipsis</span>(<span class="number">10</span>, <span class="string">"Very long text"</span>, <span class="string">"left"</span>, <span class="string">""</span>)  <span class="comment">-- " long text"</span></pre>
-    </ul>
-
-</dd>
-    <dt>
-    <a name = "utf8sub"></a>
-    <strong>utf8sub (str, i, j)</strong>
-    </dt>
-    <dd>
-    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on utf8 characters.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">str</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the string to take the substring of
-        </li>
-        <li><span class="parameter">i</span>
-            <span class="types"><span class="type">number</span></span>
-         the starting index of the substring
-        </li>
-        <li><span class="parameter">j</span>
-            <span class="types"><span class="type">number</span></span>
-         the ending index of the substring
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        the substring
-    </ol>
-
-
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="comment">-- UTF-8 double-width characters (Chinese, etc.)
-</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">2</span>)       <span class="comment">-- "你好"
-</span><span class="function-name">utf8sub</span>(<span class="string">"你好"</span>, <span class="number">1</span>, <span class="number">1</span>)       <span class="comment">-- "你"
-</span><span class="function-name">utf8sub</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">3</span>)    <span class="comment">-- "好世"</span></pre>
-    </ul>
-
-</dd>
-    <dt>
-    <a name = "utf8sub_col"></a>
-    <strong>utf8sub_col (str, i, j[, no_pad=false])</strong>
-    </dt>
-    <dd>
-    Like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string:sub</a>, returns the substring of the string from <code>i</code> to <code>j</code> inclusive, but operates on display columns.
- It uses <a href="../modules/terminal.text.width.html#utf8cwidth">text.width.utf8cwidth</a> to determine the width of each character.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">str</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the string to take the substring of
-        </li>
-        <li><span class="parameter">i</span>
-            <span class="types"><span class="type">number</span></span>
-         the starting column of the substring (can't be negative!)
-        </li>
-        <li><span class="parameter">j</span>
-            <span class="types"><span class="type">number</span></span>
-         the ending column of the substring (can't be negative!)
-        </li>
-        <li><span class="parameter">no_pad</span>
-            <span class="types"><span class="type">boolean</span></span>
-         whether to pad the substring with spaces
- if the first or last column contains half of a double-width character
-         (<em>default</em> false)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        the substring
-    </ol>
-
-
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="comment">-- UTF-8 double-width characters (2 columns each)
-</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">3</span>, <span class="number">6</span>)  <span class="comment">-- "好世" (columns 3-6)
-</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>)  <span class="comment">-- " 好世 " (columns 2-7 with padding for half of double-width chars)
-</span><span class="function-name">utf8sub_pos</span>(<span class="string">"你好世界"</span>, <span class="number">2</span>, <span class="number">7</span>, <span class="keyword">true</span>)  <span class="comment">-- "好世" (columns 2-7, no_pad == true)</span></pre>
-    </ul>
-
-</dd>
-</dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

@@ -1,0 +1,690 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><strong>ui.CanvasViewport</strong></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.CanvasViewport</code></h1>
+<p>A viewport that maps a virtual coordinate space onto a Canvas.</p>
+<p>
+
+
+<p> This viewport is useful if a canvas is displayed in a TUI panel for example
+ and you want to draw using a fixed logical coordinate system that is independent
+ of the actual canvas pixel dimensions. The viewport applies a linear transformation
+ to map virtual coordinates to the underlying canvas pixel coordinates, optionally
+ preserving aspect ratio with letterboxing/pillarboxing.</p>
+
+<p> <strong>Responsibility:</strong> pure coordinate transformation. This class translates
+ drawing calls expressed in a user-defined virtual pixel space into the
+ underlying Canvas's physical pixel space. It owns no scene data and records
+ no operations; the caller is responsible for re-issuing draw calls whenever
+ the canvas dimensions change (e.g. on panel resize).</p>
+
+<p> <strong>What it is NOT:</strong></p>
+
+<ul>
+    <li>Not a scene graph or display list. It does not remember what was drawn.</li>
+    <li>Not responsible for creating or managing the Canvas lifetime.</li>
+    <li>Not responsible for rendering or writing to the terminal.</li>
+</ul>
+
+<p> <strong>Virtual coordinate space:</strong>
+ Coordinates are 0-based, with origin (0, 0) at the top-left, x increasing
+ to the right and y increasing downward — matching the Canvas pixel convention.
+ The virtual space has a fixed logical size (<code>width</code> × <code>height</code>) set at
+ construction. Drawing calls use these logical coordinates regardless of the
+ physical canvas dimensions.</p>
+
+<p> <strong>Scale modes:</strong>
+ When the virtual aspect ratio does not match the physical canvas pixel aspect
+ ratio, the viewport applies one of the following scale modes:</p>
+
+<ul>
+    <li><code>scale_modes.stretch</code>: x and y are scaled independently to fill the canvas exactly.
+    The image may be distorted.</li>
+    <li><code>scale_modes.fit</code>: uniform scale so the virtual space fits entirely within the canvas.
+    Unused bands (letterbox / pillarbox) are left blank. No clipping.</li>
+    <li><code>scale_modes.fill</code>: uniform scale so the virtual space fills the canvas completely.
+    Content that falls outside the canvas bounds is clipped (silently ignored,
+    matching Canvas out-of-bounds behaviour).</li>
+</ul>
+
+<p> <strong>Resize handling:</strong>
+ The viewport holds a reference to a Canvas. When the panel is resized, the
+ caller should replace the canvas via <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport:set_canvas">set_canvas</a> and then re-issue all
+ drawing calls.</p>
+
+<p> Example usage:</p>
+
+<pre>
+<span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.ui.canvas"</span>
+<span class="keyword">local</span> CanvasViewport = <span class="global">require</span> <span class="string">"terminal.ui.canvasviewport"</span>
+
+<span class="comment">-- Inside a Panel content callback, called on every render (including resize):
+</span><span class="keyword">local</span> c = <span class="function-name">Canvas</span>({ width = panel.inner_width, height = panel.inner_height })
+<span class="keyword">local</span> vp = <span class="function-name">CanvasViewport</span>({
+  canvas = c, width = <span class="number">300</span>, height = <span class="number">300</span>,
+  scale_mode = CanvasViewport.scale_modes.fit,
+  anchor = CanvasViewport.anchors.center,
+})
+vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>, y1 = <span class="number">0</span>, x2 = <span class="number">299</span>, y2 = <span class="number">299</span> })  <span class="comment">-- diagonal in virtual space
+</span><span class="comment">-- position cursor and write c:render() as usual</span>
+</pre>
+
+</p>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport.anchors">ui.canvasviewport.anchors</a></td>
+	<td class="summary">Anchor constants; <code>center</code> or <code>top_left</code> determine the alignment of the virtual space within the
+ canvas when <code>scale_mode</code> is <code>fit</code> or <code>fill</code>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport.scale_modes">ui.canvasviewport.scale_modes</a></td>
+	<td class="summary">Scale mode constants; <code>stretch</code>, <code>fit</code>, or <code>fill</code> determine how the virtual
+ coordinate space is mapped to the underlying canvas when their aspect ratios do not match.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:arc">ui.canvasviewport:arc (opts)</a></td>
+	<td class="summary">Draw an arc using virtual-space coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:circle">ui.canvasviewport:circle (opts)</a></td>
+	<td class="summary">Draw a circle using virtual-space coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:ellipse">ui.canvasviewport:ellipse (opts)</a></td>
+	<td class="summary">Draw an ellipse using virtual-space coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:get_scale">ui.canvasviewport:get_scale ()</a></td>
+	<td class="summary">Return the current scale factors applied to virtual coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:init">ui.canvasviewport:init (opts)</a></td>
+	<td class="summary">Create a new CanvasViewport.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:line">ui.canvasviewport:line (opts)</a></td>
+	<td class="summary">Draw a line between two virtual-space pixels.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:polygon">ui.canvasviewport:polygon (opts)</a></td>
+	<td class="summary">Draw a polygon from an array of virtual-space <code>{x, y}</code> points.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:set">ui.canvasviewport:set (x, y)</a></td>
+	<td class="summary">Set (illuminate) a pixel at a virtual coordinate.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:set_canvas">ui.canvasviewport:set_canvas (canvas)</a></td>
+	<td class="summary">Replace the underlying canvas.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvasviewport:unset">ui.canvasviewport:unset (x, y)</a></td>
+	<td class="summary">Clear (extinguish) a pixel at a virtual coordinate.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.canvasviewport.anchors"></a>
+    <strong>ui.canvasviewport.anchors</strong>
+    </dt>
+    <dd>
+    Anchor constants; <code>center</code> or <code>top_left</code> determine the alignment of the virtual space within the
+ canvas when <code>scale_mode</code> is <code>fit</code> or <code>fill</code>.  With <code>center</code> the virtual space is centered in the
+ canvas, and with <code>top_left</code> the virtual space is aligned to the top-left corner of the canvas.
+ This has no effect when <code>scale_mode</code> is <code>stretch</code> since the virtual space always fills the canvas
+ in that mode.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport.scale_modes"></a>
+    <strong>ui.canvasviewport.scale_modes</strong>
+    </dt>
+    <dd>
+    Scale mode constants; <code>stretch</code>, <code>fit</code>, or <code>fill</code> determine how the virtual
+ coordinate space is mapped to the underlying canvas when their aspect ratios do not match.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.canvasviewport:arc"></a>
+    <strong>ui.canvasviewport:arc (opts)</strong>
+    </dt>
+    <dd>
+    Draw an arc using virtual-space coordinates.
+ Scales the centre and radii into physical canvas pixels, then delegates to <a href="../classes/ui.Canvas.html#ui.canvas:arc">Canvas:arc</a>.
+ Angles are passed through unchanged; they describe the same geometric direction
+ regardless of scale.</p>
+
+<p> Note: angles are drawn clockwise, see <a href="../classes/ui.Canvas.html#ui.canvas:arc">Canvas:arc</a> for details.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+         Centre virtual pixel column, 0-based.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+         Centre virtual pixel row, 0-based.
+        </li>
+        <li><span class="parameter">rx</span>
+            <span class="types"><span class="type">number</span></span>
+         Horizontal radius in virtual pixels.
+        </li>
+        <li><span class="parameter">ry</span>
+            <span class="types"><span class="type">number</span></span>
+         Vertical radius in virtual pixels.
+        </li>
+        <li><span class="parameter">angle_start</span>
+            <span class="types"><span class="type">number</span></span>
+         Start angle in radians.
+        </li>
+        <li><span class="parameter">angle_end</span>
+            <span class="types"><span class="type">number</span></span>
+         End angle in radians (must be >= angle_start).
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, unset pixels instead of setting them.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:circle"></a>
+    <strong>ui.canvasviewport:circle (opts)</strong>
+    </dt>
+    <dd>
+    Draw a circle using virtual-space coordinates.
+ Convenience wrapper around <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport:ellipse">ellipse</a> with equal horizontal and vertical radii.
+ With <code>scale_modes.fit</code> or <code>scale_modes.fill</code> the uniform scale preserves the circular shape.
+ With <code>scale_modes.stretch</code> the circle maps to an ellipse on the canvas.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+         Centre virtual pixel column, 0-based.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+         Centre virtual pixel row, 0-based.
+        </li>
+        <li><span class="parameter">r</span>
+            <span class="types"><span class="type">number</span></span>
+         Radius in virtual pixels.
+        </li>
+        <li><span class="parameter">fill</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, fill the interior.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, unset pixels instead of setting them.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:ellipse"></a>
+    <strong>ui.canvasviewport:ellipse (opts)</strong>
+    </dt>
+    <dd>
+    Draw an ellipse using virtual-space coordinates.
+ The virtual radii are scaled independently per axis, so a circle in virtual
+ space becomes an ellipse on the canvas when <code>scale_mode</code> is <code>scale_modes.stretch</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+         Centre virtual pixel column, 0-based.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+         Centre virtual pixel row, 0-based.
+        </li>
+        <li><span class="parameter">rx</span>
+            <span class="types"><span class="type">number</span></span>
+         Horizontal radius in virtual pixels.
+        </li>
+        <li><span class="parameter">ry</span>
+            <span class="types"><span class="type">number</span></span>
+         Vertical radius in virtual pixels.
+        </li>
+        <li><span class="parameter">fill</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, fill the interior.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, unset pixels instead of setting them.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:get_scale"></a>
+    <strong>ui.canvasviewport:get_scale ()</strong>
+    </dt>
+    <dd>
+    Return the current scale factors applied to virtual coordinates.
+ Useful for callers that need to reason about resolution (e.g. to decide
+ whether to simplify a dense dataset before drawing).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        sx  Scale factor applied to x (physical<em>px / virtual</em>px).</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        sy  Scale factor applied to y (physical<em>px / virtual</em>px).</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:init"></a>
+    <strong>ui.canvasviewport:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new CanvasViewport.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">canvas</span>
+            <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+         The underlying Canvas to draw into.
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+          Virtual space width in logical pixels.
+        </li>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         Virtual space height in logical pixels.
+        </li>
+        <li><span class="parameter">scale_mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         One of <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport.scale_modes">CanvasViewport.scale_modes</a>.
+         (<em>default</em> scale_modes.stretch)
+        </li>
+        <li><span class="parameter">anchor</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Alignment of the virtual space within the
+   canvas when <code>scale_mode</code> is <code>scale_modes.fit</code> or <code>scale_modes.fill</code>. One of <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport.anchors">CanvasViewport.anchors</a>.
+         (<em>default</em> anchors.center)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> vp = <span class="function-name">CanvasViewport</span>({
+  canvas = c,
+  width = <span class="number">300</span>,
+  height = <span class="number">300</span>,
+  scale_mode = CanvasViewport.scale_modes.fit,
+  anchor = CanvasViewport.anchors.center,
+})</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:line"></a>
+    <strong>ui.canvasviewport:line (opts)</strong>
+    </dt>
+    <dd>
+    Draw a line between two virtual-space pixels.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x1</span>
+            <span class="types"><span class="type">number</span></span>
+         Start virtual pixel column, 0-based.
+        </li>
+        <li><span class="parameter">y1</span>
+            <span class="types"><span class="type">number</span></span>
+         Start virtual pixel row, 0-based.
+        </li>
+        <li><span class="parameter">x2</span>
+            <span class="types"><span class="type">number</span></span>
+         End virtual pixel column, 0-based.
+        </li>
+        <li><span class="parameter">y2</span>
+            <span class="types"><span class="type">number</span></span>
+         End virtual pixel row, 0-based.
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, unset pixels instead of setting them.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:polygon"></a>
+    <strong>ui.canvasviewport:polygon (opts)</strong>
+    </dt>
+    <dd>
+    Draw a polygon from an array of virtual-space <code>{x, y}</code> points.
+ 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon by default.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">points</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of <code>{x, y}</code> virtual pixel coordinate pairs, 0-based.
+        </li>
+        <li><span class="parameter">open</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, do not close the path back to the first point.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">fill</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, fill the interior of the polygon.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If truthy, unset pixels instead of setting them.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:set"></a>
+    <strong>ui.canvasviewport:set (x, y)</strong>
+    </dt>
+    <dd>
+    Set (illuminate) a pixel at a virtual coordinate.
+ Out-of-bounds virtual coordinates (after mapping) are silently ignored.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+         Virtual pixel column, 0-based.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+         Virtual pixel row, 0-based.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:set_canvas"></a>
+    <strong>ui.canvasviewport:set_canvas (canvas)</strong>
+    </dt>
+    <dd>
+    Replace the underlying canvas.
+ Call this when the panel has been resized and a new Canvas has been created
+ with updated dimensions. Scale factors are recomputed immediately.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">canvas</span>
+            <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+         The new Canvas instance.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvasviewport:unset"></a>
+    <strong>ui.canvasviewport:unset (x, y)</strong>
+    </dt>
+    <dd>
+    Clear (extinguish) a pixel at a virtual coordinate.
+ Out-of-bounds virtual coordinates (after mapping) are silently ignored.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+         Virtual pixel column, 0-based.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+         Virtual pixel row, 0-based.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

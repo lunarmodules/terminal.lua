@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><strong>canvas.lua</strong></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>canvas.lua</h2>
+<pre>
+<span class="keyword">local</span> t = <span class="global">require</span> <span class="string">"terminal"</span>
+<span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.ui.canvas"</span>
+<span class="keyword">local</span> CanvasViewport = <span class="global">require</span> <span class="string">"terminal.ui.canvasviewport"</span>
+
+<span class="comment">-- Virtual coordinate space: matches the original Lua-logo geometry
+</span><span class="comment">-- (original canvas was 60×30 cells → 120×120 pixels)
+</span><span class="keyword">local</span> VIRT_W = <span class="number">120</span>
+<span class="keyword">local</span> VIRT_H = <span class="number">120</span>
+
+<span class="comment">-- Cycling lists for the two render options
+</span><span class="keyword">local</span> scale_modes = {
+  CanvasViewport.scale_modes.fit,
+  CanvasViewport.scale_modes.fill,
+  CanvasViewport.scale_modes.stretch,
+}
+<span class="keyword">local</span> anchors = {
+  CanvasViewport.anchors.center,
+  CanvasViewport.anchors.top_left,
+}
+
+<span class="keyword">local</span> scale_idx = <span class="number">1</span>
+<span class="keyword">local</span> anchor_idx = <span class="number">1</span>
+
+
+
+<span class="comment">-- Draw a dashed circle as a sequence of arcs.
+</span><span class="comment">-- dash and gap are lengths in virtual pixels; each maps to an angular extent via r.
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">dashed_circle</span>(vp, cx, cy, r, dash, gap)
+  <span class="keyword">local</span> dash_angle = dash / r
+  <span class="keyword">local</span> cycle_angle = (dash + gap) / r
+  <span class="keyword">local</span> two_pi = <span class="number">2</span> * <span class="global">math</span>.pi
+  <span class="keyword">local</span> theta = <span class="number">0</span>
+  <span class="keyword">while</span> theta &lt; two_pi <span class="keyword">do</span>
+    vp:<span class="function-name">arc</span>({
+      x = cx, y = cy, rx = r, ry = r,
+      angle_start = theta,
+      angle_end = <span class="global">math</span>.<span class="function-name">min</span>(theta + dash_angle, two_pi),
+    })
+    theta = theta + cycle_angle
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_logo</span>(vp)
+  <span class="comment">-- Outer dashed ring
+</span>  <span class="function-name">dashed_circle</span>(vp, <span class="number">60</span>, <span class="number">60</span>, <span class="number">58</span>, <span class="number">12</span>, <span class="number">8</span>)
+  <span class="comment">-- Large filled circle, offset slightly lower-left of centre
+</span>  vp:<span class="function-name">circle</span>({ x = <span class="number">60</span>, y = <span class="number">60</span>, r = <span class="number">45</span>, fill = <span class="keyword">true</span> })
+  <span class="comment">-- "Moon" highlight — erase a circle from the upper-right of the blue circle
+</span>  vp:<span class="function-name">circle</span>({ x = <span class="number">79</span>, y = <span class="number">37</span>, r = <span class="number">11</span>, fill = <span class="keyword">true</span>, erase = <span class="keyword">true</span> })
+  <span class="comment">-- Small satellite dot, upper-right between the two circles
+</span>  vp:<span class="function-name">circle</span>({ x = <span class="number">103</span>, y = <span class="number">14</span>, r = <span class="number">11</span>, fill = <span class="keyword">true</span> })
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">make_canvas</span>(rows, cols)
+  <span class="comment">-- Reserve the last row for the status bar
+</span>  <span class="keyword">local</span> canvas_rows = rows - <span class="number">1</span>
+  <span class="keyword">local</span> c = <span class="function-name">Canvas</span>({ width = cols, height = canvas_rows })
+  <span class="keyword">local</span> vp = <span class="function-name">CanvasViewport</span>({
+    canvas = c,
+    width = VIRT_W,
+    height = VIRT_H,
+    scale_mode = scale_modes[scale_idx],
+    anchor = anchors[anchor_idx],
+  })
+  <span class="function-name">draw_logo</span>(vp)
+  <span class="keyword">return</span> c
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">redraw</span>(c, rows, cols)
+  <span class="comment">-- Render the canvas starting at top-left; render() returns cursor to (1,1)
+</span>  t.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+  t.output.<span class="function-name">write</span>(c:<span class="function-name">render</span>())
+
+  <span class="comment">-- Status bar on the last row
+</span>  t.cursor.position.<span class="function-name">set</span>(rows, <span class="number">1</span>)
+  t.output.<span class="function-name">write</span>(<span class="global">string</span>.<span class="function-name">format</span>(
+    <span class="string">" [s] scale: %-8s  [a] anchor: %-8s  any other key: quit"</span>,
+    scale_modes[scale_idx], anchors[anchor_idx]
+  ))
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
+  t.cursor.visible.<span class="function-name">set</span>(<span class="keyword">false</span>)
+
+  <span class="keyword">local</span> rows, cols = t.<span class="function-name">size</span>()
+  <span class="keyword">local</span> c = <span class="function-name">make_canvas</span>(rows, cols)
+  <span class="function-name">redraw</span>(c, rows, cols)
+
+  <span class="keyword">local</span> running = <span class="keyword">true</span>
+  <span class="keyword">while</span> running <span class="keyword">do</span>
+    <span class="keyword">local</span> rawkey = t.input.<span class="function-name">readansi</span>(<span class="number">0.1</span>)
+
+    <span class="comment">-- Check for terminal resize
+</span>    <span class="keyword">local</span> new_rows, new_cols = t.<span class="function-name">size</span>()
+    <span class="keyword">if</span> new_rows ~= rows <span class="keyword">or</span> new_cols ~= cols <span class="keyword">then</span>
+      rows, cols = new_rows, new_cols
+      c = <span class="function-name">make_canvas</span>(rows, cols)
+      <span class="function-name">redraw</span>(c, rows, cols)
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span> rawkey <span class="keyword">then</span>
+      <span class="keyword">if</span> rawkey == <span class="string">"s"</span> <span class="keyword">then</span>
+        scale_idx = (scale_idx % #scale_modes) + <span class="number">1</span>
+        c = <span class="function-name">make_canvas</span>(rows, cols)
+        <span class="function-name">redraw</span>(c, rows, cols)
+      <span class="keyword">elseif</span> rawkey == <span class="string">"a"</span> <span class="keyword">then</span>
+        anchor_idx = (anchor_idx % #anchors) + <span class="number">1</span>
+        c = <span class="function-name">make_canvas</span>(rows, cols)
+        <span class="function-name">redraw</span>(c, rows, cols)
+      <span class="keyword">else</span>
+        running = <span class="keyword">false</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  t.cursor.visible.<span class="function-name">set</span>(<span class="keyword">true</span>)
+<span class="keyword">end</span>
+
+
+
+<span class="comment">-- initialize terminal and run
+</span>t.<span class="function-name">initwrap</span>(main, { displaybackup = <span class="keyword">true</span> })()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

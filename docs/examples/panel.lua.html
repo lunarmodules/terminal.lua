@@ -36,8 +36,11 @@
 <h2>Examples</h2>
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><strong>panel.lua</strong></li>
@@ -45,6 +48,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -52,15 +56,13 @@
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
   <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
-  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
-  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -68,10 +70,8 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
 </ul>
@@ -81,7 +81,10 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -127,9 +130,9 @@
   <span class="keyword">local</span> text_col = col + <span class="global">math</span>.<span class="function-name">floor</span>((width - #text) / <span class="number">2</span>)
 
   terminal.cursor.position.<span class="function-name">set</span>(text_row, text_col)
-  terminal.output.<span class="function-name">write</span>(terminal.text.stack.<span class="function-name">push_seq</span>({ fg = color }))
+  terminal.output.<span class="function-name">write</span>(terminal.text.<span class="function-name">push_seq</span>({ fg = color }))
   terminal.output.<span class="function-name">write</span>(text)
-  terminal.output.<span class="function-name">write</span>(terminal.text.stack.<span class="function-name">pop_seq</span>())
+  terminal.output.<span class="function-name">write</span>(terminal.text.<span class="function-name">pop_seq</span>())
 <span class="keyword">end</span>
 
 
@@ -245,7 +248,7 @@
           <span class="function-name">draw_content</span>(self, <span class="string">"40% - Press any key"</span>, <span class="string">"yellow"</span>)
         <span class="keyword">end</span>,
         border = {
-          format = terminal.draw.box_fmt.single,
+          format = terminal.draw.box_fmt.rounded,
           attr = { fg = <span class="string">"yellow"</span> },
           title = <span class="string">"Top Panel"</span>
         },
@@ -255,7 +258,7 @@
           <span class="function-name">draw_content</span>(self, <span class="string">"60%"</span>, <span class="string">"magenta"</span>)
         <span class="keyword">end</span>,
         border = {
-          format = terminal.draw.box_fmt.single,
+          format = terminal.draw.box_fmt.rounded,
           attr = { fg = <span class="string">"magenta"</span> },
           title = <span class="string">"Bottom Panel"</span>
         },
@@ -486,7 +489,7 @@
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

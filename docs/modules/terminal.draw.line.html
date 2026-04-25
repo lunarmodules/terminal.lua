@@ -40,15 +40,13 @@
 
 <h2>Modules</h2>
 <ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
   <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
-  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
-  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><strong>terminal.draw.line</strong></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -56,10 +54,8 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
 </ul>
@@ -69,7 +65,10 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -89,8 +88,11 @@
 <h2>Examples</h2>
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
@@ -98,6 +100,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -120,7 +123,7 @@
 	<td class="summary">Draws a horizontal line and writes it to the terminal.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#title">title (title, width[, char="─"[, pre=""[, post=""[, type="right"[, title_attr]]]]])</a></td>
+	<td class="name" nowrap><a href="#title">title (width[, title=""[, char="─"[, pre=""[, post=""[, type="right"[, title_attr]]]]]])</a></td>
 	<td class="summary">Draws a horizontal line with a title centered in it and writes it to the terminal.</td>
 	</tr>
 	<tr>
@@ -149,7 +152,7 @@
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-    Methods
+
     <dl class="function">
     <dt>
     <a name = "horizontal"></a>
@@ -187,23 +190,24 @@
 </dd>
     <dt>
     <a name = "title"></a>
-    <strong>title (title, width[, char="─"[, pre=""[, post=""[, type="right"[, title_attr]]]]])</strong>
+    <strong>title (width[, title=""[, char="─"[, pre=""[, post=""[, type="right"[, title_attr]]]]]])</strong>
     </dt>
     <dd>
     Draws a horizontal line with a title centered in it and writes it to the terminal.
  Line is drawn left to right. If the width is too small for the title, the title is truncated with "trailing <code>&quot;...&quot;</code>.
- If less than 4 characters are available for the title, the title is omitted alltogether.
+ If less than 4 characters are available for the title, the title is omitted altogether.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">title</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the title to draw
-        </li>
         <li><span class="parameter">width</span>
             <span class="types"><span class="type">number</span></span>
          the total width of the line in columns
+        </li>
+        <li><span class="parameter">title</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         the title to draw (if empty or nil, only the line is drawn)
+         (<em>default</em> "")
         </li>
         <li><span class="parameter">char</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
@@ -222,7 +226,7 @@
         </li>
         <li><span class="parameter">type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.utils.html#truncate_ellipsis">utils.truncate_ellipsis</a> for details
+         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.text.width.html#truncate_ellipsis">text.width.truncate_ellipsis</a> for details
          (<em>default</em> "right")
         </li>
         <li><span class="parameter">title_attr</span>
@@ -325,7 +329,7 @@
     <dd>
     Creates a sequence to draw a horizontal line with a title centered in it without writing it to the terminal.
  Line is drawn left to right. If the width is too small for the title, the title is truncated.
- If less than 4 characters are available for the title, the title is omitted alltogether.
+ If less than 4 characters are available for the title, the title is omitted altogether.
 
 
     <h3>Parameters:</h3>
@@ -356,7 +360,7 @@
         </li>
         <li><span class="parameter">type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.utils.html#truncate_ellipsis">utils.truncate_ellipsis</a> for details
+         the type of truncation to apply, either "left", "right", or "drop", see <a href="../modules/terminal.text.width.html#truncate_ellipsis">text.width.truncate_ellipsis</a> for details
          (<em>default</em> "right")
         </li>
         <li><span class="parameter">title_attr</span>
@@ -421,7 +425,7 @@
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
