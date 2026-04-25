@@ -1,0 +1,792 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><strong>ui.Canvas</strong></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.Canvas</code></h1>
+<p>A canvas using Unicode Braille characters for TUI pixel graphics.</p>
+<p>
+
+<p> Each cell is 2 pixels wide, 4 pixels tall (8 dots per braille character).</p>
+
+<p> Pixel coordinates are 0-based. The origin (0, 0) is at the top-left corner,
+ with x increasing to the right and y increasing downward. Drawing outside
+ the canvas bounds is ignored (no error).</p>
+
+<p> Example usage:</p>
+
+<pre>
+<span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.ui.canvas"</span>
+<span class="keyword">local</span> c = <span class="function-name">Canvas</span>({
+  width = <span class="number">60</span>,
+  height = <span class="number">30</span>,
+})
+c:<span class="function-name">set</span>(<span class="number">10</span>, <span class="number">5</span>)  <span class="comment">-- set a pixel at (10, 5)
+</span><span class="global">print</span>(c:<span class="function-name">render</span>({ <span class="global">print</span> = <span class="keyword">true</span> }))  <span class="comment">-- render the canvas for printing</span>
+</pre>
+
+</p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:arc">ui.canvas:arc (opts)</a></td>
+	<td class="summary">Draw an arc (a portion of an ellipse outline).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:circle">ui.canvas:circle (opts)</a></td>
+	<td class="summary">Draw a circle.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:clear">ui.canvas:clear ()</a></td>
+	<td class="summary">Clear the entire canvas.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:clone">ui.canvas:clone ()</a></td>
+	<td class="summary">Return a copy of this canvas with identical dimensions and pixel state.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:ellipse">ui.canvas:ellipse (opts)</a></td>
+	<td class="summary">Draw an ellipse.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:get_pixels">ui.canvas:get_pixels ()</a></td>
+	<td class="summary">Returns the canvas size in pixels.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:get_size">ui.canvas:get_size ()</a></td>
+	<td class="summary">Returns the canvas size in display rows and columns.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:init">ui.canvas:init (opts)</a></td>
+	<td class="summary">Create a new canvas.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:line">ui.canvas:line (opts)</a></td>
+	<td class="summary">Draw a line between two pixels.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:polygon">ui.canvas:polygon (opts)</a></td>
+	<td class="summary">Draw a polygon from an array of <code>{x, y}</code> points.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:render">ui.canvas:render ([opts={}])</a></td>
+	<td class="summary">Render the canvas to a single string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:resize">ui.canvas:resize ([rows[, cols]])</a></td>
+	<td class="summary">Resize the canvas to the given dimensions.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:roll">ui.canvas:roll ([rows=0[, cols=0]])</a></td>
+	<td class="summary">Shift canvas content, wrapping pixels that move beyond one edge onto the opposite edge.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:scroll">ui.canvas:scroll ([rows=0[, cols=0]])</a></td>
+	<td class="summary">Shift canvas content, dropping pixels that move beyond the edges.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:set">ui.canvas:set (x, y)</a></td>
+	<td class="summary">Set (illuminate) a pixel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.canvas:unset">ui.canvas:unset (x, y)</a></td>
+	<td class="summary">Clear (extinguish) a pixel.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.canvas:arc"></a>
+    <strong>ui.canvas:arc (opts)</strong>
+    </dt>
+    <dd>
+    Draw an arc (a portion of an ellipse outline).
+ Walks the ellipse parametrically from <code>angle_start</code> to <code>angle_end</code> (both in radians),
+ always in the direction of increasing angle.</p>
+
+<p> <strong>Angle convention:</strong> Because the canvas origin is top-left and y increases downward,
+ positive angles go clockwise on screen: 0 points right, pi/2 points down, pi points
+ left, 3*pi/2 points up. This is the opposite of the standard mathematical convention.</p>
+
+<p> <strong>Range:</strong> <code>angle_end</code> must be >= <code>angle_start</code>. For a full ellipse use
+ <code>angle_end = angle_start + 2*math.pi</code>. Ranges larger than <code>2*pi</code> are accepted but
+ cause the arc to be traced more than once; since <a href="../classes/ui.Canvas.html#ui.canvas:set">set</a>/<a href="../classes/ui.Canvas.html#ui.canvas:unset">unset</a> are idempotent this
+ produces the correct pixels but wastes proportional compute time.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         centre pixel column, 0-based
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         centre pixel row, 0-based
+        </li>
+        <li><span class="parameter">rx</span>
+            <span class="types"><span class="type">integer</span></span>
+         horizontal radius in pixels
+        </li>
+        <li><span class="parameter">ry</span>
+            <span class="types"><span class="type">integer</span></span>
+         vertical radius in pixels
+        </li>
+        <li><span class="parameter">angle_start</span>
+            <span class="types"><span class="type">number</span></span>
+         start angle in radians
+        </li>
+        <li><span class="parameter">angle_end</span>
+            <span class="types"><span class="type">number</span></span>
+         end angle in radians (must be >= angle_start)
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, unset pixels instead of setting them
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:circle"></a>
+    <strong>ui.canvas:circle (opts)</strong>
+    </dt>
+    <dd>
+    Draw a circle.
+ Convenience wrapper around <a href="../classes/ui.Canvas.html#ui.canvas:ellipse">ellipse</a> with equal horizontal and vertical radii.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         centre pixel column, 0-based
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         centre pixel row, 0-based
+        </li>
+        <li><span class="parameter">r</span>
+            <span class="types"><span class="type">integer</span></span>
+         radius in pixels
+        </li>
+        <li><span class="parameter">fill</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, fill the interior
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, unset pixels instead of setting them
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:clear"></a>
+    <strong>ui.canvas:clear ()</strong>
+    </dt>
+    <dd>
+    Clear the entire canvas.
+ Fills all cells with the blank state (respects the <code>invert</code> option passed upon instantiation).
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:clone"></a>
+    <strong>ui.canvas:clone ()</strong>
+    </dt>
+    <dd>
+    Return a copy of this canvas with identical dimensions and pixel state.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+        Copy of the canvas
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:ellipse"></a>
+    <strong>ui.canvas:ellipse (opts)</strong>
+    </dt>
+    <dd>
+    Draw an ellipse.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         centre pixel column, 0-based
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         centre pixel row, 0-based
+        </li>
+        <li><span class="parameter">rx</span>
+            <span class="types"><span class="type">integer</span></span>
+         horizontal radius in pixels
+        </li>
+        <li><span class="parameter">ry</span>
+            <span class="types"><span class="type">integer</span></span>
+         vertical radius in pixels
+        </li>
+        <li><span class="parameter">fill</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, fill the interior
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, unset pixels instead of setting them
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:get_pixels"></a>
+    <strong>ui.canvas:get_pixels ()</strong>
+    </dt>
+    <dd>
+    Returns the canvas size in pixels.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        pixel height</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        pixel width</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:get_size"></a>
+    <strong>ui.canvas:get_size ()</strong>
+    </dt>
+    <dd>
+    Returns the canvas size in display rows and columns.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        rows</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        columns</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:init"></a>
+    <strong>ui.canvas:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new canvas.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">integer</span></span>
+         Width in display columns (each column is 2 pixels wide)
+        </li>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">integer</span></span>
+         Height in display rows (each row is 4 pixels tall)
+        </li>
+        <li><span class="parameter">invert</span>
+            <span class="types"><span class="type">boolean</span></span>
+         If true, cleared cells are fully lit instead of empty
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.ui.canvas"</span>
+<span class="keyword">local</span> c = <span class="function-name">Canvas</span>({
+  width = <span class="number">60</span>,
+  height = <span class="number">30</span>,
+  invert = <span class="keyword">false</span>,      <span class="comment">-- optional, default is false
+</span>})
+<span class="global">print</span>(c:<span class="function-name">get_pixels</span>())  <span class="comment">--&gt; 120, 120 (each cell is 2x4 pixels)</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:line"></a>
+    <strong>ui.canvas:line (opts)</strong>
+    </dt>
+    <dd>
+    Draw a line between two pixels.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">x1</span>
+            <span class="types"><span class="type">integer</span></span>
+         start pixel column, 0-based
+        </li>
+        <li><span class="parameter">y1</span>
+            <span class="types"><span class="type">integer</span></span>
+         start pixel row, 0-based
+        </li>
+        <li><span class="parameter">x2</span>
+            <span class="types"><span class="type">integer</span></span>
+         end pixel column, 0-based
+        </li>
+        <li><span class="parameter">y2</span>
+            <span class="types"><span class="type">integer</span></span>
+         end pixel row, 0-based
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, unset pixels instead of setting them
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:polygon"></a>
+    <strong>ui.canvas:polygon (opts)</strong>
+    </dt>
+    <dd>
+    Draw a polygon from an array of <code>{x, y}</code> points.
+ 1 point draws a dot, 2 points draw a line, 3+ points draw a closed polygon by default.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">points</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         array of <code>{x, y}</code> pixel coordinate pairs (integer), 0-based
+        </li>
+        <li><span class="parameter">open</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, do not close the path back to the first point
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">fill</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, fill the interior of the polygon
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">erase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, unset pixels instead of setting them
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:render"></a>
+    <strong>ui.canvas:render ([opts={}])</strong>
+    </dt>
+    <dd>
+    Render the canvas to a single string.
+ Use <code>opts.print = true</code> when writing to a plain terminal or file (e.g. with <a href="https://www.lua.org/manual/5.4/manual.html#pdf-print">print</a> or
+ <a href="https://www.lua.org/manual/5.4/manual.html#pdf-io.write">io.write</a>) where cursor positioning is not needed.
+ Omit <code>opts.print</code> (or set it to false) when rendering into a TUI layout where the
+ cursor must return to the top-left of the canvas area after rendering.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">print</span>
+            <span class="types"><span class="type">boolean</span></span>
+         if truthy, use newline separators with no return sequence
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">row</span>
+            <span class="types"><span class="type">number</span></span>
+         first cell row of the viewport (1-based), must be valid
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">col</span>
+            <span class="types"><span class="type">number</span></span>
+         first cell column of the viewport (1-based), must be valid
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">number</span></span>
+         number of rows to render (defaults to all rows from <code>opts.row</code> to the bottom)
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">cols</span>
+            <span class="types"><span class="type">number</span></span>
+         number of columns to render (defaults to all columns from <code>opts.col</code> to the right)
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:resize"></a>
+    <strong>ui.canvas:resize ([rows[, cols]])</strong>
+    </dt>
+    <dd>
+    Resize the canvas to the given dimensions.
+ Columns are added or removed on the right; rows are added or removed at the bottom.
+ New cells are filled with the blank state. Existing content within the new bounds is preserved.
+ Dimensions are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">integer</span></span>
+         new height in display rows (1 row = 4 pixels)
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">cols</span>
+            <span class="types"><span class="type">integer</span></span>
+         new width in display columns (1 column = 2 pixels)
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:roll"></a>
+    <strong>ui.canvas:roll ([rows=0[, cols=0]])</strong>
+    </dt>
+    <dd>
+    Shift canvas content, wrapping pixels that move beyond one edge onto the opposite edge.
+ Positive <code>rows</code> rolls content downward; positive <code>cols</code> rolls content to the right.
+ Offsets are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">integer</span></span>
+         cell rows to roll (negative = up, positive = down; 1 row = 4 pixels)
+         (<em>default</em> 0)
+        </li>
+        <li><span class="parameter">cols</span>
+            <span class="types"><span class="type">integer</span></span>
+         cell columns to roll (negative = left, positive = right; 1 column = 2 pixels)
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:scroll"></a>
+    <strong>ui.canvas:scroll ([rows=0[, cols=0]])</strong>
+    </dt>
+    <dd>
+    Shift canvas content, dropping pixels that move beyond the edges.
+ Positive <code>rows</code> shifts content downward; positive <code>cols</code> shifts content to the right.
+ Vacated cells are filled with the blank state.
+ Offsets are in display cells: each row is 4 pixels tall, each column is 2 pixels wide.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">integer</span></span>
+         cell rows to shift (negative = up, positive = down; 1 row = 4 pixels)
+         (<em>default</em> 0)
+        </li>
+        <li><span class="parameter">cols</span>
+            <span class="types"><span class="type">integer</span></span>
+         cell columns to shift (negative = left, positive = right; 1 column = 2 pixels)
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:set"></a>
+    <strong>ui.canvas:set (x, y)</strong>
+    </dt>
+    <dd>
+    Set (illuminate) a pixel.
+ Coordinates are 0-based; origin (0, 0) is at the top-left.
+ Out-of-bounds coordinates are ignored (no error).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         pixel column, 0-based, left to right
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         pixel row, 0-based, top to bottom
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.canvas:unset"></a>
+    <strong>ui.canvas:unset (x, y)</strong>
+    </dt>
+    <dd>
+    Clear (extinguish) a pixel.
+ Coordinates are 0-based; origin (0, 0) is at the top-left.
+ Out-of-bounds coordinates are ignored (no error).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         pixel column, 0-based, left to right
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         pixel row, 0-based, top to bottom
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

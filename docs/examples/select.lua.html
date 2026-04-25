@@ -38,7 +38,7 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
-  <li><strong>colors.lua</strong></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
@@ -48,7 +48,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
-  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><strong>select.lua</strong></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -106,65 +106,104 @@
 
 <div id="content">
 
-    <h2>colors.lua</h2>
+    <h2>select.lua</h2>
 <pre>
-<span class="comment">-- This example demonstrates the use of the text-attribute stack, and how to
-</span><span class="comment">-- use it to manage text attributes in a more structured way.
+<span class="comment">--- Example demonstrating the cli.Select and cli.Prompt widgets together.
+</span><span class="comment">--
+</span><span class="comment">-- This example builds a small interactive setup wizard that uses Select
+</span><span class="comment">-- for menu choices and Prompt for text input, showing how to combine
+</span><span class="comment">-- CLI widgets in a sequential flow with text attributes for feedback.
 </span>
 <span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
-
+<span class="keyword">local</span> Select = <span class="global">require</span>(<span class="string">"terminal.cli.select"</span>)
+<span class="keyword">local</span> Prompt = <span class="global">require</span>(<span class="string">"terminal.cli.prompt"</span>)
 
 
 <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
-  <span class="comment">-- clear the screen, and move cursor to top-left
-</span>  t.clear.<span class="function-name">screen</span>()
-  t.cursor.position.<span class="function-name">push</span>(<span class="number">1</span>,<span class="number">1</span>)
-
-  <span class="comment">-- push text attribues on the stack
-</span>  t.text.<span class="function-name">push</span>{
-    fg = <span class="string">"white"</span>,
-    brightness = <span class="string">"dim"</span>,
-  }
-  t.output.<span class="global">print</span>(<span class="string">"Hello dim white World!"</span>)
-
-
-  t.text.<span class="function-name">push</span>{
-    fg = <span class="string">"white"</span>,
-    bg = <span class="string">"blue"</span>,
-    brightness = <span class="string">"normal"</span>,
-  }
-  t.output.<span class="global">print</span>(<span class="string">"Hello white on blue World!"</span>)
-
-
-  t.text.<span class="function-name">push</span>{
-    fg = <span class="string">"red"</span>,
-    bg = <span class="string">"black"</span>,
-    brightness = <span class="string">"bright"</span>,
-  }
-  t.output.<span class="global">print</span>(<span class="string">"Hello bright red World!"</span>)
-
-  <span class="comment">-- Unwind the stack, and restore text attributes along the way
-</span>  t.text.<span class="function-name">pop</span>()
-  t.output.<span class="global">print</span>(<span class="string">"Hello white on blue World! (again)"</span>)
-
+  <span class="comment">-- greeting
+</span>  t.text.<span class="function-name">push</span> { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"high"</span> }
+  t.output.<span class="global">print</span>(<span class="string">"Welcome to the project setup wizard!"</span>)
   t.text.<span class="function-name">pop</span>()
-  t.output.<span class="global">print</span>(<span class="string">"Hello dim white World! (again)"</span>)
+  t.output.<span class="global">print</span>()
 
+  <span class="comment">-- step 1: select a language
+</span>  <span class="keyword">local</span> idx, lang = <span class="function-name">Select</span> {
+    prompt = <span class="string">"Pick a language:"</span>,
+    choices = {
+      <span class="string">"Lua"</span>,
+      <span class="string">"Python"</span>,
+      <span class="string">"JavaScript"</span>,
+      <span class="string">"Go"</span>,
+    },
+    cancellable = <span class="keyword">true</span>,
+    clear = <span class="keyword">true</span>,
+  }()
+
+  <span class="keyword">if</span> <span class="keyword">not</span> idx <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"Setup cancelled."</span>)
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">-- step 2: select a license
+</span>  <span class="keyword">local</span> _, license = <span class="function-name">Select</span> {
+    prompt = <span class="string">"Choose a license:"</span>,
+    choices = {
+      <span class="string">"MIT"</span>,
+      <span class="string">"Apache-2.0"</span>,
+      <span class="string">"GPL-3.0"</span>,
+      <span class="string">"BSD-2-Clause"</span>,
+    },
+    cancellable = <span class="keyword">true</span>,
+    clear = <span class="keyword">true</span>,
+  }()
+
+  <span class="keyword">if</span> <span class="keyword">not</span> license <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"Setup cancelled."</span>)
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">-- step 3: text input for project name
+</span>  t.output.<span class="global">print</span>()
+  <span class="keyword">local</span> name = <span class="function-name">Prompt</span> {
+    prompt = <span class="string">"Project name: "</span>,
+    value = <span class="string">"my-project"</span>,
+    max_length = <span class="number">40</span>,
+    cancellable = <span class="keyword">true</span>,
+  }()
+
+  <span class="keyword">if</span> <span class="keyword">not</span> name <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"Setup cancelled."</span>)
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">-- summary
+</span>  t.output.<span class="global">print</span>()
+  t.text.<span class="function-name">push</span> { fg = <span class="string">"green"</span>, brightness = <span class="string">"high"</span> }
+  t.output.<span class="global">print</span>(<span class="string">"Setup complete!"</span>)
   t.text.<span class="function-name">pop</span>()
-  t.output.<span class="function-name">write</span>(<span class="string">"Press any key, or wait 5 seconds..."</span>)
-  t.output.<span class="function-name">flush</span>()
-  t.input.<span class="function-name">readansi</span>(<span class="number">5</span>)
+
+  t.text.<span class="function-name">push</span> { brightness = <span class="string">"dim"</span> }
+  t.output.<span class="function-name">write</span>(<span class="string">"  Language: "</span>)
+  t.text.<span class="function-name">pop</span>()
+  t.output.<span class="global">print</span>(lang)
+
+  t.text.<span class="function-name">push</span> { brightness = <span class="string">"dim"</span> }
+  t.output.<span class="function-name">write</span>(<span class="string">"  License:  "</span>)
+  t.text.<span class="function-name">pop</span>()
+  t.output.<span class="global">print</span>(license)
+
+  t.text.<span class="function-name">push</span> { brightness = <span class="string">"dim"</span> }
+  t.output.<span class="function-name">write</span>(<span class="string">"  Name:     "</span>)
+  t.text.<span class="function-name">pop</span>()
+  t.output.<span class="global">print</span>(name)
+
+  t.output.<span class="global">print</span>()
 <span class="keyword">end</span>
 
 
-
-<span class="comment">-- initialize terminal; backup (switch to alternate buffer) and set output to stdout
-</span>t.<span class="function-name">initwrap</span>(main, {
-  displaybackup = <span class="keyword">true</span>,
-  filehandle = <span class="global">io</span>.stdout,
-})()
-
-<span class="global">print</span>(<span class="string">"done!"</span>)  <span class="comment">-- this is printed on the original screen buffer</span></pre>
+t.<span class="function-name">initwrap</span>(main, {
+  disable_sigint = <span class="keyword">true</span>, <span class="comment">-- allow ctrl-c as cancellation in widgets
+</span>})()</pre>
 
 
 </div> <!-- id="content" -->

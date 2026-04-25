@@ -34,21 +34,18 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
-<li><a href="#Fields">Fields</a></li>
 </ul>
 
 
 <h2>Modules</h2>
 <ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
   <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
-  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
-  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -56,10 +53,8 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><strong>terminal.progress</strong></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
 </ul>
@@ -69,7 +64,10 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -89,8 +87,11 @@
 <h2>Examples</h2>
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
@@ -98,6 +99,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -126,20 +128,13 @@
 	<td class="summary">Create a text/led ticker like sprite-sequence for use with a progress spinner.</td>
 	</tr>
 </table>
-<h2><a href="#Fields">Fields</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#sprites">sprites</a></td>
-	<td class="summary">table with predefined sprites for progress spinners.</td>
-	</tr>
-</table>
 
 <br/>
 <br/>
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-    Methods
+
     <dl class="function">
     <dt>
     <a name = "spinner"></a>
@@ -161,7 +156,7 @@
         <li><span class="parameter">sprites</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          a table of strings to display, one at a time, overwriting the previous one. Index 0 is the "done" message.
- See <a href="../modules/terminal.progress.html#sprites">sprites</a> for a table of predefined sprites.
+ See <code>sprites</code> for a table of predefined sprites.
         </li>
         <li><span class="parameter">stepsize</span>
             <span class="types"><span class="type">number</span></span>
@@ -245,53 +240,12 @@
 
 </dd>
 </dl>
-    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "sprites"></a>
-    <strong>sprites</strong>
-    </dt>
-    <dd>
-
-<p>table with predefined sprites for progress spinners.
- The sprites are tables of strings, where each string is a frame in the spinner animation.
- The frame at index 0 is optional and is the "done" message, the rest are the animation frames.</p>
-
-<p> Available pre-defined spinners are:</p>
-
-<ul>
-    <li><code>bar_vertical</code> - a vertical bar that grows from the bottom to the top</li>
-    <li><code>bar_horizontal</code> - a horizontal bar that grows from left to right</li>
-    <li><code>square_rotate</code> - a square that rotates clockwise</li>
-    <li><code>moon</code> - a moon that waxes and wanes</li>
-    <li><code>dot_expanding</code> - a dot that expands and contracts</li>
-    <li><code>dot_vertical</code> - a dot that moves up and down</li>
-    <li><code>dot1_snake</code> - a dot that moves in a snake-like pattern</li>
-    <li><code>dot2_snake</code> - 2 dots that move in a snake-like pattern</li>
-    <li><code>dot3_snake</code> - 3 dots that move in a snake-like pattern</li>
-    <li><code>dot4_snake</code> - 4 dots that move in a snake-like pattern</li>
-    <li><code>block_pulsing</code> - a block that pulses in transparency</li>
-    <li><code>bar_rotating</code> - a bar that rotates clockwise</li>
-    <li><a href="../modules/terminal.progress.html#spinner">spinner</a> - a spinner that rotates clockwise</li>
-    <li><code>dot_horizontal</code> - 3 dots growing from left to right</li>
-</ul>
-
-
-
-
-
-
-
-
-</dd>
-</dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

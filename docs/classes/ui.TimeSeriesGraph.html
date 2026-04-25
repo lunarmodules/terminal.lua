@@ -1,0 +1,407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><strong>ui.TimeSeriesGraph</strong></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.TimeSeriesGraph</code></h1>
+<p>A time-series graph drawn on a Canvas using a CanvasViewport.</p>
+<p> Mixes two coordinate layers:
+ - A CanvasViewport (stretch) for the scaled data line.
+ - Direct canvas pixel drawing for fixed-size decorations: Y-axis (x=0),
+   tick marks (x=1), and an X-axis at the position of value 0.</p>
+
+<p> The X-axis position adapts to the data range:
+ - Range straddles zero (e.g. -50..50): axis drawn at the midpoint.
+ - Entire range positive (e.g. 0..100): axis at the bottom.
+ - Entire range negative (e.g. -100..-10): axis at the top.</p>
+
+<p> <code>min</code> and <code>max</code> can be omitted to make the range dynamic: it expands
+ automatically when a pushed value falls outside the current bounds,
+ snapping the new boundary to the nearest nice number.</p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.timeseriesgraph:clear">ui.timeseriesgraph:clear ()</a></td>
+	<td class="summary">Reset the sample history.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.timeseriesgraph:draw">ui.timeseriesgraph:draw (canvas)</a></td>
+	<td class="summary">Draw the graph onto an existing Canvas.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.timeseriesgraph:get_max">ui.timeseriesgraph:get_max ()</a></td>
+	<td class="summary">Return the current data-domain maximum.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.timeseriesgraph:get_min">ui.timeseriesgraph:get_min ()</a></td>
+	<td class="summary">Return the current data-domain minimum.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.timeseriesgraph:init">ui.timeseriesgraph:init (opts)</a></td>
+	<td class="summary">Create a new TimeSeriesGraph.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.timeseriesgraph:push">ui.timeseriesgraph:push (value)</a></td>
+	<td class="summary">Add a data sample.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.timeseriesgraph:render">ui.timeseriesgraph:render (opts)</a></td>
+	<td class="summary">Convenience wrapper: create a Canvas, draw, and return the render string.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.timeseriesgraph:clear"></a>
+    <strong>ui.timeseriesgraph:clear ()</strong>
+    </dt>
+    <dd>
+    Reset the sample history.
+ Dynamic min/max bounds are also reset to their initial sentinel values.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.timeseriesgraph:draw"></a>
+    <strong>ui.timeseriesgraph:draw (canvas)</strong>
+    </dt>
+    <dd>
+    Draw the graph onto an existing Canvas.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">canvas</span>
+            <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+         already sized by the caller
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.timeseriesgraph:get_max"></a>
+    <strong>ui.timeseriesgraph:get_max ()</strong>
+    </dt>
+    <dd>
+    Return the current data-domain maximum.
+ For dynamic ranges this reflects the nicely-snapped upper bound after pushes.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.timeseriesgraph:get_min"></a>
+    <strong>ui.timeseriesgraph:get_min ()</strong>
+    </dt>
+    <dd>
+    Return the current data-domain minimum.
+ For dynamic ranges this reflects the nicely-snapped lower bound after pushes.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.timeseriesgraph:init"></a>
+    <strong>ui.timeseriesgraph:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new TimeSeriesGraph.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">history</span>
+            <span class="types"><span class="type">number</span></span>
+         sliding window size (number of samples)
+         (<em>default</em> 100)
+        </li>
+        <li><span class="parameter">min</span>
+            <span class="types"><span class="type">number</span></span>
+         data-domain minimum, maps to the bottom of the graph;
+   when omitted the minimum expands dynamically as values are pushed
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">max</span>
+            <span class="types"><span class="type">number</span></span>
+         data-domain maximum, maps to the top of the graph;
+   when omitted the maximum expands dynamically as values are pushed
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">ticks</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         explicit Y-axis tick values in data units;
+   auto-generated from canvas height when omitted
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> graph = <span class="function-name">TimeSeriesGraph</span>({
+  history = <span class="number">100</span>,
+  min = <span class="number">0</span>,
+  max = <span class="number">100</span>,
+  ticks = { <span class="number">25</span>, <span class="number">50</span>, <span class="number">75</span>, <span class="number">100</span> },  <span class="comment">-- explicit tick values in data units
+</span>})
+graph:<span class="function-name">push</span>(<span class="number">42</span>)
+<span class="keyword">local</span> output = graph:<span class="function-name">render</span>({ cols = <span class="number">60</span>, rows = <span class="number">15</span> })</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.timeseriesgraph:push"></a>
+    <strong>ui.timeseriesgraph:push (value)</strong>
+    </dt>
+    <dd>
+    Add a data sample.  Drops the oldest sample when the window is full.
+ For dynamic min/max, expands the range to the next nice boundary when the
+ value falls outside the current bounds.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.timeseriesgraph:render"></a>
+    <strong>ui.timeseriesgraph:render (opts)</strong>
+    </dt>
+    <dd>
+    Convenience wrapper: create a Canvas, draw, and return the render string.
+ When <code>opts.fmt</code> is given, min/max labels are drawn to the left of the graph;
+ the canvas is narrowed automatically to keep the total width equal to <code>opts.cols</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">cols</span>
+            <span class="types"><span class="type">number</span></span>
+         total width in display-columns (labels + graph)
+        </li>
+        <li><span class="parameter">rows</span>
+            <span class="types"><span class="type">number</span></span>
+         total height in display-rows
+        </li>
+        <li><span class="parameter">fmt</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.format">string.format</a> pattern for the min/max labels (e.g. <code>&quot;%g&quot;</code> or <code>&quot;%d%%&quot;</code>);
+ when given, labels are drawn to the left of the graph
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">graph_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         text attributes for the graph area (e.g. <code>{ fg = &quot;cyan&quot; }</code>)
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">label_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         text attributes for the min/max labels (e.g. <code>{ fg = &quot;white&quot; }</code>)
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Sequence.html#">Sequence</a></span>
+        terminal escape sequence string ready for <code>output.write</code>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">output.<span class="function-name">write</span>(graph:<span class="function-name">render</span>({
+  cols = <span class="number">60</span>,
+  rows = <span class="number">15</span>,
+  fmt = <span class="string">"%d%%"</span>,
+  graph_attr = { fg = <span class="string">"cyan"</span> },
+  label_attr = { fg = <span class="string">"white"</span> },
+}))</pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

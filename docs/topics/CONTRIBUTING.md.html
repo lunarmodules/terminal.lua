@@ -52,15 +52,13 @@
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
   <li><a href="../modules/terminal.html">terminal</a></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
   <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
-  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
-  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -68,10 +66,8 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
 </ul>
@@ -81,7 +77,10 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -92,8 +91,11 @@
 <h2>Examples</h2>
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
@@ -101,6 +103,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -206,6 +209,10 @@ sudo luarocks purge <span class="comment">--tree=system</span>
 
 <p>Use <code>make test</code> and <code>make lint</code> to run the tests. Coverage information will be in the file <code>luacov.report.out</code>.</p>
 
+<p>When writing tests, use the helpers (in <code>./spec/helpers.lua</code>) to ensure proper isolation and for handling generic mocking (mostly in and output). This is required over manually adding mocks etc in test files, any deviations should be clearly explained and documented.</p>
+
+<p>In this library we adhere to a rigorous standard of quality: every feature, function, or component added to the codebase is accompanied by comprehensive tests, where reasonable and applicable. This ensures reliability, maintainability, and robustness, and provides a safety net for future changes. Exceptions to this rule are documented and justified, so that our development process remains transparent.</p>
+
 <p>Be sensible, write tests, increase coverage.</p>
 
 
@@ -224,13 +231,450 @@ The sources can be found in the ldoc configuration file; <code>config.ld</code>.
 <p><a name="Code_style"></a></p>
 <h2>Code style</h2>
 
-<p>todo</p>
+<p>In order to ensure a healthy and consistent codebase, we ask of you that you
+respect the adopted code style. This section contains a non-exhaustive list
+of preferred styles for writing Lua. It is opinionated but common.</p>
+
+<p>Basic rules for indentation etc can be found in <code>.luacheckrc</code> and <code>.editorconfig</code>.</p>
+
+<p>When you are unsure about the style to adopt, please browse other parts of the
+codebase to find a similar case, and stay consistent with it.</p>
+
+<p>You might also notice places in the codebase where the described style is not
+respected. This is due to legacy code. <strong>Contributions to update the code to
+the recommended style are welcome!</strong></p>
+
+
+<h3>Table of Contents - Code style</h3>
+
+<ul>
+    <li><a href="#modules">Modules</a></li>
+    <li><a href="#variables">Variables</a></li>
+    <li><a href="#tables">Tables</a></li>
+    <li><a href="#strings">Strings</a></li>
+    <li><a href="#functions">Functions</a></li>
+    <li><a href="#conditional-expressions">Conditional expressions</a></li>
+</ul>
+
+
+<h3>Modules</h3>
+
+<p>When writing a module (a Lua file), separate logical blocks of code with
+<strong>three</strong> blank lines:</p>
+
+
+<pre>
+<span class="keyword">local</span> foo = <span class="global">require</span> <span class="string">"some_module.foo"</span>
+
+
+
+<span class="keyword">local</span> _M = {}
+
+
+
+<span class="keyword">function</span> _M.<span class="function-name">bar</span>()
+  <span class="comment">-- do thing...
+</span><span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> _M.<span class="function-name">baz</span>()
+  <span class="comment">-- do thing...
+</span><span class="keyword">end</span>
+
+
+
+<span class="keyword">return</span> _M
+</pre>
+
+
+
+<h3>Variables</h3>
+
+<p>When naming a variable or function, <strong>do</strong> use snake_case:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> myString = <span class="string">"hello world"</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> my_string = <span class="string">"hello world"</span>
+</pre>
+
+
+<p>When assigning a constant variable, <strong>do</strong> give it an uppercase name:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> max_len = <span class="number">100</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> MAX_LEN = <span class="number">100</span>
+</pre>
+
+
+
+<h3>Tables</h3>
+
+<p>Use the constructor syntax, and <strong>do</strong> include a trailing comma:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> t = {}
+t.foo = <span class="string">"hello"</span>
+t.bar = <span class="string">"world"</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> t = {
+  foo = <span class="string">"hello"</span>,
+  bar = <span class="string">"world"</span>, <span class="comment">-- note the trailing comma
+</span>}
+</pre>
+
+
+<p>On single-line constructors, <strong>do</strong> include spaces around curly-braces and
+assignments:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> t = {foo=<span class="string">"hello"</span>,bar=<span class="string">"world"</span>}
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> t = { foo = <span class="string">"hello"</span>, bar = <span class="string">"world"</span> }
+</pre>
+
+
+<p>Prefer <code>ipairs()</code> to <code>for</code> loop when iterating an array,
+which gives us more readability:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">for</span> i = <span class="number">1</span>, #t <span class="keyword">do</span>
+  ...
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">for</span> _, v <span class="keyword">in</span> <span class="global">ipairs</span>(t) <span class="keyword">do</span>
+  ...
+<span class="keyword">end</span>
+</pre>
+
+
+
+<h3>Strings</h3>
+
+<p><strong>Do</strong> favor the use of double quotes in all Lua code:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> str = <span class="string">'hello'</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> str = <span class="string">"hello"</span>
+</pre>
+
+
+<p>If a string contains double quotes, <strong>do</strong> favor single quotes:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> str = <span class="string">"message: \"hello\""</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> str = <span class="string">'message: "hello"'</span>
+</pre>
+
+
+<p>When using the concatenation operator, <strong>do</strong> insert spaces around it:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> str = <span class="string">"hello "</span>..<span class="string">"world"</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> str = <span class="string">"hello "</span> .. <span class="string">"world"</span>
+</pre>
+
+
+<p>If a string is too long, <strong>do</strong> break it into multiple lines,
+and join them with the concatenation operator:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> str = <span class="string">"It is a very very very long string, that should be broken into multiple lines."</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> str = <span class="string">"It is a very very very long string, "</span> ..
+            <span class="string">"that should be broken into multiple lines."</span>
+</pre>
+
+
+
+<h3>Functions</h3>
+
+<p>Prefer the function syntax over variable syntax:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> foo = <span class="keyword">function</span>()
+
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">foo</span>()
+
+<span class="keyword">end</span>
+</pre>
+
+
+<p>Perform validation early and return as early as possible:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">check_name</span>(name)
+  <span class="keyword">local</span> valid = #name &gt; <span class="number">3</span>
+  valid = valid <span class="keyword">and</span> #name &lt; <span class="number">30</span>
+
+  <span class="comment">-- other validations
+</span>
+  <span class="keyword">return</span> valid
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">check_name</span>(name)
+  <span class="keyword">if</span> #name &lt;= <span class="number">3</span> <span class="keyword">or</span> #name &gt;= <span class="number">30</span> <span class="keyword">then</span>
+    <span class="keyword">return</span> <span class="keyword">false</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">-- other validations
+</span>
+  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">end</span>
+</pre>
+
+
+<p>Prefer if-then-error over assertions:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">some_func</span>(name)
+  <span class="comment">-- string concatenation happens on good- and failure-case
+</span>  <span class="global">assert</span>(<span class="global">type</span>(name) == <span class="string">"string"</span>, <span class="string">"expected name to be a string, got "</span> .. <span class="global">type</span>(name))
+
+  <span class="comment">-- do work
+</span><span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">some_func</span>(name)
+  <span class="keyword">if</span> <span class="global">type</span>(name) ~= <span class="string">"string"</span> <span class="keyword">then</span>
+    <span class="global">error</span>(<span class="string">"expected name to be a string, got "</span> .. <span class="global">type</span>(name))
+  <span class="keyword">end</span>
+
+  <span class="comment">-- do work
+</span><span class="keyword">end</span>
+</pre>
+
+
+<p>Follow the return values conventions: Lua supports multiple return values, and
+by convention, handles recoverable errors by returning <code>nil</code> plus a <a href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a>
+describing the error:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">check</span>()
+  <span class="keyword">local</span> ok, err = <span class="function-name">do_thing</span>()
+  <span class="keyword">if</span> <span class="keyword">not</span> ok <span class="keyword">then</span>
+    <span class="keyword">return</span> <span class="keyword">false</span>, { message = err }
+  <span class="keyword">end</span>
+
+  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">check</span>()
+  <span class="keyword">local</span> ok, err = <span class="function-name">do_thing</span>()
+  <span class="keyword">if</span> <span class="keyword">not</span> ok <span class="keyword">then</span>
+    <span class="keyword">return</span> <span class="keyword">nil</span>, <span class="string">"could not do thing: "</span> .. err
+  <span class="keyword">end</span>
+
+  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">end</span>
+</pre>
+
+
+<p>When a function call makes a line go over 100 characters, <strong>do</strong> align the
+overflowing arguments to the first one:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> str = <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"SELECT * FROM users WHERE first_name = '%s'"</span>, first_name)
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> str = <span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"SELECT * FROM users WHERE first_name = '%s'"</span>,
+                          first_name)
+</pre>
+
+
+
+<h3>Conditional expressions</h3>
+
+<p>Avoid writing 1-line conditions, <strong>do</strong> indent the child branch:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">if</span> err <span class="keyword">then</span> <span class="keyword">return</span> <span class="keyword">nil</span>, err <span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">if</span> err <span class="keyword">then</span>
+  <span class="keyword">return</span> <span class="keyword">nil</span>, err
+<span class="keyword">end</span>
+</pre>
+
+
+<p>When testing the assignment of a value, <strong>do</strong> use shortcuts, unless you
+care about the difference between <code>nil</code> and <code>false</code>:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">if</span> str ~= <span class="keyword">nil</span> <span class="keyword">then</span>
+
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">if</span> str <span class="keyword">then</span>
+
+<span class="keyword">end</span>
+</pre>
+
+
+<p>When creating multiple branches that span multiple lines, <strong>do</strong> include a
+blank line above the <code>elseif</code> and <code>else</code> statements:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">if</span> foo <span class="keyword">then</span>
+  <span class="function-name">do_stuff</span>()
+  <span class="function-name">keep_doing_stuff</span>()
+<span class="keyword">elseif</span> bar <span class="keyword">then</span>
+  <span class="function-name">do_other_stuff</span>()
+  <span class="function-name">keep_doing_other_stuff</span>()
+<span class="keyword">else</span>
+  <span class="global">error</span>()
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">if</span> thing <span class="keyword">then</span>
+  <span class="function-name">do_stuff</span>()
+  <span class="function-name">keep_doing_stuff</span>()
+
+<span class="keyword">elseif</span> bar <span class="keyword">then</span>
+  <span class="function-name">do_other_stuff</span>()
+  <span class="function-name">keep_doing_other_stuff</span>()
+
+<span class="keyword">else</span>
+  <span class="global">error</span>()
+<span class="keyword">end</span>
+</pre>
+
+
+<p>For one-line blocks, blank lines are not necessary:</p>
+
+
+<pre>
+<span class="comment">--- good
+</span><span class="keyword">if</span> foo <span class="keyword">then</span>
+  <span class="function-name">do_stuff</span>()
+<span class="keyword">else</span>
+  <span class="global">error</span>(<span class="string">"failed!"</span>)
+<span class="keyword">end</span>
+</pre>
+
+
+<p>Note in the correct "long" example that if some branches are long, then all
+branches are created with the preceding blank line (including the one-liner
+<code>else</code> case).</p>
+
+<p>When a branch returns, <strong>do not</strong> create subsequent branches, but write the
+rest of your logic on the parent branch:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">if</span> <span class="keyword">not</span> str <span class="keyword">then</span>
+  <span class="keyword">return</span> <span class="keyword">nil</span>, <span class="string">"bad value"</span>
+<span class="keyword">else</span>
+  <span class="function-name">do_thing</span>(str)
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">if</span> <span class="keyword">not</span> str <span class="keyword">then</span>
+  <span class="keyword">return</span> <span class="keyword">nil</span>, <span class="string">"bad value"</span>
+<span class="keyword">end</span>
+
+<span class="function-name">do_thing</span>(str)
+</pre>
+
+
+<p>When assigning a value or returning from a function, <strong>do</strong> use ternaries if
+it makes the code more readable:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">local</span> foo
+<span class="keyword">if</span> bar <span class="keyword">then</span>
+  foo = <span class="string">"hello"</span>
+
+<span class="keyword">else</span>
+  foo = <span class="string">"world"</span>
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">local</span> foo = bar <span class="keyword">and</span> <span class="string">"hello"</span> <span class="keyword">or</span> <span class="string">"world"</span>
+</pre>
+
+
+<p>When an expression makes a line longer than 100 characters, <strong>do</strong> align the
+expression on the following lines:</p>
+
+
+<pre>
+<span class="comment">-- bad
+</span><span class="keyword">if</span> thing_one &lt; <span class="number">1</span> <span class="keyword">and</span> <span class="function-name">long_and_complicated_function</span>(arg1, arg2) &lt; <span class="number">10</span> <span class="keyword">or</span> thing_two &gt; <span class="number">10</span> <span class="keyword">then</span>
+  <span class="function-name">do_thing</span>(str)
+<span class="keyword">end</span>
+
+<span class="comment">-- good
+</span><span class="keyword">if</span> thing_one &lt; <span class="number">1</span> <span class="keyword">and</span> <span class="function-name">long_and_complicated_function</span>(arg1, arg2) &lt; <span class="number">10</span>
+   <span class="keyword">or</span> thing_two &gt; <span class="number">10</span>
+<span class="keyword">then</span>
+  <span class="function-name">do_thing</span>(str)
+<span class="keyword">end</span>
+</pre>
+
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

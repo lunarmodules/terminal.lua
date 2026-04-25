@@ -1,0 +1,389 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><strong>car_race.lua</strong></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>car_race.lua</h2>
+<pre>
+<span class="comment">--- Simple car racing game demonstrating a terminal game loop.
+</span><span class="comment">--
+</span><span class="comment">-- This example shows how to build a game loop using the terminal library.
+</span><span class="comment">-- It demonstrates cursor positioning, 256-color text attributes, non-blocking
+</span><span class="comment">-- key input with a timeout, and the alternate display buffer for clean
+</span><span class="comment">-- full-screen output.
+</span><span class="comment">--
+</span><span class="comment">-- Use the [a] and [d] keys to steer left and right, and avoid the rocks (🪨).
+</span><span class="comment">-- The game speeds up over time. Press [n] at the start screen to quit.
+</span>
+<span class="keyword">local</span> terminal = <span class="global">require</span> <span class="string">"terminal"</span>
+<span class="keyword">local</span> write = terminal.output.write
+<span class="keyword">local</span> read_key = terminal.input.readansi
+<span class="keyword">local</span> set_pos = terminal.cursor.position.set_seq
+<span class="keyword">local</span> fg = terminal.text.color.fore_seq
+<span class="keyword">local</span> bg = terminal.text.color.back_seq
+<span class="keyword">local</span> RESET_SEQ = <span class="string">"\27[0m"</span>
+
+
+
+<span class="keyword">local</span> config = {
+  lane_count = <span class="number">3</span>,
+  lane_spacing = <span class="number">4</span>,
+  lane_offset = <span class="number">2</span>,
+  road_height = <span class="number">12</span>,
+  player_row = <span class="number">12</span>,
+  spawn_rate = <span class="number">0.25</span>,
+  speed_initial = <span class="number">0.12</span>,
+  speed_min = <span class="number">0.04</span>,
+  speed_decay = <span class="number">0.005</span>,
+  speed_interval = <span class="number">40</span>,
+  divider_period = <span class="number">4</span>,
+  divider_on = <span class="number">2</span>,
+}
+
+
+
+<span class="keyword">local</span> colors = {
+  road = <span class="function-name">bg</span>(<span class="number">235</span>),
+  border = <span class="function-name">fg</span>(<span class="number">250</span>) .. <span class="function-name">bg</span>(<span class="number">235</span>),
+  divider = <span class="function-name">fg</span>(<span class="number">220</span>) .. <span class="function-name">bg</span>(<span class="number">235</span>),
+  obstacle = <span class="function-name">fg</span>(<span class="number">196</span>) .. <span class="function-name">bg</span>(<span class="number">235</span>),
+  player = <span class="function-name">fg</span>(<span class="number">46</span>) .. <span class="function-name">bg</span>(<span class="number">235</span>),
+}
+
+
+
+<span class="keyword">local</span> ROAD_WIDTH = config.lane_count * config.lane_spacing + <span class="number">1</span>
+<span class="keyword">local</span> GAME_ROW = <span class="number">2</span>
+<span class="keyword">local</span> GAME_COL = <span class="number">2</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">new_game_state</span>()
+  <span class="keyword">return</span> {
+    player_lane = <span class="number">2</span>,
+    obstacles = {},
+    speed = config.speed_initial,
+    distance = <span class="number">0</span>,
+    frame = <span class="number">0</span>,
+    running = <span class="keyword">true</span>,
+  }
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">lane_to_column</span>(lane)
+  <span class="keyword">return</span> GAME_COL + (lane - <span class="number">1</span>) * config.lane_spacing + config.lane_offset
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">clamp</span>(value, lo, hi)
+  <span class="keyword">return</span> <span class="global">math</span>.<span class="function-name">max</span>(lo, <span class="global">math</span>.<span class="function-name">min</span>(hi, value))
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> KEY_DIRECTION = {
+  a = -<span class="number">1</span>,
+  d = <span class="number">1</span>,
+}
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">handle_input</span>(state)
+  <span class="keyword">local</span> key = <span class="function-name">read_key</span>(state.speed)
+  <span class="keyword">local</span> dir = KEY_DIRECTION[key]
+  <span class="keyword">if</span> <span class="keyword">not</span> dir <span class="keyword">then</span>
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+  state.player_lane = <span class="function-name">clamp</span>(state.player_lane + dir, <span class="number">1</span>, config.lane_count)
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">update_obstacles</span>(state)
+  <span class="keyword">local</span> obstacles = state.obstacles
+  <span class="keyword">for</span> i = #obstacles, <span class="number">1</span>, -<span class="number">1</span> <span class="keyword">do</span>
+    <span class="keyword">local</span> o = obstacles[i]
+    o.row = o.row + <span class="number">1</span>
+    <span class="keyword">if</span> o.row &gt; config.road_height <span class="keyword">then</span>
+      obstacles[i] = obstacles[#obstacles]
+      obstacles[#obstacles] = <span class="keyword">nil</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">spawn_obstacle</span>(state)
+  <span class="keyword">if</span> <span class="global">math</span>.<span class="function-name">random</span>() &gt;= config.spawn_rate <span class="keyword">then</span>
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> lane = <span class="global">math</span>.<span class="function-name">random</span>(config.lane_count)
+  state.obstacles[#state.obstacles + <span class="number">1</span>] = {
+    lane = lane,
+    row = <span class="number">1</span>,
+  }
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">update_speed</span>(state)
+  <span class="keyword">if</span> state.distance % config.speed_interval ~= <span class="number">0</span> <span class="keyword">then</span>
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+  state.speed = <span class="global">math</span>.<span class="function-name">max</span>(config.speed_min, state.speed - config.speed_decay)
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">update_game</span>(state)
+  <span class="function-name">update_obstacles</span>(state)
+  <span class="function-name">spawn_obstacle</span>(state)
+  state.distance = state.distance + <span class="number">1</span>
+  state.frame = state.frame + <span class="number">1</span>
+  <span class="function-name">update_speed</span>(state)
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">check_collision</span>(state)
+  <span class="keyword">for</span> _, o <span class="keyword">in</span> <span class="global">ipairs</span>(state.obstacles) <span class="keyword">do</span>
+    <span class="keyword">if</span> o.row == config.player_row <span class="keyword">and</span> o.lane == state.player_lane <span class="keyword">then</span>
+      state.running = <span class="keyword">false</span>
+      <span class="keyword">return</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_border</span>(buf)
+  buf[#buf + <span class="number">1</span>] = <span class="function-name">set_pos</span>(GAME_ROW, GAME_COL)
+    .. colors.border
+    .. <span class="string">"┌"</span>
+    .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"─"</span>, ROAD_WIDTH - <span class="number">2</span>)
+    .. <span class="string">"┐"</span>
+    .. RESET_SEQ
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_road_row</span>(buf, state, row)
+  <span class="keyword">local</span> screen_row = GAME_ROW + row
+  <span class="keyword">local</span> pos = <span class="function-name">set_pos</span>(screen_row, GAME_COL)
+  buf[#buf + <span class="number">1</span>] = pos .. colors.road .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">" "</span>, ROAD_WIDTH) .. RESET_SEQ
+  buf[#buf + <span class="number">1</span>] = pos .. colors.border .. <span class="string">"│"</span> .. RESET_SEQ
+  buf[#buf + <span class="number">1</span>] = <span class="function-name">set_pos</span>(screen_row, GAME_COL + ROAD_WIDTH - <span class="number">1</span>) .. colors.border .. <span class="string">"│"</span> .. RESET_SEQ
+  <span class="keyword">if</span> (state.frame + row) % config.divider_period &lt; config.divider_on <span class="keyword">then</span>
+    <span class="keyword">for</span> lane = <span class="number">1</span>, config.lane_count - <span class="number">1</span> <span class="keyword">do</span>
+      buf[#buf + <span class="number">1</span>] = <span class="function-name">set_pos</span>(screen_row, GAME_COL + lane * config.lane_spacing) .. colors.divider .. <span class="string">"┊"</span> .. RESET_SEQ
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_obstacles</span>(buf, state, row)
+  <span class="keyword">for</span> _, o <span class="keyword">in</span> <span class="global">ipairs</span>(state.obstacles) <span class="keyword">do</span>
+    <span class="keyword">if</span> o.row == row <span class="keyword">then</span>
+      buf[#buf + <span class="number">1</span>] = <span class="function-name">set_pos</span>(GAME_ROW + row, <span class="function-name">lane_to_column</span>(o.lane)) .. colors.obstacle .. <span class="string">"🪨"</span> .. RESET_SEQ
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_player</span>(buf, state, row)
+  <span class="keyword">if</span> row ~= config.player_row <span class="keyword">then</span>
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+  buf[#buf + <span class="number">1</span>] = <span class="function-name">set_pos</span>(GAME_ROW + row, <span class="function-name">lane_to_column</span>(state.player_lane)) .. colors.player .. <span class="string">"█"</span> .. RESET_SEQ
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">draw_road</span>(buf, state)
+  <span class="function-name">draw_border</span>(buf)
+  <span class="keyword">for</span> row = <span class="number">1</span>, config.road_height <span class="keyword">do</span>
+    <span class="function-name">draw_road_row</span>(buf, state, row)
+    <span class="function-name">draw_obstacles</span>(buf, state, row)
+    <span class="function-name">draw_player</span>(buf, state, row)
+  <span class="keyword">end</span>
+
+  buf[#buf + <span class="number">1</span>] = <span class="function-name">set_pos</span>(GAME_ROW + config.road_height + <span class="number">1</span>, GAME_COL)
+    .. colors.border
+    .. <span class="string">"└"</span>
+    .. <span class="global">string</span>.<span class="function-name">rep</span>(<span class="string">"─"</span>, ROAD_WIDTH - <span class="number">2</span>)
+    .. <span class="string">"┘"</span>
+    .. RESET_SEQ
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">render</span>(state)
+  <span class="keyword">local</span> buffer = {}
+  <span class="function-name">draw_road</span>(buffer, state)
+  buffer[#buffer + <span class="number">1</span>] = <span class="function-name">set_pos</span>(GAME_ROW + config.road_height + <span class="number">3</span>, GAME_COL)
+  <span class="function-name">write</span>(<span class="global">table</span>.<span class="function-name">concat</span>(buffer))
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">clear_screen</span>()
+  terminal.clear.<span class="function-name">screen</span>()
+  terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">start_screen</span>()
+  <span class="function-name">clear_screen</span>()
+  <span class="function-name">write</span>(<span class="string">"\n  CAR RACE\n\n"</span>)
+  <span class="function-name">write</span>(<span class="string">"  Press [y] to start or [n] to quit\n"</span>)
+  <span class="keyword">return</span> <span class="function-name">read_key</span>(<span class="global">math</span>.huge) == <span class="string">"y"</span>
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">game_over_screen</span>(state)
+  <span class="function-name">clear_screen</span>()
+  <span class="function-name">write</span>(<span class="string">"\n  GAME OVER\n\n"</span>)
+  <span class="function-name">write</span>(<span class="string">"  Distance: "</span> .. <span class="global">tostring</span>(state.distance) .. <span class="string">"\n\n"</span>)
+  <span class="function-name">write</span>(<span class="string">"  Press any key...\n"</span>)
+  <span class="function-name">read_key</span>(<span class="global">math</span>.huge)
+<span class="keyword">end</span>
+
+
+
+terminal.<span class="function-name">initwrap</span>(<span class="keyword">function</span>()
+  terminal.cursor.visible.<span class="function-name">set</span>(<span class="keyword">false</span>)
+  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="keyword">not</span> <span class="function-name">start_screen</span>() <span class="keyword">then</span>
+      <span class="keyword">break</span>
+    <span class="keyword">end</span>
+    <span class="function-name">clear_screen</span>()
+    <span class="keyword">local</span> state = <span class="function-name">new_game_state</span>()
+    <span class="keyword">while</span> state.running <span class="keyword">do</span>
+      <span class="function-name">handle_input</span>(state)
+      <span class="function-name">update_game</span>(state)
+      <span class="function-name">check_collision</span>(state)
+      <span class="function-name">render</span>(state)
+    <span class="keyword">end</span>
+
+    <span class="function-name">game_over_screen</span>(state)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>, { displaybackup = <span class="keyword">true</span> })()</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

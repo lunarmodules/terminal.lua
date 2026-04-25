@@ -40,15 +40,13 @@
 
 <h2>Modules</h2>
 <ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
   <li><strong>terminal</strong></li>
   <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
   <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
   <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
-  <li><a href="../modules/terminal.cursor.position.stack.html">terminal.cursor.position.stack</a></li>
   <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
-  <li><a href="../modules/terminal.cursor.shape.stack.html">terminal.cursor.shape.stack</a></li>
   <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
-  <li><a href="../modules/terminal.cursor.visible.stack.html">terminal.cursor.visible.stack</a></li>
   <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
   <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
   <li><a href="../modules/terminal.input.html">terminal.input</a></li>
@@ -56,10 +54,8 @@
   <li><a href="../modules/terminal.output.html">terminal.output</a></li>
   <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
   <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
-  <li><a href="../modules/terminal.scroll.stack.html">terminal.scroll.stack</a></li>
   <li><a href="../modules/terminal.text.html">terminal.text</a></li>
   <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
-  <li><a href="../modules/terminal.text.stack.html">terminal.text.stack</a></li>
   <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
   <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
 </ul>
@@ -69,7 +65,10 @@
   <li><a href="../classes/Sequence.html">Sequence</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
+  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -89,8 +88,11 @@
 <h2>Examples</h2>
 <ul class="nowrap">
   <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
@@ -98,6 +100,7 @@
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -136,10 +139,6 @@
 	<td class="name" nowrap><a href="#bell_seq">bell_seq ()</a></td>
 	<td class="summary">Returns a string sequence to make the terminal beep.</td>
 	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#size">size ()</a></td>
-	<td class="summary">Returns the terminal size in rows and columns.</td>
-	</tr>
 </table>
 <h2><a href="#Initialization">Initialization</a></h2>
 <table class="function_list">
@@ -150,10 +149,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#initwrap">initwrap (main[, opts])</a></td>
 	<td class="summary">Wrap a function in <a href="../modules/terminal.html#initialize">initialize</a> and <a href="../modules/terminal.html#shutdown">shutdown</a> calls.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#preload_widths">preload_widths ([str])</a></td>
-	<td class="summary">Preload known characters into the width-cache.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#ready">ready ()</a></td>
@@ -170,7 +165,7 @@
 
 
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-    Methods
+
     <dl class="function">
     <dt>
     <a name = "bell"></a>
@@ -205,39 +200,6 @@
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
         ansi sequence to write to the terminal
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "size"></a>
-    <strong>size ()</strong>
-    </dt>
-    <dd>
-    Returns the terminal size in rows and columns.
- Just a convenience, maps 1-on-1 to <code>system.termsize</code>.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-        <li>
-           <span class="types"><span class="type">number</span></span>
-        number of rows</li>
-        <li>
-           <span class="types"><span class="type">number</span></span>
-        number of columns</li>
-    </ol>
-     <h3>Or</h3>
-    <ol>
-        <li>
-           <span class="types"><span class="type">nil</span></span>
-        on error</li>
-        <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        error message</li>
     </ol>
 
 
@@ -299,6 +261,11 @@
             <span class="types"><span class="type">boolean</span></span>
          if <code>true</code>, the terminal will not send a SIGINT signal
  on Ctrl-C. Disables Ctrl-C, Ctrl-Z, and Ctrl-\, which allows the application to handle them.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">skip_width_detection</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Set to <code>true</code>, to skip ambiguous-width detection.
          (<em>default</em> false)
         </li>
         </li></ul>
@@ -366,37 +333,6 @@ main = t.<span class="function-name">initwrap</span>(main, {
 
 </dd>
     <dt>
-    <a name = "preload_widths"></a>
-    <strong>preload_widths ([str])</strong>
-    </dt>
-    <dd>
-    Preload known characters into the width-cache.
- Typically this should be called right after initialization. It will check default
- characters in use by this library, and the optional specified characters in <code>str</code>.
- Characters loaded will be the <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a> formats, and the <code>progress</code> spinner sprites.
- Uses <a href="../modules/terminal.text.width.html#test">terminal.text.width.test</a> to test the widths of the characters.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">str</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         additional character string to preload
-         (<em>optional</em>)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        true
-    </ol>
-
-
-
-
-</dd>
-    <dt>
     <a name = "ready"></a>
     <strong>ready ()</strong>
     </dt>
@@ -441,7 +377,7 @@ main = t.<span class="function-name">initwrap</span>(main, {
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
