@@ -13,7 +13,7 @@
 --     })
 --     c:set(10, 5)  -- set a pixel at (10, 5)
 --     print(c:render({ print = true }))  -- render the canvas for printing
--- @classmod ui.Canvas
+-- @classmod Canvas
 
 local position = require "terminal.cursor.position"
 local concat = table.concat
@@ -86,7 +86,7 @@ local Canvas = utils.class()
 -- @tparam integer opts.height Height in display rows (each row is 4 pixels tall)
 -- @tparam[opt=false] boolean opts.invert If true, cleared cells are fully lit instead of empty
 -- @usage
--- local Canvas = require "terminal.ui.canvas"
+-- local Canvas = require "terminal.canvas"
 -- local c = Canvas({
 --   width = 60,
 --   height = 30,

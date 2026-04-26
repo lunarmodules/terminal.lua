@@ -56,7 +56,7 @@
 --     vp:line({ x1 = 0, y1 = 0, x2 = 299, y2 = 299 })  -- diagonal in virtual space
 --     -- position cursor and write c:render() as usual
 --
--- @classmod ui.canvas.Viewport
+-- @classmod canvas.Viewport
 
 local utils = require "terminal.utils"
 local floor = math.floor
@@ -69,7 +69,7 @@ local CanvasViewport = utils.class()
 
 --- Scale mode constants; `stretch`, `fit`, or `fill` determine how the virtual
 -- coordinate space is mapped to the underlying canvas when their aspect ratios do not match.
--- @field ui.CanvasViewport.scale_modes table lookup table for scale mode constants.
+-- @field canvas.Viewport.scale_modes table lookup table for scale mode constants.
 CanvasViewport.scale_modes = utils.make_lookup("scale_mode", {
   stretch = "stretch",
   fit = "fit",
@@ -83,7 +83,7 @@ CanvasViewport.scale_modes = utils.make_lookup("scale_mode", {
 -- canvas, and with `top_left` the virtual space is aligned to the top-left corner of the canvas.
 -- This has no effect when `scale_mode` is `stretch` since the virtual space always fills the canvas
 -- in that mode.
--- @field ui.CanvasViewport.anchors table lookup table for anchor constants.
+-- @field canvas.Viewport.anchors table lookup table for anchor constants.
 CanvasViewport.anchors = utils.make_lookup("anchor", {
   center = "center",
   top_left = "top_left",
