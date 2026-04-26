@@ -7,7 +7,7 @@
 -- Press any key to quit.
 
 local t               = require "terminal"
-local TimeSeriesGraph = require "terminal.ui.timeseriesgraph"
+local TimeSeriesGraph = require "terminal.canvas.timeseriesgraph"
 
 local HISTORY_SIZE = 100   -- number of samples kept / displayed
 local INTERVAL     = 0.10  -- seconds between updates

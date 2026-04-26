@@ -4,7 +4,7 @@ local lines = require("pl.stringx").splitlines
 
 
 
-describe("terminal.ui.timeseriesgraph", function()
+describe("terminal.canvas.timeseriesgraph", function()
 
   local TimeSeriesGraph
   local Canvas
@@ -13,8 +13,8 @@ describe("terminal.ui.timeseriesgraph", function()
 
   setup(function()
     helpers.load()
-    TimeSeriesGraph = require "terminal.ui.timeseriesgraph"
-    Canvas = require "terminal.ui.canvas"
+    TimeSeriesGraph = require "terminal.canvas.timeseriesgraph"
+    Canvas = require "terminal.canvas"
     Sequence = require "terminal.sequence"
     strip_ansi = require("terminal.utils").strip_ansi
   end)

@@ -13,14 +13,14 @@
 -- `min` and `max` can be omitted to make the range dynamic: it expands
 -- automatically when a pushed value falls outside the current bounds,
 -- snapping the new boundary to the nearest nice number.
--- @classmod ui.TimeSeriesGraph
+-- @classmod canvas.TimeSeriesGraph
 
 local position = require "terminal.cursor.position"
 local Sequence = require "terminal.sequence"
-local Canvas = require "terminal.ui.canvas"
+local Canvas = require "terminal.canvas"
 local utils = require "terminal.utils"
 local text = require "terminal.text"
-local CVP = require "terminal.ui.canvasviewport"
+local CVP = require "terminal.canvas.viewport"
 
 
 

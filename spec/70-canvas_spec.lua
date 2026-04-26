@@ -20,14 +20,14 @@ local FILLED = braille(255)  -- U+28FF, all dots on
 
 
 
-describe("terminal.ui.canvas", function()
+describe("terminal.canvas", function()
 
   local Canvas
   local position
 
   setup(function()
     local terminal = helpers.load()
-    Canvas   = require("terminal.ui.canvas")
+    Canvas   = require("terminal.canvas")
     position = terminal.cursor.position
   end)
 

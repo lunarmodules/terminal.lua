@@ -23,6 +23,7 @@ configuring the terminal and abstractions over ANSI codes;
 
   - CLI widgets, see the `CLI` classes like `cli.Select` and `cli.Prompt`.
   - Fullscreen UIs, see the `UI` classes like `ui.panel.Screen` and `ui.panel.Bar`.
+  - Pixel graphics, see the `Canvas` classes: `Canvas`, `canvas.Viewport`, and `canvas.TimeSeriesGraph`.
 
 
 ## 1.2 initialization & shutdown

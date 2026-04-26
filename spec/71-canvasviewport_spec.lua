@@ -7,14 +7,14 @@ local function render_lines(c)
 end
 
 
-describe("terminal.ui.canvasviewport", function()
+describe("terminal.canvas.viewport", function()
 
   local Canvas, CanvasViewport
 
   setup(function()
     helpers.load()
-    Canvas         = require "terminal.ui.canvas"
-    CanvasViewport = require "terminal.ui.canvasviewport"
+    Canvas         = require "terminal.canvas"
+    CanvasViewport = require "terminal.canvas.viewport"
   end)
 
 
