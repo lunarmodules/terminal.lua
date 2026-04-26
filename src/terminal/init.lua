@@ -88,6 +88,50 @@ do
   local reset = "\27[0m"
   local savescreen = "\27[?1049h" -- save cursor pos + switch to alternate screen buffer
   local restorescreen = "\27[?1049l" -- restore cursor pos + switch to main screen buffer
+  local is_windows = package.config:sub(1, 1) == "\\"
+
+  local function command_ok(...)
+    local ok, _, code = os.execute(...)
+    if type(ok) == "number" then
+      return ok == 0
+    end
+    if type(ok) == "boolean" then
+      return ok and (code == nil or code == 0)
+    end
+    return false
+  end
+
+  local function try_stty(args)
+    return command_ok("stty " .. args .. " < /dev/tty 2>/dev/null")
+      or command_ok("stty " .. args .. " 2>/dev/null")
+      or command_ok("stty " .. args .. " < CON 2>nul")
+      or command_ok("stty " .. args .. " 2>nul")
+  end
+
+  local function is_console_flag_error(err)
+    if type(err) ~= "string" then
+      return false
+    end
+    return err:find("setconsoleflags", 1, true) ~= nil
+      and err:find("invalid flags", 1, true) ~= nil
+  end
+
+  local function restore_without_console_flags(backup)
+    -- Best-effort fallback for Windows pseudo terminals where restoring Win32
+    -- console flags fails (eg. "invalid flags"), but POSIX-ish tty settings,
+    -- non-block mode, and codepages can still be restored.
+    -- This keeps shutdown from leaving the shell in a degraded state.
+    if backup.term_in then pcall(sys.tcsetattr, io.stdin, sys.TCSANOW, backup.term_in) end
+    if backup.term_out then pcall(sys.tcsetattr, io.stdout, sys.TCSANOW, backup.term_out) end
+    if backup.term_err then pcall(sys.tcsetattr, io.stderr, sys.TCSANOW, backup.term_err) end
+
+    if backup.block_in ~= nil then pcall(sys.setnonblock, io.stdin, backup.block_in) end
+    if backup.block_out ~= nil then pcall(sys.setnonblock, io.stdout, backup.block_out) end
+    if backup.block_err ~= nil then pcall(sys.setnonblock, io.stderr, backup.block_err) end
+
+    if backup.consoleoutcodepage then pcall(sys.setconsoleoutputcp, backup.consoleoutcodepage) end
+    if backup.consolecp then pcall(sys.setconsolecp, backup.consolecp) end
+  end
 
 
 
@@ -152,24 +196,57 @@ do
 
     -- set Windows output to UTF-8
     sys.setconsoleoutputcp(65001)
+    if is_windows then
+      local cflags_out = sys.getconsoleflags(io.stdout)
+      local cflags_in = sys.getconsoleflags(io.stdin)
+      local can_use_console_flags = cflags_out ~= nil and cflags_in ~= nil
 
-    -- setup Windows console to handle ANSI processing, disable echo and line input (canonical mode)
-    sys.setconsoleflags(io.stdout, sys.getconsoleflags(io.stdout) + sys.COF_VIRTUAL_TERMINAL_PROCESSING)
-    sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) + sys.CIF_VIRTUAL_TERMINAL_INPUT - sys.CIF_ECHO_INPUT - sys.CIF_LINE_INPUT)
+      if can_use_console_flags then
+        local cof_vtp = sys.COF_VIRTUAL_TERMINAL_PROCESSING or sys.bitflag(4)
+        local cif_vti  = sys.CIF_VIRTUAL_TERMINAL_INPUT or sys.bitflag(0x0200)
+        local new_out = cflags_out + cof_vtp
+        local new_in = cflags_in + cif_vti
 
-    -- setup Posix terminal to disable canonical mode and echo
-    sys.tcsetattr(io.stdin, sys.TCSANOW, {
-      lflag = sys.tcgetattr(io.stdin).lflag - sys.L_ICANON - sys.L_ECHO,
-    })
+        -- Some Windows pseudo terminals (eg. ConPTY hosts) reject Win32
+        -- console flag changes. Keep this best-effort.
+        -- We only try to enable VTP/VTI here. Input still works because
+        -- luasystem `getch` already reads single key presses on Windows.
+        -- If this fails we continue; failing hard here would break otherwise
+        -- usable hosts such as VS Code/Git Bash terminals.
+        pcall(sys.setconsoleflags, io.stdout, new_out)
+        pcall(sys.setconsoleflags, io.stdin, new_in)
+      end
+    end
+
+    -- setup Posix terminal to disable canonical mode and echo (no-op mock on Windows)
+    local attr = sys.tcgetattr(io.stdin)
+    if attr and attr.lflag then
+      sys.tcsetattr(io.stdin, sys.TCSANOW, {
+        lflag = attr.lflag - sys.L_ICANON - sys.L_ECHO,
+      })
+    end
+
     -- setup stdin to non-blocking mode
     sys.setnonblock(io.stdin, true)
 
     if opts.disable_sigint then
       -- let the app handle ctrl-c, don't send SIGINT
-      sys.tcsetattr(io.stdin, sys.TCSANOW, {
-        lflag = sys.tcgetattr(io.stdin).lflag - sys.L_ISIG,
-      })
-      sys.setconsoleflags(io.stdin, sys.getconsoleflags(io.stdin) - sys.CIF_PROCESSED_INPUT)
+      local attr_sig = sys.tcgetattr(io.stdin)
+      if attr_sig and attr_sig.lflag then
+        sys.tcsetattr(io.stdin, sys.TCSANOW, {
+          lflag = attr_sig.lflag - sys.L_ISIG,
+        })
+      end
+      if is_windows then
+        local cflags_sig = sys.getconsoleflags(io.stdin)
+        if cflags_sig ~= nil then
+          pcall(sys.setconsoleflags, io.stdin, cflags_sig - sys.CIF_PROCESSED_INPUT)
+        else
+          -- Best effort for pseudo terminals where Win32 console flags are unavailable.
+          -- Some emulated terminals expose POSIX signal control via stty.
+          try_stty("intr ''")
+        end
+      end
     end
 
     if not opts.skip_width_detection then
@@ -206,7 +283,18 @@ do
     output.write(reset)
     output.flush()
 
-    sys.termrestore(termbackup)
+    local ok_restore, restore_err = pcall(sys.termrestore, termbackup)
+    if (not ok_restore) and is_windows and is_console_flag_error(restore_err) then
+      -- Pseudo terminals on Windows (eg. ConPTY-based hosts) can reject
+      -- restoring Win32 console flags captured by `termbackup`.
+      -- Fall back to restoring non-console state to avoid leaving tty mode in
+      -- a broken state for the shell session.
+      -- Only this known compatibility error is suppressed; unexpected restore
+      -- errors still bubble up below.
+      restore_without_console_flags(termbackup)
+    elseif not ok_restore then
+      error(restore_err, 2)
+    end
 
     M._asleep = sys.sleep
     M._bsleep = sys.sleep
