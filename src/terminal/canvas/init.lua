@@ -6,7 +6,7 @@
 -- the canvas bounds is ignored (no error).
 --
 -- Example usage:
---     local Canvas = require "terminal.ui.canvas"
+--     local Canvas = require "terminal.canvas"
 --     local c = Canvas({
 --       width = 60,
 --       height = 30,

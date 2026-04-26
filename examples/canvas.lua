@@ -1,6 +1,6 @@
 local t = require "terminal"
-local Canvas = require "terminal.ui.canvas"
-local CanvasViewport = require "terminal.ui.canvasviewport"
+local Canvas = require "terminal.canvas"
+local CanvasViewport = require "terminal.canvas.viewport"
 
 -- Virtual coordinate space: matches the original Lua-logo geometry
 -- (original canvas was 60×30 cells → 120×120 pixels)

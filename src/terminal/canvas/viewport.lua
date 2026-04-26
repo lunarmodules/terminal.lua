@@ -43,8 +43,8 @@
 -- drawing calls.
 --
 -- Example usage:
---     local Canvas = require "terminal.ui.canvas"
---     local CanvasViewport = require "terminal.ui.canvasviewport"
+--     local Canvas = require "terminal.canvas"
+--     local CanvasViewport = require "terminal.canvas.viewport"
 --
 --     -- Inside a Panel content callback, called on every render (including resize):
 --     local c = Canvas({ width = panel.inner_width, height = panel.inner_height })
@@ -56,7 +56,7 @@
 --     vp:line({ x1 = 0, y1 = 0, x2 = 299, y2 = 299 })  -- diagonal in virtual space
 --     -- position cursor and write c:render() as usual
 --
--- @classmod ui.CanvasViewport
+-- @classmod ui.canvas.Viewport
 
 local utils = require "terminal.utils"
 local floor = math.floor
