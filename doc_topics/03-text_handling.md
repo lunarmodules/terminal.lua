@@ -19,8 +19,7 @@ Since not all characters have a predefined width (east-asian languages with ambi
 LuaSystems functions to determine character display width there are still unknowns. The only way to know how they
 render (single or double columns) is to actually test display width.
 
-For this purpose there are several utility functions in `terminal.text.width`, and there is the width-testing for
-use during application startup/initialization by means of `terminal.preload_widths`.
+For this purpose there are several utility functions in `terminal.text.width`.
 
 # 3.2 Displaying strings
 
