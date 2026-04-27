@@ -134,6 +134,35 @@ end
 
 
 
+--- Path progress animation where a runner moves toward the start position.
+-- Returns a table of animation frames for use as a sprite sequence with `spinner()`.
+--
+-- Example:
+--   local frames = M.progress_path(5, "📍", "🚙")
+--   -- frames[1] = "📍....🚙"
+--   -- frames[5] = "📍🚙"
+--
+-- @tparam[opt=20] number width number of animation frames (not visual width)
+-- @tparam[opt="📍"] string start_icon icon at the start (left) position
+-- @tparam[opt="🚙"] string runner_icon icon representing the runner
+-- @treturn table array of animation frame strings
+function M.progress_path(width, start_icon, runner_icon)
+  width = width or 20
+  start_icon = start_icon or "📍"
+  runner_icon = runner_icon or "🚙"
+
+  local result = {}
+
+  for i = 1, width do
+    local dots = string.rep(".", width - i)
+    result[i] = start_icon .. dots .. runner_icon
+  end
+
+  return result
+end
+
+
+
 --- Create a text/led ticker like sprite-sequence for use with a progress spinner.
 -- @tparam string text the text to display
 -- @tparam[opt=40] number width the width of the ticker, in characters
