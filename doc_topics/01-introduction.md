@@ -1,6 +1,6 @@
 # 1. Introduction
 
-Yet another terminal library, why? Becasue it adds a couple of things not found with other libraries:
+Yet another terminal library, why? Because it adds a couple of things not found with other libraries:
 
 - Also works on Windows (since it builds on top of `luasystem`)
 - Works async with coroutines for keyboard input

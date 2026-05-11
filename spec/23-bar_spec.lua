@@ -79,6 +79,19 @@ describe("terminal.ui.panel.bar", function()
       assert.is_false(bar.auto_render)
     end)
 
+
+    it("reads truncation option from left/center/right config", function()
+      local bar = Bar {
+        left = { text = "L", truncation = "left" },
+        center = { text = "C", truncation = "drop" },
+        right = { text = "R", truncation = "right" },
+      }
+
+      assert.are.equal("left", bar.left_trunc)
+      assert.are.equal("drop", bar.center_trunc)
+      assert.are.equal("right", bar.right_trunc)
+    end)
+
   end)
 
 

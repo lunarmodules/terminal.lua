@@ -20,17 +20,17 @@ local function main()
     padding = 3,
     left = {
       text = "File",
-      type = "left",
+      truncation = "left",
       attr = { fg = "cyan", brightness = "bright" }
     },
     center = {
       text = "Terminal Editor",
-      type = "right",
+      truncation = "right",
       attr = { fg = "yellow", brightness = "bright", underline = true }
     },
     right = {
       text = "Help",
-      type = "drop",
+      truncation = "drop",
       attr = { fg = "green", brightness = "bright" }
     },
     attr = { bg = "blue" }
@@ -42,17 +42,17 @@ local function main()
     padding = 2,
     left = {
       text = "Status: Ready",
-      type = "left",
+      truncation = "left",
       attr = { fg = "white", brightness = "dim" }
     },
     center = {
       text = "Press 'q' to quit",
-      type = "right",
+      truncation = "right",
       attr = { fg = "white", brightness = "bright" }
     },
     right = {
       text = "Resize to redraw",
-      type = "drop",
+      truncation = "drop",
       attr = { fg = "white", brightness = "dim" }
     },
     attr = { bg = "blue", brightness = "dim" }

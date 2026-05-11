@@ -28,15 +28,15 @@ local Bar = utils.class(Panel)
 -- @tparam[opt] table opts.attr Text attributes for the entire bar.
 -- @tparam[opt] table opts.left Left section configuration.
 -- @tparam[opt] string opts.left.text Left section content.
--- @tparam[opt="right"] string opts.left.type Truncation type for left section ("left", "right", or "drop").
+-- @tparam[opt="right"] string opts.left.truncation Truncation type for left section ("left", "right", or "drop").
 -- @tparam[opt] table opts.left.attr Text attributes for left section content.
 -- @tparam[opt] table opts.center Center section configuration.
 -- @tparam[opt] string opts.center.text Center section content.
--- @tparam[opt="right"] string opts.center.type Truncation type for center section ("left", "right", or "drop").
+-- @tparam[opt="right"] string opts.center.truncation Truncation type for center section ("left", "right", or "drop").
 -- @tparam[opt] table opts.center.attr Text attributes for center section content.
 -- @tparam[opt] table opts.right Right section configuration.
 -- @tparam[opt] string opts.right.text Right section content.
--- @tparam[opt="right"] string opts.right.type Truncation type for right section ("left", "right", or "drop").
+-- @tparam[opt="right"] string opts.right.truncation Truncation type for right section ("left", "right", or "drop").
 -- @tparam[opt] table opts.right.attr Text attributes for right section content.
 -- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when text content changes.
 -- @treturn Bar A new Bar instance.
@@ -47,17 +47,17 @@ local Bar = utils.class(Panel)
 --     padding = 2,
 --     left = {
 --       text = "File",
---       type = "right",
+--       truncation = "right",
 --       attr = { fg = "blue" }
 --     },
 --     center = {
 --       text = "Editor",
---       type = "left",
+--       truncation = "left",
 --       attr = { fg = "yellow", brightness = "bright" }
 --     },
 --     right = {
 --       text = "Help",
---       type = "drop",
+--       truncation = "drop",
 --       attr = { fg = "green" }
 --     },
 --     attr = { bg = "black" }
@@ -80,13 +80,13 @@ function Bar:init(opts)
 
   -- Extract component configurations
   local left = left_config.text or ""
-  local left_type = left_config.type or "right"
+  local left_trunc = left_config.truncation or "right"
   local left_attr = left_config.attr
   local center = center_config.text or ""
-  local center_type = center_config.type or "right"
+  local center_trunc = center_config.truncation or "right"
   local center_attr = center_config.attr
   local right = right_config.text or ""
-  local right_type = right_config.type or "right"
+  local right_trunc = right_config.truncation or "right"
   local right_attr = right_config.attr
 
   -- Remove bar-specific options from opts to avoid conflicts with Panel
@@ -110,11 +110,11 @@ function Bar:init(opts)
   -- Set bar-specific properties after parent constructor
   self.margin = margin
   self.padding = padding
-  self.left_type = left_type
+  self.left_trunc = left_trunc
   self.left_attr = left_attr
-  self.center_type = center_type
+  self.center_trunc = center_trunc
   self.center_attr = center_attr
-  self.right_type = right_type
+  self.right_trunc = right_trunc
   self.right_attr = right_attr
   self.attr = attr
   self.auto_render = false -- set to false initially to prevent render during initialization
@@ -154,9 +154,9 @@ function Bar:_build_bar_line(width)
   local right_alloc = available_content_space - left_alloc - center_alloc
 
   -- Use truncate_ellipsis for proper truncation
-  local left_str, left_w = text.width.truncate_ellipsis(left_alloc, self.left, self.left_type)
-  local center_str, center_w = text.width.truncate_ellipsis(center_alloc, self.center, self.center_type)
-  local right_str, right_w = text.width.truncate_ellipsis(right_alloc, self.right, self.right_type)
+  local left_str, left_w = text.width.truncate_ellipsis(left_alloc, self.left, self.left_trunc)
+  local center_str, center_w = text.width.truncate_ellipsis(center_alloc, self.center, self.center_trunc)
+  local right_str, right_w = text.width.truncate_ellipsis(right_alloc, self.right, self.right_trunc)
 
   -- Calculate actual space used by content
   local content_width = left_w + center_w + right_w
