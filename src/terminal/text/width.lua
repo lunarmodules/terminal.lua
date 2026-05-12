@@ -5,7 +5,7 @@
 -- Especially the ['ambiguous width'](https://www.unicode.org/Public/UCD/latest/ucd/EastAsianWidth.txt)
 -- characters can be displayed with different
 -- widths especially when used with East Asian languages.
--- The only way to truly know their display width is to write them to the terminal
+-- The only way to truly know their display width is to write one to the terminal
 -- and measure the cursor position change.
 --
 -- This module implements ambiguous-width configuration and detection (default 1).
@@ -30,7 +30,7 @@ local ambiguous_width = 1
 --- Detects and sets the width of the abiguous width characters.
 -- Writes a test character and queries the cursor position. Returns (and sets) the default value 1 if detection fails.
 --
--- The preferred way to call this function is during terminal initialization, see `terminal.initialize`.
+-- The preferred way to call this function is implicitly during terminal initialization, see `terminal.initialize`.
 -- @treturn number 1 or 2
 function M.detect_ambiguous_width()
   local t = require("terminal")
@@ -125,16 +125,23 @@ end
 
 
 --- Truncates text to fit within a given width, adding ellipsis as needed.
--- Shortens text if necessary, adds ellipsis when truncated. Respects UTF-8
--- character boundaries and handles double-width characters correctly.
+-- Respects UTF-8 character boundaries and handles double-width characters correctly.
+--
+-- Truncation type:
+--
+--   - `"right"`: Truncate from the right, show beginning of text with ellipsis on the right
+--
+--   - `"left"`: Truncate from the left, show end of text with ellipsis on the left
+--
+--   - `"drop"`: Drop the entire text if it doesn't fit (return empty string).
+--
+-- _NOTE_: The returned string can be less than the requested width. The 2nd return value is the actual
+-- width of the returned string in columns.
 -- @tparam number width The available width for the text in columns.
 -- @tparam[opt=""] string text The text to truncate.
--- @tparam[opt="right"] string trunc_type The type of truncation to apply:
---   - "right": Truncate from the right, show beginning of text with ellipsis on the right
---   - "left": Truncate from the left, show end of text with ellipsis on the left
---   - "drop": Drop the entire text if it doesn't fit (return empty string).
+-- @tparam[opt="right"] string trunc_type The type of truncation to apply; `"right"` (default), `"left"`, or `"drop"`.
 -- @tparam[opt="…"] string ellipsis The ellipsis string to use. Defaults to Unicode ellipsis character "…".
---   Can be a multi-character string or empty string.
+-- Can be a multi-character string or empty string.
 -- @treturn string The truncated text (may be empty string).
 -- @treturn number The size of the returned text in columns.
 -- @usage
