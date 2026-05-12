@@ -239,7 +239,7 @@ end
 --   displaybackup = true,
 -- })
 --
--- main("one", "two") -- rethrows any error after termimal restore
+-- main("one", "two") -- rethrows any error after terminal restore
 function M.initwrap(main, opts)
   assert(type(main) == "function", "expected arg#1 to be a function, got " .. type(main))
 

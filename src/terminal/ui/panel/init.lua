@@ -84,11 +84,11 @@ local DEFAULT_MAX_SIZE = math.huge
 --- Create a new Panel instance.
 -- Do not call this method directly, call on the class instead. See example.
 -- @tparam table opts Options for the panel.
--- @tparam[opt] function opts.content Content callback function that takes only self parameter. Access layout via self.inner_row, self.inner_col, self.inner_height, self.inner_width.
+-- @tparam[opt] function opts.content Content callback function that takes only `self` parameter. Access layout via `self.inner_row`, `self.inner_col`, `self.inner_height`, `self.inner_width`.
 -- @tparam[opt=true] boolean opts.clear_content Whether to clear the content area before rendering.
 -- @tparam[opt] table opts.orientation Panel orientation: `Panel.orientations.horizontal` or `Panel.orientations.vertical` (for divided panels).
 -- @tparam[opt] table opts.children Array of exactly 2 child panels (for divided panels).
--- @tparam[opt] string opts.name Optional name for the panel. Defaults to tostring(self) if not provided.
+-- @tparam[opt] string opts.name Optional name for the panel. Defaults to `tostring(self)` if not provided.
 -- @tparam[opt=1] number opts.min_height Minimum height constraint.
 -- @tparam[opt=1] number opts.min_width Minimum width constraint.
 -- @tparam[opt=math.huge] number opts.max_height Maximum height constraint.
@@ -96,11 +96,11 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @tparam[opt=0.5] number opts.split_ratio Ratio for dividing child panels (0.0 to 1.0).
 -- @tparam[opt=true] boolean opts.visible Whether the panel is visible (true) or hidden (false).
 -- @tparam[opt] table opts.border Border configuration for content panels, with the following properties:
--- @tparam table border.format The box format table (see `terminal.draw.box_fmt`).
--- @tparam[opt] table border.attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
--- @tparam[opt] string border.title Optional title to display in the border.
--- @tparam[opt="right"] string border.truncation_type The type of title-truncation to apply, either "left", "right", or "drop".
--- @tparam[opt] table border.title_attr Table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`.
+-- @tparam table opts.border.format The box format table (see `terminal.draw.box_fmt`).
+-- @tparam[opt] table opts.border.attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
+-- @tparam[opt] string opts.border.title Optional title to display in the border.
+-- @tparam[opt="right"] string opts.border.truncation_type The type of title-truncation to apply, either "left", "right", or "drop".
+-- @tparam[opt] table opts.border.title_attr Table of attributes for the title, eg. `{ fg = "red", bg = "blue" }`.
 -- @treturn Panel A new Panel instance.
 -- @usage
 --   local Panel = require("terminal.ui.panel")
