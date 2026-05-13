@@ -119,6 +119,17 @@ end
 
 
 
+--- Render just the bar fill area.
+-- Renders the fill, tip, and empty portions based on current value.
+-- Does not include reverse logic, which is handled by render().
+-- Subclasses can override this to customize bar rendering.
+-- @tparam number width Width available for the bar fill area (in display columns)
+-- @treturn Sequence The rendered bar fill
+function Bar:render_bar(width)
+end
+
+
+
 --- Render the progress bar to a Sequence.
 -- The bar fills exactly `width` display columns, with fixed elements (label, caps, format, status)
 -- measured first and the fill area taking the remainder.
