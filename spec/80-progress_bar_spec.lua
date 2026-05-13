@@ -1,4 +1,6 @@
 local helpers = require "spec.helpers"
+local tw = require("terminal.text.width")
+local text = require("terminal.text")
 
 
 describe("progress.Bar", function()
@@ -126,63 +128,150 @@ describe("progress.Bar", function()
 
   describe("render_bar()", function()
 
-    pending("returns a Sequence", function()
+    it("returns a Sequence", function()
+      local b = Bar({ value = 50 })
+      local seq = b:render_bar(20)
+      assert.is_table(seq)
     end)
 
 
-    pending("renders empty when value=min", function()
+    it("renders empty when value=min", function()
+      local b = Bar({
+        min = 0,
+        max = 100,
+        value = 0,
+        empty_char = "-",
+      })
+      assert.are.equal("----------", tostring(b:render_bar(10)))
     end)
 
 
-    pending("renders full when value=max", function()
+    it("renders full when value=max", function()
+      local b = Bar({
+        min = 0,
+        max = 100,
+        value = 100,
+        filled_char = "=",
+      })
+      assert.are.equal("==========", tostring(b:render_bar(10)))
     end)
 
 
-    pending("renders approximately 50% fill at midpoint", function()
+    it("renders approximately 50% fill at midpoint", function()
+      local b = Bar({
+        min = 0,
+        max = 100,
+        value = 50,
+        filled_char = "=",
+        empty_char = "-",
+      })
+      assert.are.equal("=====-----", tostring(b:render_bar(10)))
     end)
 
 
-    pending("uses filled_char for filled portion", function()
+    it("uses filled_char for filled portion", function()
+      local b = Bar({
+        value = 75,
+        filled_char = "#",
+      })
+      assert.are.equal("###############     ", tostring(b:render_bar(20)))
     end)
 
 
-    pending("uses empty_char for unfilled portion", function()
+    it("uses empty_char for unfilled portion", function()
+      local b = Bar({
+        value = 25,
+        empty_char = ".",
+      })
+      assert.are.equal("█████...............", tostring(b:render_bar(20)))
     end)
 
 
-    pending("includes tip_chars when provided and partial fill", function()
+    it("includes tip_chars when provided and partial fill", function()
+      local b = Bar({
+        min = 0,
+        max = 100,
+        value = 52,
+        filled_char = "=",
+        empty_char = "-",
+        tip_chars = { "▏", "▎", "▍", "▌", "▋", "▊", "▉" },
+      })
+      assert.match("[▏▎▍▌▋▊▉]", tostring(b:render_bar(10)))
     end)
 
 
-    pending("omits tip when tip_chars is nil", function()
+    it("omits tip when tip_chars is nil", function()
+      local b = Bar({
+        min = 0,
+        max = 100,
+        value = 40,
+        filled_char = "=",
+        empty_char = "-",
+        tip_chars = nil,
+      })
+      assert.are.equal("====------", tostring(b:render_bar(10)))
     end)
 
 
     pending("handles double-width filled_char correctly", function()
+      local b = Bar({
+        value = 50,
+        filled_char = "🚀",
+      })
+      local str = tostring(b:render_bar(4))
+      assert.are.equal("🚀🚀", str)
+      assert.are.equal(4, tw.utf8swidth(str))
     end)
 
 
     pending("handles double-width empty_char correctly", function()
+      local b = Bar({
+        value = 50,
+        empty_char = "🌟",
+      })
+      local str = tostring(b:render_bar(4))
+      assert.are.equal("██🌟🌟", str)
+      assert.are.equal(4, tw.utf8swidth(str))
     end)
 
 
     pending("handles double-width tip_chars correctly", function()
+      local b = Bar({
+        value = 50,
+        tip_chars = { "🎯" },
+      })
+      local str = tostring(b:render_bar(4))
+      assert.are.equal("██🎯", str)
+      assert.are.equal(4, tw.utf8swidth(str))
     end)
 
 
-    pending("applies filled_attr to filled portion when provided", function()
+    it("applies filled_attr to filled portion when provided", function()
+      local b = Bar({
+        value = 50,
+        filled_attr = { fg = "red" },
+      })
+      local str = tostring(b:render_bar(10))
+      local expected_seq = text.push_seq({ fg = "red" })
+      assert.is_not_nil(string.find(str, expected_seq, 1, true))
     end)
 
 
-    pending("applies empty_attr to empty portion when provided", function()
+    it("applies empty_attr to empty portion when provided", function()
+      local b = Bar({
+        value = 50,
+        empty_attr = { fg = "blue" },
+      })
+      local str = tostring(b:render_bar(10))
+      local expected_seq = text.push_seq({ fg = "blue" })
+      assert.is_not_nil(string.find(str, expected_seq, 1, true))
     end)
 
 
-    pending("omits attrs when not provided", function()
-    end)
-
-
-    pending("handles zero width gracefully", function()
+    it("handles zero width gracefully", function()
+      local b = Bar({ value = 50 })
+      local seq = b:render_bar(0)
+      assert.is_not_nil(seq)
     end)
 
   end)

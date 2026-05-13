@@ -126,6 +126,47 @@ end
 -- @tparam number width Width available for the bar fill area (in display columns)
 -- @treturn Sequence The rendered bar fill
 function Bar:render_bar(width)
+  width = math.max(0, width)
+
+  local fraction = (self.value - self.min) / (self.max - self.min)
+  local fill = fraction * width
+  local full_cells = math.floor(fill)
+  local tip_chars = self.tip_chars
+  local tip_index = tip_chars and math.floor((fill - full_cells) * #tip_chars) or 0
+
+  local s = Sequence()
+
+  if self.filled_attr then
+    s[#s + 1] = function()
+      return text.push_seq(self.filled_attr)
+    end
+  end
+
+  s[#s + 1] = string.rep(self.filled_char, full_cells)
+
+  if tip_index > 0 then
+    s[#s + 1] = tip_chars[tip_index]
+  end
+
+  if self.filled_attr then
+    s[#s + 1] = text.pop_seq
+  end
+
+  local empty_cells = width - full_cells - (tip_index > 0 and 1 or 0)
+
+  if self.empty_attr then
+    s[#s + 1] = function()
+      return text.push_seq(self.empty_attr)
+    end
+  end
+
+  s[#s + 1] = string.rep(self.empty_char, empty_cells)
+
+  if self.empty_attr then
+    s[#s + 1] = text.pop_seq
+  end
+
+  return s
 end
 
 
