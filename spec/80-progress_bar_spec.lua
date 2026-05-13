@@ -213,36 +213,112 @@ describe("progress.Bar", function()
     end)
 
 
-    pending("handles double-width filled_char correctly", function()
-      local b = Bar({
-        value = 50,
-        filled_char = "🚀",
-      })
-      local str = tostring(b:render_bar(4))
-      assert.are.equal("🚀🚀", str)
-      assert.are.equal(4, tw.utf8swidth(str))
-    end)
+    pending("accounts for character width in render_bar", function()
+      local cases = {
+        {
+          name = "all single-width",
+          opts = {
+            value = 50,
+            filled_char = "=",
+            empty_char = "-",
+            tip_chars = nil,
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "=====-----",
+        },
+        {
+          name = "filled double-width, others single",
+          opts = {
+            value = 50,
+            filled_char = "🚀",
+            empty_char = "-",
+            tip_chars = nil,
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "🚀🚀---",
+        },
+        {
+          name = "empty double-width, others single",
+          opts = {
+            value = 50,
+            filled_char = "=",
+            empty_char = "🚀",
+            tip_chars = nil,
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "=====🚀🚀",
+        },
+        {
+          name = "tip double-width, others single",
+          opts = {
+            value = 50,
+            filled_char = "=",
+            empty_char = "-",
+            tip_chars = { "🚀" },
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "====🚀----",
+        },
+        {
+          name = "filled and empty double-width, tip single",
+          opts = {
+            value = 50,
+            filled_char = "🚀",
+            empty_char = "🚀",
+            tip_chars = nil,
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "🚀🚀🚀",
+        },
+        {
+          name = "filled and tip double-width, empty single",
+          opts = {
+            value = 50,
+            filled_char = "🚀",
+            empty_char = "-",
+            tip_chars = { "🚀" },
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "🚀🚀--",
+        },
+        {
+          name = "empty and tip double-width, filled single",
+          opts = {
+            value = 50,
+            filled_char = "=",
+            empty_char = "🚀",
+            tip_chars = { "🚀" },
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "====🚀🚀",
+        },
+        {
+          name = "all double-width",
+          opts = {
+            value = 50,
+            filled_char = "🚀",
+            empty_char = "🚀",
+            tip_chars = { "🚀" },
+          },
+          render_width = 10,
+          expected_display_width = 10,
+          expected_output = "🚀🚀",
+        },
+      }
 
-
-    pending("handles double-width empty_char correctly", function()
-      local b = Bar({
-        value = 50,
-        empty_char = "🌟",
-      })
-      local str = tostring(b:render_bar(4))
-      assert.are.equal("██🌟🌟", str)
-      assert.are.equal(4, tw.utf8swidth(str))
-    end)
-
-
-    pending("handles double-width tip_chars correctly", function()
-      local b = Bar({
-        value = 50,
-        tip_chars = { "🎯" },
-      })
-      local str = tostring(b:render_bar(4))
-      assert.are.equal("██🎯", str)
-      assert.are.equal(4, tw.utf8swidth(str))
+      for _, case in ipairs(cases) do
+        local b = Bar(case.opts)
+        local str = tostring(b:render_bar(case.render_width))
+        assert.are.equal(case.expected_output, str, case.name)
+        assert.are.equal(case.expected_display_width, tw.utf8swidth(str), case.name)
+      end
     end)
 
 
