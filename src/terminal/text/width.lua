@@ -100,6 +100,7 @@ end
 -- @tparam string|number char the character (string or codepoint) to check
 -- @treturn number the width of the first character in columns
 function M.utf8cwidth(char)
+  -- TODO: for "", return 0 instead of erroring (invalid codepoint), where is this used in the codebase????
   if type(char) == "string" then
     char = utf8.codepoint(char)
   elseif type(char) ~= "number" then

@@ -16,10 +16,10 @@ local Bar = utils.class()
 
 
 --- Predefined tip-character sets for sub-character precision at the bar tip.
--- @table Bar.tip_chars
--- @field block Array of 7 Unicode block elements for smooth fill progression
-Bar.tip_chars = {
-  block = {"▏", "▎", "▍", "▌", "▋", "▊", "▉"},
+-- @table Bar.block_tip_chars
+-- @field block Array of 9 Unicode block elements for smooth fill progression
+Bar.block_tip_chars = {
+  block = {" ", "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"},
 }
 
 
@@ -40,6 +40,7 @@ Bar.tip_chars = {
 -- @tparam[opt="█"] string opts.filled_char Character for fully-filled cells
 -- @tparam[opt=" "] string opts.empty_char Character for empty cells
 -- @tparam[opt] table opts.tip_chars Array of tip characters for sub-char precision (1-indexed, ascending fill)
+-- The tip is always shown! so the range should start with `empty` and end with `filled`.
 -- @tparam[opt=""] string opts.left_cap Left bracket/delimiter
 -- @tparam[opt=""] string opts.right_cap Right bracket/delimiter
 -- @tparam[opt=0] number opts.min Minimum value (lower bound)
@@ -138,41 +139,46 @@ end
 -- @tparam number width Width available for the bar fill area (in display columns)
 -- @treturn Sequence The rendered bar fill
 function Bar:render_bar(width)
-  -- FIXME: we should always use the following algorithm;
-  -- 1. size of tip comes first
-  -- 2. size of the double-width chars comes next, can be filled or empty
-  -- 3. remaining space is filled with single-width chars, can be filled or empty
-  -- This ensures padding is only used if there is no alternative.
   width = math.max(0, width)
 
-  local filled_char_width = tw.utf8swidth(self.filled_char)
-  local empty_char_width = tw.utf8swidth(self.empty_char)
+  local filled_char_width = tw.utf8cwidth(self.filled_char)
+  local empty_char_width = tw.utf8cwidth(self.empty_char)
+  local tip_char_width = self.tip_chars and tw.utf8swidth(self.tip_chars[1]) or 0 -- assume all tips are equal width
 
   local fraction = (self.value - self.min) / (self.max - self.min)
   if self.reverse then
     fraction = 1 - fraction
   end
-  local fill_width = fraction * width
-  local full_cells = math.floor(fill_width / filled_char_width)
-  local filled_width = full_cells * filled_char_width
-  local fractional_fill = fill_width - filled_width
 
-  local tip_chars = self.tip_chars
-  local tip_char = nil
+  local columns_empty
+  local columns_filled = fraction * (width - tip_char_width)  -- fractional !!
 
-  if tip_chars then
-    local tip_index = math.floor(fractional_fill / filled_char_width * #tip_chars)
-    if tip_index > 0 and tip_index <= #tip_chars then
-      tip_char = tip_chars[tip_index]
+  local tip_char = ""
+  if self.tip_chars then
+    local tip_index = (columns_filled - math.floor(columns_filled)) * #self.tip_chars
+    tip_index = math.floor(tip_index) + 1
+    tip_char = self.tip_chars[tip_index]
+  end
+
+  -- start with the filled columns, left-over is empty
+  columns_filled = math.floor(columns_filled)  -- no more fractional
+  local filled_count = math.floor(columns_filled / filled_char_width)
+  columns_empty = width - tip_char_width - filled_count * filled_char_width
+
+  if empty_char_width == 2 and filled_char_width == 1 then
+    -- if columns_empty is uneven, width char_width 2, then we need to adjust
+    -- to prevent unnecessary padding of the last column
+    if columns_empty % 2 == 1 and columns_filled > 1 then
+      columns_empty = columns_empty + 1
+      columns_filled = columns_filled - 1
+      filled_count = math.floor(columns_filled / filled_char_width)
     end
   end
 
-  local tip_width = tip_char and tw.utf8swidth(tip_char) or 0
-  local used_width = filled_width + tip_width
-  local remaining_width = width - used_width
-  local empty_cells = math.floor(remaining_width / empty_char_width)
-  local padding_width = remaining_width - (empty_cells * empty_char_width)
+  local empty_count = math.floor(columns_empty / empty_char_width)
+  local padding_width = width - (filled_count * filled_char_width) - (empty_count * empty_char_width) - tip_char_width
 
+  -- build the sequence
   local s = Sequence()
 
   if self.filled_attr then
@@ -181,11 +187,9 @@ function Bar:render_bar(width)
     end
   end
 
-  s[#s + 1] = string.rep(self.filled_char, full_cells)
+  s[#s + 1] = string.rep(self.filled_char, filled_count)
 
-  if tip_char then
-    s[#s + 1] = tip_char
-  end
+  s[#s + 1] = tip_char
 
   if self.filled_attr then
     s[#s + 1] = text.pop_seq
@@ -197,10 +201,10 @@ function Bar:render_bar(width)
     end
   end
 
-  s[#s + 1] = string.rep(self.empty_char, empty_cells)
+  s[#s + 1] = string.rep(self.empty_char, empty_count)
 
   if padding_width > 0 then
-    s[#s + 1] = string.rep(" ", padding_width)
+    s[#s + 1] = " " -- padding is 0 or 1, so if set, a single space will do
   end
 
   if self.empty_attr then

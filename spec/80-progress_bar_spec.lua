@@ -214,7 +214,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("accounts for character width in render_bar", function()
+    do
       local cases = {
         {
           name = "all single-width",
@@ -245,36 +245,36 @@ describe("progress.Bar", function()
           opts = {
             value = 50,
             filled_char = "=",
-            empty_char = "🚀",
+            empty_char = "🌍",
             tip_chars = nil,
           },
           render_width = 10,
           expected_display_width = 10,
-          expected_output = "=====🚀🚀 ", -- FIXME: there is a single width char (empty), so no padding to be used
+          expected_output = "====🌍🌍🌍",  -- extra = extends the filled section; no space padding (case b)
         },
         {
           name = "tip double-width, others single",
           opts = {
-            value = 50,
+            value = 55,
             filled_char = "=",
             empty_char = "-",
-            tip_chars = { "🚀" },
+            tip_chars = { "⭐" },
           },
           render_width = 10,
           expected_display_width = 10,
-          expected_output = "=====-----",  -- FIXME: tip char is missing in output
+          expected_output = "====⭐----",  -- 55% → fractional fill triggers the 2-wide tip char
         },
         {
           name = "filled and empty double-width, tip single",
           opts = {
             value = 50,
             filled_char = "🚀",
-            empty_char = "🚀",
-            tip_chars = nil,  -- FIXME: this is not a single width char
+            empty_char = "🌍",
+            tip_chars = { "=" },
           },
           render_width = 10,
           expected_display_width = 10,
-          expected_output = "🚀🚀🚀🚀🚀",
+          expected_output = "🚀🚀=🌍🌍 ",  -- both filled+empty are 2w: unavoidable space pad
         },
         {
           name = "filled and tip double-width, empty single",
@@ -282,45 +282,47 @@ describe("progress.Bar", function()
             value = 50,
             filled_char = "🚀",
             empty_char = "-",
-            tip_chars = { "🚀" },  -- FIXME: to better visualize we need different emoji for the 3 chars, in all tests
+            tip_chars = { "⭐" },
           },
           render_width = 10,
           expected_display_width = 10,
-          expected_output = "🚀🚀------",
+          expected_output = "🚀🚀⭐----",
         },
         {
           name = "empty and tip double-width, filled single",
           opts = {
-            value = 50,
+            value = 55,
             filled_char = "=",
-            empty_char = "🚀",
-            tip_chars = { "🚀" },
+            empty_char = "🌍",
+            tip_chars = { "⭐" },
           },
           render_width = 10,
           expected_display_width = 10,
-          expected_output = "=====🚀🚀 ",  -- FIXME: no padding to be used since filled is single-width
+          expected_output = "====⭐🌍🌍",  -- extra = extends filled section between tip and empty (case b)
         },
         {
           name = "all double-width",
           opts = {
             value = 50,
             filled_char = "🚀",
-            empty_char = "🚀",
-            tip_chars = { "🚀" },
+            empty_char = "🌍",
+            tip_chars = { "⭐" },
           },
           render_width = 10,
           expected_display_width = 10,
-          expected_output = "🚀🚀🚀🚀🚀",
+          expected_output = "🚀🚀⭐🌍🌍",
         },
       }
 
       for _, case in ipairs(cases) do
-        local b = Bar(case.opts)
-        local str = tostring(b:render_bar(case.render_width))
-        assert.are.equal(case.expected_output, str, case.name)
-        assert.are.equal(case.expected_display_width, tw.utf8swidth(str), case.name)
+        it("character width: " .. case.name, function()
+          local b = Bar(case.opts)
+          local str = tostring(b:render_bar(case.render_width))
+          assert.are.equal(case.expected_output, str, case.name)
+          assert.are.equal(case.expected_display_width, tw.utf8swidth(str), case.name)
+        end)
       end
-    end)
+    end
 
 
     it("applies filled_attr to filled portion when provided", function()
