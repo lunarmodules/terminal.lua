@@ -318,8 +318,8 @@ describe("progress.Bar", function()
         it("character width: " .. case.name, function()
           local b = Bar(case.opts)
           local str = tostring(b:render_bar(case.render_width))
-          assert.are.equal(case.expected_output, str, case.name)
-          assert.are.equal(case.expected_display_width, tw.utf8swidth(str), case.name)
+          assert.are.equal(case.expected_output, str)
+          assert.are.equal(case.expected_display_width, tw.utf8swidth(str))
         end)
       end
     end

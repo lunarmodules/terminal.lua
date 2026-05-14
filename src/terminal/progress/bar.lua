@@ -123,6 +123,14 @@ end
 
 
 
+--- Get the progress value.
+-- @treturn number The current progress value
+function Bar:get()
+  return self.value
+end
+
+
+
 --- Set the status text.
 -- @tparam string status The new status text (e.g. "waiting", "downloading", "unpacking", "complete")
 -- @return nothing
