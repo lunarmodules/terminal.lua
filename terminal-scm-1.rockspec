@@ -35,6 +35,7 @@ build = {
   modules = {
     ["terminal.init"] = "src/terminal/init.lua",
     ["terminal.progress.init"] = "src/terminal/progress/init.lua",
+    ["terminal.progress.bar"] = "src/terminal/progress/bar.lua",
     ["terminal.sequence"] = "src/terminal/sequence.lua",
     ["terminal.output"] = "src/terminal/output.lua",
     ["terminal.clear"] = "src/terminal/clear.lua",

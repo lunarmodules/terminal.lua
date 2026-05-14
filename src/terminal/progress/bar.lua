@@ -23,6 +23,16 @@ Bar.tip_chars = {
 }
 
 
+-- TODO: add a "rolling" mode as an option where the bar fills up to a point, then jumps back
+-- to empty and starts again, for use as a spinner (e.g. for unknown-duration tasks).
+-- This would mean not clamping to max, and allowing value to wrap around to min after exceeding max.
+-- We'd also not show the % complete in this format.
+
+-- TODO: add a "pad" option to specify a character to use for padding the end of the bar when the
+-- fill doesn't reach the full width, instead of just using spaces. This would be useful for visualizing
+-- the bar's max width and for cases where spaces might be less visible.
+-- This MUST we a single-width char.
+
 
 --- Create a new Bar instance.
 -- Do not call this method directly, call on the class instead.
@@ -107,6 +117,7 @@ end
 -- @tparam number value The new progress value
 -- @return nothing
 function Bar:set(value)
+  self.value = math.max(self.min, math.min(self.max, value))
 end
 
 
@@ -115,6 +126,7 @@ end
 -- @tparam string status The new status text (e.g. "waiting", "downloading", "unpacking", "complete")
 -- @return nothing
 function Bar:set_status(status)
+  self.status = status or ""
 end
 
 
@@ -126,13 +138,40 @@ end
 -- @tparam number width Width available for the bar fill area (in display columns)
 -- @treturn Sequence The rendered bar fill
 function Bar:render_bar(width)
+  -- FIXME: we should always use the following algorithm;
+  -- 1. size of tip comes first
+  -- 2. size of the double-width chars comes next, can be filled or empty
+  -- 3. remaining space is filled with single-width chars, can be filled or empty
+  -- This ensures padding is only used if there is no alternative.
   width = math.max(0, width)
 
+  local filled_char_width = tw.utf8swidth(self.filled_char)
+  local empty_char_width = tw.utf8swidth(self.empty_char)
+
   local fraction = (self.value - self.min) / (self.max - self.min)
-  local fill = fraction * width
-  local full_cells = math.floor(fill)
+  if self.reverse then
+    fraction = 1 - fraction
+  end
+  local fill_width = fraction * width
+  local full_cells = math.floor(fill_width / filled_char_width)
+  local filled_width = full_cells * filled_char_width
+  local fractional_fill = fill_width - filled_width
+
   local tip_chars = self.tip_chars
-  local tip_index = tip_chars and math.floor((fill - full_cells) * #tip_chars) or 0
+  local tip_char = nil
+
+  if tip_chars then
+    local tip_index = math.floor(fractional_fill / filled_char_width * #tip_chars)
+    if tip_index > 0 and tip_index <= #tip_chars then
+      tip_char = tip_chars[tip_index]
+    end
+  end
+
+  local tip_width = tip_char and tw.utf8swidth(tip_char) or 0
+  local used_width = filled_width + tip_width
+  local remaining_width = width - used_width
+  local empty_cells = math.floor(remaining_width / empty_char_width)
+  local padding_width = remaining_width - (empty_cells * empty_char_width)
 
   local s = Sequence()
 
@@ -144,15 +183,13 @@ function Bar:render_bar(width)
 
   s[#s + 1] = string.rep(self.filled_char, full_cells)
 
-  if tip_index > 0 then
-    s[#s + 1] = tip_chars[tip_index]
+  if tip_char then
+    s[#s + 1] = tip_char
   end
 
   if self.filled_attr then
     s[#s + 1] = text.pop_seq
   end
-
-  local empty_cells = width - full_cells - (tip_index > 0 and 1 or 0)
 
   if self.empty_attr then
     s[#s + 1] = function()
@@ -161,6 +198,10 @@ function Bar:render_bar(width)
   end
 
   s[#s + 1] = string.rep(self.empty_char, empty_cells)
+
+  if padding_width > 0 then
+    s[#s + 1] = string.rep(" ", padding_width)
+  end
 
   if self.empty_attr then
     s[#s + 1] = text.pop_seq
