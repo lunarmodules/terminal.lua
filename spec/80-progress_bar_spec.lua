@@ -353,37 +353,189 @@ describe("progress.Bar", function()
       assert.is_not_nil(seq)
     end)
 
+
+    do
+      -- expected[w] is the exact string render_bar should produce at render-width w (0-7).
+      -- display width of each expected string must equal w.
+      local narrow_cases = {
+        {
+          name = "single-width chars, value=50",
+          opts = {
+            value = 50,
+            filled_char = "=",
+            empty_char = "-",
+            tip_chars = { "*" },
+          },
+          expected = {
+            [0] = "",
+            [1] = "*",
+            [2] = "*-",
+            [3] = "=*-",
+            [4] = "=*--",
+            [5] = "==*--",
+            [6] = "==*---",
+            [7] = "===*---",
+          },
+        },
+        {
+          name = "2w filled char, value=100",
+          opts = {
+            value = 100,
+            filled_char = "🚀",
+            empty_char = "-",
+            tip_chars = { "*" },
+          },
+          expected = {
+            [0] = "",
+            [1] = "*",
+            [2] = "*-",
+            [3] = "🚀*",
+            [4] = "🚀*-",
+            [5] = "🚀🚀*",
+            [6] = "🚀🚀*-",
+            [7] = "🚀🚀🚀*",
+          },
+        },
+        {
+          name = "2w empty char, value=0",
+          opts = {
+            value = 0,
+            filled_char = "=",
+            empty_char = "🌍",
+            tip_chars = { "*" },
+          },
+          expected = {
+            [0] = "",
+            [1] = "*",
+            [2] = "* ",
+            [3] = "*🌍",
+            [4] = "*🌍 ",
+            [5] = "*🌍🌍",
+            [6] = "*🌍🌍 ",
+            [7] = "*🌍🌍🌍",
+          },
+        },
+        {
+          name = "2w tip char, value=55",
+          opts = {
+            value = 55,
+            filled_char = "=",
+            empty_char = "-",
+            tip_chars = { "⭐" },
+          },
+          expected = {
+            [0] = "",
+            [1] = " ",       -- tip (2w) does not fit; fallback: no-tip behaviour
+            [2] = "⭐",
+            [3] = "⭐-",
+            [4] = "=⭐-",
+            [5] = "=⭐--",
+            [6] = "==⭐--",
+            [7] = "==⭐---",
+          },
+        },
+        {
+          name = "2w chars, value=0",
+          opts = {
+            value = 0,
+            filled_char = "🚀",
+            empty_char = "🌍",
+            tip_chars = { "⭐" },
+          },
+          expected = {
+            [0] = "",
+            [1] = " ",
+            [2] = "⭐",
+            [3] = "⭐ ",
+            [4] = "⭐🌍",
+            [5] = "⭐🌍 ",
+            [6] = "⭐🌍🌍",
+            [7] = "⭐🌍🌍 ",
+          },
+        },
+        {
+          name = "2w chars, value=55",
+          opts = {
+            value = 55,
+            filled_char = "🚀",
+            empty_char = "🌍",
+            tip_chars = { "⭐" },
+          },
+          expected = {
+            [0] = "",
+            [1] = " ",
+            [2] = "⭐",
+            [3] = "⭐ ",
+            [4] = "⭐🌍",
+            [5] = "⭐🌍 ",
+            [6] = "🚀⭐🌍",
+            [7] = "🚀⭐🌍 ",
+          },
+        },
+        {
+          name = "2w chars, value=100",
+          opts = {
+            value = 100,
+            filled_char = "🚀",
+            empty_char = "🌍",
+            tip_chars = { "⭐" },
+          },
+          expected = {
+            [0] = "",
+            [1] = " ",
+            [2] = "⭐",
+            [3] = "⭐ ",
+            [4] = "🚀⭐",
+            [5] = "🚀⭐ ",
+            [6] = "🚀🚀⭐",
+            [7] = "🚀🚀⭐ ",
+          },
+        },
+      }
+
+      for _, case in ipairs(narrow_cases) do
+        it("narrow width: " .. case.name, function()
+          local b = Bar(case.opts)
+          for render_width = 0, 7 do
+            local str = tostring(b:render_bar(render_width))
+            assert.are.equal(case.expected[render_width], str, "width=" .. render_width)
+            assert.are.equal(render_width, tw.utf8swidth(str), "width=" .. render_width)
+          end
+        end)
+      end
+    end
+
   end)
 
 
 
-  pending("set()", function()
+  describe("set()", function()
 
     it("sets value within range", function()
       local b = Bar({ min = 0, max = 100 })
       b:set(50)
-      assert.are.equal(50, b.value)
+      assert.are.equal(50, b:get())
     end)
 
 
     it("clamps value above max", function()
       local b = Bar({ min = 0, max = 100 })
       b:set(150)
-      assert.are.equal(100, b.value)
+      assert.are.equal(100, b:get())
     end)
 
 
     it("clamps value below min", function()
       local b = Bar({ min = 0, max = 100 })
       b:set(-10)
-      assert.are.equal(0, b.value)
+      assert.are.equal(0, b:get())
     end)
 
   end)
 
 
 
-  pending("set_status()", function()
+  describe("set_status()", function()
 
     it("sets status text", function()
       local b = Bar()

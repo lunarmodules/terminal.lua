@@ -152,6 +152,10 @@ function Bar:render_bar(width)
   local filled_char_width = tw.utf8cwidth(self.filled_char)
   local empty_char_width = tw.utf8cwidth(self.empty_char)
   local tip_char_width = self.tip_chars and tw.utf8swidth(self.tip_chars[1]) or 0 -- assume all tips are equal width
+  if tip_char_width > width then
+    -- if the tip char doesn't fit, we can't show anything
+    return (" "):rep(width)  -- just show empty space
+  end
 
   local fraction = (self.value - self.min) / (self.max - self.min)
   if self.reverse then
