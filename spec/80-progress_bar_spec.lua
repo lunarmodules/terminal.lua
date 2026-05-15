@@ -561,9 +561,9 @@ describe("progress.Bar", function()
 
 
 
-  pending("render()", function()
+  describe("render()", function()
 
-    it("returns a Sequence and dimensions", function()
+    pending("returns a Sequence and dimensions", function()
       local b = Bar({ value = 50 })
       local seq, w, h = b:render(20)
       assert.is_table(seq)
@@ -572,21 +572,21 @@ describe("progress.Bar", function()
     end)
 
 
-    it("echoes back the requested width", function()
+    pending("echoes back the requested width", function()
       local b = Bar()
       local _, w = b:render(80)
       assert.are.equal(80, w)
     end)
 
 
-    it("always returns height of 1", function()
+    pending("always returns height of 1", function()
       local b = Bar()
       local _, _, h = b:render(10)
       assert.are.equal(1, h)
     end)
 
 
-    it("includes label in output", function()
+    pending("includes label in output", function()
       local b = Bar({
         label = "Progress",
         value = 50,
@@ -597,7 +597,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("includes left and right caps in output", function()
+    pending("includes left and right caps in output", function()
       local b = Bar({
         left_cap = "[",
         right_cap = "]",
@@ -610,7 +610,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("formats progress value with format string", function()
+    pending("formats progress value with format string", function()
       local b = Bar({
         min = 0,
         max = 100,
@@ -623,7 +623,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("includes status text in output", function()
+    pending("includes status text in output", function()
       local b = Bar({
         status = "downloading",
         value = 50,
@@ -634,7 +634,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("measures fixed elements and allocates remainder to bar", function()
+    pending("measures fixed elements and allocates remainder to bar", function()
       local b = Bar({
         label = "X",
         left_cap = "[",
@@ -648,7 +648,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("applies overall attr when provided", function()
+    pending("applies overall attr when provided", function()
       local b = Bar({
         attr = { fg = "red" },
         value = 50,
@@ -660,7 +660,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("applies cap_attr when provided", function()
+    pending("applies cap_attr when provided", function()
       local b = Bar({
         left_cap = "[",
         cap_attr = { fg = "blue" },
@@ -673,7 +673,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("applies label_attr when provided", function()
+    pending("applies label_attr when provided", function()
       local b = Bar({
         label = "L",
         label_attr = { fg = "green" },
@@ -686,7 +686,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("applies status_attr when provided", function()
+    pending("applies status_attr when provided", function()
       local b = Bar({
         status = "S",
         status_attr = { fg = "cyan" },
@@ -699,7 +699,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("handles reverse mode", function()
+    pending("handles reverse mode", function()
       local b = Bar({
         min = 0,
         max = 100,
@@ -713,7 +713,7 @@ describe("progress.Bar", function()
     end)
 
 
-    it("handles format as function", function()
+    pending("handles format as function", function()
       local b = Bar({
         min = 0,
         max = 100,
