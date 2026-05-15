@@ -176,9 +176,13 @@ function Bar:render_bar(width)
 
   local tip_char = ""
   if self.tip_chars then
-    local tip_index = (columns_filled - math.floor(columns_filled)) * #self.tip_chars
-    tip_index = math.floor(tip_index) + 1
-    tip_char = self.tip_chars[tip_index]
+    if self.value >= self.max then
+      tip_char = self.tip_chars[#self.tip_chars]
+    else
+      local tip_index = (columns_filled - math.floor(columns_filled)) * #self.tip_chars
+      tip_index = math.floor(tip_index) + 1
+      tip_char = self.tip_chars[tip_index]
+    end
   end
 
   -- start with the filled columns, left-over is empty
