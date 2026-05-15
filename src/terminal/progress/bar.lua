@@ -249,9 +249,67 @@ end
 -- measured first and the fill area taking the remainder.
 -- @tparam number width Total output width in display columns
 -- @treturn Sequence The rendered bar
--- @treturn number The width passed in (echoed back)
+-- @treturn number The width passed in (sub-classes can override)
 -- @treturn number Always 1 (bar height is fixed at one line, sub-classes can override)
 function Bar:render(width)
+  width = math.max(0, width)
+
+  local format_str = self.format and string.format(self.format, self.value) or ""
+  local fixed_w = tw.utf8swidth(self.label)
+    + tw.utf8swidth(self.left_cap)
+    + tw.utf8swidth(self.right_cap)
+    + tw.utf8swidth(format_str)
+    + tw.utf8swidth(self.status)
+  local fill_w = math.max(0, width - fixed_w)
+
+  local bar_seq = self:render_bar(fill_w)
+
+  local s = Sequence()
+
+  if self.attr then
+    s[#s+1] = function() return text.push_seq(self.attr) end
+  end
+
+  if self.label_attr then
+    s[#s+1] = function() return text.push_seq(self.label_attr) end
+  end
+  s[#s+1] = self.label
+  if self.label_attr then
+    s[#s+1] = text.pop_seq
+  end
+
+  if self.cap_attr and self.left_cap ~= "" then
+    s[#s+1] = function() return text.push_seq(self.cap_attr) end
+  end
+  s[#s+1] = self.left_cap
+  if self.cap_attr and self.left_cap ~= "" then
+    s[#s+1] = text.pop_seq
+  end
+
+  s[#s+1] = bar_seq
+
+  if self.cap_attr and self.right_cap ~= "" then
+    s[#s+1] = function() return text.push_seq(self.cap_attr) end
+  end
+  s[#s+1] = self.right_cap
+  if self.cap_attr and self.right_cap ~= "" then
+    s[#s+1] = text.pop_seq
+  end
+
+  if self.status_attr then
+    s[#s+1] = function() return text.push_seq(self.status_attr) end
+  end
+  s[#s+1] = format_str
+  s[#s+1] = self.status
+  if self.status_attr then
+    s[#s+1] = text.pop_seq
+  end
+
+  if self.attr then
+    s[#s+1] = text.pop_seq
+  end
+
+  return s, width, 1
 end
 
 

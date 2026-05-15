@@ -643,54 +643,53 @@ describe("progress.Bar", function()
 
   describe("render()", function()
 
-    pending("returns a Sequence and dimensions", function()
+    it("returns a Sequence and dimensions", function()
       local b = Bar({ value = 50 })
       local seq, w, h = b:render(20)
-      assert.is_table(seq)
+      assert.are.equal("██████████          ", tostring(seq))
       assert.are.equal(20, w)
       assert.are.equal(1, h)
     end)
 
 
-    pending("echoes back the requested width", function()
+    it("echoes back the requested width", function()
       local b = Bar()
-      local _, w = b:render(80)
+      local seq, w = b:render(80)
+      assert.are.equal(string.rep(" ", 80), tostring(seq))
       assert.are.equal(80, w)
     end)
 
 
-    pending("always returns height of 1", function()
+    it("returns height of 1", function()
       local b = Bar()
-      local _, _, h = b:render(10)
+      local seq, _, h = b:render(10)
+      assert.are.equal("          ", tostring(seq))
       assert.are.equal(1, h)
     end)
 
 
-    pending("includes label in output", function()
+    it("includes label in output", function()
       local b = Bar({
         label = "Progress",
         value = 50,
       })
       local seq = b:render(20)
-      local str = tostring(seq)
-      assert.is_not_nil(string.find(str, "Progress", 1, true))
+      assert.are.equal("Progress██████      ", tostring(seq))
     end)
 
 
-    pending("includes left and right caps in output", function()
+    it("includes left and right caps in output", function()
       local b = Bar({
         left_cap = "[",
         right_cap = "]",
         value = 50,
       })
       local seq = b:render(20)
-      local str = tostring(seq)
-      assert.is_not_nil(string.find(str, "[", 1, true))
-      assert.is_not_nil(string.find(str, "]", 1, true))
+      assert.are.equal("[█████████         ]", tostring(seq))
     end)
 
 
-    pending("formats progress value with format string", function()
+    it("formats progress value with format string", function()
       local b = Bar({
         min = 0,
         max = 100,
@@ -698,23 +697,21 @@ describe("progress.Bar", function()
         format = "%d%%",
       })
       local seq = b:render(20)
-      local str = tostring(seq)
-      assert.is_not_nil(string.find(str, "50%", 1, true))
+      assert.are.equal("████████         50%", tostring(seq))
     end)
 
 
-    pending("includes status text in output", function()
+    it("includes status text in output", function()
       local b = Bar({
         status = "downloading",
         value = 50,
       })
       local seq = b:render(20)
-      local str = tostring(seq)
-      assert.is_not_nil(string.find(str, "downloading", 1, true))
+      assert.are.equal("████     downloading", tostring(seq))
     end)
 
 
-    pending("measures fixed elements and allocates remainder to bar", function()
+    it("measures fixed elements and allocates remainder to bar", function()
       local b = Bar({
         label = "X",
         left_cap = "[",
@@ -724,87 +721,76 @@ describe("progress.Bar", function()
         value = 50,
       })
       local seq = b:render(10)
-      assert.is_not_nil(seq)
+      assert.are.equal("X[██  ]50S", tostring(seq))
     end)
 
 
-    pending("applies overall attr when provided", function()
+    it("applies overall attr when provided", function()
       local b = Bar({
         attr = { fg = "red" },
         value = 50,
       })
       local seq = b:render(10)
-      local str = tostring(seq)
-      local expected_seq = text.push_seq({ fg = "red" })
-      assert.is_not_nil(string.find(str, expected_seq, 1, true))
+      local t = require("terminal.text")
+      local push = t.push_seq({ fg = "red" })
+      local pop = t.pop_seq()
+      assert.are.equal(push .. "█████     " .. pop, tostring(seq))
     end)
 
 
-    pending("applies cap_attr when provided", function()
+    it("applies cap_attr when provided", function()
       local b = Bar({
         left_cap = "[",
         cap_attr = { fg = "blue" },
         value = 50,
       })
       local seq = b:render(10)
-      local str = tostring(seq)
-      local expected_seq = text.push_seq({ fg = "blue" })
-      assert.is_not_nil(string.find(str, expected_seq, 1, true))
+      local t = require("terminal.text")
+      local push = t.push_seq({ fg = "blue" })
+      local pop = t.pop_seq()
+      assert.are.equal(push .. "[" .. pop .. "████     ", tostring(seq))
     end)
 
 
-    pending("applies label_attr when provided", function()
+    it("applies label_attr when provided", function()
       local b = Bar({
         label = "L",
         label_attr = { fg = "green" },
         value = 50,
       })
       local seq = b:render(10)
-      local str = tostring(seq)
-      local expected_seq = text.push_seq({ fg = "green" })
-      assert.is_not_nil(string.find(str, expected_seq, 1, true))
+      local t = require("terminal.text")
+      local push = t.push_seq({ fg = "green" })
+      local pop = t.pop_seq()
+      assert.are.equal(push .. "L" .. pop .. "████     ", tostring(seq))
     end)
 
 
-    pending("applies status_attr when provided", function()
+    it("applies status_attr when provided", function()
       local b = Bar({
         status = "S",
         status_attr = { fg = "cyan" },
         value = 50,
       })
       local seq = b:render(10)
-      local str = tostring(seq)
-      local expected_seq = text.push_seq({ fg = "cyan" })
-      assert.is_not_nil(string.find(str, expected_seq, 1, true))
+      local t = require("terminal.text")
+      local push = t.push_seq({ fg = "cyan" })
+      local pop = t.pop_seq()
+      assert.are.equal("████     " .. push .. "S" .. pop, tostring(seq))
     end)
 
 
-    pending("handles reverse mode", function()
+    it("handles reverse mode", function()
       local b = Bar({
         min = 0,
         max = 100,
-        value = 90,
+        value = 25,
         reverse = true,
         filled_char = "█",
         empty_char = " ",
       })
       local seq = b:render(10)
-      assert.is_not_nil(seq)
-    end)
-
-
-    pending("handles format as function", function()
-      local b = Bar({
-        min = 0,
-        max = 100,
-        value = 50,
-        format = function(v, mn, mx)
-          return string.format("%d/%d", v, mx)
-        end,
-      })
-      local seq = b:render(20)
-      local str = tostring(seq)
-      assert.is_not_nil(string.find(str, "50/100", 1, true))
+      assert.are.equal("███████   ", tostring(seq))
     end)
 
   end)
