@@ -646,7 +646,7 @@ describe("progress.Bar", function()
     it("returns a Sequence and dimensions", function()
       local b = Bar({ value = 50 })
       local seq, w, h = b:render(20)
-      assert.are.equal("██████████          ", tostring(seq))
+      assert.are.equal(" █████████          ", tostring(seq))
       assert.are.equal(20, w)
       assert.are.equal(1, h)
     end)
@@ -674,7 +674,7 @@ describe("progress.Bar", function()
         value = 50,
       })
       local seq = b:render(20)
-      assert.are.equal("Progress██████      ", tostring(seq))
+      assert.are.equal("Progress █████      ", tostring(seq))
     end)
 
 
@@ -697,7 +697,7 @@ describe("progress.Bar", function()
         format = "%d%%",
       })
       local seq = b:render(20)
-      assert.are.equal("████████         50%", tostring(seq))
+      assert.are.equal(" ███████         50%", tostring(seq))
     end)
 
 
@@ -707,7 +707,7 @@ describe("progress.Bar", function()
         value = 50,
       })
       local seq = b:render(20)
-      assert.are.equal("████     downloading", tostring(seq))
+      assert.are.equal(" ███     downloading", tostring(seq))
     end)
 
 
@@ -734,7 +734,7 @@ describe("progress.Bar", function()
       local t = require("terminal.text")
       local push = t.push_seq({ fg = "red" })
       local pop = t.pop_seq()
-      assert.are.equal(push .. "█████     " .. pop, tostring(seq))
+      assert.are.equal(push .. " ████     " .. pop, tostring(seq))
     end)
 
 
@@ -748,7 +748,7 @@ describe("progress.Bar", function()
       local t = require("terminal.text")
       local push = t.push_seq({ fg = "blue" })
       local pop = t.pop_seq()
-      assert.are.equal(push .. "[" .. pop .. "████     ", tostring(seq))
+      assert.are.equal(push .. "[" .. pop .. "████    " .. push .. " " .. pop, tostring(seq))
     end)
 
 
@@ -762,7 +762,7 @@ describe("progress.Bar", function()
       local t = require("terminal.text")
       local push = t.push_seq({ fg = "green" })
       local pop = t.pop_seq()
-      assert.are.equal(push .. "L" .. pop .. "████     ", tostring(seq))
+      assert.are.equal(push .. "L" .. pop .. " ███     ", tostring(seq))
     end)
 
 
@@ -776,7 +776,7 @@ describe("progress.Bar", function()
       local t = require("terminal.text")
       local push = t.push_seq({ fg = "cyan" })
       local pop = t.pop_seq()
-      assert.are.equal("████     " .. push .. "S" .. pop, tostring(seq))
+      assert.are.equal(" ███     " .. push .. "S" .. pop, tostring(seq))
     end)
 
 
@@ -790,7 +790,7 @@ describe("progress.Bar", function()
         empty_char = " ",
       })
       local seq = b:render(10)
-      assert.are.equal("███████   ", tostring(seq))
+      assert.are.equal(" ██████   ", tostring(seq))
     end)
 
   end)

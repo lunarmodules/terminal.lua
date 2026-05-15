@@ -37,8 +37,8 @@ Bar.block_tip_chars = {
 -- The tip is always shown! so the range should start with `empty` and end with `filled`.
 -- @tparam[opt=" "] string opts.pad_char Single-width character used to pad the bar to the requested
 -- width when the fill does not cover the full area; pass `""` to omit padding entirely
--- @tparam[opt=""] string opts.left_cap Left bracket/delimiter
--- @tparam[opt=""] string opts.right_cap Right bracket/delimiter
+-- @tparam[opt=" "] string opts.left_cap Left bracket/delimiter
+-- @tparam[opt=" "] string opts.right_cap Right bracket/delimiter
 -- @tparam[opt=0] number opts.min Minimum value (lower bound)
 -- @tparam[opt=100] number opts.max Maximum value (upper bound)
 -- @tparam[opt] number opts.value Initial value (defaults to opts.min)
@@ -98,8 +98,8 @@ function Bar:init(opts)
   self.filled_char = opts.filled_char or "█"
   self.empty_char = opts.empty_char or " "
   self.tip_chars = opts.tip_chars
-  self.left_cap = opts.left_cap or ""
-  self.right_cap = opts.right_cap or ""
+  self.left_cap = opts.left_cap or " "
+  self.right_cap = opts.right_cap or " "
   self.min = opts.min or 0
   self.max = opts.max or 100
   self.value = opts.value or self.min
