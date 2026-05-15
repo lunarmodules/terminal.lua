@@ -31,6 +31,7 @@ describe("progress.Bar", function()
         filled_char = "=",
         empty_char = "-",
         tip_chars = {"."},
+        pad_char = ".",
         left_cap = "[",
         right_cap = "]",
         min = 10,
@@ -123,16 +124,49 @@ describe("progress.Bar", function()
       )
     end)
 
+
+    it("rejects pad_char if it's not a string", function()
+      assert.has_error(
+        function()
+          Bar({ pad_char = 42 })
+        end,
+        "pad_char must be a single-width character or an empty string if provided"
+      )
+    end)
+
+
+    it("rejects pad_char if it's a double-width character", function()
+      assert.has_error(
+        function()
+          Bar({ pad_char = "🚀" })
+        end,
+        "pad_char must be a single-width character or an empty string if provided"
+      )
+    end)
+
+
+    it("accepts pad_char as an empty string", function()
+      local b = Bar({ pad_char = "" })
+      assert.is_not_nil(b)
+    end)
+
+
+    it("accepts pad_char as a single-width character", function()
+      local b = Bar({ pad_char = "." })
+      assert.is_not_nil(b)
+    end)
+
   end)
 
 
 
   describe("render_bar()", function()
 
-    it("returns a Sequence", function()
+    it("returns a Sequence and actual width", function()
       local b = Bar({ value = 50 })
-      local seq = b:render_bar(20)
+      local seq, actual_width = b:render_bar(20)
       assert.is_table(seq)
+      assert.are.equal(20, actual_width)
     end)
 
 
@@ -143,7 +177,9 @@ describe("progress.Bar", function()
         value = 0,
         empty_char = "-",
       })
-      assert.are.equal("----------", tostring(b:render_bar(10)))
+      local seq, actual_width = b:render_bar(10)
+      assert.are.equal("----------", tostring(seq))
+      assert.are.equal(10, actual_width)
     end)
 
 
@@ -154,7 +190,9 @@ describe("progress.Bar", function()
         value = 100,
         filled_char = "=",
       })
-      assert.are.equal("==========", tostring(b:render_bar(10)))
+      local seq, actual_width = b:render_bar(10)
+      assert.are.equal("==========", tostring(seq))
+      assert.are.equal(10, actual_width)
     end)
 
 
@@ -166,7 +204,9 @@ describe("progress.Bar", function()
         filled_char = "=",
         empty_char = "-",
       })
-      assert.are.equal("=====-----", tostring(b:render_bar(10)))
+      local seq, actual_width = b:render_bar(10)
+      assert.are.equal("=====-----", tostring(seq))
+      assert.are.equal(10, actual_width)
     end)
 
 
@@ -175,7 +215,9 @@ describe("progress.Bar", function()
         value = 75,
         filled_char = "#",
       })
-      assert.are.equal("###############     ", tostring(b:render_bar(20)))
+      local seq, actual_width = b:render_bar(20)
+      assert.are.equal("###############     ", tostring(seq))
+      assert.are.equal(20, actual_width)
     end)
 
 
@@ -184,7 +226,9 @@ describe("progress.Bar", function()
         value = 25,
         empty_char = ".",
       })
-      assert.are.equal("█████...............", tostring(b:render_bar(20)))
+      local seq, actual_width = b:render_bar(20)
+      assert.are.equal("█████...............", tostring(seq))
+      assert.are.equal(20, actual_width)
     end)
 
 
@@ -210,7 +254,9 @@ describe("progress.Bar", function()
         empty_char = "-",
         tip_chars = nil,
       })
-      assert.are.equal("====------", tostring(b:render_bar(10)))
+      local seq, actual_width = b:render_bar(10)
+      assert.are.equal("====------", tostring(seq))
+      assert.are.equal(10, actual_width)
     end)
 
 
@@ -317,9 +363,11 @@ describe("progress.Bar", function()
       for _, case in ipairs(cases) do
         it("character width: " .. case.name, function()
           local b = Bar(case.opts)
-          local str = tostring(b:render_bar(case.render_width))
+          local seq, actual_width = b:render_bar(case.render_width)
+          local str = tostring(seq)
           assert.are.equal(case.expected_output, str)
           assert.are.equal(case.expected_display_width, tw.utf8swidth(str))
+          assert.are.equal(case.render_width, actual_width)
         end)
       end
     end
@@ -330,9 +378,11 @@ describe("progress.Bar", function()
         value = 50,
         filled_attr = { fg = "red" },
       })
-      local str = tostring(b:render_bar(10))
+      local seq, actual_width = b:render_bar(10)
+      local str = tostring(seq)
       local expected_seq = text.push_seq({ fg = "red" })
       assert.is_not_nil(string.find(str, expected_seq, 1, true))
+      assert.are.equal(10, actual_width)
     end)
 
 
@@ -341,16 +391,45 @@ describe("progress.Bar", function()
         value = 50,
         empty_attr = { fg = "blue" },
       })
-      local str = tostring(b:render_bar(10))
+      local seq, actual_width = b:render_bar(10)
+      local str = tostring(seq)
       local expected_seq = text.push_seq({ fg = "blue" })
       assert.is_not_nil(string.find(str, expected_seq, 1, true))
+      assert.are.equal(10, actual_width)
     end)
 
 
     it("handles zero width gracefully", function()
       local b = Bar({ value = 50 })
-      local seq = b:render_bar(0)
+      local seq, actual_width = b:render_bar(0)
       assert.is_not_nil(seq)
+      assert.are.equal(0, actual_width)
+    end)
+
+
+    it("uses custom pad_char when fill does not cover full width", function()
+      local b = Bar({
+        value = 0,
+        filled_char = "=",
+        empty_char = "🌍",
+        pad_char = ".",
+      })
+      local seq, actual_width = b:render_bar(3)
+      assert.are.equal("🌍.", tostring(seq))
+      assert.are.equal(3, actual_width)
+    end)
+
+
+    it("omits padding when pad_char is empty string, actual_width is shorter", function()
+      local b = Bar({
+        value = 0,
+        filled_char = "=",
+        empty_char = "🌍",
+        pad_char = "",
+      })
+      local seq, actual_width = b:render_bar(3)
+      assert.are.equal("🌍", tostring(seq))
+      assert.are.equal(2, actual_width)
     end)
 
 
@@ -497,9 +576,10 @@ describe("progress.Bar", function()
         it("narrow width: " .. case.name, function()
           local b = Bar(case.opts)
           for render_width = 0, 7 do
-            local str = tostring(b:render_bar(render_width))
+            local seq, actual_width = b:render_bar(render_width)
+            local str = tostring(seq)
             assert.are.equal(case.expected[render_width], str, "width=" .. render_width)
-            assert.are.equal(render_width, tw.utf8swidth(str), "width=" .. render_width)
+            assert.are.equal(render_width, actual_width, "width=" .. render_width)
           end
         end)
       end

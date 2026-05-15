@@ -28,12 +28,6 @@ Bar.block_tip_chars = {
 -- This would mean not clamping to max, and allowing value to wrap around to min after exceeding max.
 -- We'd also not show the % complete in this format.
 
--- TODO: add a "pad" option to specify a character to use for padding the end of the bar when the
--- fill doesn't reach the full width, instead of just using spaces. This would be useful for visualizing
--- the bar's max width and for cases where spaces might be less visible.
--- This MUST we a single-width char.
-
-
 --- Create a new Bar instance.
 -- Do not call this method directly, call on the class instead.
 -- @tparam table opts Configuration options
@@ -41,6 +35,8 @@ Bar.block_tip_chars = {
 -- @tparam[opt=" "] string opts.empty_char Character for empty cells
 -- @tparam[opt] table opts.tip_chars Array of tip characters for sub-char precision (1-indexed, ascending fill)
 -- The tip is always shown! so the range should start with `empty` and end with `filled`.
+-- @tparam[opt=" "] string opts.pad_char Single-width character used to pad the bar to the requested
+-- width when the fill does not cover the full area; pass `""` to omit padding entirely
 -- @tparam[opt=""] string opts.left_cap Left bracket/delimiter
 -- @tparam[opt=""] string opts.right_cap Right bracket/delimiter
 -- @tparam[opt=0] number opts.min Minimum value (lower bound)
@@ -92,6 +88,13 @@ function Bar:init(opts)
     error("value must be a number if provided", 2)
   end
 
+  if opts.pad_char ~= nil then
+    if type(opts.pad_char) ~= "string" or
+       (opts.pad_char ~= "" and tw.utf8swidth(opts.pad_char) ~= 1) then
+      error("pad_char must be a single-width character or an empty string if provided", 2)
+    end
+  end
+
   self.filled_char = opts.filled_char or "█"
   self.empty_char = opts.empty_char or " "
   self.tip_chars = opts.tip_chars
@@ -110,6 +113,7 @@ function Bar:init(opts)
   self.empty_attr = opts.empty_attr
   self.label_attr = opts.label_attr
   self.status_attr = opts.status_attr
+  self.pad_char = opts.pad_char or " "
 end
 
 
@@ -146,6 +150,7 @@ end
 -- Subclasses can override this to customize bar rendering.
 -- @tparam number width Width available for the bar fill area (in display columns)
 -- @treturn Sequence The rendered bar fill
+-- @treturn number Actual bar width in display columns (equals `width` unless `pad_char=""` and padding was needed)
 function Bar:render_bar(width)
   width = math.max(0, width)
 
@@ -154,7 +159,11 @@ function Bar:render_bar(width)
   local tip_char_width = self.tip_chars and tw.utf8swidth(self.tip_chars[1]) or 0 -- assume all tips are equal width
   if tip_char_width > width then
     -- if the tip char doesn't fit, we can't show anything
-    return (" "):rep(width)  -- just show empty space
+    local s = Sequence()
+    if width > 0 and self.pad_char ~= "" then
+      s[#s + 1] = string.rep(self.pad_char, width)
+    end
+    return s, (self.pad_char ~= "" and width or 0)
   end
 
   local fraction = (self.value - self.min) / (self.max - self.min)
@@ -215,15 +224,22 @@ function Bar:render_bar(width)
 
   s[#s + 1] = string.rep(self.empty_char, empty_count)
 
+  local actual_width = width
+
   if padding_width > 0 then
-    s[#s + 1] = " " -- padding is 0 or 1, so if set, a single space will do
+    if self.pad_char ~= "" then
+      s[#s + 1] = self.pad_char
+    else
+      -- if pad_char is empty, we just eat the extra space and report a smaller actual width
+      actual_width = width - padding_width
+    end
   end
 
   if self.empty_attr then
     s[#s + 1] = text.pop_seq
   end
 
-  return s
+  return s, actual_width
 end
 
 
