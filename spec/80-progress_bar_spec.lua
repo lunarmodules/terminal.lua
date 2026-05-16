@@ -156,6 +156,40 @@ describe("progress.Bar", function()
       assert.is_not_nil(b)
     end)
 
+
+    it("defaults mode to clamp", function()
+      local b = Bar({})
+      assert.are.equal(Bar.modes.clamp, b.mode)
+    end)
+
+
+    it("accepts all valid mode constants", function()
+      for _, mode in pairs({ Bar.modes.clamp, Bar.modes.loop, Bar.modes.bounce }) do
+        local b = Bar({ mode = mode })
+        assert.are.equal(mode, b.mode)
+      end
+    end)
+
+
+    it("rejects mode if it is not a string", function()
+      assert.has_error(
+        function()
+          Bar({ mode = 42 })
+        end,
+        'Invalid bar mode: 42. Expected one of: "bounce", "clamp", "loop"'
+      )
+    end)
+
+
+    it("rejects an unknown mode string", function()
+      assert.has_error(
+        function()
+          Bar({ mode = "zigzag" })
+        end,
+        'Invalid bar mode: "zigzag". Expected one of: "bounce", "clamp", "loop"'
+      )
+    end)
+
   end)
 
 
@@ -598,17 +632,12 @@ describe("progress.Bar", function()
     end)
 
 
-    it("clamps value above max", function()
-      local b = Bar({ min = 0, max = 100 })
-      b:set(150)
-      assert.are.equal(100, b:get())
-    end)
-
-
-    it("clamps value below min", function()
-      local b = Bar({ min = 0, max = 100 })
-      b:set(-10)
-      assert.are.equal(0, b:get())
+    it("checks value to be a number", function()
+      local b = Bar()
+      assert.has_error(
+        function()
+          b:set("notanumber")
+        end)
     end)
 
   end)

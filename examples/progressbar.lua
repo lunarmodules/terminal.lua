@@ -77,10 +77,10 @@ local function render_bars(bars, row_start)
   local _, cols = t.size()
 
   -- bar only
-  for i, bar in ipairs(bars) do
-    t.cursor.position.set(row_start + i - 1, 1)
-    t.output.write((bar:render_bar(cols)))
-  end
+  -- for i, bar in ipairs(bars) do
+  --   t.cursor.position.set(row_start + i - 1, 1)
+  --   t.output.write((bar:render_bar(cols)))
+  -- end
 
   -- bar with labels etc
   for i, bar in ipairs(bars) do

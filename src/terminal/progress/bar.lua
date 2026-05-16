@@ -23,6 +23,18 @@ Bar.block_tip_chars = {
 }
 
 
+--- Fill-mode constants for the `mode` constructor option.
+-- @table Bar.modes
+-- @field clamp Value is clamped to [min, max] (default)
+-- @field loop Value wraps back to min after exceeding max
+-- @field bounce Value oscillates: fills left-to-right then right-to-left
+Bar.modes = utils.make_lookup("bar mode", {
+  clamp  = "clamp",
+  loop   = "loop",
+  bounce = "bounce",
+})
+
+
 -- TODO: add a "rolling" mode as an option where the bar fills up to a point, then jumps back
 -- to empty and starts again, for use as a spinner (e.g. for unknown-duration tasks).
 -- This would mean not clamping to max, and allowing value to wrap around to min after exceeding max.
@@ -42,6 +54,7 @@ Bar.block_tip_chars = {
 -- @tparam[opt=0] number opts.min Minimum value (lower bound)
 -- @tparam[opt=100] number opts.max Maximum value (upper bound)
 -- @tparam[opt] number opts.value Initial value (defaults to opts.min)
+-- @tparam[opt="clamp"] string opts.mode Fill mode: `"clamp"` stops at max, `"loop"` wraps back to min, `"bounce"` oscillates. See `Bar.modes`.
 -- @tparam[opt=false] boolean opts.reverse When true, inverts progress (shows remaining instead)
 -- @tparam[opt=""] string opts.label Text printed before left cap
 -- @tparam[opt] string opts.format Format string for progress value (e.g. "%d%%" for "45%"), or nil to omit
@@ -88,6 +101,8 @@ function Bar:init(opts)
     error("value must be a number if provided", 2)
   end
 
+  local _ = Bar.modes[opts.mode or Bar.modes.clamp]  -- errors with friendly message on unknown value
+
   if opts.pad_char ~= nil then
     if type(opts.pad_char) ~= "string" or
        (opts.pad_char ~= "" and tw.utf8swidth(opts.pad_char) ~= 1) then
@@ -103,6 +118,7 @@ function Bar:init(opts)
   self.min = opts.min or 0
   self.max = opts.max or 100
   self.value = opts.value or self.min
+  self.mode = opts.mode or Bar.modes.clamp
   self.reverse = not not opts.reverse
   self.label = opts.label or ""
   self.format = opts.format
@@ -118,11 +134,14 @@ end
 
 
 
---- Set the progress value, clamping to [min, max].
+--- Set the progress value.
 -- @tparam number value The new progress value
 -- @return nothing
 function Bar:set(value)
-  self.value = math.max(self.min, math.min(self.max, value))
+  if type(value) ~= "number" then
+    error("value must be a number", 2)
+  end
+  self.value = value
 end
 
 
@@ -146,14 +165,12 @@ end
 
 --- Render just the bar fill area.
 -- Renders the fill, tip, and empty portions based on current value.
--- Does not include reverse logic, which is handled by render().
 -- Subclasses can override this to customize bar rendering.
+-- @tparam number fraction Progress as a fraction between 0 and 1
 -- @tparam number width Width available for the bar fill area (in display columns)
 -- @treturn Sequence The rendered bar fill
 -- @treturn number Actual bar width in display columns (equals `width` unless `pad_char=""` and padding was needed)
-function Bar:render_bar(width)
-  width = math.max(0, width)
-
+function Bar:render_bar(fraction, width)
   local filled_char_width = tw.utf8cwidth(self.filled_char)
   local empty_char_width = tw.utf8cwidth(self.empty_char)
   local tip_char_width = self.tip_chars and tw.utf8swidth(self.tip_chars[1]) or 0 -- assume all tips are equal width
@@ -166,17 +183,12 @@ function Bar:render_bar(width)
     return s, (self.pad_char ~= "" and width or 0)
   end
 
-  local fraction = (self.value - self.min) / (self.max - self.min)
-  if self.reverse then
-    fraction = 1 - fraction
-  end
-
   local columns_empty
   local columns_filled = fraction * (width - tip_char_width)  -- fractional !!
 
   local tip_char = ""
   if self.tip_chars then
-    if self.value >= self.max then
+    if fraction >= 1 then
       tip_char = self.tip_chars[#self.tip_chars]
     else
       local tip_index = (columns_filled - math.floor(columns_filled)) * #self.tip_chars
@@ -258,6 +270,33 @@ end
 function Bar:render(width)
   width = math.max(0, width)
 
+  local display_value = self.value
+  local reverse = self.reverse
+
+  if self.mode == Bar.modes.clamp then
+    display_value = math.max(self.min, math.min(self.max, display_value))
+
+  elseif self.mode == Bar.modes.loop then
+    local range = self.max - self.min
+    display_value = ((display_value - self.min) % range) + self.min
+
+  elseif self.mode == Bar.modes.bounce then
+    local range = self.max - self.min
+    local double_range = range * 2
+    local mod = (display_value - self.min) % double_range
+    if mod > range then
+      display_value = self.max - (mod - range)
+      reverse = not reverse
+    else
+      display_value = self.min + mod
+    end
+  end
+
+  local fraction = (display_value - self.min) / (self.max - self.min)
+  if reverse then
+    fraction = 1 - fraction
+  end
+
   local format_str = self.format and string.format(self.format, self.value) or ""
   local fixed_w = tw.utf8swidth(self.label)
     + tw.utf8swidth(self.left_cap)
@@ -266,7 +305,7 @@ function Bar:render(width)
     + tw.utf8swidth(self.status)
   local fill_w = math.max(0, width - fixed_w)
 
-  local bar_seq = self:render_bar(fill_w)
+  local bar_seq = self:render_bar(fraction, fill_w)
 
   local s = Sequence()
 
