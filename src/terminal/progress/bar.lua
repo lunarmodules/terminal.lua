@@ -286,7 +286,6 @@ function Bar:render(width)
     local mod = (display_value - self.min) % double_range
     if mod > range then
       display_value = self.max - (mod - range)
-      reverse = not reverse
     else
       display_value = self.min + mod
     end
