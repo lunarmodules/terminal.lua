@@ -76,15 +76,8 @@ end
 local function render_bars(bars, row_start)
   local _, cols = t.size()
 
-  -- bar only
-  -- for i, bar in ipairs(bars) do
-  --   t.cursor.position.set(row_start + i - 1, 1)
-  --   t.output.write((bar:render_bar(cols)))
-  -- end
-
-  -- bar with labels etc
   for i, bar in ipairs(bars) do
-    t.cursor.position.set(row_start + i + #bars + 3, 1)
+    t.cursor.position.set(row_start + i - 1, 1)
     t.output.write((bar:render(cols)))
   end
 end
@@ -103,10 +96,6 @@ local function main()
 
   -- Header
   t.cursor.position.set(row_start - 1, 1)
-  t.text.push({ fg = "white", brightness = "high" })
-  t.output.write(
-    string.rep(" ", math.floor((cols - 35) / 2)) .. "  progress.Bar  example bars-only  ")
-  t.cursor.position.set(row_start + 6, 1)
   t.output.write(
     string.rep(" ", math.floor((cols - 35) / 2)) .. "  progress.Bar  example full-bars  ")
   t.text.pop()
