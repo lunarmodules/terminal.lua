@@ -22,6 +22,7 @@
 --     end
 -- @classmod cli.Confirm
 
+local t = require("terminal")
 local Select = require("terminal.cli.select")
 local utils = require("terminal.utils")
 
@@ -40,8 +41,9 @@ Confirm.response_ids = utils.response_ids
 Confirm.response_labels = utils.response_labels
 
 
--- TODO: clear; should not be passed to Select. seelct should always clear, but the clear option in this widget should control
--- wheteher we print the question and its answer on screen after completion or not.
+-- Summary line symbol (filled counterpart to Select's open diamond prompt symbol).
+local filled_diamond = "◆ "
+
 
 
 --- Create a new Confirm instance.
@@ -51,7 +53,8 @@ Confirm.response_labels = utils.response_labels
 -- @tparam[opt] string opts.default Response ID from `utils.response_ids` to pre-select. Defaults to the first response in the list.
 -- @tparam[opt] boolean opts.cancellable Whether the widget can be cancelled by pressing `<esc>` or `<ctrl+c>`.
 -- Defaults to `true` when `cancel` is in `responses`, `false` otherwise.
--- @tparam[opt=false] boolean opts.clear Whether to clear the widget from screen after completion.
+-- @tparam[opt=false] boolean opts.clear When `false` (default), replaces the widget with a one-line
+-- summary of the prompt and chosen response on completion. When `true`, clears everything.
 -- @treturn Confirm A new Confirm instance.
 -- @name cli.Confirm
 function Confirm:init(opts)
@@ -94,7 +97,7 @@ function Confirm:init(opts)
     choices = choices,
     default = default_idx,
     cancellable = self.cancellable,
-    clear = self.clear,
+    clear = true,  -- always clear the interactive widget; Confirm handles the summary
   }
 end
 
@@ -124,18 +127,40 @@ end
 
 --- Executes the widget.
 -- Initializes the terminal if necessary, and handles cleanup after the widget closes.
--- @treturn[1] response_id The selected response ID (e.g. `utils.response_ids.yes`).
--- @treturn[2] nil upon an error
--- @treturn[2] string error message.
+-- On completion, replaces the interactive widget with a one-line summary unless `clear` was set.
+-- @treturn[1] string The selected response ID (e.g. `utils.response_ids.yes`).
+-- @treturn[2] nil On error.
+-- @treturn[2] string `"cancelled"` if cancelled without a `cancel` response in the set.
 function Confirm:run()
   local idx, err = self._select:run()
+
+  local response
   if not idx then
     if err == "cancelled" and self.has_cancel then
-      return utils.response_ids.cancel
+      response = utils.response_ids.cancel
+    else
+      return nil, err
     end
-    return nil, err
+  else
+    response = self.responses[idx]
   end
-  return self.responses[idx]
+
+  if not self.clear then
+    t.output.write(
+      t.text.push_seq({ fg = "green" }),
+      filled_diamond,
+      t.text.pop_seq(),
+      self.prompt,
+      " ",
+      t.text.push_seq({ brightness = "dim" }),
+      utils.response_labels[response],
+      t.text.pop_seq(),
+      t.clear.eol_seq(),
+      "\n"
+    )
+  end
+
+  return response
 end
 
 
