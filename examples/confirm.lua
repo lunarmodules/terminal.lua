@@ -1,10 +1,9 @@
 --- Example demonstrating the cli.Confirm widget.
 --
--- Step 1: pick a response set from a menu.
+-- Step 1: pick a pre-defined response set using a custom Confirm widget.
 -- Step 2: run a confirmation widget using that set, then show the result.
 
 local t = require("terminal")
-local Select = require("terminal.cli.select")
 local Confirm = require("terminal.cli.confirm")
 
 
@@ -16,35 +15,36 @@ local function main()
 
 
 
-  -- step 1: pick a response set
-  local labels = {}
-  for name, set in pairs(Confirm.response_sets) do
-    labels[#labels + 1] = name
+  -- step 1: pick a response set via a custom Confirm widget
+  local set_names = {}
+  for name in pairs(Confirm.sets) do
+    set_names[#set_names + 1] = name
+  end
+  table.sort(set_names)
+
+  local responses = {}
+  for _, name in ipairs(set_names) do
+    responses[#responses + 1] = { label = name, value = name }
   end
 
-  local choice = Select {
+  local choice = Confirm {
     prompt = "Pick a response set:",
-    choices = labels,
+    responses = responses,
     cancellable = true,
-    clear = true,
   }
-  local idx, err = choice()
+  local chosen_name, err = choice()
 
-  if not idx then
-    t.output.print(idx, err)
+  if not chosen_name then
+    t.output.print("cancelled:", err)
     return
   end
-
-  choice:print_selection()
-
-  local chosen_set = Confirm.response_sets[labels[idx]]
 
 
 
   -- step 2: run the confirmation widget with the chosen set
   local confirm = Confirm {
     prompt = "Proceed with the operation?",
-    responses = chosen_set,
+    responses = Confirm.sets[chosen_name],
     cancellable = true,
   }
   local result, err = confirm()

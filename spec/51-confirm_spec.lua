@@ -22,24 +22,29 @@ describe("terminal.cli.confirm", function()
     it("initializes with defaults", function()
       local d = Confirm{ prompt = "Continue?" }
       assert.are.equal("Continue?", d.prompt)
-      assert.are.same(Confirm.response_sets.ok, d.responses)
-      assert.are.equal(Confirm.response_ids.ok, d.default)
+      assert.are.same(Confirm.sets.ok, d.responses)
+      assert.are.equal(Confirm.ids.ok, d.default)
       assert.is_false(d.cancellable)
       assert.is_false(d.clear)
     end)
 
 
     it("initializes with all options specified", function()
+      local responses = {
+        { label = "Yes",    value = "yes" },
+        { label = "No",     value = "no" },
+        { label = "Cancel", value = "cancel", cancel = true },
+      }
       local d = Confirm{
         prompt = "Delete?",
-        responses = Confirm.response_sets.yes_no_cancel,
-        default = Confirm.response_ids.no,
+        responses = responses,
+        default = Confirm.ids.no,
         cancellable = true,
         clear = true,
       }
       assert.are.equal("Delete?", d.prompt)
-      assert.are.same(Confirm.response_sets.yes_no_cancel, d.responses)
-      assert.are.equal(Confirm.response_ids.no, d.default)
+      assert.are.same(responses, d.responses)
+      assert.are.equal(Confirm.ids.no, d.default)
       assert.is_true(d.cancellable)
       assert.is_true(d.clear)
     end)
@@ -59,53 +64,56 @@ describe("terminal.cli.confirm", function()
     end)
 
 
-    it("errors when responses contains an invalid id", function()
+    it("errors when a response entry is missing a label", function()
       assert.has_error(function()
         Confirm{
           prompt = "test",
-          responses = { "maybe" },
+          responses = { { value = "x" } },
         }
-      end, 'Invalid response id: "maybe". Expected one of: "abort", "cancel", "continue", "ignore", "no", "ok", "retry", "try_again", "yes"')
+      end, "each response must have a string label")
     end)
 
 
-    it("errors when default is not a valid response id", function()
+    it("errors when default value is not found in responses", function()
       assert.has_error(function()
         Confirm{
           prompt = "test",
-          default = "maybe",
+          responses = { { label = "OK" } },
+          default = "missing",
         }
-      end, 'Invalid response id: "maybe". Expected one of: "abort", "cancel", "continue", "ignore", "no", "ok", "retry", "try_again", "yes"')
+      end, "default value not found in responses")
     end)
 
 
-    it("cancellable defaults to true when cancel is in responses", function()
+    it("cancellable defaults to true when a response has cancel = true", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = Confirm.response_sets.ok_cancel,
+        responses = Confirm.sets.ok_cancel,
       }
       assert.is_true(d.cancellable)
     end)
 
 
-    it("cancellable can be set true even when cancel is not in responses", function()
+    it("cancellable can be set true even when no response has cancel = true", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = Confirm.response_sets.yes_no,
+        responses = Confirm.sets.yes_no,
         cancellable = true,
       }
       assert.is_true(d.cancellable)
     end)
 
 
-    it("errors when default is not in the responses list", function()
+    it("errors when more than one response is marked as cancel", function()
       assert.has_error(function()
         Confirm{
           prompt = "test",
-          responses = Confirm.response_sets.yes_no,
-          default = Confirm.response_ids.cancel,
+          responses = {
+            { label = "A", cancel = true },
+            { label = "B", cancel = true },
+          },
         }
-      end, "default 'cancel' is not a valid response")
+      end, "only one response can be marked as cancel")
     end)
 
   end)
@@ -133,47 +141,47 @@ describe("terminal.cli.confirm", function()
 
   describe("run()", function()
 
-    it("returns the default response id when Enter pressed", function()
+    it("returns the value of the default response when Enter pressed", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = Confirm.response_sets.ok_cancel,
-        default = Confirm.response_ids.ok,
+        responses = Confirm.sets.ok_cancel,
+        default = Confirm.ids.ok,
       }
       helpers.push_kb_input(helpers.keys.enter)
       local result, err = d:run()
-      assert.are.equal(Confirm.response_ids.ok, result)
+      assert.are.equal(Confirm.ids.ok, result)
       assert.is_nil(err)
     end)
 
 
-    it("returns the response id after navigating down", function()
+    it("returns the value after navigating down", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = Confirm.response_sets.yes_no,
-        default = Confirm.response_ids.yes,
+        responses = Confirm.sets.yes_no,
+        default = Confirm.ids.yes,
       }
       helpers.push_kb_input(helpers.keys.down)
       helpers.push_kb_input(helpers.keys.enter)
       local result = d:run()
-      assert.are.equal(Confirm.response_ids.no, result)
+      assert.are.equal(Confirm.ids.no, result)
     end)
 
 
-    it("returns cancel response id when Esc pressed and cancel is in responses", function()
+    it("returns the cancel entry value when Esc pressed and a response has cancel = true", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = Confirm.response_sets.ok_cancel,
+        responses = Confirm.sets.ok_cancel,
       }
       helpers.push_kb_input(helpers.keys.esc)
       local result = d:run()
-      assert.are.equal(Confirm.response_ids.cancel, result)
+      assert.are.equal(Confirm.ids.cancel, result)
     end)
 
 
-    it("returns nil and 'cancelled' when Esc pressed and cancel is not in responses", function()
+    it("returns nil and 'cancelled' when Esc pressed and no response has cancel = true", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = Confirm.response_sets.yes_no,
+        responses = Confirm.sets.yes_no,
         cancellable = true,
       }
       helpers.push_kb_input(helpers.keys.esc)
@@ -183,15 +191,41 @@ describe("terminal.cli.confirm", function()
     end)
 
 
+    it("returns the label as value when value is not specified", function()
+      local d = Confirm{
+        prompt = "Continue?",
+        responses = { { label = "Maybe" } },
+      }
+      helpers.push_kb_input(helpers.keys.enter)
+      local result = d:run()
+      assert.are.equal("Maybe", result)
+    end)
+
+
+    it("returns arbitrary value types", function()
+      local d = Confirm{
+        prompt = "Continue?",
+        responses = {
+          { label = "Yes", value = true },
+          { label = "No",  value = false },
+        },
+        default = false,
+      }
+      helpers.push_kb_input(helpers.keys.enter)
+      local result = d:run()
+      assert.is_false(result)
+    end)
+
+
     it("can be invoked directly as a function", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = Confirm.response_sets.yes_no,
-        default = Confirm.response_ids.yes,
+        responses = Confirm.sets.yes_no,
+        default = Confirm.ids.yes,
       }
       helpers.push_kb_input(helpers.keys.enter)
       local result = d()
-      assert.are.equal(Confirm.response_ids.yes, result)
+      assert.are.equal(Confirm.ids.yes, result)
     end)
 
   end)
