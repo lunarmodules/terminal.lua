@@ -53,6 +53,7 @@ build = {
     ["terminal.text.init"] = "src/terminal/text/init.lua",
     ["terminal.text.color"] = "src/terminal/text/color.lua",
     ["terminal.text.width"] = "src/terminal/text/width.lua",
+    ["terminal.cli.confirm"] = "src/terminal/cli/confirm.lua",
     ["terminal.cli.select"] = "src/terminal/cli/select.lua",
     ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
     ["terminal.ui.panel.init"] = "src/terminal/ui/panel/init.lua",
