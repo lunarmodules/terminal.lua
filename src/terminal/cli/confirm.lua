@@ -8,17 +8,16 @@
 --
 -- *Usage:*
 --     local Confirm = require("terminal.cli.confirm")
---     local utils = require("terminal.utils")
 --
 --     local widget = Confirm{
 --       prompt = "Delete this file?",
---       responses = utils.response_sets.yes_no_cancel,
---       default = utils.response_ids.no,
+--       responses = Confirm.response_sets.yes_no_cancel,
+--       default = Confirm.response_ids.no,
 --       cancellable = true,
 --     }
 --
 --     local result = widget()   -- invokes the 'run' method
---     if result == utils.response_ids.yes then
+--     if result == Confirm.response_ids.yes then
 --       -- proceed
 --     end
 -- @classmod cli.Confirm
@@ -27,6 +26,22 @@ local Select = require("terminal.cli.select")
 local utils = require("terminal.utils")
 
 local Confirm = utils.class()
+
+--- Response set constants. A reference to `utils.response_sets`.
+-- @table Confirm.response_sets
+Confirm.response_sets = utils.response_sets
+
+--- Response ID constants. A reference to `utils.response_ids`.
+-- @table Confirm.response_ids
+Confirm.response_ids = utils.response_ids
+
+--- Response label constants. A reference to `utils.response_labels`.
+-- @table Confirm.response_labels
+Confirm.response_labels = utils.response_labels
+
+
+-- TODO: clear; should not be passed to Select. seelct should always clear, but the clear option in this widget should control
+-- wheteher we print the question and its answer on screen after completion or not.
 
 
 --- Create a new Confirm instance.

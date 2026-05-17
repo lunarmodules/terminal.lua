@@ -3,12 +3,11 @@ local helpers = require "spec.helpers"
 
 describe("terminal.cli.confirm", function()
 
-  local Confirm, utils
+  local Confirm
 
   setup(function()
     helpers.load()
     Confirm = require("terminal.cli.confirm")
-    utils = require("terminal.utils")
   end)
 
 
@@ -23,8 +22,8 @@ describe("terminal.cli.confirm", function()
     it("initializes with defaults", function()
       local d = Confirm{ prompt = "Continue?" }
       assert.are.equal("Continue?", d.prompt)
-      assert.are.same(utils.response_sets.ok, d.responses)
-      assert.are.equal(utils.response_ids.ok, d.default)
+      assert.are.same(Confirm.response_sets.ok, d.responses)
+      assert.are.equal(Confirm.response_ids.ok, d.default)
       assert.is_false(d.cancellable)
       assert.is_false(d.clear)
     end)
@@ -33,14 +32,14 @@ describe("terminal.cli.confirm", function()
     it("initializes with all options specified", function()
       local d = Confirm{
         prompt = "Delete?",
-        responses = utils.response_sets.yes_no_cancel,
-        default = utils.response_ids.no,
+        responses = Confirm.response_sets.yes_no_cancel,
+        default = Confirm.response_ids.no,
         cancellable = true,
         clear = true,
       }
       assert.are.equal("Delete?", d.prompt)
-      assert.are.same(utils.response_sets.yes_no_cancel, d.responses)
-      assert.are.equal(utils.response_ids.no, d.default)
+      assert.are.same(Confirm.response_sets.yes_no_cancel, d.responses)
+      assert.are.equal(Confirm.response_ids.no, d.default)
       assert.is_true(d.cancellable)
       assert.is_true(d.clear)
     end)
@@ -83,7 +82,7 @@ describe("terminal.cli.confirm", function()
     it("cancellable defaults to true when cancel is in responses", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = utils.response_sets.ok_cancel,
+        responses = Confirm.response_sets.ok_cancel,
       }
       assert.is_true(d.cancellable)
     end)
@@ -92,7 +91,7 @@ describe("terminal.cli.confirm", function()
     it("cancellable can be set true even when cancel is not in responses", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = utils.response_sets.yes_no,
+        responses = Confirm.response_sets.yes_no,
         cancellable = true,
       }
       assert.is_true(d.cancellable)
@@ -103,8 +102,8 @@ describe("terminal.cli.confirm", function()
       assert.has_error(function()
         Confirm{
           prompt = "test",
-          responses = utils.response_sets.yes_no,
-          default = utils.response_ids.cancel,
+          responses = Confirm.response_sets.yes_no,
+          default = Confirm.response_ids.cancel,
         }
       end, "default 'cancel' is not a valid response")
     end)
@@ -137,12 +136,12 @@ describe("terminal.cli.confirm", function()
     it("returns the default response id when Enter pressed", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = utils.response_sets.ok_cancel,
-        default = utils.response_ids.ok,
+        responses = Confirm.response_sets.ok_cancel,
+        default = Confirm.response_ids.ok,
       }
       helpers.push_kb_input(helpers.keys.enter)
       local result, err = d:run()
-      assert.are.equal(utils.response_ids.ok, result)
+      assert.are.equal(Confirm.response_ids.ok, result)
       assert.is_nil(err)
     end)
 
@@ -150,31 +149,31 @@ describe("terminal.cli.confirm", function()
     it("returns the response id after navigating down", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = utils.response_sets.yes_no,
-        default = utils.response_ids.yes,
+        responses = Confirm.response_sets.yes_no,
+        default = Confirm.response_ids.yes,
       }
       helpers.push_kb_input(helpers.keys.down)
       helpers.push_kb_input(helpers.keys.enter)
       local result = d:run()
-      assert.are.equal(utils.response_ids.no, result)
+      assert.are.equal(Confirm.response_ids.no, result)
     end)
 
 
     it("returns cancel response id when Esc pressed and cancel is in responses", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = utils.response_sets.ok_cancel,
+        responses = Confirm.response_sets.ok_cancel,
       }
       helpers.push_kb_input(helpers.keys.esc)
       local result = d:run()
-      assert.are.equal(utils.response_ids.cancel, result)
+      assert.are.equal(Confirm.response_ids.cancel, result)
     end)
 
 
     it("returns nil and 'cancelled' when Esc pressed and cancel is not in responses", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = utils.response_sets.yes_no,
+        responses = Confirm.response_sets.yes_no,
         cancellable = true,
       }
       helpers.push_kb_input(helpers.keys.esc)
@@ -187,12 +186,12 @@ describe("terminal.cli.confirm", function()
     it("can be invoked directly as a function", function()
       local d = Confirm{
         prompt = "Continue?",
-        responses = utils.response_sets.yes_no,
-        default = utils.response_ids.yes,
+        responses = Confirm.response_sets.yes_no,
+        default = Confirm.response_ids.yes,
       }
       helpers.push_kb_input(helpers.keys.enter)
       local result = d()
-      assert.are.equal(utils.response_ids.yes, result)
+      assert.are.equal(Confirm.response_ids.yes, result)
     end)
 
   end)
