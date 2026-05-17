@@ -71,7 +71,7 @@ function Confirm:init(opts)
   local _ = utils.response_ids[default_id]  -- validates; throws if unknown
 
   local default_idx
-  local has_cancel = false
+  local cancel_idx
   local choices = {}
   for i, id in ipairs(responses) do
     choices[i] = utils.response_labels[id]
@@ -79,7 +79,7 @@ function Confirm:init(opts)
       default_idx = i
     end
     if id == utils.response_ids.cancel then
-      has_cancel = true
+      cancel_idx = i
     end
   end
   assert(default_idx, "default '" .. default_id .. "' is not a valid response")
@@ -87,9 +87,9 @@ function Confirm:init(opts)
   self.prompt = opts.prompt
   self.responses = responses
   self.default = default_id
-  self.has_cancel = has_cancel
-  self.cancellable = has_cancel and opts.cancellable ~= false
-                  or not has_cancel and not not opts.cancellable
+  self.cancel_idx = cancel_idx
+  self.cancellable = cancel_idx and opts.cancellable ~= false
+                  or not cancel_idx and not not opts.cancellable
   self.clear = not not opts.clear
 
   self._select = Select{
@@ -125,6 +125,13 @@ end
 
 
 
+--- Prints a one-line summary of the prompt and selected response.
+function Confirm:print_selection()
+  self._select:print_selection()
+end
+
+
+
 --- Executes the widget.
 -- Initializes the terminal if necessary, and handles cleanup after the widget closes.
 -- On completion, replaces the interactive widget with a one-line summary unless `clear` was set.
@@ -136,7 +143,8 @@ function Confirm:run()
 
   local response
   if not idx then
-    if err == "cancelled" and self.has_cancel then
+    if err == "cancelled" and self.cancel_idx then
+      self._select:set_selection(self.cancel_idx)
       response = utils.response_ids.cancel
     else
       return nil, err
@@ -146,18 +154,7 @@ function Confirm:run()
   end
 
   if not self.clear then
-    t.output.write(
-      t.text.push_seq({ fg = "green" }),
-      filled_diamond,
-      t.text.pop_seq(),
-      self.prompt,
-      " ",
-      t.text.push_seq({ brightness = "dim" }),
-      utils.response_labels[response],
-      t.text.pop_seq(),
-      t.clear.eol_seq(),
-      "\n"
-    )
+    self:print_selection()
   end
 
   return response

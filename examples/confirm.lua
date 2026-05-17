@@ -6,69 +6,54 @@
 local t = require("terminal")
 local Select = require("terminal.cli.select")
 local Confirm = require("terminal.cli.confirm")
-local utils = require("terminal.utils")
 
-
--- ordered list of sets to present in the menu
-local set_choices = {
-  { label = "OK",                      set = utils.response_sets.ok },
-  { label = "OK / Cancel",             set = utils.response_sets.ok_cancel },
-  { label = "Yes / No",                set = utils.response_sets.yes_no },
-  { label = "Yes / No / Cancel",       set = utils.response_sets.yes_no_cancel },
-  { label = "Retry / Cancel",          set = utils.response_sets.retry_cancel },
-  { label = "Abort / Retry / Ignore",  set = utils.response_sets.abort_retry_ignore },
-  { label = "Cancel / Try / Continue", set = utils.response_sets.cancel_try_continue },
-}
 
 
 local function main()
   t.text.push { fg = "cyan", brightness = "high" }
   t.output.print("cli.Confirm demo")
   t.text.pop()
-  t.output.print()
+
+
 
   -- step 1: pick a response set
   local labels = {}
-  for _, entry in ipairs(set_choices) do
-    labels[#labels + 1] = entry.label
+  for name, set in pairs(Confirm.response_sets) do
+    labels[#labels + 1] = name
   end
 
-  local idx = Select {
+  local choice = Select {
     prompt = "Pick a response set:",
     choices = labels,
     cancellable = true,
     clear = true,
-  }()
+  }
+  local idx, err = choice()
 
   if not idx then
-    t.output.print("Cancelled.")
+    t.output.print(idx, err)
     return
   end
 
-  local chosen_set = set_choices[idx].set
+  choice:print_selection()
+
+  local chosen_set = Confirm.response_sets[labels[idx]]
+
+
 
   -- step 2: run the confirmation widget with the chosen set
-  t.output.print()
-  local result, err = Confirm {
+  local confirm = Confirm {
     prompt = "Proceed with the operation?",
     responses = chosen_set,
     cancellable = true,
-  }()
+  }
+  local result, err = confirm()
 
   -- show result
-  t.output.print()
-  if result then
-    t.text.push { fg = "green", brightness = "high" }
-    t.output.write("Response: ")
-    t.text.pop()
-    t.output.print(utils.response_labels[result] .. " (" .. result .. ")")
-  else
-    t.text.push { fg = "yellow" }
-    t.output.print("Cancelled.")
-    t.text.pop()
+  if not result then
+    t.output.print("An error was returned: ", result, err)
   end
 
-  t.output.print()
 end
 
 

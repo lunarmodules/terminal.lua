@@ -46,6 +46,7 @@ local keymap = t.input.keymap.get_keymap({
 
 
 -- UI symbols (including trailing whitespace)
+local filled_diamond = "◆ "
 local diamond = "◇ "
 local circle  = "○ "
 local dot     = "● "
@@ -195,6 +196,34 @@ function Select:clear_widget()
     (t.clear.eol_seq() .. "\n"):rep(self:height()),
     t.cursor.position.up_seq():rep(self:height())
   )
+end
+
+
+
+--- Prints a one-line summary of the prompt and selected response.
+function Select:print_selection()
+  t.output.write(
+    t.text.push_seq({ fg = "green" }),
+    filled_diamond,
+    t.text.pop_seq(),
+    self.prompt,
+    " ",
+    t.text.push_seq({ fg = "yellow", brightness = "dim" }),
+    self.choices[self.selected],
+    t.text.pop_seq(),
+    t.clear.eol_seq(),
+    "\n"
+  )
+end
+
+
+
+--- Set the current selection index.
+-- @tparam number idx The index to set as the current selection.
+function Select:set_selection(idx)
+  assert(type(idx) == "number", "selection index must be a number")
+  assert(idx >= 1 and idx <= #self.choices, "selection index out of range")
+  self.selected = idx
 end
 
 
