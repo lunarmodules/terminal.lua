@@ -266,6 +266,28 @@ for raw, name in pairs(M.control_characters) do
 end
 
 
+--- Return the raw-key from a key name.
+-- @tparam string keyname the name of the key, e.g. "up", "ctrl_c", "alt_x", etc.
+-- @treturn string the raw key sequence that corresponds to the key name, or niol + error if not found.
+-- @usage
+-- -- use overrides to re-map vim-oriented keys to arrow-keys
+-- local keys = terminal.input.keymap.default_keys
+-- local ctrl_c = terminal.input.keymap.get_raw_key("ctrl_c")
+-- local vi_keymap = terminal.input.keymap.get_keymap({
+--   ["j"] = keys.down,         -- use lookup table, not magic strings
+--   ["k"] = keys.up,           -- use lookup table, not magic strings
+--   [ctrl_c] = keys.escape,    -- remap ctrl-c to Esc, using names, not byte-sequences
+-- })
+function M.get_raw_key(keyname)
+  for raw, name in pairs(M.default_key_map) do
+    if name == keyname then
+      return raw
+    end
+  end
+  return nil, "keyname not found: " .. tostring(keyname)
+end
+
+
 
 --- Returns a new key-map to map incoming raw key-strokes to a key-name.
 -- Generates a new key-map, containing the `default_key_map`, and the provided overrides.

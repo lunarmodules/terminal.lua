@@ -36,10 +36,11 @@ local Select = utils.class()
 
 -- Key bindings
 local keys = t.input.keymap.get_keys()
+local ctrl_c = assert(t.input.keymap.get_raw_key("ctrl_c"))
 local keymap = t.input.keymap.get_keymap({
   k = keys.up,    -- Vim-style up
   j = keys.down,  -- Vim-style down
-  ctrl_c = keys.escape, -- Ctrl+C
+  [ctrl_c] = keys.escape, -- Ctrl+C --> Esc
 })
 
 
