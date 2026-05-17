@@ -84,6 +84,86 @@ describe("Utils", function()
 
 
 
+  describe("response_sets", function()
+
+    it("returns the ordered list for a valid set", function()
+      assert.are.same({ "yes", "no", "cancel" }, utils.response_sets.yes_no_cancel)
+    end)
+
+
+    it("throws an error for an invalid set", function()
+      assert.has_error(function()
+        return utils.response_sets.maybe
+      end, 'Invalid response set: "maybe". Expected one of: "abort_retry_ignore", "cancel_try_continue", "ok", "ok_cancel", "retry_cancel", "yes_no", "yes_no_cancel"')
+    end)
+
+
+    it("the entries in every set match an id", function()
+      for set_name, ids in pairs(utils.response_sets) do
+        for _, id in ipairs(ids) do
+          assert.has.no.error(function()
+            return utils.response_ids[id]
+          end)
+        end
+      end
+    end)
+
+  end)
+
+
+
+  describe("response_ids", function()
+
+    it("returns the id string for a valid response", function()
+      assert.are.equal("yes", utils.response_ids.yes)
+    end)
+
+
+    it("throws an error for an invalid response id", function()
+      assert.has_error(function()
+        return utils.response_ids.maybe
+      end, 'Invalid response id: "maybe". Expected one of: "abort", "cancel", "continue", "ignore", "no", "ok", "retry", "try_again", "yes"')
+    end)
+
+
+    it("every id has a label", function()
+      for id in pairs(utils.response_ids) do
+        assert.has.no.error(function()
+          return utils.response_labels[id]
+        end)
+      end
+    end)
+
+  end)
+
+
+
+  describe("response_labels", function()
+
+    it("returns the display label for a valid response", function()
+      assert.are.equal("Try Again", utils.response_labels.try_again)
+    end)
+
+
+    it("throws an error for an invalid response label key", function()
+      assert.has_error(function()
+        return utils.response_labels.maybe
+      end, 'Invalid response label: "maybe". Expected one of: "abort", "cancel", "continue", "ignore", "no", "ok", "retry", "try_again", "yes"')
+    end)
+
+
+    it("every label entry has an id", function()
+      for id in pairs(utils.response_labels) do
+        assert.has.no.error(function()
+          return utils.response_ids[id]
+        end)
+      end
+    end)
+
+  end)
+
+
+
   describe("resolve_index()", function()
 
     local list = {

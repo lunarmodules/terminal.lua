@@ -109,6 +109,83 @@ end
 
 
 
+--- Response set constants for confirmation widgets.
+-- Each entry is an ordered list of `response_ids` values, defining which responses to display.
+-- @field ok Single OK response.
+-- @field ok_cancel OK and Cancel responses.
+-- @field abort_retry_ignore Abort, Retry, and Ignore responses.
+-- @field yes_no_cancel Yes, No, and Cancel responses.
+-- @field yes_no Yes and No responses.
+-- @field retry_cancel Retry and Cancel responses.
+-- @field cancel_try_continue Cancel, Try Again, and Continue responses.
+-- @table response_sets
+-- @within Constants
+M.response_sets = M.make_lookup("response set", {
+  ok = { "ok" },
+  ok_cancel = { "ok", "cancel" },
+  abort_retry_ignore = { "abort", "retry", "ignore" },
+  yes_no_cancel = { "yes", "no", "cancel" },
+  yes_no = { "yes", "no" },
+  retry_cancel = { "retry", "cancel" },
+  cancel_try_continue = { "cancel", "try_again", "continue" },
+})
+
+
+
+--- Response ID constants for confirmation widgets (equivalent to Windows `IDXXX` constants).
+-- Used to specify the default response and returned by widgets to indicate which response was selected.
+-- @field ok The OK response.
+-- @field cancel The Cancel response.
+-- @field abort The Abort response.
+-- @field retry The Retry response.
+-- @field ignore The Ignore response.
+-- @field yes The Yes response.
+-- @field no The No response.
+-- @field try_again The Try Again response.
+-- @field continue The Continue response.
+-- @table response_ids
+-- @within Constants
+M.response_ids = M.make_lookup("response id", {
+  ok = "ok",
+  cancel = "cancel",
+  abort = "abort",
+  retry = "retry",
+  ignore = "ignore",
+  yes = "yes",
+  no = "no",
+  try_again = "try_again",
+  continue = "continue",
+})
+
+
+
+--- Display labels for response IDs, for use in confirmation widgets.
+-- Maps each `response_ids` key to its human-readable label.
+-- @field ok `"OK"`
+-- @field cancel `"Cancel"`
+-- @field abort `"Abort"`
+-- @field retry `"Retry"`
+-- @field ignore `"Ignore"`
+-- @field yes `"Yes"`
+-- @field no `"No"`
+-- @field try_again `"Try Again"`
+-- @field continue `"Continue"`
+-- @table response_labels
+-- @within Constants
+M.response_labels = M.make_lookup("response label", {
+  ok = "OK",
+  cancel = "Cancel",
+  abort = "Abort",
+  retry = "Retry",
+  ignore = "Ignore",
+  yes = "Yes",
+  no = "No",
+  try_again = "Try Again",
+  continue = "Continue",
+})
+
+
+
 --- Resolve indices.
 -- This function resolves negative indices to positive indices.
 -- The result will be capped into the range [`min_value`, `max_value`].
