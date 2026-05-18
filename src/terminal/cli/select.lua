@@ -3,7 +3,8 @@
 -- This module provides a simple way to create a menu with a list of choices,
 -- allowing the user to navigate and select an option using keyboard input.
 -- The menu is displayed in the terminal, and the user can use the arrow keys
--- to navigate through the options. The selected option is highlighted, and the
+-- to navigate through the options, or type to search for an option.
+-- The selected option is highlighted, and the
 -- user can confirm their choice by pressing Enter. Optionally the menu can also be
 -- cancelled by pressing `<esc>` or `<ctrl+c>`.
 --
@@ -27,6 +28,7 @@
 -- @classmod cli.Select
 
 local t = require("terminal")
+local EditLine = require("terminal.editline")
 local Sequence = require("terminal.sequence")
 local utils = require("terminal.utils")
 
@@ -62,6 +64,7 @@ local angle   = "└  "
 -- @tparam[opt="Select an option:"] string opts.prompt Prompt message to display.
 -- @tparam[opt=false] boolean opts.cancellable Whether the menu can be cancelled (by pressing `<esc>` or `<ctrl+c>`).
 -- @tparam[opt=false] boolean opts.clear Whether to clear the widget from screen after completion.
+-- @tparam[opt=1.0] number opts.typeahead_delay Seconds of inactivity after which the typeahead search buffer resets.
 -- @treturn Prompt A new Select instance.
 -- @name cli.Select
 function Select:init(opts)
@@ -83,6 +86,7 @@ function Select:init(opts)
   self.selected = self.default
   self.cancellable = not not opts.cancellable
   self.clear = not not opts.clear
+  self.typeahead_delay = opts.typeahead_delay or 1.0
 
   self:template()
 end
@@ -131,32 +135,76 @@ end
 
 
 -- Read and normalize key input
-function Select:readKey()
-  local key = t.input.readansi(math.huge)
-  return key, keymap[key] or key
+function Select:readKey(timeout)
+  local rawkey, keytype = t.input.readansi(timeout)
+  return rawkey, keymap[rawkey] or rawkey, keytype
+end
+
+
+
+-- Find first choice whose prefix matches the current search buffer (case-insensitive).
+-- Starts at self.selected (inclusive) and wraps around. Returns self.selected if no match.
+function Select:_findMatch()
+  local prefix = tostring(self._search):lower()
+
+  if #prefix == 0 then
+    return self.selected
+  end
+
+  local n = #self.choices
+  for i = 0, n - 1 do
+    local idx = (self.selected - 1 + i) % n + 1
+    if self.choices[idx]:lower():sub(1, #prefix) == prefix then
+      return idx
+    end
+  end
+
+  return self.selected
 end
 
 
 
 -- Handle input loop and navigation
 function Select:handleInput()
+  self._search = EditLine{}
+
   local res1, res2
   while true do
     t.output.write(self.__template)
 
-    local _, keyName = self:readKey()
+    local timeout = self._search:len_char() > 0 and self.typeahead_delay or math.huge
+    local rawkey, keyName, keytype = self:readKey(timeout)
 
-    if keyName == keys.up then
+    if rawkey == nil then
+      -- timeout (or error): reset search buffer
+      self._search:clear()
+
+    elseif keyName == keys.backspace or keyName == keys.del then
+      -- backspace: trim search buffer if active, otherwise ignore
+      if self._search:len_char() > 0 then
+        self._search:backspace()
+        self.selected = self:_findMatch()
+      end
+
+    elseif keytype == "char" then
+      self._search:insert(rawkey)
+      self.selected = self:_findMatch()
+
+    elseif keyName == keys.up then
+      self._search:clear()
       self.selected = math.max(1, self.selected - 1)
 
     elseif keyName == keys.down then
+      self._search:clear()
       self.selected = math.min(#self.choices, self.selected + 1)
 
     elseif keyName == keys.escape and self.cancellable then
+      self._search:clear()
       res1, res2 = nil, "cancelled"
       break
 
     elseif keyName == keys.enter then
+      self._search:clear()
       res1 = self.selected
       break
     end

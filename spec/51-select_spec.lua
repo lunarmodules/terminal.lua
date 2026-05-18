@@ -250,4 +250,112 @@ describe("terminal.cli.select", function()
 
   end)
 
+
+
+  describe("typeahead", function()
+
+    it("jumps to a matching choice on keypress", function()
+      local s = Select{ choices = { "Apple", "Banana", "Cherry" } }
+      helpers.push_kb_input("B")
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx, val = s:run()
+      assert.are.equal(2, idx)
+      assert.are.equal("Banana", val)
+    end)
+
+
+    it("matches are case-insensitive", function()
+      local s = Select{ choices = { "Apple", "Banana", "Cherry" } }
+      helpers.push_kb_input("b")
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(2, idx)
+    end)
+
+
+    it("accumulates characters to narrow the match", function()
+      local s = Select{ choices = { "Bear", "Banana", "Cherry" } }
+      helpers.push_kb_input("b")
+      helpers.push_kb_input("a")
+      helpers.push_kb_input("n")
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(2, idx)
+    end)
+
+
+    it("does not move when no choice matches the prefix", function()
+      local s = Select{ choices = { "Apple", "Banana", "Cherry" }, default = 2 }
+      helpers.push_kb_input("z")
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(2, idx)
+    end)
+
+
+    it("wraps around when searching from current position", function()
+      local s = Select{ choices = { "Apple", "Avocado", "Banana" }, default = 3 }
+      -- starting at Banana (3), "a" skips it, wraps to Apple (1) before Avocado (2)
+      helpers.push_kb_input("a")
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(1, idx)
+    end)
+
+
+    it("backspace removes last typed character and re-searches", function()
+      local s = Select{ choices = { "Bear", "Banana", "Cherry" } }
+      helpers.push_kb_input("b")
+      helpers.push_kb_input("z")        -- "bz" → no match, stays on Bear
+      helpers.push_kb_input(helpers.keys.backspace)  -- back to "b", remains on Bear
+      helpers.push_kb_input("a")        -- "ba" → matches Banana
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(2, idx)
+    end)
+
+
+    it("backspace is ignored when search buffer is empty", function()
+      local s = Select{ choices = { "Apple", "Banana" }, default = 1 }
+      helpers.push_kb_input(helpers.keys.backspace)
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(1, idx)
+    end)
+
+
+    it("timeout resets the search buffer", function()
+      local s = Select{ choices = { "Bear", "Banana", "Cherry" } }
+      helpers.push_kb_input("b")        -- jumps to Bear
+      helpers.push_kb_input(nil, "timeout")  -- buffer resets
+      helpers.push_kb_input("c")        -- now searches from Bear (current) → Cherry
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(3, idx)
+    end)
+
+
+    it("arrow key resets the search buffer", function()
+      local s = Select{ choices = { "Apple", "Banana", "Cherry" }, default = 1 }
+      helpers.push_kb_input("b")        -- jumps to Banana (index 2)
+      helpers.push_kb_input(helpers.keys.up)  -- resets buffer, moves up to index 1
+      helpers.push_kb_input("a")        -- searches from Apple (current) → stays on Apple since it matches "a"
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(1, idx)
+    end)
+
+
+    it("inclusive start: current choice matches its own prefix", function()
+      local s = Select{ choices = { "Apple", "Avocado", "Banana" }, default = 2 }
+      -- "av" matches "Avocado" which is current selection → stays
+      helpers.push_kb_input("a")
+      helpers.push_kb_input("v")
+      helpers.push_kb_input(helpers.keys.enter)
+      local idx = s:run()
+      assert.are.equal(2, idx)
+    end)
+
+  end)
+
 end)
