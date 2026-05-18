@@ -129,6 +129,20 @@ describe("Spec helpers", function()
       assert.equals("char", keytype)
     end)
 
+
+    it("terminal.input.readansi() does not hang when pushing an escape followed by another key", function()
+      -- it could hang if it was an incomplete escape sequence
+      local terminal = helpers.load()
+
+      helpers.push_kb_input(helpers.keys.esc)
+      helpers.push_kb_input(helpers.keys.enter)
+
+      local call1 = { terminal.input.readansi(math.huge) }
+      local call2 = { terminal.input.readansi(0.1) }
+      assert.are.same({ helpers.keys.esc, "ctrl" }, call1)
+      assert.are.same({ helpers.keys.enter, "ctrl" }, call2)
+    end)
+
   end)
 
 
