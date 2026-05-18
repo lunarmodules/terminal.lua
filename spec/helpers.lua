@@ -143,7 +143,14 @@ end
 function M.push_kb_input(seq, err)
   local buffer = get_config().keyboardbuffer
 
-  if type(seq) == "string" then
+  if seq == M.keys.esc then
+    -- if we push a single ESC key-press, we MUST follow a timeout error. The readkey functionality will
+    -- consider an ESC, with extra keys immediately following it as an escape sequence, and wait for the
+    -- extra keys and hang. So we push nil and a timeout error to ensure the ESC is processed as a single key-press.
+    table.insert(buffer, pack(27))  -- ESC key
+    table.insert(buffer, pack(nil, "timeout"))
+
+  elseif type(seq) == "string" then
     assert(err == nil, "error must be nil if seq is a string")
     assert(seq ~= "", "seq must be a non-empty string")
     for i = 1, #seq do
