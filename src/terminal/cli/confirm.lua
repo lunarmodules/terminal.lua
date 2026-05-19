@@ -1,7 +1,7 @@
 --- A confirmation widget for CLI tools.
 --
 -- Displays a prompt with a list of labelled responses styled as a `cli.Select` menu.
--- The user navigates with arrow keys and confirms with Enter. Optionally the widget
+-- The user navigates with arrow keys or typing, and confirms with Enter. Optionally the widget
 -- can be cancelled with `<esc>` or `<ctrl+c>`.
 --
 -- Each response entry is a table `{ label = string, value = any, cancel = bool? }`.
@@ -33,7 +33,7 @@
 --       prompt = "Choose an option:",
 --       responses = {
 --         { label = "Option 1", value = "opt1" },
---         { label = "Option 2", value = "opt2", cancel = true
+--         { label = "Option 2", value = "opt2", cancel = true },
 --       },
 --       default = "opt2",
 --     }
