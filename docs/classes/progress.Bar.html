@@ -1,0 +1,518 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><strong>progress.Bar</strong></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>progress.Bar</code></h1>
+<p>A progress bar class.</p>
+<p> A configurable horizontal progress bar that renders to a Sequence.
+ The bar displays fixed elements (label, caps, format string, status) around a fill area,
+ and the total output fills exactly the requested width in display columns.</p>
+
+
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar.block_tip_chars">progress.bar.block_tip_chars</a></td>
+	<td class="summary">Predefined tip-character sets for sub-character precision at the bar tip.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar.modes">progress.bar.modes</a></td>
+	<td class="summary">Fill-mode constants for the <code>mode</code> constructor option.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar:get">progress.bar:get ()</a></td>
+	<td class="summary">Get the progress value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar:init">progress.bar:init (opts)</a></td>
+	<td class="summary">Create a new Bar instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar:render">progress.bar:render (width)</a></td>
+	<td class="summary">Render the progress bar to a Sequence.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar:render_bar">progress.bar:render_bar (fraction, width)</a></td>
+	<td class="summary">Render just the bar fill area.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar:set">progress.bar:set (value)</a></td>
+	<td class="summary">Set the progress value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#progress.bar:set_status">progress.bar:set_status (status)</a></td>
+	<td class="summary">Set the status text.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "progress.bar.block_tip_chars"></a>
+    <strong>progress.bar.block_tip_chars</strong>
+    </dt>
+    <dd>
+    Predefined tip-character sets for sub-character precision at the bar tip.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">block</span>
+         Array of 9 Unicode block elements for smooth fill progression
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "progress.bar.modes"></a>
+    <strong>progress.bar.modes</strong>
+    </dt>
+    <dd>
+    Fill-mode constants for the <code>mode</code> constructor option.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">clamp</span>
+         Value is clamped to [min, max] (default)
+        </li>
+        <li><span class="parameter">loop</span>
+         Value wraps back to min after exceeding max
+        </li>
+        <li><span class="parameter">bounce</span>
+         Value oscillates: fills left-to-right then right-to-left
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "progress.bar:get"></a>
+    <strong>progress.bar:get ()</strong>
+    </dt>
+    <dd>
+    Get the progress value.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The current progress value
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "progress.bar:init"></a>
+    <strong>progress.bar:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Bar instance.
+ Do not call this method directly, call on the class instead.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Configuration options
+        <ul>
+        <li><span class="parameter">filled_char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Character for fully-filled cells
+         (<em>default</em> "█")
+        </li>
+        <li><span class="parameter">empty_char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Character for empty cells
+         (<em>default</em> " ")
+        </li>
+        <li><span class="parameter">tip_chars</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of tip characters for sub-char precision (1-indexed, ascending fill)
+ The tip is always shown! so the range should start with <code>empty</code> and end with <code>filled</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">pad_char</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Single-width character used to pad the bar to the requested
+ width when the fill does not cover the full area; pass <code>&quot;&quot;</code> to omit padding entirely
+         (<em>default</em> " ")
+        </li>
+        <li><span class="parameter">left_cap</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Left bracket/delimiter
+         (<em>default</em> " ")
+        </li>
+        <li><span class="parameter">right_cap</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Right bracket/delimiter
+         (<em>default</em> " ")
+        </li>
+        <li><span class="parameter">min</span>
+            <span class="types"><span class="type">number</span></span>
+         Minimum value (lower bound)
+         (<em>default</em> 0)
+        </li>
+        <li><span class="parameter">max</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum value (upper bound)
+         (<em>default</em> 100)
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span></span>
+         Initial value (defaults to opts.min)
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Fill mode: <code>&quot;clamp&quot;</code> stops at max, <code>&quot;loop&quot;</code> wraps back to min, <code>&quot;bounce&quot;</code> oscillates. See <a href="../classes/progress.Bar.html#progress.bar.modes">Bar.modes</a>.
+         (<em>default</em> "clamp")
+        </li>
+        <li><span class="parameter">reverse</span>
+            <span class="types"><span class="type">boolean</span></span>
+         When true, inverts progress (shows remaining instead)
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">label</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Text printed before left cap
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">format</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Format string for progress value (e.g. "%d%%" for "45%"), or nil to omit
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">status</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Text printed after format string (e.g. "downloading", "complete")
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">attr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         Text attributes wrapping entire output
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">cap_attr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         Text attributes for left and right caps
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">filled_attr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         Text attributes for filled + tip portion
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">empty_attr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         Text attributes for empty portion
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">label_attr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         Text attributes for label
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">status_attr</span>
+            <span class="types"><span class="type">textattr</span></span>
+         Text attributes for format string + status
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/progress.Bar.html">Bar</a></span>
+        A new Bar instance
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Bar = <span class="global">require</span>(<span class="string">"terminal.progress.bar"</span>)
+
+<span class="keyword">local</span> bar = <span class="function-name">Bar</span> {
+  filled_char = <span class="string">"█"</span>, empty_char = <span class="string">" "</span>,
+  tip_chars = Bar.tip_chars.block,
+  left_cap = <span class="string">"["</span>, right_cap = <span class="string">"]"</span>,
+  format = <span class="string">"%d%%"</span>,
+  status = <span class="string">"downloading"</span>,
+}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "progress.bar:render"></a>
+    <strong>progress.bar:render (width)</strong>
+    </dt>
+    <dd>
+    Render the progress bar to a Sequence.
+ The bar fills exactly <code>width</code> display columns, with fixed elements (label, caps, format, status)
+ measured first and the fill area taking the remainder.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         Total output width in display columns
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><a class="type" href="../classes/Sequence.html#">Sequence</a></span>
+        The rendered bar</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The width passed in (sub-classes can override)</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        Always 1 (bar height is fixed at one line, sub-classes can override)</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "progress.bar:render_bar"></a>
+    <strong>progress.bar:render_bar (fraction, width)</strong>
+    </dt>
+    <dd>
+    Render just the bar fill area.
+ Renders the fill, tip, and empty portions based on current value.
+ Subclasses can override this to customize bar rendering.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fraction</span>
+            <span class="types"><span class="type">number</span></span>
+         Progress as a fraction between 0 and 1
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         Width available for the bar fill area (in display columns)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><a class="type" href="../classes/Sequence.html#">Sequence</a></span>
+        The rendered bar fill</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        Actual bar width in display columns (equals <code>width</code> unless <code>pad_char=&quot;&quot;</code> and padding was needed)</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "progress.bar:set"></a>
+    <strong>progress.bar:set (value)</strong>
+    </dt>
+    <dd>
+    Set the progress value.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span></span>
+         The new progress value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "progress.bar:set_status"></a>
+    <strong>progress.bar:set_status (status)</strong>
+    </dt>
+    <dd>
+    Set the status text.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">status</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The new status text (e.g. "waiting", "downloading", "unpacking", "complete")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

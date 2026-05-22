@@ -46,9 +46,9 @@
   <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
   <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
   <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
-  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
+  <li><strong>cli.MultiSelect</strong></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
-  <li><strong>cli.Select</strong></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
   <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
@@ -118,38 +118,34 @@
 
 <div id="content">
 
-<h1>Class <code>cli.Select</code></h1>
-<p>A single-choice interactive menu widget for CLI tools.</p>
+<h1>Class <code>cli.MultiSelect</code></h1>
+<p>A multi-choice interactive checkbox widget for CLI tools.</p>
 <p>
 
 
-<p> This module provides a simple way to create a menu with a list of choices,
- allowing the user to navigate and select an option using keyboard input.
- The menu is displayed in the terminal, and the user can use the arrow keys
- to navigate through the options, or type to search for an option.
- The selected option is highlighted, and the
- user can confirm their choice by pressing Enter. Optionally the menu can also be
- cancelled by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>.</p>
+<p> This module provides a way to create a checkbox list, allowing the user
+ to toggle multiple options using Space, navigate with arrow keys, and
+ confirm with Enter. Type-ahead search navigates to a matching entry.
+ The selected options are highlighted, and the user can confirm with Enter.
+ Optionally the widget can be cancelled by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>.</p>
 
 <p> NOTE: you MUST call <a href="../modules/terminal.html#initialize">terminal.initialize</a> before calling this widget's <code>:run()</code> method.</p>
 
 <p> <em>Usage:</em></p>
 
 <pre>
-<span class="keyword">local</span> menu = cli.<span class="function-name">Select</span>{
-  prompt = <span class="string">"Select an option:"</span>,
+<span class="keyword">local</span> menu = cli.<span class="function-name">MultiSelect</span>{
+  prompt = <span class="string">"Select options:"</span>,
   choices = {
-    <span class="string">"Option 1"</span>,
-    <span class="string">"Option 2"</span>,
-    <span class="string">"Option 3"</span>
-  },
-  default = <span class="number">1</span>,
+    { label = <span class="string">"Option 1"</span>, key = <span class="string">"opt1"</span>, value = <span class="keyword">false</span> },
+    { label = <span class="string">"Option 2"</span>, key = <span class="string">"opt2"</span>, value = <span class="keyword">true</span> },
+    { label = <span class="string">"Option 3"</span>, value = <span class="keyword">false</span> },  <span class="comment">-- key defaults to label
+</span>  },
   cancellable = <span class="keyword">true</span>
 }
 
-<span class="keyword">local</span> selected_index, selected_value = <span class="function-name">menu</span>()  <span class="comment">-- invokes the 'run' method
-</span><span class="global">print</span>(<span class="string">"Selected index: "</span> .. selected_index)
-<span class="global">print</span>(<span class="string">"Selected value: "</span> .. selected_value)
+<span class="keyword">local</span> result = <span class="function-name">menu</span>()  <span class="comment">-- invokes the 'run' method
+</span><span class="comment">-- result = { opt1 = false, opt2 = true, ["Option 3"] = false }</span>
 </pre>
 
 </p>
@@ -158,31 +154,31 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#cli.Select">cli.Select (opts)</a></td>
-	<td class="summary">Create a new Select instance.</td>
+	<td class="name" nowrap><a href="#cli.MultiSelect">cli.MultiSelect (opts)</a></td>
+	<td class="summary">Create a new MultiSelect instance.</td>
 	</tr>
 </table>
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#cli.select:clear_widget">cli.select:clear_widget ()</a></td>
+	<td class="name" nowrap><a href="#cli.multiselect:clear_widget">cli.multiselect:clear_widget ()</a></td>
 	<td class="summary">Clears the widget.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#cli.select:height">cli.select:height ()</a></td>
+	<td class="name" nowrap><a href="#cli.multiselect:height">cli.multiselect:height ()</a></td>
 	<td class="summary">Returns the display height in rows.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#cli.select:print_selection">cli.select:print_selection ()</a></td>
-	<td class="summary">Prints a one-line summary of the prompt and selected response.</td>
+	<td class="name" nowrap><a href="#cli.multiselect:print_selection">cli.multiselect:print_selection ()</a></td>
+	<td class="summary">Prints a one-line summary showing the count of checked items.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#cli.select:run">cli.select:run ()</a></td>
+	<td class="name" nowrap><a href="#cli.multiselect:run">cli.multiselect:run ()</a></td>
 	<td class="summary">Executes the widget.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#cli.select:set_selection">cli.select:set_selection (idx)</a></td>
-	<td class="summary">Set the current selection index.</td>
+	<td class="name" nowrap><a href="#cli.multiselect:set_selection">cli.multiselect:set_selection (idx)</a></td>
+	<td class="summary">Set the current cursor position.</td>
 	</tr>
 </table>
 
@@ -194,34 +190,36 @@
 
     <dl class="function">
     <dt>
-    <a name = "cli.Select"></a>
-    <strong>cli.Select (opts)</strong>
+    <a name = "cli.MultiSelect"></a>
+    <strong>cli.MultiSelect (opts)</strong>
     </dt>
     <dd>
-    Create a new Select instance.
+    Create a new MultiSelect instance.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">opts</span> Options for the Select menu.
+        <li><span class="parameter">opts</span> Options for the MultiSelect widget.
         <ul>
         <li><span class="parameter">choices</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         List of choices (strings) to display.
+         List of choices. Each entry is a table with:
+   <code>label</code> (string, required), <code>key</code> (any type, optional, defaults to label),
+   <code>value</code> (boolean, optional, initial checked state, defaults to false).
         </li>
         <li><span class="parameter">default</span>
             <span class="types"><span class="type">number</span></span>
-         Default choice index (1-based).
+         Default cursor position (1-based index into choices).
          (<em>default</em> 1)
         </li>
         <li><span class="parameter">prompt</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          Prompt message to display.
-         (<em>default</em> "Select an option:")
+         (<em>default</em> "Select options:")
         </li>
         <li><span class="parameter">cancellable</span>
             <span class="types"><span class="type">boolean</span></span>
-         Whether the menu can be cancelled (by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>).
+         Whether the widget can be cancelled (by pressing <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>).
          (<em>default</em> false)
         </li>
         <li><span class="parameter">clear</span>
@@ -234,14 +232,24 @@
          Seconds of inactivity after which the typeahead search buffer resets.
          (<em>default</em> 1.0)
         </li>
+        <li><span class="parameter">checked_sym</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Symbol displayed in front of a checked item.
+         (<em>default</em> "● ")
+        </li>
+        <li><span class="parameter">unchecked_sym</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Symbol displayed in front of an unchecked item.
+         (<em>default</em> "○ ")
+        </li>
         </li></ul>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="../classes/cli.Prompt.html">Prompt</a></span>
-        A new Select instance.
+           <span class="types"><a class="type" href="../classes/cli.MultiSelect.html">MultiSelect</a></span>
+        A new MultiSelect instance.
     </ol>
 
 
@@ -253,8 +261,8 @@
 
     <dl class="function">
     <dt>
-    <a name = "cli.select:clear_widget"></a>
-    <strong>cli.select:clear_widget ()</strong>
+    <a name = "cli.multiselect:clear_widget"></a>
+    <strong>cli.multiselect:clear_widget ()</strong>
     </dt>
     <dd>
     Clears the widget.
@@ -267,8 +275,8 @@
 
 </dd>
     <dt>
-    <a name = "cli.select:height"></a>
-    <strong>cli.select:height ()</strong>
+    <a name = "cli.multiselect:height"></a>
+    <strong>cli.multiselect:height ()</strong>
     </dt>
     <dd>
     Returns the display height in rows.
@@ -279,7 +287,7 @@
     <ol>
 
            <span class="types"><span class="type">number</span></span>
-        The height of the menu in rows.
+        The height of the widget in rows.
     </ol>
 
 
@@ -287,11 +295,11 @@
 
 </dd>
     <dt>
-    <a name = "cli.select:print_selection"></a>
-    <strong>cli.select:print_selection ()</strong>
+    <a name = "cli.multiselect:print_selection"></a>
+    <strong>cli.multiselect:print_selection ()</strong>
     </dt>
     <dd>
-    Prints a one-line summary of the prompt and selected response.
+    Prints a one-line summary showing the count of checked items.
 
 
 
@@ -301,24 +309,24 @@
 
 </dd>
     <dt>
-    <a name = "cli.select:run"></a>
-    <strong>cli.select:run ()</strong>
+    <a name = "cli.multiselect:run"></a>
+    <strong>cli.multiselect:run ()</strong>
     </dt>
     <dd>
     Executes the widget.
  If necessary it initializes the terminal first.
- It also handles the cleanup of the terminal state after the menu is closed.
+ It also handles the cleanup of the terminal state after the widget is closed.
 
 
 
     <h3>Returns:</h3>
     <ol>
         <li>
-           <span class="types"><span class="type">number</span> or <span class="type">nil</span></span>
-        The index of the selected choice (1-based) or nil if cancelled.</li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a> or <span class="type">nil</span></span>
+        Hash table <code>{ [key] = bool }</code> for each choice, or nil if cancelled.</li>
         <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">err</span></span>
-        The selected choice or <code>&quot;cancelled&quot;</code> if cancelled.</li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <span class="type">nil</span></span>
+        nil on success, <code>&quot;cancelled&quot;</code> if cancelled.</li>
     </ol>
 
 
@@ -326,18 +334,18 @@
 
 </dd>
     <dt>
-    <a name = "cli.select:set_selection"></a>
-    <strong>cli.select:set_selection (idx)</strong>
+    <a name = "cli.multiselect:set_selection"></a>
+    <strong>cli.multiselect:set_selection (idx)</strong>
     </dt>
     <dd>
-    Set the current selection index.
+    Set the current cursor position.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">idx</span>
             <span class="types"><span class="type">number</span></span>
-         The index to set as the current selection.
+         The index to set as the current cursor position (1-based).
         </li>
     </ul>
 

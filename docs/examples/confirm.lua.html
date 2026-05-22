@@ -39,9 +39,9 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
+  <li><strong>confirm.lua</strong></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
-  <li><strong>graph.lua</strong></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
@@ -113,70 +113,70 @@
 
 <div id="content">
 
-    <h2>graph.lua</h2>
+    <h2>confirm.lua</h2>
 <pre>
-<span class="comment">--- Time-series graph demo using TimeSeriesGraph.
+<span class="comment">--- Example demonstrating the cli.Confirm widget.
 </span><span class="comment">--
-</span><span class="comment">-- Plots a slow sine wave to demonstrate dynamic min/max scaling,
-</span><span class="comment">-- axis placement, and label rendering.
-</span><span class="comment">--
-</span><span class="comment">-- Run with: lua examples/graph.lua
-</span><span class="comment">-- Press any key to quit.
+</span><span class="comment">-- Step 1: pick a pre-defined response set using a custom Confirm widget.
+</span><span class="comment">-- Step 2: run a confirmation widget using that set, then show the result.
 </span>
-<span class="keyword">local</span> t               = <span class="global">require</span> <span class="string">"terminal"</span>
-<span class="keyword">local</span> TimeSeriesGraph = <span class="global">require</span> <span class="string">"terminal.canvas.timeseriesgraph"</span>
-
-<span class="keyword">local</span> HISTORY_SIZE = <span class="number">100</span>   <span class="comment">-- number of samples kept / displayed
-</span><span class="keyword">local</span> INTERVAL     = <span class="number">0.10</span>  <span class="comment">-- seconds between updates
-</span><span class="keyword">local</span> GRAPH_COLS   = <span class="number">60</span>    <span class="comment">-- canvas width in braille character columns (= 120 px)
-</span><span class="keyword">local</span> GRAPH_ROWS   = <span class="number">15</span>    <span class="comment">-- canvas height in braille character rows   (=  60 px)
-</span>
-<span class="keyword">local</span> frame = <span class="number">0</span>   <span class="comment">-- counts updates; use frame * INTERVAL for wall time
-</span>
-<span class="keyword">local</span> graph = <span class="function-name">TimeSeriesGraph</span>({
-  history = HISTORY_SIZE,
-})
-
-
-
-<span class="comment">--- Returns the next data sample: a slow sine wave in the range -100..100.
-</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">get_value</span>()
-  frame = frame + <span class="number">1</span>
-  <span class="keyword">return</span> <span class="number">100</span> * <span class="global">math</span>.<span class="function-name">sin</span>(frame * INTERVAL * <span class="number">0.8</span>)
-<span class="keyword">end</span>
+<span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Confirm = <span class="global">require</span>(<span class="string">"terminal.cli.confirm"</span>)
 
 
 
 <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
-  t.cursor.visible.<span class="function-name">set</span>(<span class="keyword">false</span>)
-  t.output.<span class="global">print</span>(<span class="string">"Sine wave demo  (press any key to quit)"</span>)
-  t.output.<span class="function-name">write</span>((<span class="string">"\n"</span>):<span class="function-name">rep</span>(GRAPH_ROWS + <span class="number">2</span>))
-  t.cursor.position.<span class="function-name">up</span>(GRAPH_ROWS + <span class="number">2</span>)
+  t.text.<span class="function-name">push</span> { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"high"</span> }
+  t.output.<span class="global">print</span>(<span class="string">"cli.Confirm demo"</span>)
+  t.text.<span class="function-name">pop</span>()
 
-  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
-    graph:<span class="function-name">push</span>(<span class="function-name">get_value</span>())
-    t.output.<span class="function-name">write</span>(graph:<span class="function-name">render</span>({
-      cols = GRAPH_COLS,
-      rows = GRAPH_ROWS,
-      fmt = <span class="string">"%g%%"</span>,
-      graph_attr = { fg = <span class="string">"black"</span>, bg = <span class="string">"yellow"</span> },
-      label_attr = { fg = <span class="string">"red"</span>, bg = <span class="string">"white"</span> },
-    }))
 
-    <span class="keyword">if</span> t.input.<span class="function-name">readansi</span>(INTERVAL) <span class="keyword">then</span>
-      <span class="keyword">break</span>
-    <span class="keyword">end</span>
+
+  <span class="comment">-- step 1: pick a response set via a custom Confirm widget
+</span>  <span class="keyword">local</span> set_names = {}
+  <span class="keyword">for</span> name <span class="keyword">in</span> <span class="global">pairs</span>(Confirm.sets) <span class="keyword">do</span>
+    set_names[#set_names + <span class="number">1</span>] = name
+  <span class="keyword">end</span>
+  <span class="global">table</span>.<span class="function-name">sort</span>(set_names)
+
+  <span class="keyword">local</span> responses = {}
+  <span class="keyword">for</span> _, name <span class="keyword">in</span> <span class="global">ipairs</span>(set_names) <span class="keyword">do</span>
+    responses[#responses + <span class="number">1</span>] = { label = name, value = name }
   <span class="keyword">end</span>
 
-  t.cursor.position.<span class="function-name">down</span>(GRAPH_ROWS)
-  t.output.<span class="global">print</span>(<span class="string">"\nDone."</span>)
-  t.cursor.visible.<span class="function-name">set</span>(<span class="keyword">true</span>)
+  <span class="keyword">local</span> choice = <span class="function-name">Confirm</span> {
+    prompt = <span class="string">"Pick a response set:"</span>,
+    responses = responses,
+    cancellable = <span class="keyword">true</span>,
+  }
+  <span class="keyword">local</span> chosen_name, err = <span class="function-name">choice</span>()
+
+  <span class="keyword">if</span> <span class="keyword">not</span> chosen_name <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"cancelled:"</span>, err)
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+
+
+
+  <span class="comment">-- step 2: run the confirmation widget with the chosen set
+</span>  <span class="keyword">local</span> confirm = <span class="function-name">Confirm</span> {
+    prompt = <span class="string">"Proceed with the operation?"</span>,
+    responses = Confirm.sets[chosen_name],
+    cancellable = <span class="keyword">true</span>,
+  }
+  <span class="keyword">local</span> result, err = <span class="function-name">confirm</span>()
+
+  <span class="comment">-- show result
+</span>  <span class="keyword">if</span> <span class="keyword">not</span> result <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"An error was returned: "</span>, result, err)
+  <span class="keyword">end</span>
+
 <span class="keyword">end</span>
 
 
-
-<span class="comment">-- initialize terminal and run
-</span>t.<span class="function-name">initwrap</span>(main)()</pre>
+t.<span class="function-name">initwrap</span>(main, {
+  disable_sigint = <span class="keyword">true</span>, <span class="comment">-- allow ctrl-c as cancellation in widgets
+</span>})()</pre>
 
 
 </div> <!-- id="content" -->

@@ -39,14 +39,17 @@
 
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><strong>Canvas</strong></li>
   <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><strong>ui.Canvas</strong></li>
-  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -80,6 +83,7 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -90,12 +94,15 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
@@ -110,7 +117,7 @@
 
 <div id="content">
 
-<h1>Class <code>ui.Canvas</code></h1>
+<h1>Class <code>Canvas</code></h1>
 <p>A canvas using Unicode Braille characters for TUI pixel graphics.</p>
 <p>
 
@@ -123,7 +130,7 @@
 <p> Example usage:</p>
 
 <pre>
-<span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.ui.canvas"</span>
+<span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.canvas"</span>
 <span class="keyword">local</span> c = <span class="function-name">Canvas</span>({
   width = <span class="number">60</span>,
   height = <span class="number">30</span>,
@@ -138,67 +145,67 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:arc">ui.canvas:arc (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas:arc">canvas:arc (opts)</a></td>
 	<td class="summary">Draw an arc (a portion of an ellipse outline).</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:circle">ui.canvas:circle (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas:circle">canvas:circle (opts)</a></td>
 	<td class="summary">Draw a circle.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:clear">ui.canvas:clear ()</a></td>
+	<td class="name" nowrap><a href="#canvas:clear">canvas:clear ()</a></td>
 	<td class="summary">Clear the entire canvas.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:clone">ui.canvas:clone ()</a></td>
+	<td class="name" nowrap><a href="#canvas:clone">canvas:clone ()</a></td>
 	<td class="summary">Return a copy of this canvas with identical dimensions and pixel state.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:ellipse">ui.canvas:ellipse (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas:ellipse">canvas:ellipse (opts)</a></td>
 	<td class="summary">Draw an ellipse.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:get_pixels">ui.canvas:get_pixels ()</a></td>
+	<td class="name" nowrap><a href="#canvas:get_pixels">canvas:get_pixels ()</a></td>
 	<td class="summary">Returns the canvas size in pixels.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:get_size">ui.canvas:get_size ()</a></td>
+	<td class="name" nowrap><a href="#canvas:get_size">canvas:get_size ()</a></td>
 	<td class="summary">Returns the canvas size in display rows and columns.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:init">ui.canvas:init (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas:init">canvas:init (opts)</a></td>
 	<td class="summary">Create a new canvas.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:line">ui.canvas:line (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas:line">canvas:line (opts)</a></td>
 	<td class="summary">Draw a line between two pixels.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:polygon">ui.canvas:polygon (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas:polygon">canvas:polygon (opts)</a></td>
 	<td class="summary">Draw a polygon from an array of <code>{x, y}</code> points.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:render">ui.canvas:render ([opts={}])</a></td>
+	<td class="name" nowrap><a href="#canvas:render">canvas:render ([opts={}])</a></td>
 	<td class="summary">Render the canvas to a single string.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:resize">ui.canvas:resize ([rows[, cols]])</a></td>
+	<td class="name" nowrap><a href="#canvas:resize">canvas:resize ([rows[, cols]])</a></td>
 	<td class="summary">Resize the canvas to the given dimensions.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:roll">ui.canvas:roll ([rows=0[, cols=0]])</a></td>
+	<td class="name" nowrap><a href="#canvas:roll">canvas:roll ([rows=0[, cols=0]])</a></td>
 	<td class="summary">Shift canvas content, wrapping pixels that move beyond one edge onto the opposite edge.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:scroll">ui.canvas:scroll ([rows=0[, cols=0]])</a></td>
+	<td class="name" nowrap><a href="#canvas:scroll">canvas:scroll ([rows=0[, cols=0]])</a></td>
 	<td class="summary">Shift canvas content, dropping pixels that move beyond the edges.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:set">ui.canvas:set (x, y)</a></td>
+	<td class="name" nowrap><a href="#canvas:set">canvas:set (x, y)</a></td>
 	<td class="summary">Set (illuminate) a pixel.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvas:unset">ui.canvas:unset (x, y)</a></td>
+	<td class="name" nowrap><a href="#canvas:unset">canvas:unset (x, y)</a></td>
 	<td class="summary">Clear (extinguish) a pixel.</td>
 	</tr>
 </table>
@@ -211,8 +218,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
     <dl class="function">
     <dt>
-    <a name = "ui.canvas:arc"></a>
-    <strong>ui.canvas:arc (opts)</strong>
+    <a name = "canvas:arc"></a>
+    <strong>canvas:arc (opts)</strong>
     </dt>
     <dd>
     Draw an arc (a portion of an ellipse outline).
@@ -225,7 +232,7 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 <p> <strong>Range:</strong> <code>angle_end</code> must be >= <code>angle_start</code>. For a full ellipse use
  <code>angle_end = angle_start + 2*math.pi</code>. Ranges larger than <code>2*pi</code> are accepted but
- cause the arc to be traced more than once; since <a href="../classes/ui.Canvas.html#ui.canvas:set">set</a>/<a href="../classes/ui.Canvas.html#ui.canvas:unset">unset</a> are idempotent this
+ cause the arc to be traced more than once; since <a href="../classes/Canvas.html#canvas:set">set</a>/<a href="../classes/Canvas.html#canvas:unset">unset</a> are idempotent this
  produces the correct pixels but wastes proportional compute time.
 
 
@@ -273,12 +280,12 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:circle"></a>
-    <strong>ui.canvas:circle (opts)</strong>
+    <a name = "canvas:circle"></a>
+    <strong>canvas:circle (opts)</strong>
     </dt>
     <dd>
     Draw a circle.
- Convenience wrapper around <a href="../classes/ui.Canvas.html#ui.canvas:ellipse">ellipse</a> with equal horizontal and vertical radii.
+ Convenience wrapper around <a href="../classes/Canvas.html#canvas:ellipse">ellipse</a> with equal horizontal and vertical radii.
 
 
     <h3>Parameters:</h3>
@@ -318,8 +325,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:clear"></a>
-    <strong>ui.canvas:clear ()</strong>
+    <a name = "canvas:clear"></a>
+    <strong>canvas:clear ()</strong>
     </dt>
     <dd>
     Clear the entire canvas.
@@ -333,8 +340,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:clone"></a>
-    <strong>ui.canvas:clone ()</strong>
+    <a name = "canvas:clone"></a>
+    <strong>canvas:clone ()</strong>
     </dt>
     <dd>
     Return a copy of this canvas with identical dimensions and pixel state.
@@ -344,7 +351,7 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+           <span class="types"><a class="type" href="../classes/Canvas.html#">Canvas</a></span>
         Copy of the canvas
     </ol>
 
@@ -353,8 +360,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:ellipse"></a>
-    <strong>ui.canvas:ellipse (opts)</strong>
+    <a name = "canvas:ellipse"></a>
+    <strong>canvas:ellipse (opts)</strong>
     </dt>
     <dd>
     Draw an ellipse.
@@ -401,8 +408,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:get_pixels"></a>
-    <strong>ui.canvas:get_pixels ()</strong>
+    <a name = "canvas:get_pixels"></a>
+    <strong>canvas:get_pixels ()</strong>
     </dt>
     <dd>
     Returns the canvas size in pixels.
@@ -424,8 +431,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:get_size"></a>
-    <strong>ui.canvas:get_size ()</strong>
+    <a name = "canvas:get_size"></a>
+    <strong>canvas:get_size ()</strong>
     </dt>
     <dd>
     Returns the canvas size in display rows and columns.
@@ -447,8 +454,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:init"></a>
-    <strong>ui.canvas:init (opts)</strong>
+    <a name = "canvas:init"></a>
+    <strong>canvas:init (opts)</strong>
     </dt>
     <dd>
     Create a new canvas.
@@ -482,7 +489,7 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.ui.canvas"</span>
+        <pre class="example"><span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.canvas"</span>
 <span class="keyword">local</span> c = <span class="function-name">Canvas</span>({
   width = <span class="number">60</span>,
   height = <span class="number">30</span>,
@@ -493,8 +500,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:line"></a>
-    <strong>ui.canvas:line (opts)</strong>
+    <a name = "canvas:line"></a>
+    <strong>canvas:line (opts)</strong>
     </dt>
     <dd>
     Draw a line between two pixels.
@@ -536,8 +543,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:polygon"></a>
-    <strong>ui.canvas:polygon (opts)</strong>
+    <a name = "canvas:polygon"></a>
+    <strong>canvas:polygon (opts)</strong>
     </dt>
     <dd>
     Draw a polygon from an array of <code>{x, y}</code> points.
@@ -578,8 +585,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:render"></a>
-    <strong>ui.canvas:render ([opts={}])</strong>
+    <a name = "canvas:render"></a>
+    <strong>canvas:render ([opts={}])</strong>
     </dt>
     <dd>
     Render the canvas to a single string.
@@ -637,8 +644,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:resize"></a>
-    <strong>ui.canvas:resize ([rows[, cols]])</strong>
+    <a name = "canvas:resize"></a>
+    <strong>canvas:resize ([rows[, cols]])</strong>
     </dt>
     <dd>
     Resize the canvas to the given dimensions.
@@ -667,8 +674,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:roll"></a>
-    <strong>ui.canvas:roll ([rows=0[, cols=0]])</strong>
+    <a name = "canvas:roll"></a>
+    <strong>canvas:roll ([rows=0[, cols=0]])</strong>
     </dt>
     <dd>
     Shift canvas content, wrapping pixels that move beyond one edge onto the opposite edge.
@@ -696,8 +703,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:scroll"></a>
-    <strong>ui.canvas:scroll ([rows=0[, cols=0]])</strong>
+    <a name = "canvas:scroll"></a>
+    <strong>canvas:scroll ([rows=0[, cols=0]])</strong>
     </dt>
     <dd>
     Shift canvas content, dropping pixels that move beyond the edges.
@@ -726,8 +733,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:set"></a>
-    <strong>ui.canvas:set (x, y)</strong>
+    <a name = "canvas:set"></a>
+    <strong>canvas:set (x, y)</strong>
     </dt>
     <dd>
     Set (illuminate) a pixel.
@@ -753,8 +760,8 @@ c:<span class="function-name">set</span>(<span class="number">10</span>, <span c
 
 </dd>
     <dt>
-    <a name = "ui.canvas:unset"></a>
-    <strong>ui.canvas:unset (x, y)</strong>
+    <a name = "canvas:unset"></a>
+    <strong>canvas:unset (x, y)</strong>
     </dt>
     <dd>
     Clear (extinguish) a pixel.

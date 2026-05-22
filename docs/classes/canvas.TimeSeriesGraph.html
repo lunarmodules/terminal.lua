@@ -39,14 +39,17 @@
 
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
   <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><strong>canvas.TimeSeriesGraph</strong></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
-  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><strong>ui.TimeSeriesGraph</strong></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -80,6 +83,7 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -90,12 +94,15 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
@@ -110,7 +117,7 @@
 
 <div id="content">
 
-<h1>Class <code>ui.TimeSeriesGraph</code></h1>
+<h1>Class <code>canvas.TimeSeriesGraph</code></h1>
 <p>A time-series graph drawn on a Canvas using a CanvasViewport.</p>
 <p> Mixes two coordinate layers:
  - A CanvasViewport (stretch) for the scaled data line.
@@ -130,31 +137,31 @@
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#ui.timeseriesgraph:clear">ui.timeseriesgraph:clear ()</a></td>
+	<td class="name" nowrap><a href="#canvas.timeseriesgraph:clear">canvas.timeseriesgraph:clear ()</a></td>
 	<td class="summary">Reset the sample history.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.timeseriesgraph:draw">ui.timeseriesgraph:draw (canvas)</a></td>
+	<td class="name" nowrap><a href="#canvas.timeseriesgraph:draw">canvas.timeseriesgraph:draw (canvas)</a></td>
 	<td class="summary">Draw the graph onto an existing Canvas.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.timeseriesgraph:get_max">ui.timeseriesgraph:get_max ()</a></td>
+	<td class="name" nowrap><a href="#canvas.timeseriesgraph:get_max">canvas.timeseriesgraph:get_max ()</a></td>
 	<td class="summary">Return the current data-domain maximum.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.timeseriesgraph:get_min">ui.timeseriesgraph:get_min ()</a></td>
+	<td class="name" nowrap><a href="#canvas.timeseriesgraph:get_min">canvas.timeseriesgraph:get_min ()</a></td>
 	<td class="summary">Return the current data-domain minimum.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.timeseriesgraph:init">ui.timeseriesgraph:init (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas.timeseriesgraph:init">canvas.timeseriesgraph:init (opts)</a></td>
 	<td class="summary">Create a new TimeSeriesGraph.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.timeseriesgraph:push">ui.timeseriesgraph:push (value)</a></td>
+	<td class="name" nowrap><a href="#canvas.timeseriesgraph:push">canvas.timeseriesgraph:push (value)</a></td>
 	<td class="summary">Add a data sample.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.timeseriesgraph:render">ui.timeseriesgraph:render (opts)</a></td>
+	<td class="name" nowrap><a href="#canvas.timeseriesgraph:render">canvas.timeseriesgraph:render (opts)</a></td>
 	<td class="summary">Convenience wrapper: create a Canvas, draw, and return the render string.</td>
 	</tr>
 </table>
@@ -167,8 +174,8 @@
 
     <dl class="function">
     <dt>
-    <a name = "ui.timeseriesgraph:clear"></a>
-    <strong>ui.timeseriesgraph:clear ()</strong>
+    <a name = "canvas.timeseriesgraph:clear"></a>
+    <strong>canvas.timeseriesgraph:clear ()</strong>
     </dt>
     <dd>
     Reset the sample history.
@@ -182,8 +189,8 @@
 
 </dd>
     <dt>
-    <a name = "ui.timeseriesgraph:draw"></a>
-    <strong>ui.timeseriesgraph:draw (canvas)</strong>
+    <a name = "canvas.timeseriesgraph:draw"></a>
+    <strong>canvas.timeseriesgraph:draw (canvas)</strong>
     </dt>
     <dd>
     Draw the graph onto an existing Canvas.
@@ -192,7 +199,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">canvas</span>
-            <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+            <span class="types"><a class="type" href="../classes/Canvas.html#">Canvas</a></span>
          already sized by the caller
         </li>
     </ul>
@@ -203,8 +210,8 @@
 
 </dd>
     <dt>
-    <a name = "ui.timeseriesgraph:get_max"></a>
-    <strong>ui.timeseriesgraph:get_max ()</strong>
+    <a name = "canvas.timeseriesgraph:get_max"></a>
+    <strong>canvas.timeseriesgraph:get_max ()</strong>
     </dt>
     <dd>
     Return the current data-domain maximum.
@@ -226,8 +233,8 @@
 
 </dd>
     <dt>
-    <a name = "ui.timeseriesgraph:get_min"></a>
-    <strong>ui.timeseriesgraph:get_min ()</strong>
+    <a name = "canvas.timeseriesgraph:get_min"></a>
+    <strong>canvas.timeseriesgraph:get_min ()</strong>
     </dt>
     <dd>
     Return the current data-domain minimum.
@@ -249,8 +256,8 @@
 
 </dd>
     <dt>
-    <a name = "ui.timeseriesgraph:init"></a>
-    <strong>ui.timeseriesgraph:init (opts)</strong>
+    <a name = "canvas.timeseriesgraph:init"></a>
+    <strong>canvas.timeseriesgraph:init (opts)</strong>
     </dt>
     <dd>
     Create a new TimeSeriesGraph.
@@ -306,8 +313,8 @@ graph:<span class="function-name">push</span>(<span class="number">42</span>)
 
 </dd>
     <dt>
-    <a name = "ui.timeseriesgraph:push"></a>
-    <strong>ui.timeseriesgraph:push (value)</strong>
+    <a name = "canvas.timeseriesgraph:push"></a>
+    <strong>canvas.timeseriesgraph:push (value)</strong>
     </dt>
     <dd>
     Add a data sample.  Drops the oldest sample when the window is full.
@@ -331,8 +338,8 @@ graph:<span class="function-name">push</span>(<span class="number">42</span>)
 
 </dd>
     <dt>
-    <a name = "ui.timeseriesgraph:render"></a>
-    <strong>ui.timeseriesgraph:render (opts)</strong>
+    <a name = "canvas.timeseriesgraph:render"></a>
+    <strong>canvas.timeseriesgraph:render (opts)</strong>
     </dt>
     <dd>
     Convenience wrapper: create a Canvas, draw, and return the render string.

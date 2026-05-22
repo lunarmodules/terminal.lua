@@ -41,10 +41,10 @@
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
   <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
-  <li><strong>graph.lua</strong></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
-  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
+  <li><strong>multiselect.lua</strong></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
@@ -113,70 +113,68 @@
 
 <div id="content">
 
-    <h2>graph.lua</h2>
+    <h2>multiselect.lua</h2>
 <pre>
-<span class="comment">--- Time-series graph demo using TimeSeriesGraph.
+<span class="comment">--- Example demonstrating the cli.MultiSelect widget.
 </span><span class="comment">--
-</span><span class="comment">-- Plots a slow sine wave to demonstrate dynamic min/max scaling,
-</span><span class="comment">-- axis placement, and label rendering.
-</span><span class="comment">--
-</span><span class="comment">-- Run with: lua examples/graph.lua
-</span><span class="comment">-- Press any key to quit.
+</span><span class="comment">-- Presents a list of project features with some recommended defaults
+</span><span class="comment">-- pre-checked, then prints a summary of the chosen configuration.
 </span>
-<span class="keyword">local</span> t               = <span class="global">require</span> <span class="string">"terminal"</span>
-<span class="keyword">local</span> TimeSeriesGraph = <span class="global">require</span> <span class="string">"terminal.canvas.timeseriesgraph"</span>
-
-<span class="keyword">local</span> HISTORY_SIZE = <span class="number">100</span>   <span class="comment">-- number of samples kept / displayed
-</span><span class="keyword">local</span> INTERVAL     = <span class="number">0.10</span>  <span class="comment">-- seconds between updates
-</span><span class="keyword">local</span> GRAPH_COLS   = <span class="number">60</span>    <span class="comment">-- canvas width in braille character columns (= 120 px)
-</span><span class="keyword">local</span> GRAPH_ROWS   = <span class="number">15</span>    <span class="comment">-- canvas height in braille character rows   (=  60 px)
-</span>
-<span class="keyword">local</span> frame = <span class="number">0</span>   <span class="comment">-- counts updates; use frame * INTERVAL for wall time
-</span>
-<span class="keyword">local</span> graph = <span class="function-name">TimeSeriesGraph</span>({
-  history = HISTORY_SIZE,
-})
-
-
-
-<span class="comment">--- Returns the next data sample: a slow sine wave in the range -100..100.
-</span><span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">get_value</span>()
-  frame = frame + <span class="number">1</span>
-  <span class="keyword">return</span> <span class="number">100</span> * <span class="global">math</span>.<span class="function-name">sin</span>(frame * INTERVAL * <span class="number">0.8</span>)
-<span class="keyword">end</span>
+<span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> MultiSelect = <span class="global">require</span>(<span class="string">"terminal.cli.multiselect"</span>)
 
 
 
 <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
-  t.cursor.visible.<span class="function-name">set</span>(<span class="keyword">false</span>)
-  t.output.<span class="global">print</span>(<span class="string">"Sine wave demo  (press any key to quit)"</span>)
-  t.output.<span class="function-name">write</span>((<span class="string">"\n"</span>):<span class="function-name">rep</span>(GRAPH_ROWS + <span class="number">2</span>))
-  t.cursor.position.<span class="function-name">up</span>(GRAPH_ROWS + <span class="number">2</span>)
+  t.text.<span class="function-name">push</span> { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"high"</span> }
+  t.output.<span class="global">print</span>(<span class="string">"cli.MultiSelect demo"</span>)
+  t.text.<span class="function-name">pop</span>()
+  t.output.<span class="global">print</span>()
 
-  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
-    graph:<span class="function-name">push</span>(<span class="function-name">get_value</span>())
-    t.output.<span class="function-name">write</span>(graph:<span class="function-name">render</span>({
-      cols = GRAPH_COLS,
-      rows = GRAPH_ROWS,
-      fmt = <span class="string">"%g%%"</span>,
-      graph_attr = { fg = <span class="string">"black"</span>, bg = <span class="string">"yellow"</span> },
-      label_attr = { fg = <span class="string">"red"</span>, bg = <span class="string">"white"</span> },
-    }))
 
-    <span class="keyword">if</span> t.input.<span class="function-name">readansi</span>(INTERVAL) <span class="keyword">then</span>
-      <span class="keyword">break</span>
-    <span class="keyword">end</span>
+  <span class="keyword">local</span> features = {
+    { label = <span class="string">"Unit tests"</span>,       key = <span class="string">"tests"</span>,     value = <span class="keyword">true</span>  },
+    { label = <span class="string">"CI workflow"</span>,      key = <span class="string">"ci"</span>,        value = <span class="keyword">true</span>  },
+    { label = <span class="string">"Docker support"</span>,   key = <span class="string">"docker"</span>,    value = <span class="keyword">false</span> },
+    { label = <span class="string">"Type annotations"</span>, key = <span class="string">"types"</span>,     value = <span class="keyword">false</span> },
+    { label = <span class="string">"Documentation"</span>,    key = <span class="string">"docs"</span>,      value = <span class="keyword">false</span> },
+    { label = <span class="string">"Changelog"</span>,        key = <span class="string">"changelog"</span>, value = <span class="keyword">false</span> },
+  }
+
+  <span class="keyword">local</span> ms = <span class="function-name">MultiSelect</span> {
+    prompt = <span class="string">"Enable features:"</span>,
+    choices = features,
+    cancellable = <span class="keyword">true</span>,
+  }
+  <span class="keyword">local</span> result, err = <span class="function-name">ms</span>()
+
+  <span class="keyword">if</span> <span class="keyword">not</span> result <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(result, err)
+    <span class="keyword">return</span>
   <span class="keyword">end</span>
 
-  t.cursor.position.<span class="function-name">down</span>(GRAPH_ROWS)
-  t.output.<span class="global">print</span>(<span class="string">"\nDone."</span>)
-  t.cursor.visible.<span class="function-name">set</span>(<span class="keyword">true</span>)
+
+  <span class="comment">-- summary
+</span>  t.output.<span class="global">print</span>()
+  t.text.<span class="function-name">push</span> { fg = <span class="string">"green"</span>, brightness = <span class="string">"high"</span> }
+  t.output.<span class="global">print</span>(<span class="string">"Configuration ready!"</span>)
+  t.text.<span class="function-name">pop</span>()
+
+  t.output.<span class="global">print</span>(<span class="string">"result = {"</span>)
+  <span class="keyword">for</span> key, value <span class="keyword">in</span> <span class="global">pairs</span>(result) <span class="keyword">do</span>
+    t.output.<span class="global">print</span>(<span class="string">'    "'</span> .. key .. <span class="string">'" = '</span> .. <span class="global">tostring</span>(value) .. <span class="string">","</span>)
+  <span class="keyword">end</span>
+  t.output.<span class="global">print</span>(<span class="string">"}"</span>)
+
+  t.output.<span class="global">print</span>()
+  ms:<span class="function-name">print_selection</span>()
 <span class="keyword">end</span>
 
 
 
-<span class="comment">-- initialize terminal and run
-</span>t.<span class="function-name">initwrap</span>(main)()</pre>
+t.<span class="function-name">initwrap</span>(main, {
+  disable_sigint = <span class="keyword">true</span>, <span class="comment">-- allow ctrl-c as cancellation in widgets
+</span>})()</pre>
 
 
 </div> <!-- id="content" -->

@@ -61,14 +61,17 @@
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
   <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
-  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -81,6 +84,7 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -91,12 +95,15 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
@@ -118,7 +125,7 @@
  Especially the <a href="https://www.unicode.org/Public/UCD/latest/ucd/EastAsianWidth.txt">'ambiguous width'</a>
  characters can be displayed with different
  widths especially when used with East Asian languages.
- The only way to truly know their display width is to write them to the terminal
+ The only way to truly know their display width is to write one to the terminal
  and measure the cursor position change.</p>
 
 <p> This module implements ambiguous-width configuration and detection (default 1).
@@ -173,7 +180,7 @@
     Detects and sets the width of the abiguous width characters.
  Writes a test character and queries the cursor position. Returns (and sets) the default value 1 if detection fails.</p>
 
-<p> The preferred way to call this function is during terminal initialization, see <a href="../modules/terminal.html#initialize">terminal.initialize</a>.
+<p> The preferred way to call this function is implicitly during terminal initialization, see <a href="../modules/terminal.html#initialize">terminal.initialize</a>.
 
 
 
@@ -295,8 +302,18 @@
     </dt>
     <dd>
     Truncates text to fit within a given width, adding ellipsis as needed.
- Shortens text if necessary, adds ellipsis when truncated. Respects UTF-8
- character boundaries and handles double-width characters correctly.
+ Respects UTF-8 character boundaries and handles double-width characters correctly.</p>
+
+<p> Truncation type:</p>
+
+<ul>
+    <li><p><code>&quot;right&quot;</code>: Truncate from the right, show beginning of text with ellipsis on the right</p></li>
+    <li><p><code>&quot;left&quot;</code>: Truncate from the left, show end of text with ellipsis on the left</p></li>
+    <li><p><code>&quot;drop&quot;</code>: Drop the entire text if it doesn't fit (return empty string).</p></li>
+</ul>
+
+<p> <em>NOTE</em>: The returned string can be less than the requested width. The 2nd return value is the actual
+ width of the returned string in columns.
 
 
     <h3>Parameters:</h3>
@@ -312,16 +329,13 @@
         </li>
         <li><span class="parameter">trunc_type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         The type of truncation to apply:
-   - "right": Truncate from the right, show beginning of text with ellipsis on the right
-   - "left": Truncate from the left, show end of text with ellipsis on the left
-   - "drop": Drop the entire text if it doesn't fit (return empty string).
+         The type of truncation to apply; <code>&quot;right&quot;</code> (default), <code>&quot;left&quot;</code>, or <code>&quot;drop&quot;</code>.
          (<em>default</em> "right")
         </li>
         <li><span class="parameter">ellipsis</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          The ellipsis string to use. Defaults to Unicode ellipsis character "…".
-   Can be a multi-character string or empty string.
+ Can be a multi-character string or empty string.
          (<em>default</em> "…")
         </li>
     </ul>

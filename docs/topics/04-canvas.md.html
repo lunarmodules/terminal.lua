@@ -31,6 +31,12 @@
   <li><a href="../index.html">Index</a></li>
 </ul>
 
+<h2>Contents</h2>
+<ul>
+<li><a href="#4_1_Canvas">4.1 Canvas </a></li>
+<li><a href="#4_2_canvas_Viewport">4.2 canvas.Viewport </a></li>
+<li><a href="#4_3_canvas_TimeSeriesGraph">4.3 canvas.TimeSeriesGraph </a></li>
+</ul>
 
 
 <h2>Topics</h2>
@@ -38,10 +44,10 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
-  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><strong>4. Canvas (braille pixel graphics)</strong></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
-  <li><strong>MIT License</strong></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
@@ -114,27 +120,69 @@
 <div id="content">
 
 
-<h1>MIT License</h1>
+<h1>4. Canvas (braille pixel graphics)</h1>
 
-<h3>Copyright (c) 2024-2026 Thijs Schreijer</h3>
+<p>The <code>terminal.canvas</code> module family provides a pixel-level drawing surface built on Unicode
+Braille characters. Each terminal cell holds one braille character (U+2800–U+28FF), which
+encodes a 2×4 dot grid — so a canvas that is <strong>W columns × H rows</strong> in terminal space exposes
+<strong>2W × 4H pixels</strong>.</p>
 
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
+<p>Three classes build on each other:</p>
 
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
+<ul>
+    <li><a href="../classes/Canvas.html#">Canvas</a> — the raw pixel grid and all drawing primitives.</li>
+    <li><a href="../classes/canvas.Viewport.html#">canvas.Viewport</a> — maps a fixed virtual coordinate space onto a canvas with scaling and alignment.</li>
+    <li><a href="../classes/canvas.TimeSeriesGraph.html#">canvas.TimeSeriesGraph</a> — a ready-made scrolling data graph drawn on a canvas.</li>
+</ul>
 
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<p><a name="4_1_Canvas"></a></p>
+<h2>4.1 Canvas</h2>
+
+<p>A <a href="../classes/Canvas.html#">Canvas</a> owns a grid of braille cells. Pixel coordinates are <strong>0-based</strong>, origin at the
+top-left, x increasing right, y increasing down. Drawing outside the bounds is silently
+ignored.</p>
+
+<p>The canvas can be rendered with <code>render()</code>. Without options, cursor movement sequences are
+included so the cursor returns to the top-left of the block after rendering — suitable for
+use inside a TUI layout. Pass <code>print = true</code> to get plain newline-separated output instead.</p>
+
+<p>See the <a href="../classes/Canvas.html#">Canvas</a> class reference for all drawing primitives (<code>line</code>, <code>ellipse</code>, <code>circle</code>,
+<code>arc</code>, <code>polygon</code>) and canvas management methods (<code>clear</code>, <code>resize</code>, <code>scroll</code>, <code>roll</code>).</p>
+
+<p><a name="4_2_canvas_Viewport"></a></p>
+<h2>4.2 canvas.Viewport</h2>
+
+<p>Drawing directly in physical pixels is inconvenient when the canvas size changes (e.g. on
+terminal resize). <a href="../classes/canvas.Viewport.html#">canvas.Viewport</a> solves this by providing a <strong>fixed virtual coordinate
+space</strong> that it maps to the underlying canvas via a linear transform.</p>
+
+<p>Three scale modes control what happens when the virtual and physical aspect ratios differ:</p>
+
+<ul>
+    <li><code>stretch</code> — x and y scaled independently; fills the canvas exactly, may distort.</li>
+    <li><code>fit</code> — uniform scale; fits inside the canvas, leaving blank letterbox/pillarbox bands.</li>
+    <li><code>fill</code> — uniform scale; fills the canvas, clipping content outside the bounds.</li>
+</ul>
+
+<p>The <code>anchor</code> option (<code>center</code> or <code>top_left</code>) positions the virtual space within any blank
+bands that appear in <code>fit</code> mode.</p>
+
+<p>On terminal resize, call <code>set_canvas</code> with a new canvas and re-issue all drawing calls.
+<a href="../classes/canvas.Viewport.html#">canvas.Viewport</a> exposes the same drawing primitives as <a href="../classes/Canvas.html#">Canvas</a>, using virtual coordinates.</p>
+
+<p>See <code>examples/canvas.lua</code> for a working demo.</p>
+
+<p><a name="4_3_canvas_TimeSeriesGraph"></a></p>
+<h2>4.3 canvas.TimeSeriesGraph</h2>
+
+<p><a href="../classes/canvas.TimeSeriesGraph.html#">canvas.TimeSeriesGraph</a> renders a scrolling data plot. It manages a sliding sample window,
+Y-axis bounds, tick marks, and labels. Push values with <code>push()</code>, then either draw onto an
+existing canvas with <code>draw(canvas)</code> or let it create one internally via <code>render({ cols, rows })</code>.</p>
+
+<p>When <code>min</code>/<code>max</code> are omitted, the range expands dynamically, snapping to the nearest "nice"
+number (1/2/5 × 10ⁿ).</p>
+
+<p>See <code>examples/graph.lua</code> for a working demo.</p>
 
 
 </div> <!-- id="content" -->

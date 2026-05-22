@@ -1,0 +1,440 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><strong>cli.Confirm</strong></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>cli.Confirm</code></h1>
+<p>A confirmation widget for CLI tools.</p>
+<p>
+
+
+<p> Displays a prompt with a list of labelled responses styled as a <a href="../classes/cli.Select.html#">cli.Select</a> menu.
+ The user navigates with arrow keys or typing, and confirms with Enter. Optionally the widget
+ can be cancelled with <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>.</p>
+
+<p> Each response entry is a table <code>{ label = string, value = any, cancel = bool? }</code>.
+ When <code>value</code> is omitted it defaults to <code>label</code>. Marking an entry with <code>cancel = true</code>
+ means pressing Escape selects that entry instead of returning <code>nil, &quot;cancelled&quot;</code>.</p>
+
+<p> NOTE: you MUST call <a href="../modules/terminal.html#initialize">terminal.initialize</a> before calling this widget's <code>:run()</code> method.</p>
+
+<p> Example using a pre-defined set of responses:</p>
+
+
+<pre>
+<span class="keyword">local</span> Confirm = <span class="global">require</span>(<span class="string">"terminal.cli.confirm"</span>)
+
+<span class="keyword">local</span> widget = <span class="function-name">Confirm</span>{
+  prompt = <span class="string">"Delete this file?"</span>,
+  responses = Confirm.sets.yes_no_cancel,
+  default = Confirm.ids.no,
+}
+
+<span class="keyword">local</span> result = <span class="function-name">widget</span>()   <span class="comment">-- invokes the 'run' method
+</span><span class="keyword">if</span> result == Confirm.ids.yes <span class="keyword">then</span>
+  <span class="comment">-- proceed
+</span><span class="keyword">end</span>
+</pre>
+
+<p> Example using a custom set of responses:</p>
+
+
+<pre>
+<span class="keyword">local</span> Confirm = <span class="global">require</span>(<span class="string">"terminal.cli.confirm"</span>)
+
+<span class="keyword">local</span> widget = <span class="function-name">Confirm</span>{
+  prompt = <span class="string">"Choose an option:"</span>,
+  responses = {
+    { label = <span class="string">"Option 1"</span>, value = <span class="string">"opt1"</span> },
+    { label = <span class="string">"Option 2"</span>, value = <span class="string">"opt2"</span>, cancel = <span class="keyword">true</span> },
+  },
+  default = <span class="string">"opt2"</span>,
+}
+
+<span class="keyword">local</span> result, err = widget:<span class="function-name">run</span>()
+</pre>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cli.Confirm">cli.Confirm (opts)</a></td>
+	<td class="summary">Create a new Confirm instance.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cli.confirm.ids">cli.confirm.ids</a></td>
+	<td class="summary">Response ID constants.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cli.confirm.sets">cli.confirm.sets</a></td>
+	<td class="summary">Preset response sets.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cli.confirm:height">cli.confirm:height ()</a></td>
+	<td class="summary">Returns the display height in rows.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cli.confirm:print_selection">cli.confirm:print_selection ()</a></td>
+	<td class="summary">Prints a one-line summary of the prompt and selected response.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cli.confirm:run">cli.confirm:run ()</a></td>
+	<td class="summary">Executes the widget.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cli.Confirm"></a>
+    <strong>cli.Confirm (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Confirm instance.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options for the Confirm widget.
+        <ul>
+        <li><span class="parameter">prompt</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         The question to display.
+        </li>
+        <li><span class="parameter">responses</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         List of response entry tables. Each entry must have
+ a <code>label</code> (string) and may have a <code>value</code> (any; defaults to <code>label</code>) and
+ <code>cancel</code> (bool; marks the entry selected when Escape is pressed).
+ Defaults to <code>Confirm.sets.ok</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">default</span>
+            <span class="types"><span class="type">any</span></span>
+         The <code>value</code> of the response to pre-select. Defaults to the value of the first entry.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">cancellable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether the widget can be cancelled by pressing
+ <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>. Defaults to <code>true</code> when a response has <code>cancel = true</code>,
+ <code>false</code> otherwise.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">clear</span>
+            <span class="types"><span class="type">boolean</span></span>
+         When <code>false</code> (default), replaces the widget with
+ a one-line summary on completion. When <code>true</code>, clears everything.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/cli.Confirm.html">Confirm</a></span>
+        A new Confirm instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cli.confirm.ids"></a>
+    <strong>cli.confirm.ids</strong>
+    </dt>
+    <dd>
+    Response ID constants.  Plain strings used as <code>value</code> fields in the preset <a href="../classes/cli.Confirm.html#cli.confirm.sets">sets</a>.
+ Useful for comparing the return value of <code>run()</code> without hardcoding strings.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">ok</span>
+         <code>&quot;ok&quot;</code>
+        </li>
+        <li><span class="parameter">cancel</span>
+         <code>&quot;cancel&quot;</code>
+        </li>
+        <li><span class="parameter">abort</span>
+         <code>&quot;abort&quot;</code>
+        </li>
+        <li><span class="parameter">retry</span>
+         <code>&quot;retry&quot;</code>
+        </li>
+        <li><span class="parameter">ignore</span>
+         <code>&quot;ignore&quot;</code>
+        </li>
+        <li><span class="parameter">yes</span>
+         <code>&quot;yes&quot;</code>
+        </li>
+        <li><span class="parameter">no</span>
+         <code>&quot;no&quot;</code>
+        </li>
+        <li><span class="parameter">try_again</span>
+         <code>&quot;try_again&quot;</code>
+        </li>
+        <li><span class="parameter">continue</span>
+         <code>&quot;continue&quot;</code>
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cli.confirm.sets"></a>
+    <strong>cli.confirm.sets</strong>
+    </dt>
+    <dd>
+    Preset response sets.  Each is an array, where the values are has tables; <code>{label, value, cancel?}</code>.
+ These are ready to pass as <code>opts.responses</code>, as the most common confirmations.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">ok</span>
+         Single OK response.
+        </li>
+        <li><span class="parameter">ok_cancel</span>
+         OK and Cancel responses.
+        </li>
+        <li><span class="parameter">abort_retry_ignore</span>
+         Abort (cancel), Retry, and Ignore responses.
+        </li>
+        <li><span class="parameter">yes_no_cancel</span>
+         Yes, No, and Cancel responses.
+        </li>
+        <li><span class="parameter">yes_no</span>
+         Yes and No responses.
+        </li>
+        <li><span class="parameter">retry_cancel</span>
+         Retry and Cancel responses.
+        </li>
+        <li><span class="parameter">cancel_try_continue</span>
+         Cancel, Try Again, and Continue responses.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cli.confirm:height"></a>
+    <strong>cli.confirm:height ()</strong>
+    </dt>
+    <dd>
+    Returns the display height in rows.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The height of the widget in rows.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cli.confirm:print_selection"></a>
+    <strong>cli.confirm:print_selection ()</strong>
+    </dt>
+    <dd>
+    Prints a one-line summary of the prompt and selected response.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cli.confirm:run"></a>
+    <strong>cli.confirm:run ()</strong>
+    </dt>
+    <dd>
+    Executes the widget.
+ Initializes the terminal if necessary, and handles cleanup after the widget closes.
+ On completion, replaces the interactive widget with a one-line summary unless <code>clear</code> was set.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span></span>
+        The <code>value</code> of the selected response entry (defaults to its <code>label</code> when unset).
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        On error.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        <code>&quot;cancelled&quot;</code> if cancelled and no response has <code>cancel = true</code>.</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -40,14 +40,17 @@
 
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
   <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
-  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><strong>ui.Panel</strong></li>
-  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -81,6 +84,7 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -91,12 +95,15 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
@@ -826,7 +833,7 @@
         <ul>
         <li><span class="parameter">content</span>
             <span class="types"><span class="type">function</span></span>
-         Content callback function that takes only self parameter. Access layout via self.inner<em>row, self.inner</em>col, self.inner<em>height, self.inner</em>width.
+         Content callback function that takes only <code>self</code> parameter. Access layout via <a href="../classes/ui.Panel.html#self.inner_row">self.inner_row</a>, <a href="../classes/ui.Panel.html#self.inner_col">self.inner_col</a>, <a href="../classes/ui.Panel.html#self.inner_height">self.inner_height</a>, <a href="../classes/ui.Panel.html#self.inner_width">self.inner_width</a>.
          (<em>optional</em>)
         </li>
         <li><span class="parameter">clear_content</span>
@@ -846,7 +853,7 @@
         </li>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         Optional name for the panel. Defaults to tostring(self) if not provided.
+         Optional name for the panel. Defaults to <code>tostring(self)</code> if not provided.
          (<em>optional</em>)
         </li>
         <li><span class="parameter">min_height</span>
@@ -884,26 +891,26 @@
          Border configuration for content panels, with the following properties:
          (<em>optional</em>)
         </li>
-        <li><span class="parameter">format</span>
+        <li><span class="parameter">border.format</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          The box format table (see <a href="../modules/terminal.draw.html#box_fmt">terminal.draw.box_fmt</a>).
         </li>
-        <li><span class="parameter">attr</span>
+        <li><span class="parameter">border.attr</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          Table of attributes for the border, eg. <code>{ fg = &quot;red&quot;, bg = &quot;blue&quot; }</code>.
          (<em>optional</em>)
         </li>
-        <li><span class="parameter">title</span>
+        <li><span class="parameter">border.title</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          Optional title to display in the border.
          (<em>optional</em>)
         </li>
-        <li><span class="parameter">truncation_type</span>
+        <li><span class="parameter">border.truncation_type</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          The type of title-truncation to apply, either "left", "right", or "drop".
          (<em>default</em> "right")
         </li>
-        <li><span class="parameter">title_attr</span>
+        <li><span class="parameter">border.title_attr</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          Table of attributes for the title, eg. <code>{ fg = &quot;red&quot;, bg = &quot;blue&quot; }</code>.
          (<em>optional</em>)

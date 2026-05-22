@@ -33,21 +33,24 @@
 
 <h2>Contents</h2>
 <ul>
+<li><a href="#Functions">Functions</a></li>
 <li><a href="#Fields">Fields</a></li>
-<li><a href="#Methods">Methods</a></li>
 </ul>
 
 
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
   <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><strong>canvas.Viewport</strong></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
-  <li><strong>ui.CanvasViewport</strong></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -81,6 +84,7 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -91,12 +95,15 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
@@ -111,7 +118,7 @@
 
 <div id="content">
 
-<h1>Class <code>ui.CanvasViewport</code></h1>
+<h1>Class <code>canvas.Viewport</code></h1>
 <p>A viewport that maps a virtual coordinate space onto a Canvas.</p>
 <p>
 
@@ -159,14 +166,14 @@
 
 <p> <strong>Resize handling:</strong>
  The viewport holds a reference to a Canvas. When the panel is resized, the
- caller should replace the canvas via <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport:set_canvas">set_canvas</a> and then re-issue all
+ caller should replace the canvas via <a href="../classes/canvas.Viewport.html#CanvasViewport:set_canvas">set_canvas</a> and then re-issue all
  drawing calls.</p>
 
 <p> Example usage:</p>
 
 <pre>
-<span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.ui.canvas"</span>
-<span class="keyword">local</span> CanvasViewport = <span class="global">require</span> <span class="string">"terminal.ui.canvasviewport"</span>
+<span class="keyword">local</span> Canvas = <span class="global">require</span> <span class="string">"terminal.canvas"</span>
+<span class="keyword">local</span> CanvasViewport = <span class="global">require</span> <span class="string">"terminal.canvas.viewport"</span>
 
 <span class="comment">-- Inside a Panel content callback, called on every render (including resize):
 </span><span class="keyword">local</span> c = <span class="function-name">Canvas</span>({ width = panel.inner_width, height = panel.inner_height })
@@ -182,118 +189,81 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 </p>
 
 
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:arc">CanvasViewport:arc (opts)</a></td>
+	<td class="summary">Draw an arc using virtual-space coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:circle">CanvasViewport:circle (opts)</a></td>
+	<td class="summary">Draw a circle using virtual-space coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:ellipse">CanvasViewport:ellipse (opts)</a></td>
+	<td class="summary">Draw an ellipse using virtual-space coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:get_scale">CanvasViewport:get_scale ()</a></td>
+	<td class="summary">Return the current scale factors applied to virtual coordinates.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:init">CanvasViewport:init (opts)</a></td>
+	<td class="summary">Create a new CanvasViewport.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:line">CanvasViewport:line (opts)</a></td>
+	<td class="summary">Draw a line between two virtual-space pixels.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:polygon">CanvasViewport:polygon (opts)</a></td>
+	<td class="summary">Draw a polygon from an array of virtual-space <code>{x, y}</code> points.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:set">CanvasViewport:set (x, y)</a></td>
+	<td class="summary">Set (illuminate) a pixel at a virtual coordinate.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:set_canvas">CanvasViewport:set_canvas (canvas)</a></td>
+	<td class="summary">Replace the underlying canvas.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CanvasViewport:unset">CanvasViewport:unset (x, y)</a></td>
+	<td class="summary">Clear (extinguish) a pixel at a virtual coordinate.</td>
+	</tr>
+</table>
 <h2><a href="#Fields">Fields</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport.anchors">ui.canvasviewport.anchors</a></td>
+	<td class="name" nowrap><a href="#CanvasViewport.anchors">CanvasViewport.anchors</a></td>
 	<td class="summary">Anchor constants; <code>center</code> or <code>top_left</code> determine the alignment of the virtual space within the
  canvas when <code>scale_mode</code> is <code>fit</code> or <code>fill</code>.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport.scale_modes">ui.canvasviewport.scale_modes</a></td>
+	<td class="name" nowrap><a href="#CanvasViewport.scale_modes">CanvasViewport.scale_modes</a></td>
 	<td class="summary">Scale mode constants; <code>stretch</code>, <code>fit</code>, or <code>fill</code> determine how the virtual
  coordinate space is mapped to the underlying canvas when their aspect ratios do not match.</td>
 	</tr>
 </table>
-<h2><a href="#Methods">Methods</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:arc">ui.canvasviewport:arc (opts)</a></td>
-	<td class="summary">Draw an arc using virtual-space coordinates.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:circle">ui.canvasviewport:circle (opts)</a></td>
-	<td class="summary">Draw a circle using virtual-space coordinates.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:ellipse">ui.canvasviewport:ellipse (opts)</a></td>
-	<td class="summary">Draw an ellipse using virtual-space coordinates.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:get_scale">ui.canvasviewport:get_scale ()</a></td>
-	<td class="summary">Return the current scale factors applied to virtual coordinates.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:init">ui.canvasviewport:init (opts)</a></td>
-	<td class="summary">Create a new CanvasViewport.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:line">ui.canvasviewport:line (opts)</a></td>
-	<td class="summary">Draw a line between two virtual-space pixels.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:polygon">ui.canvasviewport:polygon (opts)</a></td>
-	<td class="summary">Draw a polygon from an array of virtual-space <code>{x, y}</code> points.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:set">ui.canvasviewport:set (x, y)</a></td>
-	<td class="summary">Set (illuminate) a pixel at a virtual coordinate.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:set_canvas">ui.canvasviewport:set_canvas (canvas)</a></td>
-	<td class="summary">Replace the underlying canvas.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#ui.canvasviewport:unset">ui.canvasviewport:unset (x, y)</a></td>
-	<td class="summary">Clear (extinguish) a pixel at a virtual coordinate.</td>
-	</tr>
-</table>
 
 <br/>
 <br/>
 
 
-    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
 
     <dl class="function">
     <dt>
-    <a name = "ui.canvasviewport.anchors"></a>
-    <strong>ui.canvasviewport.anchors</strong>
-    </dt>
-    <dd>
-    Anchor constants; <code>center</code> or <code>top_left</code> determine the alignment of the virtual space within the
- canvas when <code>scale_mode</code> is <code>fit</code> or <code>fill</code>.  With <code>center</code> the virtual space is centered in the
- canvas, and with <code>top_left</code> the virtual space is aligned to the top-left corner of the canvas.
- This has no effect when <code>scale_mode</code> is <code>stretch</code> since the virtual space always fills the canvas
- in that mode.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "ui.canvasviewport.scale_modes"></a>
-    <strong>ui.canvasviewport.scale_modes</strong>
-    </dt>
-    <dd>
-    Scale mode constants; <code>stretch</code>, <code>fit</code>, or <code>fill</code> determine how the virtual
- coordinate space is mapped to the underlying canvas when their aspect ratios do not match.
-
-
-
-
-
-
-
-</dd>
-</dl>
-    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "ui.canvasviewport:arc"></a>
-    <strong>ui.canvasviewport:arc (opts)</strong>
+    <a name = "CanvasViewport:arc"></a>
+    <strong>CanvasViewport:arc (opts)</strong>
     </dt>
     <dd>
     Draw an arc using virtual-space coordinates.
- Scales the centre and radii into physical canvas pixels, then delegates to <a href="../classes/ui.Canvas.html#ui.canvas:arc">Canvas:arc</a>.
+ Scales the centre and radii into physical canvas pixels, then delegates to <a href="../classes/Canvas.html#canvas:arc">Canvas:arc</a>.
  Angles are passed through unchanged; they describe the same geometric direction
  regardless of scale.</p>
 
-<p> Note: angles are drawn clockwise, see <a href="../classes/ui.Canvas.html#ui.canvas:arc">Canvas:arc</a> for details.
+<p> Note: angles are drawn clockwise, see <a href="../classes/Canvas.html#canvas:arc">Canvas:arc</a> for details.
 
 
     <h3>Parameters:</h3>
@@ -340,12 +310,12 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:circle"></a>
-    <strong>ui.canvasviewport:circle (opts)</strong>
+    <a name = "CanvasViewport:circle"></a>
+    <strong>CanvasViewport:circle (opts)</strong>
     </dt>
     <dd>
     Draw a circle using virtual-space coordinates.
- Convenience wrapper around <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport:ellipse">ellipse</a> with equal horizontal and vertical radii.
+ Convenience wrapper around <a href="../classes/canvas.Viewport.html#CanvasViewport:ellipse">ellipse</a> with equal horizontal and vertical radii.
  With <code>scale_modes.fit</code> or <code>scale_modes.fill</code> the uniform scale preserves the circular shape.
  With <code>scale_modes.stretch</code> the circle maps to an ellipse on the canvas.
 
@@ -387,8 +357,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:ellipse"></a>
-    <strong>ui.canvasviewport:ellipse (opts)</strong>
+    <a name = "CanvasViewport:ellipse"></a>
+    <strong>CanvasViewport:ellipse (opts)</strong>
     </dt>
     <dd>
     Draw an ellipse using virtual-space coordinates.
@@ -437,8 +407,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:get_scale"></a>
-    <strong>ui.canvasviewport:get_scale ()</strong>
+    <a name = "CanvasViewport:get_scale"></a>
+    <strong>CanvasViewport:get_scale ()</strong>
     </dt>
     <dd>
     Return the current scale factors applied to virtual coordinates.
@@ -462,8 +432,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:init"></a>
-    <strong>ui.canvasviewport:init (opts)</strong>
+    <a name = "CanvasViewport:init"></a>
+    <strong>CanvasViewport:init (opts)</strong>
     </dt>
     <dd>
     Create a new CanvasViewport.
@@ -477,7 +447,7 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
         <ul>
         <li><span class="parameter">canvas</span>
-            <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+            <span class="types"><a class="type" href="../classes/Canvas.html#">Canvas</a></span>
          The underlying Canvas to draw into.
         </li>
         <li><span class="parameter">width</span>
@@ -490,13 +460,13 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
         </li>
         <li><span class="parameter">scale_mode</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-         One of <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport.scale_modes">CanvasViewport.scale_modes</a>.
+         One of <a href="../classes/canvas.Viewport.html#CanvasViewport.scale_modes">CanvasViewport.scale_modes</a>.
          (<em>default</em> scale_modes.stretch)
         </li>
         <li><span class="parameter">anchor</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          Alignment of the virtual space within the
-   canvas when <code>scale_mode</code> is <code>scale_modes.fit</code> or <code>scale_modes.fill</code>. One of <a href="../classes/ui.CanvasViewport.html#ui.canvasviewport.anchors">CanvasViewport.anchors</a>.
+   canvas when <code>scale_mode</code> is <code>scale_modes.fit</code> or <code>scale_modes.fill</code>. One of <a href="../classes/canvas.Viewport.html#CanvasViewport.anchors">CanvasViewport.anchors</a>.
          (<em>default</em> anchors.center)
         </li>
         </li></ul>
@@ -518,8 +488,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:line"></a>
-    <strong>ui.canvasviewport:line (opts)</strong>
+    <a name = "CanvasViewport:line"></a>
+    <strong>CanvasViewport:line (opts)</strong>
     </dt>
     <dd>
     Draw a line between two virtual-space pixels.
@@ -561,8 +531,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:polygon"></a>
-    <strong>ui.canvasviewport:polygon (opts)</strong>
+    <a name = "CanvasViewport:polygon"></a>
+    <strong>CanvasViewport:polygon (opts)</strong>
     </dt>
     <dd>
     Draw a polygon from an array of virtual-space <code>{x, y}</code> points.
@@ -603,8 +573,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:set"></a>
-    <strong>ui.canvasviewport:set (x, y)</strong>
+    <a name = "CanvasViewport:set"></a>
+    <strong>CanvasViewport:set (x, y)</strong>
     </dt>
     <dd>
     Set (illuminate) a pixel at a virtual coordinate.
@@ -629,8 +599,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:set_canvas"></a>
-    <strong>ui.canvasviewport:set_canvas (canvas)</strong>
+    <a name = "CanvasViewport:set_canvas"></a>
+    <strong>CanvasViewport:set_canvas (canvas)</strong>
     </dt>
     <dd>
     Replace the underlying canvas.
@@ -641,7 +611,7 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">canvas</span>
-            <span class="types"><a class="type" href="../classes/ui.Canvas.html">Canvas</a></span>
+            <span class="types"><a class="type" href="../classes/Canvas.html#">Canvas</a></span>
          The new Canvas instance.
         </li>
     </ul>
@@ -652,8 +622,8 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
 
 </dd>
     <dt>
-    <a name = "ui.canvasviewport:unset"></a>
-    <strong>ui.canvasviewport:unset (x, y)</strong>
+    <a name = "CanvasViewport:unset"></a>
+    <strong>CanvasViewport:unset (x, y)</strong>
     </dt>
     <dd>
     Clear (extinguish) a pixel at a virtual coordinate.
@@ -671,6 +641,43 @@ vp:<span class="function-name">line</span>({ x1 = <span class="number">0</span>,
          Virtual pixel row, 0-based.
         </li>
     </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "CanvasViewport.anchors"></a>
+    <strong>CanvasViewport.anchors</strong>
+    </dt>
+    <dd>
+    Anchor constants; <code>center</code> or <code>top_left</code> determine the alignment of the virtual space within the
+ canvas when <code>scale_mode</code> is <code>fit</code> or <code>fill</code>.  With <code>center</code> the virtual space is centered in the
+ canvas, and with <code>top_left</code> the virtual space is aligned to the top-left corner of the canvas.
+ This has no effect when <code>scale_mode</code> is <code>stretch</code> since the virtual space always fills the canvas
+ in that mode.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "CanvasViewport.scale_modes"></a>
+    <strong>CanvasViewport.scale_modes</strong>
+    </dt>
+    <dd>
+    Scale mode constants; <code>stretch</code>, <code>fit</code>, or <code>fill</code> determine how the virtual
+ coordinate space is mapped to the underlying canvas when their aspect ratios do not match.
+
+
 
 
 

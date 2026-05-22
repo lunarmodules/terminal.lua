@@ -61,14 +61,17 @@
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
   <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
-  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -81,6 +84,7 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -91,12 +95,15 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
@@ -136,8 +143,8 @@
 	<td class="summary">Write a sequence to the terminal to make it beep.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#bell_seq">bell_seq ()</a></td>
-	<td class="summary">Returns a string sequence to make the terminal beep.</td>
+	<td class="name" nowrap><a href="#size">size ()</a></td>
+	<td class="summary">Returns the terminal size in rows and columns.</td>
 	</tr>
 </table>
 <h2><a href="#Initialization">Initialization</a></h2>
@@ -187,19 +194,32 @@
 
 </dd>
     <dt>
-    <a name = "bell_seq"></a>
-    <strong>bell_seq ()</strong>
+    <a name = "size"></a>
+    <strong>size ()</strong>
     </dt>
     <dd>
-    Returns a string sequence to make the terminal beep.
+    Returns the terminal size in rows and columns.
+ Just a convenience, maps 1-on-1 to <code>system.termsize</code>.
 
 
 
     <h3>Returns:</h3>
     <ol>
-
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        number of rows</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        number of columns</li>
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        on error</li>
+        <li>
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
-        ansi sequence to write to the terminal
+        error message</li>
     </ol>
 
 
@@ -328,7 +348,7 @@ main = t.<span class="function-name">initwrap</span>(main, {
   displaybackup = <span class="keyword">true</span>,
 })
 
-<span class="function-name">main</span>(<span class="string">"one"</span>, <span class="string">"two"</span>) <span class="comment">-- rethrows any error after termimal restore</span></pre>
+<span class="function-name">main</span>(<span class="string">"one"</span>, <span class="string">"two"</span>) <span class="comment">-- rethrows any error after terminal restore</span></pre>
     </ul>
 
 </dd>

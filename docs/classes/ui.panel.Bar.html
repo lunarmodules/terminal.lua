@@ -39,14 +39,17 @@
 
 <h2>Classes</h2>
 <ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
   <li><a href="../classes/EditLine.html">EditLine</a></li>
   <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
   <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
   <li><a href="../classes/cli.Select.html">cli.Select</a></li>
-  <li><a href="../classes/ui.Canvas.html">ui.Canvas</a></li>
-  <li><a href="../classes/ui.CanvasViewport.html">ui.CanvasViewport</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
-  <li><a href="../classes/ui.TimeSeriesGraph.html">ui.TimeSeriesGraph</a></li>
   <li><strong>ui.panel.Bar</strong></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
@@ -80,6 +83,7 @@
   <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
   <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -90,12 +94,15 @@
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
   <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
@@ -192,7 +199,7 @@
          Left section content.
          (<em>optional</em>)
         </li>
-        <li><span class="parameter">left.type</span>
+        <li><span class="parameter">left.truncation</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          Truncation type for left section ("left", "right", or "drop").
          (<em>default</em> "right")
@@ -212,7 +219,7 @@
          Center section content.
          (<em>optional</em>)
         </li>
-        <li><span class="parameter">center.type</span>
+        <li><span class="parameter">center.truncation</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          Truncation type for center section ("left", "right", or "drop").
          (<em>default</em> "right")
@@ -232,7 +239,7 @@
          Right section content.
          (<em>optional</em>)
         </li>
-        <li><span class="parameter">right.type</span>
+        <li><span class="parameter">right.truncation</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
          Truncation type for right section ("left", "right", or "drop").
          (<em>default</em> "right")
@@ -267,17 +274,17 @@
   padding = <span class="number">2</span>,
   left = {
     text = <span class="string">"File"</span>,
-    <span class="global">type</span> = <span class="string">"right"</span>,
+    truncation = <span class="string">"right"</span>,
     attr = { fg = <span class="string">"blue"</span> }
   },
   center = {
     text = <span class="string">"Editor"</span>,
-    <span class="global">type</span> = <span class="string">"left"</span>,
+    truncation = <span class="string">"left"</span>,
     attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span> }
   },
   right = {
     text = <span class="string">"Help"</span>,
-    <span class="global">type</span> = <span class="string">"drop"</span>,
+    truncation = <span class="string">"drop"</span>,
     attr = { fg = <span class="string">"green"</span> }
   },
   attr = { bg = <span class="string">"black"</span> }
