@@ -55,6 +55,7 @@ build = {
     ["terminal.text.width"] = "src/terminal/text/width.lua",
     ["terminal.cli.confirm"] = "src/terminal/cli/confirm.lua",
     ["terminal.cli.select"] = "src/terminal/cli/select.lua",
+    ["terminal.cli.multiselect"] = "src/terminal/cli/multiselect.lua",
     ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
     ["terminal.ui.panel.init"] = "src/terminal/ui/panel/init.lua",
     ["terminal.ui.panel.screen"] = "src/terminal/ui/panel/screen.lua",
