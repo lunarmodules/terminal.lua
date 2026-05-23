@@ -4,8 +4,8 @@
 -- The user navigates with arrow keys or typing, and confirms with Enter. Optionally the widget
 -- can be cancelled with `<esc>` or `<ctrl+c>`.
 --
--- Each response entry is a table `{ label = string, value = any, cancel = bool? }`.
--- When `value` is omitted it defaults to `label`. Marking an entry with `cancel = true`
+-- Each response entry is a table `{ label = string, id = any, cancel = bool? }`.
+-- When `id` is omitted it defaults to `label`. Marking an entry with `cancel = true`
 -- means pressing Escape selects that entry instead of returning `nil, "cancelled"`.
 --
 -- NOTE: you MUST call `terminal.initialize` before calling this widget's `:run()` method.
@@ -32,8 +32,8 @@
 --     local widget = Confirm{
 --       prompt = "Choose an option:",
 --       responses = {
---         { label = "Option 1", value = "opt1" },
---         { label = "Option 2", value = "opt2", cancel = true },
+--         { label = "Option 1", id = "opt1" },
+--         { label = "Option 2", id = "opt2", cancel = true },
 --       },
 --       default = "opt2",
 --     }
@@ -48,7 +48,7 @@ local Confirm = utils.class()
 
 
 
---- Response ID constants. Plain strings used as `value` fields in the preset `sets`.
+--- Response ID constants. Plain strings used as `id` fields in the preset `sets`.
 -- Useful for comparing the return value of `run()` without hardcoding strings.
 -- @field ok `"ok"`
 -- @field cancel `"cancel"`
@@ -73,7 +73,7 @@ Confirm.ids = utils.make_lookup("response id", {
 })
 
 
---- Preset response sets. Each is an array, where the values are has tables; `{label, value, cancel?}`.
+--- Preset response sets. Each is an array, where the values are has tables; `{label, id, cancel?}`.
 -- These are ready to pass as `opts.responses`, as the most common confirmations.
 -- @field ok Single OK response.
 -- @field ok_cancel OK and Cancel responses.
@@ -86,34 +86,34 @@ Confirm.ids = utils.make_lookup("response id", {
 local ids = Confirm.ids
 Confirm.sets = utils.make_lookup("response set", {
   ok = {
-    { label = "OK", value = ids.ok },
+    { label = "OK", id = ids.ok },
   },
   ok_cancel = {
-    { label = "OK",     value = ids.ok },
-    { label = "Cancel", value = ids.cancel, cancel = true },
+    { label = "OK",     id = ids.ok },
+    { label = "Cancel", id = ids.cancel, cancel = true },
   },
   abort_retry_ignore = {
-    { label = "Abort",  value = ids.abort, cancel = true },
-    { label = "Retry",  value = ids.retry },
-    { label = "Ignore", value = ids.ignore },
+    { label = "Abort",  id = ids.abort, cancel = true },
+    { label = "Retry",  id = ids.retry },
+    { label = "Ignore", id = ids.ignore },
   },
   yes_no_cancel = {
-    { label = "Yes",    value = ids.yes },
-    { label = "No",     value = ids.no },
-    { label = "Cancel", value = ids.cancel, cancel = true },
+    { label = "Yes",    id = ids.yes },
+    { label = "No",     id = ids.no },
+    { label = "Cancel", id = ids.cancel, cancel = true },
   },
   yes_no = {
-    { label = "Yes", value = ids.yes },
-    { label = "No",  value = ids.no },
+    { label = "Yes", id = ids.yes },
+    { label = "No",  id = ids.no },
   },
   retry_cancel = {
-    { label = "Retry",  value = ids.retry },
-    { label = "Cancel", value = ids.cancel, cancel = true },
+    { label = "Retry",  id = ids.retry },
+    { label = "Cancel", id = ids.cancel, cancel = true },
   },
   cancel_try_continue = {
-    { label = "Cancel",    value = ids.cancel,    cancel = true },
-    { label = "Try Again", value = ids.try_again },
-    { label = "Continue",  value = ids.continue },
+    { label = "Cancel",    id = ids.cancel,    cancel = true },
+    { label = "Try Again", id = ids.try_again },
+    { label = "Continue",  id = ids.continue },
   },
 })
 
@@ -123,10 +123,10 @@ Confirm.sets = utils.make_lookup("response set", {
 -- @tparam table opts Options for the Confirm widget.
 -- @tparam string opts.prompt The question to display.
 -- @tparam[opt] table opts.responses List of response entry tables. Each entry must have
--- a `label` (string) and may have a `value` (any; defaults to `label`) and
+-- a `label` (string) and may have an `id` (any; defaults to `label`) and
 -- `cancel` (bool; marks the entry selected when Escape is pressed).
 -- Defaults to `Confirm.sets.ok`.
--- @tparam[opt] any opts.default The `value` of the response to pre-select. Defaults to the value of the first entry.
+-- @tparam[opt] any opts.default The `id` of the response to pre-select. Defaults to the id of the first entry.
 -- @tparam[opt] boolean opts.cancellable Whether the widget can be cancelled by pressing
 -- `<esc>` or `<ctrl+c>`. Defaults to `true` when a response has `cancel = true`,
 -- `false` otherwise.
@@ -157,7 +157,7 @@ function Confirm:init(opts)
   local default_value
   if opts.default ~= nil then
     for i, entry in ipairs(responses) do
-      local v = entry.value
+      local v = entry.id
       if v == nil then v = entry.label end
       if v == opts.default then
         default_idx = i
@@ -168,7 +168,7 @@ function Confirm:init(opts)
     assert(default_value ~= nil, "default value not found in responses")
   else
     local first = responses[1]
-    default_value = first.value
+    default_value = first.id
     if default_value == nil then default_value = first.label end
   end
 
@@ -216,7 +216,7 @@ end
 --- Executes the widget.
 -- Initializes the terminal if necessary, and handles cleanup after the widget closes.
 -- On completion, replaces the interactive widget with a one-line summary unless `clear` was set.
--- @treturn[1] any The `value` of the selected response entry (defaults to its `label` when unset).
+-- @treturn[1] any The `id` of the selected response entry (defaults to its `label` when unset).
 -- @treturn[2] nil On error.
 -- @treturn[2] string `"cancelled"` if cancelled and no response has `cancel = true`.
 function Confirm:run()
@@ -237,7 +237,7 @@ function Confirm:run()
   end
 
   local entry = self.responses[idx]
-  return entry.value == nil and entry.label or entry.value
+  return entry.id == nil and entry.label or entry.id
 end
 
 

@@ -24,7 +24,7 @@ local function main()
 
   local responses = {}
   for _, name in ipairs(set_names) do
-    responses[#responses + 1] = { label = name, value = name }
+    responses[#responses + 1] = { label = name, id = name }
   end
 
   local choice = Confirm {

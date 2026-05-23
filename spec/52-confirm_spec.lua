@@ -31,9 +31,9 @@ describe("terminal.cli.confirm", function()
 
     it("initializes with all options specified", function()
       local responses = {
-        { label = "Yes",    value = "yes" },
-        { label = "No",     value = "no" },
-        { label = "Cancel", value = "cancel", cancel = true },
+        { label = "Yes",    id = "yes" },
+        { label = "No",     id = "no" },
+        { label = "Cancel", id = "cancel", cancel = true },
       }
       local d = Confirm{
         prompt = "Delete?",
@@ -202,12 +202,12 @@ describe("terminal.cli.confirm", function()
     end)
 
 
-    it("returns arbitrary value types", function()
+    it("returns arbitrary id types", function()
       local d = Confirm{
         prompt = "Continue?",
         responses = {
-          { label = "Yes", value = true },
-          { label = "No",  value = false },
+          { label = "Yes", id = true },
+          { label = "No",  id = false },
         },
         default = false,
       }
