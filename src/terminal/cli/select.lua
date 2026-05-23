@@ -36,6 +36,11 @@ local Select = utils.class()
 
 
 
+-- TODO: consistency on all widgets; open diamond while active, closed diamond when done, and the cursor yellow
+-- once inactive still highlight the choices/input
+
+
+
 -- Key bindings
 local keys = t.input.keymap.get_keys()
 local ctrl_c = assert(t.input.keymap.get_raw_key("ctrl_c"))
