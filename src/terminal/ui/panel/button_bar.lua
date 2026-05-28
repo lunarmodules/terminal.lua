@@ -153,8 +153,8 @@ end
 -- `cancel = true`.
 -- @tparam[opt] any opts.selected Id of the button that receives initial focus.
 -- Defaults to the first item.
--- @tparam[opt="["] string opts.prefix String prepended to every button label when rendered.
--- @tparam[opt="]"] string opts.postfix String appended to every button label when rendered.
+-- @tparam[opt] string opts.prefix String prepended to every button label when rendered. Default `"["`.
+-- @tparam[opt] string opts.postfix String appended to every button label when rendered. Default `"]"`.
 -- @tparam[opt=1] number opts.padding Number of spaces rendered between adjacent buttons.
 -- @tparam[opt] number opts.button_min_width Minimum display-column width for each button cell
 -- (prefix + label + postfix combined). Cells are padded with spaces when the content is shorter.
