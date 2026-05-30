@@ -16,100 +16,99 @@ local text = require "terminal.text"
 
 
 
---- Table with pre-defined box formats.
--- @table box_fmt
--- @field single Single line box format
--- @field single_top Single line box format with top border only
--- @field double Double line box format
--- @field double_top Double line box format with top border only
--- @field copy Function to copy a box format, see `box_fmt.copy` for details
-M.box_fmt = utils.make_lookup("box-format", {
-  single = {
-    t = "─",
-    b = "─",
-    l = "│",
-    r = "│",
-    tl = "┌",
-    tr = "┐",
-    bl = "└",
-    br = "┘",
-    pre = "┤",
-    post = "├",
-  },
-  rounded = {
-    t = "─",
-    b = "─",
-    l = "│",
-    r = "│",
-    tl = "╭",
-    tr = "╮",
-    bl = "╰",
-    br = "╯",
-    pre = "┤",
-    post = "├",
-  },
-  single_top = {
-    t = "─",
-    b = "",
-    l = "",
-    r = "",
-    tl = "",
-    tr = "",
-    bl = "",
-    br = "",
-    pre = "┤",
-    post = "├",
-  },
-  double = {
-    t = "═",
-    b = "═",
-    l = "║",
-    r = "║",
-    tl = "╔",
-    tr = "╗",
-    bl = "╚",
-    br = "╝",
-    pre = "╡",
-    post = "╞",
-  },
-  double_top = {
-    t = "═",
-    b = "",
-    l = "",
-    r = "",
-    tl = "",
-    tr = "",
-    bl = "",
-    br = "",
-    pre = "╡",
-    post = "╞",
-  },
-  --- Copy a box format.
-  -- @function box_fmt.copy
-  -- @tparam table default the default format to copy
-  -- @treturn table a copy of the default format provided
+do
+  local box_fmt_meta = {}
+  box_fmt_meta.__index = {
+    copy = function(self)
+      return setmetatable({
+        t = self.t,
+        b = self.b,
+        l = self.l,
+        r = self.r,
+        tl = self.tl,
+        tr = self.tr,
+        bl = self.bl,
+        br = self.br,
+        pre = self.pre,
+        post = self.post,
+      }, box_fmt_meta)
+    end,
+  }
+
+  --- Table with pre-defined box formats.
+  -- They also have a `copy` method to quickly copy and customize a format.
+  -- @table box_fmt
+  -- @field single Single line box format
+  -- @field single_top Single line box format with top border only
+  -- @field double Double line box format
+  -- @field double_top Double line box format with top border only
   -- @usage -- create new format with spaces around the title
-  -- local fmt = t.box_fmt.copy(t.box_fmt.single)
+  -- local fmt = t.box_fmt.single:copy()
   -- fmt.pre = fmt.pre .. " "
   -- fmt.post = " " .. fmt.post
-  copy = function(default)
-    -- TODO: also add 'copy' such that it becomes a method of the copied format, and can be used to create variations of variations (preferably using a metatable to avoid copying the function every time)
-    -- then chack all uses of this 'copy' function to replace them with method calls (including the above usage example).
-    return {
-      t = default.t,
-      b = default.b,
-      l = default.l,
-      r = default.r,
-      tl = default.tl,
-      tr = default.tr,
-      bl = default.bl,
-      br = default.br,
-      pre = default.pre,
-      post = default.post,
-    }
-  end,
-})
-
+  M.box_fmt = utils.make_lookup("box-format", {
+    single = setmetatable({
+      t = "─",
+      b = "─",
+      l = "│",
+      r = "│",
+      tl = "┌",
+      tr = "┐",
+      bl = "└",
+      br = "┘",
+      pre = "┤",
+      post = "├",
+    }, box_fmt_meta),
+    rounded = setmetatable({
+      t = "─",
+      b = "─",
+      l = "│",
+      r = "│",
+      tl = "╭",
+      tr = "╮",
+      bl = "╰",
+      br = "╯",
+      pre = "┤",
+      post = "├",
+    }, box_fmt_meta),
+    single_top = setmetatable({
+      t = "─",
+      b = "",
+      l = "",
+      r = "",
+      tl = "",
+      tr = "",
+      bl = "",
+      br = "",
+      pre = "┤",
+      post = "├",
+    }, box_fmt_meta),
+    double = setmetatable({
+      t = "═",
+      b = "═",
+      l = "║",
+      r = "║",
+      tl = "╔",
+      tr = "╗",
+      bl = "╚",
+      br = "╝",
+      pre = "╡",
+      post = "╞",
+    }, box_fmt_meta),
+    double_top = setmetatable({
+      t = "═",
+      b = "",
+      l = "",
+      r = "",
+      tl = "",
+      tr = "",
+      bl = "",
+      br = "",
+      pre = "╡",
+      post = "╞",
+    }, box_fmt_meta),
+  })
+end
 
 
 --- Creates a sequence to draw a box, without writing it to the terminal.

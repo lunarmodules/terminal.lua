@@ -763,7 +763,7 @@ describe("terminal.ui.panel", function()
 
     it("accounts for double-width border characters in inner area", function()
       local draw = require("terminal.draw")
-      local fmt = draw.box_fmt.copy(draw.box_fmt.single)
+      local fmt = draw.box_fmt.single:copy()
       fmt.l = "一"  -- U+4E00, display width 2
       fmt.r = "一"
 

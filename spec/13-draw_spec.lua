@@ -4,10 +4,12 @@ local helpers = require "spec.helpers"
 describe("terminal.draw", function()
 
   local line
+  local draw
 
   setup(function()
     helpers.load()
     line = require("terminal.draw.line")
+    draw = require("terminal.draw")
   end)
 
 
@@ -210,6 +212,58 @@ describe("terminal.draw", function()
       local expected = line.title_seq(10, nil)
       line.title(10, nil)
       assert.are.equal(expected, helpers.get_output())
+    end)
+
+  end)
+
+
+  describe("box_fmt:copy()", function()
+
+    it("copies all fields from the source format", function()
+      local src = draw.box_fmt.single
+      local copy = src:copy()
+      assert.are.equal(src.t,    copy.t)
+      assert.are.equal(src.b,    copy.b)
+      assert.are.equal(src.l,    copy.l)
+      assert.are.equal(src.r,    copy.r)
+      assert.are.equal(src.tl,   copy.tl)
+      assert.are.equal(src.tr,   copy.tr)
+      assert.are.equal(src.bl,   copy.bl)
+      assert.are.equal(src.br,   copy.br)
+      assert.are.equal(src.pre,  copy.pre)
+      assert.are.equal(src.post, copy.post)
+    end)
+
+    it("returns a distinct table", function()
+      local copy = draw.box_fmt.single:copy()
+      assert.are_not.equal(draw.box_fmt.single, copy)
+    end)
+
+    it("modifications to the copy do not affect the source", function()
+      local copy = draw.box_fmt.single:copy()
+      copy.tl = "X"
+      assert.are_not.equal("X", draw.box_fmt.single.tl)
+    end)
+
+    it("the copy has a copy method (variations of variations)", function()
+      local copy = draw.box_fmt.single:copy()
+      assert.is_function(copy.copy)
+    end)
+
+    it("copy of a copy carries all fields", function()
+      local copy1 = draw.box_fmt.single:copy()
+      copy1.tl = "X"
+      local copy2 = copy1:copy()
+      assert.are.equal("X", copy2.tl)
+      assert.are.equal(draw.box_fmt.single.t, copy2.t)
+    end)
+
+    it("works on every predefined format", function()
+      for _, name in ipairs({ "single", "rounded", "single_top", "double", "double_top" }) do
+        local fmt = draw.box_fmt[name]
+        local copy = fmt:copy()
+        assert.is_function(copy.copy, name .. ":copy() should return a copyable table")
+      end
     end)
 
   end)
