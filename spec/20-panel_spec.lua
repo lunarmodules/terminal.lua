@@ -692,10 +692,44 @@ describe("terminal.ui.panel", function()
       assert.are.equal(7, bottom_panel.height) -- remaining space
     end)
 
+
+    it("accounts for single-width border characters in inner area", function()
+      local draw = require("terminal.draw")
+      local panel = Panel {
+        content = function() end,
+        border = { format = draw.box_fmt.single }
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+
+      -- All four edges present, each 1 column/row wide
+      assert.are.equal(2, panel.inner_row)    -- top border: +1 row
+      assert.are.equal(2, panel.inner_col)    -- left border: +1 col
+      assert.are.equal(8, panel.inner_height) -- top + bottom borders: -2 rows
+      assert.are.equal(18, panel.inner_width) -- left + right borders: -2 cols
+    end)
+
+
+    it("accounts for double-width border characters in inner area", function()
+      local draw = require("terminal.draw")
+      local fmt = draw.box_fmt.copy(draw.box_fmt.single)
+      fmt.l = "一"  -- U+4E00, display width 2
+      fmt.r = "一"
+
+      local panel = Panel {
+        content = function() end,
+        border = { format = fmt }
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+
+      assert.are.equal(2, panel.inner_row)    -- top border: +1 row
+      assert.are.equal(8, panel.inner_height) -- top + bottom borders: -2 rows
+      assert.are.equal(3, panel.inner_col)    -- left border: +2 cols
+      assert.are.equal(16, panel.inner_width) -- left + right borders: -4 cols
+    end)
+
   end)
-
-
-
 
 
 
