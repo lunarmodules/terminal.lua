@@ -54,6 +54,22 @@ local text = require("terminal.text")
 
 
 
+-- Returns the number of rows consumed by top/bottom borders (0 or 1 each).
+local function border_h_overhead(format)
+  return (format.t ~= "" and 1 or 0)
+       + (format.b ~= "" and 1 or 0)
+end
+
+
+
+-- Returns the number of columns consumed by left/right borders.
+local function border_w_overhead(format)
+  return text.width.utf8swidth(format.l or "")
+       + text.width.utf8swidth(format.r or "")
+end
+
+
+
 local Panel = utils.class()
 
 
@@ -97,7 +113,7 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @tparam[opt=math.huge] number opts.max_width Maximum width constraint.
 -- @tparam[opt=0.5] number opts.split_ratio Ratio for dividing child panels (0.0 to 1.0).
 -- @tparam[opt=true] boolean opts.visible Whether the panel is visible (true) or hidden (false).
--- @tparam[opt] table opts.border Border configuration for content panels, with the following properties:
+-- @tparam[opt] table opts.border Border configuration, with the following properties:
 -- @tparam table opts.border.format The box format table (see `terminal.draw.box_fmt`).
 -- @tparam[opt] table opts.border.attr Table of attributes for the border, eg. `{ fg = "red", bg = "blue" }`.
 -- @tparam[opt] string opts.border.title Optional title to display in the border.
@@ -131,13 +147,6 @@ function Panel:init(opts)
     self.clear_content = opts.clear_content ~= false
     self.orientation = nil
     self.children = nil
-
-    -- Border configuration for content panels
-    self.border = opts.border
-    if self.border then
-      assert(type(self.border) == "table", "border must be a table")
-      assert(self.border.format, "border.format is required when border is specified")
-    end
   else
     -- Divided panel
     assert(#opts.children == 2, "Divided panel must have exactly 2 children")
@@ -150,6 +159,13 @@ function Panel:init(opts)
     self.children = opts.children
     self.split_ratio = opts.split_ratio or 0.5
     assert(self.split_ratio >= 0.0 and self.split_ratio <= 1.0, "Split ratio must be between 0.0 and 1.0")
+  end
+
+  -- Border configuration
+  self.border = opts.border
+  if self.border then
+    assert(type(self.border) == "table", "border must be a table")
+    assert(self.border.format, "border.format is required when border is specified")
   end
 
   -- Size constraints (private)
@@ -292,15 +308,15 @@ function Panel:_calculate_children_layout()
     local child2_width
     if child1:visible() then
       if child2:visible() then  -- both children are visible
-        child1_width = math.floor(self.width * self.split_ratio)
-        child2_width = self.width - child1_width
+        child1_width = math.floor(self.inner_width * self.split_ratio)
+        child2_width = self.inner_width - child1_width
       else  -- only child1 is visible
-        child1_width = self.width
+        child1_width = self.inner_width
         child2_width = 0
       end
     else  -- only child2 is visible
       child1_width = 0
-      child2_width = self.width
+      child2_width = self.inner_width
     end
 
     -- Get size constraints
@@ -312,26 +328,26 @@ function Panel:_calculate_children_layout()
     -- Apply maximum width constraints
     if child1_width > child1_max_width then
       child1_width = child1_max_width
-      child2_width = self.width - child1_width
+      child2_width = self.inner_width - child1_width
     end
     if child2_width > child2_max_width then
       child2_width = child2_max_width
-      child1_width = self.width - child2_width
+      child1_width = self.inner_width - child2_width
     end
 
     -- Ensure minimum widths
     if child1_width < child1_min_width then
       child1_width = child1_min_width
-      child2_width = self.width - child1_width
+      child2_width = self.inner_width - child1_width
     end
     if child2_width < child2_min_width then
       child2_width = child2_min_width
-      child1_width = self.width - child2_width
+      child1_width = self.inner_width - child2_width
     end
 
     -- Calculate child layouts
-    child1:calculate_layout(self.row, self.col, self.height, child1_width)
-    child2:calculate_layout(self.row, self.col + child1_width, self.height, child2_width)
+    child1:calculate_layout(self.inner_row, self.inner_col, self.inner_height, child1_width)
+    child2:calculate_layout(self.inner_row, self.inner_col + child1_width, self.inner_height, child2_width)
 
   else -- VERTICAL
     -- Vertical division: split height
@@ -340,15 +356,15 @@ function Panel:_calculate_children_layout()
 
     if child1:visible() then
       if child2:visible() then  -- both children are visible
-        child1_height = math.floor(self.height * self.split_ratio)
-        child2_height = self.height - child1_height
+        child1_height = math.floor(self.inner_height * self.split_ratio)
+        child2_height = self.inner_height - child1_height
       else  -- only child1 is visible
-        child1_height = self.height
+        child1_height = self.inner_height
         child2_height = 0
       end
     else  -- only child2 is visible
       child1_height = 0
-      child2_height = self.height
+      child2_height = self.inner_height
     end
 
     -- Get size constraints
@@ -360,26 +376,26 @@ function Panel:_calculate_children_layout()
     -- Apply maximum height constraints
     if child1_height > child1_max_height then
       child1_height = child1_max_height
-      child2_height = self.height - child1_height
+      child2_height = self.inner_height - child1_height
     end
     if child2_height > child2_max_height then
       child2_height = child2_max_height
-      child1_height = self.height - child2_height
+      child1_height = self.inner_height - child2_height
     end
 
     -- Ensure minimum heights
     if child1_height < child1_min_height then
       child1_height = child1_min_height
-      child2_height = self.height - child1_height
+      child2_height = self.inner_height - child1_height
     end
     if child2_height < child2_min_height then
       child2_height = child2_min_height
-      child1_height = self.height - child2_height
+      child1_height = self.inner_height - child2_height
     end
 
     -- Calculate child layouts
-    child1:calculate_layout(self.row, self.col, child1_height, self.width)
-    child2:calculate_layout(self.row + child1_height, self.col, child2_height, self.width)
+    child1:calculate_layout(self.inner_row, self.inner_col, child1_height, self.inner_width)
+    child2:calculate_layout(self.inner_row + child1_height, self.inner_col, child2_height, self.inner_width)
   end
 end
 
@@ -430,9 +446,9 @@ function Panel:render()
     return  -- Skip rendering hidden panels
   end
 
+  self:draw_border()
+
   if self.content then
-    -- Render content panel with optional border
-    self:draw_border()
     if self.clear_content then
       self:clear()
     end
@@ -484,6 +500,10 @@ function Panel:get_min_height()
     derived_min_height = self.children[1]:get_min_height() + self.children[2]:get_min_height()
   end
 
+  if self.border then
+    derived_min_height = derived_min_height + border_h_overhead(self.border.format)
+  end
+
   return math.max(self._min_height, derived_min_height)
 end
 
@@ -505,6 +525,10 @@ function Panel:get_min_width()
   else -- VERTICAL
     -- Width constraints are the minimum of both children
     derived_min_width = math.max(self.children[1]:get_min_width(), self.children[2]:get_min_width())
+  end
+
+  if self.border then
+    derived_min_width = derived_min_width + border_w_overhead(self.border.format)
   end
 
   return math.max(self._min_width, derived_min_width)
@@ -530,6 +554,10 @@ function Panel:get_max_height()
     derived_max_height = self.children[1]:get_max_height() + self.children[2]:get_max_height()
   end
 
+  if self.border then
+    derived_max_height = derived_max_height + border_h_overhead(self.border.format)
+  end
+
   return math.min(self._max_height, derived_max_height)
 end
 
@@ -551,6 +579,10 @@ function Panel:get_max_width()
   else -- VERTICAL
     -- Width constraints are the minimum of both children
     derived_max_width = math.min(self.children[1]:get_max_width(), self.children[2]:get_max_width())
+  end
+
+  if self.border then
+    derived_max_width = derived_max_width + border_w_overhead(self.border.format)
   end
 
   return math.min(self._max_width, derived_max_width)

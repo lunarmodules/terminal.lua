@@ -552,6 +552,57 @@ describe("terminal.ui.panel", function()
       assert.are.equal(expected_name, panel.name)
     end)
 
+
+    it("accepts border configuration on divided panels", function()
+      local draw = require("terminal.draw")
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+
+      local panel
+      assert.has_no.errors(function()
+        panel = Panel {
+          orientation = Panel.orientations.horizontal,
+          children = { left_panel, right_panel },
+          border = { format = draw.box_fmt.single, title = "Split Panel" }
+        }
+      end)
+
+      assert.is_not_nil(panel.border)
+      assert.are.equal(draw.box_fmt.single, panel.border.format)
+      assert.are.equal("Split Panel", panel.border.title)
+    end)
+
+
+    it("throws error when border has no format on divided panel", function()
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+
+      assert.has.error(function()
+        Panel {
+          orientation = Panel.orientations.horizontal,
+          children = { left_panel, right_panel },
+          border = {}
+        }
+      end, "border.format is required when border is specified")
+    end)
+
+
+    it("derives constraints from children including border overhead for divided panels", function()
+      local draw = require("terminal.draw")
+      local left_panel = Panel { content = function() end, min_height = 3, min_width = 8 }
+      local right_panel = Panel { content = function() end, min_height = 4, min_width = 6 }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel },
+        border = { format = draw.box_fmt.single }
+      }
+
+      -- single border: top+bottom = 2 rows overhead, left+right = 2 cols overhead
+      assert.are.equal(6, panel:get_min_height()) -- max(3,4) + 2
+      assert.are.equal(16, panel:get_min_width())  -- 8+6 + 2
+    end)
+
   end)
 
 
@@ -729,6 +780,62 @@ describe("terminal.ui.panel", function()
       assert.are.equal(16, panel.inner_width) -- left + right borders: -4 cols
     end)
 
+
+    it("lays out children inside parent border (horizontal)", function()
+      local draw = require("terminal.draw")
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        split_ratio = 0.5,
+        children = { left_panel, right_panel },
+        border = { format = draw.box_fmt.single }
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+
+      -- Inner area: row 2, col 2, height 8, width 18 (single border on all sides)
+      -- Left child: half of inner width = 9
+      assert.are.equal(2, left_panel.row)
+      assert.are.equal(2, left_panel.col)
+      assert.are.equal(8, left_panel.height)
+      assert.are.equal(9, left_panel.width)
+      -- Right child: remaining inner width = 9
+      assert.are.equal(2, right_panel.row)
+      assert.are.equal(11, right_panel.col)  -- 2 + 9
+      assert.are.equal(8, right_panel.height)
+      assert.are.equal(9, right_panel.width)
+    end)
+
+
+    it("lays out children inside parent border (vertical)", function()
+      local draw = require("terminal.draw")
+      local top_panel = Panel { content = function() end }
+      local bottom_panel = Panel { content = function() end }
+
+      local panel = Panel {
+        orientation = Panel.orientations.vertical,
+        split_ratio = 0.5,
+        children = { top_panel, bottom_panel },
+        border = { format = draw.box_fmt.single }
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+
+      -- Inner area: row 2, col 2, height 8, width 18 (single border on all sides)
+      -- Top child: half of inner height = 4
+      assert.are.equal(2, top_panel.row)
+      assert.are.equal(2, top_panel.col)
+      assert.are.equal(4, top_panel.height)
+      assert.are.equal(18, top_panel.width)
+      -- Bottom child: remaining inner height = 4
+      assert.are.equal(6, bottom_panel.row)  -- 2 + 4
+      assert.are.equal(2, bottom_panel.col)
+      assert.are.equal(4, bottom_panel.height)
+      assert.are.equal(18, bottom_panel.width)
+    end)
+
   end)
 
 
@@ -858,10 +965,44 @@ describe("terminal.ui.panel", function()
       assert.is_true(right_callback_called)
     end)
 
+
+    it("draws border for divided panel before rendering children", function()
+      local draw = require("terminal.draw")
+      local text_module = require("terminal.text")
+      local terminal_mod = require("terminal")
+      local clear_mod = require("terminal.clear")
+
+      local old_box = draw.box
+      local old_stack = text_module.stack
+      local old_cursor = terminal_mod.cursor
+      local old_clear_box = clear_mod.box
+
+      local box_called = false
+      draw.box = function() box_called = true end
+      text_module.stack = { push = function() end, pop = function() end }
+      terminal_mod.cursor = { position = { backup = function() end, restore = function() end, set = function() end } }
+      clear_mod.box = function() end
+
+      local left_panel = Panel { content = function() end }
+      local right_panel = Panel { content = function() end }
+      local panel = Panel {
+        orientation = Panel.orientations.horizontal,
+        children = { left_panel, right_panel },
+        border = { format = draw.box_fmt.single }
+      }
+
+      panel:calculate_layout(1, 1, 10, 20)
+      panel:render()
+
+      draw.box = old_box
+      text_module.stack = old_stack
+      terminal_mod.cursor = old_cursor
+      clear_mod.box = old_clear_box
+
+      assert.is_true(box_called)
+    end)
+
   end)
-
-
-
 
 
 
