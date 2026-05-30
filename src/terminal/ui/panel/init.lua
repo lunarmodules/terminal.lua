@@ -52,6 +52,8 @@ local utils = require("terminal.utils")
 local draw = require("terminal.draw")
 local text = require("terminal.text")
 
+
+
 local Panel = utils.class()
 
 
@@ -255,14 +257,12 @@ function Panel:_calculate_inner_area()
       height = height - 1
     end
 
-    if format.l ~= "" then
-      col = col + 1
-      width = width - 1
-    end
+    local wl = text.width.utf8swidth(format.l or "")
+    col = col + wl
+    width = width - wl
 
-    if format.r ~= "" then
-      width = width - 1
-    end
+    local wr = text.width.utf8swidth(format.r or "")
+    width = width - wr
 
     if format.b ~= "" then
       height = height - 1

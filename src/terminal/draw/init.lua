@@ -93,6 +93,8 @@ M.box_fmt = utils.make_lookup("box-format", {
   -- fmt.pre = fmt.pre .. " "
   -- fmt.post = " " .. fmt.post
   copy = function(default)
+    -- TODO: also add 'copy' such that it becomes a method of the copied format, and can be used to create variations of variations (preferably using a metatable to avoid copying the function every time)
+    -- then chack all uses of this 'copy' function to replace them with method calls (including the above usage example).
     return {
       t = default.t,
       b = default.b,
