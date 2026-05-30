@@ -175,18 +175,18 @@ local function run_example_4()
   terminal.cursor.position.set(1, 1)
 
   -- create custom formats to connect the panel borders visually
-  local fmt_top_left = terminal.draw.box_fmt.copy(terminal.draw.box_fmt.single)
+  local fmt_top_left = terminal.draw.box_fmt.single:copy()
   fmt_top_left.tr = "┬" -- connect to the right panel top left corner
   fmt_top_left.b = ""   -- do not draw the bottom bar (use the lower panels top bar)
   fmt_top_left.bl = fmt_top_left.l  -- no edge, continue vertical line
   fmt_top_left.br = fmt_top_left.l  -- no edge, continue vertical line
 
-  local fmt_bottom_left = terminal.draw.box_fmt.copy(terminal.draw.box_fmt.single)
+  local fmt_bottom_left = terminal.draw.box_fmt.single:copy()
   fmt_bottom_left.tl = "├"  -- connect to the top panel bottom left corner
   fmt_bottom_left.tr = "┤"  -- connect to the top panel bottom right corner
   fmt_bottom_left.br = "┴"  -- connect to the right panel bottom left corner
 
-  local fmt_right = terminal.draw.box_fmt.copy(terminal.draw.box_fmt.single)
+  local fmt_right = terminal.draw.box_fmt.single:copy()
   fmt_right.l = ""    -- do not draw the left border (use the left panels right border)
   fmt_right.tl = fmt_right.t -- no edge, continue horizontal line
   fmt_right.bl = fmt_right.b -- no edge, continue horizontal line
