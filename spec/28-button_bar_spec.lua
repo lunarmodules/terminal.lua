@@ -37,37 +37,6 @@ describe("terminal.ui.panel.button_bar", function()
     end)
 
 
-    it("has fixed height of 2 lines when padding_top is true", function()
-      local bar = ButtonBar {
-        items = { { label = "OK" } },
-        padding_top = true,
-      }
-      assert.are.equal(2, bar:get_min_height())
-      assert.are.equal(2, bar:get_max_height())
-    end)
-
-
-    it("has fixed height of 2 lines when padding_bottom is true", function()
-      local bar = ButtonBar {
-        items = { { label = "OK" } },
-        padding_bottom = true,
-      }
-      assert.are.equal(2, bar:get_min_height())
-      assert.are.equal(2, bar:get_max_height())
-    end)
-
-
-    it("has fixed height of 3 lines when both padding_top and padding_bottom are true", function()
-      local bar = ButtonBar {
-        items = { { label = "OK" } },
-        padding_top = true,
-        padding_bottom = true,
-      }
-      assert.are.equal(3, bar:get_min_height())
-      assert.are.equal(3, bar:get_max_height())
-    end)
-
-
     it("uses Panel's content callback mechanism", function()
       local bar = ButtonBar { items = { { label = "OK" } } }
       assert.is_function(bar.content)
@@ -1012,46 +981,6 @@ describe("terminal.ui.panel.button_bar", function()
     end)
 
 
-    it("renders a blank row above buttons when padding_top is true", function()
-      local bar_no_pad = ButtonBar { items = { { label = "OK" } } }
-      bar_no_pad:calculate_layout(1, 1, 1, 80)
-      helpers.clear_output()
-      bar_no_pad:render()
-      local len_no_pad = #utils.strip_ansi(helpers.get_output())
-
-      local bar_pad = ButtonBar {
-        items = { { label = "OK" } },
-        padding_top = true,
-      }
-      bar_pad:calculate_layout(1, 1, 2, 80)
-      helpers.clear_output()
-      bar_pad:render()
-      local len_pad = #utils.strip_ansi(helpers.get_output())
-
-      assert.are.equal(2 * len_no_pad, len_pad)
-    end)
-
-
-    it("renders a blank row below buttons when padding_bottom is true", function()
-      local bar_no_pad = ButtonBar { items = { { label = "OK" } } }
-      bar_no_pad:calculate_layout(1, 1, 1, 80)
-      helpers.clear_output()
-      bar_no_pad:render()
-      local len_no_pad = #utils.strip_ansi(helpers.get_output())
-
-      local bar_pad = ButtonBar {
-        items = { { label = "OK" } },
-        padding_bottom = true,
-      }
-      bar_pad:calculate_layout(1, 1, 2, 80)
-      helpers.clear_output()
-      bar_pad:render()
-      local len_pad = #utils.strip_ansi(helpers.get_output())
-
-      assert.are.equal(2 * len_no_pad, len_pad)
-    end)
-
-
     it("re-renders after select_next changes focus", function()
       local bar = ButtonBar {
         items = {
@@ -1156,14 +1085,13 @@ describe("terminal.ui.panel.button_bar", function()
   describe("preferred_min_width()", function()
 
     -- Renders bar at a large fixed width, strips ANSI and surrounding whitespace to
-    -- isolate the button content, measures its display width, then adds back the two
-    -- edge padding gaps that were stripped (one on each side).
+    -- isolate the button content, and measures its display width.
     local function rendered_content_width(bar)
       bar:calculate_layout(1, 1, 1, 999)
       helpers.clear_output()
       bar:render()
       local content = utils.strip_ansi(helpers.get_output()):match("^%s*(.-)%s*$")
-      return textwidth.utf8swidth(content) + 2 * bar.padding
+      return textwidth.utf8swidth(content)
     end
 
 
