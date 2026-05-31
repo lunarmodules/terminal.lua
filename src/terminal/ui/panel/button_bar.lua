@@ -1,12 +1,14 @@
 --- ButtonBar panel for displaying an interactive horizontal row of buttons.
 --
--- This class creates a fixed-height panel (1 to 3 lines) that renders a set of labelled
--- buttons side by side and tracks which one is currently focused. It is designed as the
--- button row of a dialog: the parent panel owns the event loop and decides which keys
--- navigate or confirm; the ButtonBar exposes navigation methods and `get_selection()`.
+-- This class creates a fixed-height panel (1 line of button content) that renders a set
+-- of labelled buttons side by side and tracks which one is currently focused. It is
+-- designed as the button row of a dialog: the parent panel owns the event loop and
+-- decides which keys navigate or confirm; the ButtonBar exposes navigation methods and
+-- `get_selection()`.
 --
--- Height is determined by the `padding_top` and `padding_bottom` options: 1 line for
--- buttons only, 2 lines when one padding is enabled, 3 lines when both are enabled.
+-- To add blank rows above and/or below the buttons, pass a `border` with a blank format,
+-- e.g. `border = { format = terminal.draw.box_fmt.blank }`. The border is drawn by the
+-- Panel base class and the button content occupies only the inner area.
 --
 -- **Typical use**
 --
@@ -25,16 +27,15 @@
 --         { id = "no",     label = "No" },
 --         { id = "cancel", label = "Cancel", cancel = true },
 --       },
---       selected     = "no",
---       padding_top  = true,
---       attr         = { fg = "white", bg = "blue" },
+--       selected = "no",
+--       attr     = { fg = "white", bg = "blue" },
 --     }
 --
 --     -- Inside the parent's key-dispatch loop:
---     if key == keys.left  then bar:select_prev() end
---     if key == keys.right then bar:select_next() end
+--     if key == keys.left   then bar:select_prev() end
+--     if key == keys.right  then bar:select_next() end
 --     if key == keys.escape then bar:select_cancel() end
---     if key == keys.enter then
+--     if key == keys.enter  then
 --       local id = bar:get_selection()
 --       -- act on id
 --     end
@@ -160,8 +161,6 @@ end
 -- @tparam[opt] number opts.button_max_width Maximum display-column width for each button cell
 -- (prefix + label + postfix combined). Labels that exceed this are truncated with an
 -- ellipsis via `text.width.truncate_ellipsis`.
--- @tparam[opt=false] boolean opts.padding_top When true, adds a blank row above the button row.
--- @tparam[opt=false] boolean opts.padding_bottom When true, adds a blank row below the button row.
 -- @tparam[opt=false] boolean opts.auto_render When true, automatically re-renders the panel
 -- whenever the selection changes via `select`, `select_next`, `select_prev`, or `select_cancel`.
 -- @tparam[opt] table opts.attr Text attributes applied to the entire bar background,
@@ -179,7 +178,6 @@ end
 --       { label = "OK" },
 --       { label = "Cancel", cancel = true },
 --     },
---     padding_top = true,
 --   }
 function ButtonBar:init(opts)
   assert(type(opts) == "table", "options must be a table")
@@ -192,23 +190,21 @@ function ButtonBar:init(opts)
   local padding = opts.padding or 1
   local button_min_width = opts.button_min_width or 1
   local button_max_width = opts.button_max_width or math.huge
-  local padding_top = opts.padding_top == true
-  local padding_bottom = opts.padding_bottom == true
   local auto_render = not not opts.auto_render
   local attr = opts.attr
   local button_attr = opts.button_attr
   local selected_attr = opts.selected_attr
 
-  local height = 1 + (padding_top and 1 or 0) + (padding_bottom and 1 or 0)
-  opts.min_height = height
-  opts.max_height = height
+  opts.min_height = 1
+  opts.max_height = 1
+  opts.size_mode = Panel.size_modes.inner
 
   opts.content = function(self)
     self:_draw_buttonbar()
   end
 
-  -- calculate minimum panel width based on the items and options
-  opts.min_width = (width.utf8swidth(prefix .. postfix) + padding + button_min_width) * #items + padding
+  -- calculate minimum panel width based on the items and options (inner; border overhead added by Panel)
+  opts.min_width = (width.utf8swidth(prefix .. postfix) + padding + button_min_width) * #items - padding
 
   opts.items = nil
   opts.selected = nil
@@ -217,8 +213,6 @@ function ButtonBar:init(opts)
   opts.padding = nil
   opts.button_min_width = nil
   opts.button_max_width = nil
-  opts.padding_top = nil
-  opts.padding_bottom = nil
   opts.auto_render = nil
   opts.attr = nil
   opts.button_attr = nil
@@ -246,8 +240,6 @@ function ButtonBar:init(opts)
   self.padding = padding
   self.button_min_width = button_min_width
   self.button_max_width = button_max_width
-  self.padding_top = padding_top
-  self.padding_bottom = padding_bottom
   self.auto_render = auto_render
   self.attr = attr
   self.button_attr = button_attr
@@ -287,13 +279,13 @@ function ButtonBar:_draw_buttonbar()
     tot_label_width = tot_label_width + label_width
   end
 
-  local pad_left = math.floor((self.inner_width - tot_label_width) / 2)
-  local pad_right = self.inner_width - tot_label_width - pad_left
+  local buttons_total = tot_label_width + (#self.items - 1) * self.padding
+  local pad_left = math.floor((self.inner_width - buttons_total) / 2)
+  local pad_right = self.inner_width - buttons_total - pad_left
 
 
   -- build the output sequence
   local s = Sequence()
-  -- local line = 0
 
   -- backup cursor pos, and apply bar background attr if given
   s[#s+1] = terminal.cursor.position.backup_seq()
@@ -301,21 +293,11 @@ function ButtonBar:_draw_buttonbar()
     s[#s+1] = function() return text.push_seq(self.attr) end
   end
 
-  if self.padding_top then
-    -- position on first line, and clear it
-    s[#s+1] = function() return terminal.cursor.position.set_seq(self.inner_row, self.inner_col) end
-    s[#s+1] = function() return (" "):rep(self.inner_width) end
-  end
-
-  -- the button line itself: position and initial padding
-  if self.padding_top then
-    s[#s+1] = function() return terminal.cursor.position.set_seq(self.inner_row + 1, self.inner_col) end
-  else
-    s[#s+1] = function() return terminal.cursor.position.set_seq(self.inner_row, self.inner_col) end
-  end
+  -- position on the button line and write left centering padding
+  s[#s+1] = function() return terminal.cursor.position.set_seq(self.inner_row, self.inner_col) end
   s[#s+1] = (" "):rep(pad_left)
 
-  -- draw button and trailing padding for each item
+  -- draw each button with inter-button padding
   for i, item in ipairs(self.items) do
     -- set attributes based on selection state
     if item.id == self.selected then
@@ -328,31 +310,20 @@ function ButtonBar:_draw_buttonbar()
     s[#s+1] = labels[i]
     s[#s+1] = self.postfix
 
-    -- write trailing padding for all but last
     s[#s+1] = text.pop_seq
     if i < #self.items then
       s[#s+1] = (" "):rep(self.padding)
     end
   end
 
-  -- write right padding after the last button
+  -- write right centering padding
   s[#s+1] = (" "):rep(pad_right)
 
-  if self.padding_bottom then
-    -- position on last line, and clear it
-    if self.padding_top then
-      s[#s+1] = function() return terminal.cursor.position.set_seq(self.inner_row + 2, self.inner_col) end
-    else
-      s[#s+1] = function() return terminal.cursor.position.set_seq(self.inner_row + 1, self.inner_col) end
-    end
-    s[#s+1] = function() return (" "):rep(self.inner_width) end
-  end
-
   -- restore cursor pos and attributes
-  s[#s+1] = terminal.cursor.position.restore_seq()
   if self.attr then
     s[#s+1] = text.pop_seq
   end
+  s[#s+1] = terminal.cursor.position.restore_seq()
 
   -- write the sequence to the terminal
   terminal.output.write(s)
@@ -360,10 +331,10 @@ end
 
 
 
---- Returns the minimum render-width. At this width all buttons render at their maximum
--- display size, with the least truncation.
+--- Returns the preferred minimum outer width. At this width all buttons render at their
+-- maximum display size with the least truncation. Includes any border width overhead.
 -- Can be used by parent dialogs to compute their own preferred width.
--- @treturn number The preferred minimum width in columns.
+-- @treturn number The preferred minimum outer width in columns.
 function ButtonBar:preferred_min_width()
   local total = 0
   local pw = width.utf8swidth(self.prefix .. self.postfix)
@@ -373,7 +344,12 @@ function ButtonBar:preferred_min_width()
     if w < self.button_min_width then w = self.button_min_width end
     total = total + pw + w
   end
-  return total + (#self.items + 1) * self.padding
+  local border_w = 0
+  if self.border then
+    local fmt = self.border.format
+    border_w = width.utf8swidth(fmt.l or "") + width.utf8swidth(fmt.r or "")
+  end
+  return total + (#self.items - 1) * self.padding + border_w
 end
 
 
