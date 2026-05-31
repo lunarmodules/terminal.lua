@@ -603,6 +603,62 @@ describe("terminal.ui.panel", function()
       assert.are.equal(16, panel:get_min_width())  -- 8+6 + 2
     end)
 
+
+    it("size_mode outer (explicit) behaves identical to default", function()
+      local draw = require("terminal.draw")
+      local panel = Panel {
+        content = function() end,
+        size_mode = Panel.size_modes.outer,
+        min_height = 5,
+        min_width = 10,
+        max_height = 20,
+        max_width = 50,
+        border = { format = draw.box_fmt.single }
+      }
+
+      assert.are.equal(5, panel:get_min_height())
+      assert.are.equal(10, panel:get_min_width())
+      assert.are.equal(20, panel:get_max_height())
+      assert.are.equal(50, panel:get_max_width())
+    end)
+
+
+    it("size_mode inner adjusts constraints by border overhead", function()
+      local draw = require("terminal.draw")
+      -- single border: top+bottom = 2 rows, left+right = 2 cols
+      local panel = Panel {
+        content = function() end,
+        size_mode = Panel.size_modes.inner,
+        min_height = 5,
+        min_width = 10,
+        max_height = 20,
+        max_width = 50,
+        border = { format = draw.box_fmt.single }
+      }
+
+      assert.are.equal(7, panel:get_min_height())
+      assert.are.equal(12, panel:get_min_width())
+      assert.are.equal(22, panel:get_max_height())
+      assert.are.equal(52, panel:get_max_width())
+    end)
+
+
+    it("size_mode inner without border is a no-op", function()
+      local panel = Panel {
+        content = function() end,
+        size_mode = Panel.size_modes.inner,
+        min_height = 5,
+        min_width = 10,
+        max_height = 20,
+        max_width = 50,
+      }
+
+      assert.are.equal(5, panel:get_min_height())
+      assert.are.equal(10, panel:get_min_width())
+      assert.are.equal(20, panel:get_max_height())
+      assert.are.equal(50, panel:get_max_width())
+    end)
+
   end)
 
 

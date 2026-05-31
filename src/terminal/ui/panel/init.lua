@@ -93,6 +93,15 @@ Panel.types = utils.make_lookup("type", {
 
 
 
+--- Panel size mode constants table.
+-- @field ui.panel.size_modes table lookup table for size mode constants.
+Panel.size_modes = utils.make_lookup("size_mode", {
+  outer = "outer",
+  inner = "inner",
+})
+
+
+
 -- Default size constraints
 local DEFAULT_MIN_SIZE = 1
 local DEFAULT_MAX_SIZE = math.huge
@@ -107,10 +116,11 @@ local DEFAULT_MAX_SIZE = math.huge
 -- @tparam[opt] table opts.orientation Panel orientation: `Panel.orientations.horizontal` or `Panel.orientations.vertical` (for divided panels).
 -- @tparam[opt] table opts.children Array of exactly 2 child panels (for divided panels).
 -- @tparam[opt] string opts.name Optional name for the panel. Defaults to `tostring(self)` if not provided.
--- @tparam[opt=1] number opts.min_height Minimum height constraint.
--- @tparam[opt=1] number opts.min_width Minimum width constraint.
--- @tparam[opt=math.huge] number opts.max_height Maximum height constraint.
--- @tparam[opt=math.huge] number opts.max_width Maximum width constraint.
+-- @tparam[opt=outer] string opts.size_mode Whether min/max size constraints are `Panel.size_modes.outer` (including border) or `Panel.size_modes.inner` (excluding border).
+-- @tparam[opt=1] number opts.min_height Minimum height constraint, interpreted according to `opts.size_mode`.
+-- @tparam[opt=1] number opts.min_width Minimum width constraint, interpreted according to `opts.size_mode`.
+-- @tparam[opt=math.huge] number opts.max_height Maximum height constraint, interpreted according to `opts.size_mode`.
+-- @tparam[opt=math.huge] number opts.max_width Maximum width constraint, interpreted according to `opts.size_mode`.
 -- @tparam[opt=0.5] number opts.split_ratio Ratio for dividing child panels (0.0 to 1.0).
 -- @tparam[opt=true] boolean opts.visible Whether the panel is visible (true) or hidden (false).
 -- @tparam[opt] table opts.border Border configuration, with the following properties:
@@ -168,12 +178,15 @@ function Panel:init(opts)
     assert(self.border.format, "border.format is required when border is specified")
   end
 
-  -- Size constraints (private)
-  -- Set defaults so we don't need nil checks in getters
-  self._min_height = opts.min_height or DEFAULT_MIN_SIZE
-  self._min_width = opts.min_width or DEFAULT_MIN_SIZE
-  self._max_height = opts.max_height or DEFAULT_MAX_SIZE
-  self._max_width = opts.max_width or DEFAULT_MAX_SIZE
+  -- Size constraints (private, always stored as outer sizes)
+  local h_overhead = (opts.size_mode == Panel.size_modes.inner and self.border)
+                     and border_h_overhead(self.border.format) or 0
+  local w_overhead = (opts.size_mode == Panel.size_modes.inner and self.border)
+                     and border_w_overhead(self.border.format) or 0
+  self._min_height = (opts.min_height or DEFAULT_MIN_SIZE) + h_overhead
+  self._min_width  = (opts.min_width  or DEFAULT_MIN_SIZE) + w_overhead
+  self._max_height = (opts.max_height or DEFAULT_MAX_SIZE) + h_overhead
+  self._max_width  = (opts.max_width  or DEFAULT_MAX_SIZE) + w_overhead
 
   -- Panel name
   self.name = opts.name or tostring(self)
@@ -483,7 +496,7 @@ end
 
 
 --- Get the minimum height constraint of this panel.
--- @treturn number The minimum height.
+-- @treturn number The minimum height, including border (outer size).
 function Panel:get_min_height()
   if not self.children then
     return self._min_height  -- For content panels, return stored value
@@ -510,7 +523,7 @@ end
 
 
 --- Get the minimum width constraint of this panel.
--- @treturn number The minimum width.
+-- @treturn number The minimum width, including border (outer size).
 function Panel:get_min_width()
   if not self.children then
     return self._min_width  -- For content panels, return stored value
@@ -537,7 +550,7 @@ end
 
 
 --- Get the maximum height constraint of this panel.
--- @treturn number The maximum height.
+-- @treturn number The maximum height, including border (outer size).
 function Panel:get_max_height()
   if not self.children then
     return self._max_height  -- For content panels, return stored value
@@ -564,7 +577,7 @@ end
 
 
 --- Get the maximum width constraint of this panel.
--- @treturn number The maximum width.
+-- @treturn number The maximum width, including border (outer size).
 function Panel:get_max_width()
   if not self.children then
     return self._max_width  -- For content panels, return stored value
