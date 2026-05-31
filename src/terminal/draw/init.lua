@@ -39,9 +39,11 @@ do
   -- They also have a `copy` method to quickly copy and customize a format.
   -- @table box_fmt
   -- @field single Single line box format
+  -- @field rounded Rounded corner box format (single line)
   -- @field single_top Single line box format with top border only
   -- @field double Double line box format
   -- @field double_top Double line box format with top border only
+  -- @field blank Blank box format (no lines, just spaces, 1 line top/bottom, 2 columns left/right)
   -- @usage -- create new format with spaces around the title
   -- local fmt = t.box_fmt.single:copy()
   -- fmt.pre = fmt.pre .. " "
@@ -106,6 +108,18 @@ do
       br = "",
       pre = "╡",
       post = "╞",
+    }, box_fmt_meta),
+    blank = setmetatable({
+      t = " ",
+      b = " ",
+      l = "  ",
+      r = "  ",
+      tl = "  ",
+      tr = "  ",
+      bl = "  ",
+      br = "  ",
+      pre = "",
+      post = "",
     }, box_fmt_meta),
   })
 end
