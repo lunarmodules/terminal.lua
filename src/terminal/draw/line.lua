@@ -22,7 +22,7 @@ local text = require "terminal.text"
 -- @within Sequences
 function M.horizontal_seq(n, char)
   char = char or "─"
-  local w = text.width.utf8cwidth(char)
+  local w = text.width.utf8swidth(char)
   return char:rep(math.floor(n / w))
 end
 
@@ -51,8 +51,9 @@ end
 -- @within Sequences
 function M.vertical_seq(n, char, lastcolumn)
   char = char or "│"
+  if n <= 0 then return "" end
   lastcolumn = lastcolumn and 1 or 0
-  local w = text.width.utf8cwidth(char)
+  local w = text.width.utf8swidth(char)
   local back = w - lastcolumn
   return (char .. cursor.position.left_seq(back) .. cursor.position.down_seq(1)):rep(n-1) .. char
 end
