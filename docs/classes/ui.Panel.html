@@ -52,6 +52,8 @@
   <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><strong>ui.Panel</strong></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.ButtonBar.html">ui.panel.ButtonBar</a></li>
+  <li><a href="../classes/ui.panel.Confirm.html">ui.panel.Confirm</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
   <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
@@ -102,6 +104,7 @@
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
@@ -216,6 +219,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#ui.panel.orientations">ui.panel.orientations</a></td>
 	<td class="summary">Panel orientation constants table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.size_modes">ui.panel.size_modes</a></td>
+	<td class="summary">Panel size mode constants table.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#ui.panel.types">ui.panel.types</a></td>
@@ -484,6 +491,20 @@
 
 </dd>
     <dt>
+    <a name = "ui.panel.size_modes"></a>
+    <strong>ui.panel.size_modes</strong>
+    </dt>
+    <dd>
+    Panel size mode constants table.
+
+
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "ui.panel.types"></a>
     <strong>ui.panel.types</strong>
     </dt>
@@ -594,7 +615,7 @@
     <ol>
 
            <span class="types"><span class="type">number</span></span>
-        The maximum height.
+        The maximum height, including border (outer size).
     </ol>
 
 
@@ -614,7 +635,7 @@
     <ol>
 
            <span class="types"><span class="type">number</span></span>
-        The maximum width.
+        The maximum width, including border (outer size).
     </ol>
 
 
@@ -634,7 +655,7 @@
     <ol>
 
            <span class="types"><span class="type">number</span></span>
-        The minimum height.
+        The minimum height, including border (outer size).
     </ol>
 
 
@@ -654,7 +675,7 @@
     <ol>
 
            <span class="types"><span class="type">number</span></span>
-        The minimum width.
+        The minimum width, including border (outer size).
     </ol>
 
 
@@ -856,24 +877,29 @@
          Optional name for the panel. Defaults to <code>tostring(self)</code> if not provided.
          (<em>optional</em>)
         </li>
+        <li><span class="parameter">size_mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Whether min/max size constraints are <code>Panel.size_modes.outer</code> (including border) or <code>Panel.size_modes.inner</code> (excluding border).
+         (<em>default</em> outer)
+        </li>
         <li><span class="parameter">min_height</span>
             <span class="types"><span class="type">number</span></span>
-         Minimum height constraint.
+         Minimum height constraint, interpreted according to <code>opts.size_mode</code>.
          (<em>default</em> 1)
         </li>
         <li><span class="parameter">min_width</span>
             <span class="types"><span class="type">number</span></span>
-         Minimum width constraint.
+         Minimum width constraint, interpreted according to <code>opts.size_mode</code>.
          (<em>default</em> 1)
         </li>
         <li><span class="parameter">max_height</span>
             <span class="types"><span class="type">number</span></span>
-         Maximum height constraint.
+         Maximum height constraint, interpreted according to <code>opts.size_mode</code>.
          (<em>default</em> math.huge)
         </li>
         <li><span class="parameter">max_width</span>
             <span class="types"><span class="type">number</span></span>
-         Maximum width constraint.
+         Maximum width constraint, interpreted according to <code>opts.size_mode</code>.
          (<em>default</em> math.huge)
         </li>
         <li><span class="parameter">split_ratio</span>
@@ -888,7 +914,7 @@
         </li>
         <li><span class="parameter">border</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         Border configuration for content panels, with the following properties:
+         Border configuration, with the following properties:
          (<em>optional</em>)
         </li>
         <li><span class="parameter">border.format</span>

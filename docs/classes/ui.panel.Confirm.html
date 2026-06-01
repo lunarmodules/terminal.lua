@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.ButtonBar.html">ui.panel.ButtonBar</a></li>
+  <li><strong>ui.panel.Confirm</strong></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.panel.Confirm</code></h1>
+<p>Confirmation dialog.</p>
+<p>
+
+
+<p> Creates a modal dialog that sizes itself to the terminal: the width is
+ derived from the ButtonBar's preferred display size, and the text area
+ height from word-wrapping the prompt to that width.</p>
+
+<p> The button items, <a href="../classes/ui.panel.Confirm.html#ui.panel.confirm.ids">ids</a>, and <a href="../classes/ui.panel.Confirm.html#ui.panel.confirm.sets">sets</a> fields share the same format as
+ <a href="../classes/ui.panel.ButtonBar.html#">ui.panel.ButtonBar</a> and <a href="../classes/cli.Confirm.html#">cli.Confirm</a>.</p>
+
+<p> Call <code>:run()</code> to display the dialog and block until the user confirms or
+ cancels. On confirmation the <code>id</code> of the selected button is returned. On
+ cancellation <code>nil, &quot;cancelled&quot;</code> is returned.</p>
+
+<p> This Panel class is standalone, similar to <a href="../classes/ui.panel.Screen.html">Screen</a>, it is not intended to
+ be embedded inside another Panel as a child.</p>
+
+<p> Example:</p>
+
+
+<pre>
+<span class="keyword">local</span> Confirm = <span class="global">require</span>(<span class="string">"terminal.ui.panel.confirm"</span>)
+<span class="keyword">local</span> terminal = <span class="global">require</span>(<span class="string">"terminal"</span>)
+
+<span class="keyword">local</span> dlg = <span class="function-name">Confirm</span> {
+  prompt   = <span class="string">"Delete this file?"</span>,
+  buttons  = Confirm.sets.yes_no_cancel,
+  border   = {
+    format = terminal.draw.box_fmt.rounded,
+    title  = <span class="string">"Confirm"</span>,
+  },
+}
+
+<span class="keyword">local</span> id, err = dlg:<span class="function-name">run</span>()
+<span class="keyword">if</span> id == Confirm.ids.yes <span class="keyword">then</span>
+  <span class="comment">-- proceed
+</span><span class="keyword">end</span>
+</pre>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.Confirm">ui.panel.Confirm (opts)</a></td>
+	<td class="summary">Create a new Confirm dialog instance.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.confirm.ids">ui.panel.confirm.ids</a></td>
+	<td class="summary">Response ID constants.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.confirm.sets">ui.panel.confirm.sets</a></td>
+	<td class="summary">Preset item sets ready to pass as <code>opts.items</code>.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.confirm:get_selection">ui.panel.confirm:get_selection ()</a></td>
+	<td class="summary">Returns the id of the currently focused button.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.confirm:run">ui.panel.confirm:run ()</a></td>
+	<td class="summary">Display the dialog and block until the user makes a selection.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel.Confirm"></a>
+    <strong>ui.panel.Confirm (opts)</strong>
+    </dt>
+    <dd>
+    Create a new Confirm dialog instance.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Options.
+        <ul>
+        <li><span class="parameter">prompt</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a> or <a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         The question or message shown in the text area.
+ A plain string is used as a single line. Alternatively supply an array of strings.
+        </li>
+        <li><span class="parameter">buttons</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of button items. Each entry must have a <code>label</code>
+ (string) and may have an <code>id</code> (any; defaults to the item index) and
+ <code>cancel</code> (boolean; marks the button selected on Escape).
+        </li>
+        <li><span class="parameter">default</span>
+            <span class="types"><span class="type">any</span></span>
+         Id of the initially focused button.
+ Defaults to the first item.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">cancellable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether ESC/Ctrl+C is allowed.
+ Defaults to <code>true</code> when an item has <code>cancel = true</code>, <code>false</code> otherwise.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">border</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Border configuration for the dialog. Inherits
+ the same structure as <a href="../classes/ui.Panel.html">Panel</a>'s border option (format, attr, title, title<em>attr,
+ truncation</em>type).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">prefix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Passed to ButtonBar: string prepended to each button label, default: <code>&quot;[&quot;</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">postfix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Passed to ButtonBar: string appended to each button label, default: <code>&quot;]&quot;</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">padding</span>
+            <span class="types"><span class="type">number</span></span>
+         Passed to ButtonBar: spaces between adjacent buttons.
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">button_min_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Passed to ButtonBar.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">button_max_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Passed to ButtonBar.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes applied to the dialog background
+ and prompt text.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">button_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Passed to ButtonBar: unselected button attributes.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">selected_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Passed to ButtonBar: focused button attributes.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">redraw</span>
+            <span class="types"><span class="type">function</span></span>
+         Called before each dialog render (including on
+ resize) and once after <code>:run()</code> exits. Use it to repaint the underlying screen
+ so the dialog always draws on a fresh background and the screen is restored on exit.
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.panel.Confirm.html">Confirm</a></span>
+        A new Confirm dialog instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel.confirm.ids"></a>
+    <strong>ui.panel.confirm.ids</strong>
+    </dt>
+    <dd>
+    Response ID constants.  Shared with <a href="../classes/ui.panel.ButtonBar.html#Confirm.ids">ButtonBar.ids</a> and <a href="../classes/cli.Confirm.html#cli.confirm.ids">cli.Confirm.ids</a>.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.confirm.sets"></a>
+    <strong>ui.panel.confirm.sets</strong>
+    </dt>
+    <dd>
+    Preset item sets ready to pass as <code>opts.items</code>.
+ Shared with <a href="../classes/ui.panel.ButtonBar.html#Confirm.sets">ButtonBar.sets</a> and <a href="../classes/cli.Confirm.html#cli.confirm.sets">cli.Confirm.sets</a>.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel.confirm:get_selection"></a>
+    <strong>ui.panel.confirm:get_selection ()</strong>
+    </dt>
+    <dd>
+    Returns the id of the currently focused button.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span></span>
+        The focused button id.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.confirm:run"></a>
+    <strong>ui.panel.confirm:run ()</strong>
+    </dt>
+    <dd>
+    Display the dialog and block until the user makes a selection.
+ Handles Left/Right to navigate buttons, Enter to confirm, and
+ ESC/Ctrl+C to cancel. On each iteration the terminal size is compared
+ to the last known size; if it changed the layout is recalculated and the
+ dialog is re-rendered before processing the key.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">any</span></span>
+        The <code>id</code> of the selected button.</li>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+
+
+</li>
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+        On success with an explicit cancel button.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        <code>&quot;cancelled&quot;</code> when ESC is pressed and no cancel button
+ exists but <code>cancellable</code> is <code>true</code>.</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

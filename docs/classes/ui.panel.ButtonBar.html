@@ -1,0 +1,518 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><strong>ui.panel.ButtonBar</strong></li>
+  <li><a href="../classes/ui.panel.Confirm.html">ui.panel.Confirm</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>ui.panel.ButtonBar</code></h1>
+<p>ButtonBar panel for displaying an interactive horizontal row of buttons.</p>
+<p>
+
+
+<p> This class creates a fixed-height panel (1 line of button content) that renders a set
+ of labelled buttons side by side and tracks which one is currently focused. It is
+ designed as the button row of a dialog: the parent panel owns the event loop and
+ decides which keys navigate or confirm; the ButtonBar exposes navigation methods and
+ <code>get_selection()</code>.</p>
+
+<p> To add blank rows above and/or below the buttons, pass a <code>border</code> with a blank format,
+ e.g. <code>border = { format = terminal.draw.box_fmt.blank }</code>. The border is drawn by the
+ Panel base class and the button content occupies only the inner area.</p>
+
+<p> <strong>Typical use</strong></p>
+
+<p> Place a ButtonBar as the bottom child of a vertically-split panel whose top child
+ holds the dialog prompt or message. In the parent's key handler, call
+ <a href="../classes/ui.panel.ButtonBar.html#ui.panel.buttonbar:select_next">select_next</a>/<a href="../classes/ui.panel.ButtonBar.html#ui.panel.buttonbar:select_prev">select_prev</a> for arrow keys, <a href="../classes/ui.panel.ButtonBar.html#ui.panel.buttonbar:select_cancel">select_cancel</a> for Escape, and
+ <code>get_selection()</code> when the confirm key (e.g. Enter) is pressed.</p>
+
+<p> <em>Usage:</em></p>
+
+
+<pre>
+<span class="keyword">local</span> ButtonBar = <span class="global">require</span>(<span class="string">"terminal.ui.panel.button_bar"</span>)
+
+<span class="keyword">local</span> bar = <span class="function-name">ButtonBar</span> {
+  items = {
+    { id = <span class="string">"yes"</span>,    label = <span class="string">"Yes"</span> },
+    { id = <span class="string">"no"</span>,     label = <span class="string">"No"</span> },
+    { id = <span class="string">"cancel"</span>, label = <span class="string">"Cancel"</span>, cancel = <span class="keyword">true</span> },
+  },
+  selected = <span class="string">"no"</span>,
+  attr     = { fg = <span class="string">"white"</span>, bg = <span class="string">"blue"</span> },
+}
+
+<span class="comment">-- Inside the parent's key-dispatch loop:
+</span><span class="keyword">if</span> key == keys.left   <span class="keyword">then</span> bar:<span class="function-name">select_prev</span>() <span class="keyword">end</span>
+<span class="keyword">if</span> key == keys.right  <span class="keyword">then</span> bar:<span class="function-name">select_next</span>() <span class="keyword">end</span>
+<span class="keyword">if</span> key == keys.escape <span class="keyword">then</span> bar:<span class="function-name">select_cancel</span>() <span class="keyword">end</span>
+<span class="keyword">if</span> key == keys.enter  <span class="keyword">then</span>
+  <span class="keyword">local</span> id = bar:<span class="function-name">get_selection</span>()
+  <span class="comment">-- act on id
+</span><span class="keyword">end</span>
+</pre>
+
+</p>
+
+
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Confirm.ids">Confirm.ids</a></td>
+	<td class="summary">Response ID constants.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Confirm.sets">Confirm.sets</a></td>
+	<td class="summary">Preset item sets.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.buttonbar:get_selection">ui.panel.buttonbar:get_selection ()</a></td>
+	<td class="summary">Get the id of the currently focused button.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.buttonbar:init">ui.panel.buttonbar:init (opts)</a></td>
+	<td class="summary">Create a new ButtonBar instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.buttonbar:preferred_min_width">ui.panel.buttonbar:preferred_min_width ()</a></td>
+	<td class="summary">Returns the preferred minimum outer width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.buttonbar:select">ui.panel.buttonbar:select (id)</a></td>
+	<td class="summary">Move focus to the button with the given id.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.buttonbar:select_cancel">ui.panel.buttonbar:select_cancel ()</a></td>
+	<td class="summary">Move focus to the cancel-marked button.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.buttonbar:select_next">ui.panel.buttonbar:select_next ()</a></td>
+	<td class="summary">Move focus to the next (right) button.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ui.panel.buttonbar:select_prev">ui.panel.buttonbar:select_prev ()</a></td>
+	<td class="summary">Move focus to the previous (left) button.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Confirm.ids"></a>
+    <strong>Confirm.ids</strong>
+    </dt>
+    <dd>
+    Response ID constants.  Plain strings used as <code>value</code> fields in the preset <a href="../classes/ui.panel.ButtonBar.html#Confirm.sets">sets</a>.
+ Copy of <a href="../classes/cli.Confirm.html#cli.confirm.ids">cli.Confirm.ids</a>.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Confirm.sets"></a>
+    <strong>Confirm.sets</strong>
+    </dt>
+    <dd>
+    Preset item sets.  Each is an array, where the values are has tables; <code>{label, value, cancel?}</code>.
+ These are ready to pass as <code>opts.items</code>, as the most common sets.
+ Copy of <a href="../classes/cli.Confirm.html#cli.confirm.sets">cli.Confirm.sets</a>.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "ui.panel.buttonbar:get_selection"></a>
+    <strong>ui.panel.buttonbar:get_selection ()</strong>
+    </dt>
+    <dd>
+    Get the id of the currently focused button.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span></span>
+        The focused button id.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.buttonbar:init"></a>
+    <strong>ui.panel.buttonbar:init (opts)</strong>
+    </dt>
+    <dd>
+    Create a new ButtonBar instance.
+ Do not call this method directly, call on the class instead. See example.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span> Configuration options (see <a href="../classes/ui.Panel.html#ui.panel:init">Panel:init</a> for inherited properties).
+        <ul>
+        <li><span class="parameter">items</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Array of button items. Each entry must have a <code>label</code> field
+ (string) and may have an <code>id</code> field (any; defaults to the item's index) and a <code>cancel</code>
+ field (boolean; marks this button as the cancel action). At most one item may carry
+ <code>cancel = true</code>.
+        </li>
+        <li><span class="parameter">selected</span>
+            <span class="types"><span class="type">any</span></span>
+         Id of the button that receives initial focus.
+ Defaults to the first item.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">prefix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         String prepended to every button label when rendered. Default <code>&quot;[&quot;</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">postfix</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         String appended to every button label when rendered. Default <code>&quot;]&quot;</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">padding</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of spaces rendered between adjacent buttons.
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">button_min_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Minimum display-column width for each button cell
+ (prefix + label + postfix combined). Cells are padded with spaces when the content is shorter.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">button_max_width</span>
+            <span class="types"><span class="type">number</span></span>
+         Maximum display-column width for each button cell
+ (prefix + label + postfix combined). Labels that exceed this are truncated with an
+ ellipsis via <code>text.width.truncate_ellipsis</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">auto_render</span>
+            <span class="types"><span class="type">boolean</span></span>
+         When true, automatically re-renders the panel
+ whenever the selection changes via <a href="../classes/ui.panel.ButtonBar.html#ui.panel.buttonbar:select">select</a>, <a href="../classes/ui.panel.ButtonBar.html#ui.panel.buttonbar:select_next">select_next</a>, <a href="../classes/ui.panel.ButtonBar.html#ui.panel.buttonbar:select_prev">select_prev</a>, or <a href="../classes/ui.panel.ButtonBar.html#ui.panel.buttonbar:select_cancel">select_cancel</a>.
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes applied to the entire bar background,
+ including the spaces between and around buttons (e.g. <code>{ fg = &quot;white&quot;, bg = &quot;blue&quot; }</code>).
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">button_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes applied to unselected buttons.
+ When omitted and <code>opts.attr</code> is provided, derived automatically by inverting the
+ <code>reverse</code> field of <code>opts.attr</code>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">selected_attr</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
+         Text attributes applied to the focused button.
+ When omitted, derived automatically by inverting the <code>reverse</code> field of <code>opts.button_attr</code>.
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/ui.panel.ButtonBar.html">ButtonBar</a></span>
+        A new ButtonBar instance.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> ButtonBar = <span class="global">require</span>(<span class="string">"terminal.ui.panel.button_bar"</span>)
+<span class="keyword">local</span> bar = <span class="function-name">ButtonBar</span> {
+  items = {
+    { label = <span class="string">"OK"</span> },
+    { label = <span class="string">"Cancel"</span>, cancel = <span class="keyword">true</span> },
+  },
+}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "ui.panel.buttonbar:preferred_min_width"></a>
+    <strong>ui.panel.buttonbar:preferred_min_width ()</strong>
+    </dt>
+    <dd>
+    Returns the preferred minimum outer width.  At this width all buttons render at their
+ maximum display size with the least truncation. Includes any border width overhead.
+ Can be used by parent dialogs to compute their own preferred width.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The preferred minimum outer width in columns.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.buttonbar:select"></a>
+    <strong>ui.panel.buttonbar:select (id)</strong>
+    </dt>
+    <dd>
+    Move focus to the button with the given id.
+ Re-renders when <code>auto_render</code> is true and the selection changed.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">any</span></span>
+         The id of the button to focus.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">any</span></span>
+        The id of the currently focused button after the operation.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        An error message when the given id does not exist in the items.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.buttonbar:select_cancel"></a>
+    <strong>ui.panel.buttonbar:select_cancel ()</strong>
+    </dt>
+    <dd>
+    Move focus to the cancel-marked button.
+ Useful when the parent receives an Escape key press.
+ Always returns the currently focused button id (first return is always truthy).
+ The second return value signals whether the move was successful: it is <code>nil</code> on success
+ and an error string when no cancel button is defined (in which case focus does not move).
+ Re-renders when <code>auto_render</code> is true and the selection changed.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">any</span></span>
+        The id of the currently focused button after the operation.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+        <code>&quot;no cancel button&quot;</code> when no item is marked with <code>cancel = true</code>.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.buttonbar:select_next"></a>
+    <strong>ui.panel.buttonbar:select_next ()</strong>
+    </dt>
+    <dd>
+    Move focus to the next (right) button.
+ Has no effect when the last button is already focused; does not wrap around.
+ Re-renders when <code>auto_render</code> is true and the selection changed.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span></span>
+        The id of the currently focused button after the operation.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ui.panel.buttonbar:select_prev"></a>
+    <strong>ui.panel.buttonbar:select_prev ()</strong>
+    </dt>
+    <dd>
+    Move focus to the previous (left) button.
+ Has no effect when the first button is already focused; does not wrap around.
+ Re-renders when <code>auto_render</code> is true and the selection changed.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span></span>
+        The id of the currently focused button after the operation.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

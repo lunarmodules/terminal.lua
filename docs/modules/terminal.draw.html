@@ -74,6 +74,8 @@
   <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.ButtonBar.html">ui.panel.ButtonBar</a></li>
+  <li><a href="../classes/ui.panel.Confirm.html">ui.panel.Confirm</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
   <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
@@ -103,6 +105,7 @@
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
@@ -129,10 +132,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#box">box (height, width, format, clear_flag[, title=""[, lastcolumn=false[, type="right"[, title_attr]]]])</a></td>
 	<td class="summary">Draws a box and writes it to the terminal.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#box_fmt.copy">box_fmt.copy (default)</a></td>
-	<td class="summary">Copy a box format.</td>
 	</tr>
 </table>
 <h2><a href="#Tables">Tables</a></h2>
@@ -215,40 +214,6 @@
 
 
 </dd>
-    <dt>
-    <a name = "box_fmt.copy"></a>
-    <strong>box_fmt.copy (default)</strong>
-    </dt>
-    <dd>
-    Copy a box format.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">default</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-         the default format to copy
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
-        a copy of the default format provided
-    </ol>
-
-
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="comment">-- create new format with spaces around the title
-</span><span class="keyword">local</span> fmt = t.box_fmt.<span class="function-name">copy</span>(t.box_fmt.single)
-fmt.pre = fmt.pre .. <span class="string">" "</span>
-fmt.post = <span class="string">" "</span> .. fmt.post</pre>
-    </ul>
-
-</dd>
 </dl>
     <h2 class="section-header "><a name="Tables"></a>Tables</h2>
 
@@ -259,12 +224,16 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
     </dt>
     <dd>
     Table with pre-defined box formats.
+ They also have a <code>copy</code> method to quickly copy and customize a format.
 
 
     <h3>Fields:</h3>
     <ul>
         <li><span class="parameter">single</span>
          Single line box format
+        </li>
+        <li><span class="parameter">rounded</span>
+         Rounded corner box format (single line)
         </li>
         <li><span class="parameter">single_top</span>
          Single line box format with top border only
@@ -275,14 +244,21 @@ fmt.post = <span class="string">" "</span> .. fmt.post</pre>
         <li><span class="parameter">double_top</span>
          Double line box format with top border only
         </li>
-        <li><span class="parameter">copy</span>
-         Function to copy a box format, see <a href="../modules/terminal.draw.html#box_fmt.copy">box_fmt.copy</a> for details
+        <li><span class="parameter">blank</span>
+         Blank box format (no lines, just spaces, 1 line top/bottom, 2 columns left/right)
         </li>
     </ul>
 
 
 
 
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="comment">-- create new format with spaces around the title
+</span><span class="keyword">local</span> fmt = t.box_fmt.single:<span class="function-name">copy</span>()
+fmt.pre = fmt.pre .. <span class="string">" "</span>
+fmt.post = <span class="string">" "</span> .. fmt.post</pre>
+    </ul>
 
 </dd>
 </dl>
