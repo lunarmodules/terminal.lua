@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><strong>panel_confirm.lua</strong></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/select.lua.html">select.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.ButtonBar.html">ui.panel.ButtonBar</a></li>
+  <li><a href="../classes/ui.panel.Confirm.html">ui.panel.Confirm</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
+  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>panel_confirm.lua</h2>
+<pre>
+#!/usr/bin/env lua
+
+<span class="comment">--- Example: ui.panel.Confirm dialog with a fullscreen layout.
+</span><span class="comment">--
+</span><span class="comment">-- Runs a sequence of Confirm dialogs in a loop. Each result is appended to a
+</span><span class="comment">-- scrolling log in the body before the next dialog opens, so you can see the
+</span><span class="comment">-- history build up.
+</span><span class="comment">--
+</span><span class="comment">-- Dialogs demonstrated:
+</span><span class="comment">--   1. Wide ButtonBar — four buttons padded to a large minimum width.
+</span><span class="comment">--   2. Word-wrapped prompt — a long message that wraps inside the dialog box.
+</span><span class="comment">--
+</span><span class="comment">-- Press ESC or Ctrl+C inside any dialog to cancel and exit.
+</span>
+<span class="keyword">local</span> t       = <span class="global">require</span>(<span class="string">"terminal"</span>)
+<span class="keyword">local</span> Screen  = <span class="global">require</span>(<span class="string">"terminal.ui.panel.screen"</span>)
+<span class="keyword">local</span> Bar     = <span class="global">require</span>(<span class="string">"terminal.ui.panel.bar"</span>)
+<span class="keyword">local</span> TextPanel = <span class="global">require</span>(<span class="string">"terminal.ui.panel.text"</span>)
+<span class="keyword">local</span> Confirm = <span class="global">require</span>(<span class="string">"terminal.ui.panel.confirm"</span>)
+
+
+
+<span class="comment">-- Scrolling result log displayed in the body panel
+</span><span class="keyword">local</span> log = <span class="function-name">TextPanel</span> {
+  lines     = { <span class="string">"Select a button in each dialog.  ESC or Ctrl+C cancels and quits."</span> },
+  text_attr = { fg = <span class="string">"white"</span> },
+}
+
+<span class="keyword">local</span> screen = <span class="function-name">Screen</span> {
+  header = <span class="function-name">Bar</span> {
+    left   = { text = <span class="string">"ui.panel.Confirm Demo"</span>,    attr = { fg = <span class="string">"cyan"</span>,   brightness = <span class="string">"bright"</span> } },
+    center = { text = <span class="string">"Confirm Dialog Examples"</span>,  attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span>, underline = <span class="keyword">true</span> } },
+    right  = { text = <span class="string">"ESC / Ctrl+C to quit"</span>,     attr = { fg = <span class="string">"white"</span>,  brightness = <span class="string">"dim"</span> } },
+    attr   = { bg = <span class="string">"blue"</span> },
+  },
+  body = log,
+  footer = <span class="function-name">Bar</span> {
+    center = {
+      text = <span class="string">"← → navigate   Enter confirm   ESC / Ctrl+C cancel"</span>,
+      attr = { fg = <span class="string">"white"</span>, brightness = <span class="string">"normal"</span> },
+    },
+    attr = { bg = <span class="string">"blue"</span>, brightness = <span class="string">"dim"</span> },
+  },
+}
+
+
+
+<span class="comment">-- Dialog factory functions — recreated each iteration so focus resets.
+</span><span class="keyword">local</span> dialogs = {
+
+  <span class="comment">-- 1. Wide ButtonBar: four buttons with a generous minimum width so the
+</span>  <span class="comment">--    button row dominates the dialog and each label has breathing room.
+</span>  {
+    label = <span class="string">"Wide ButtonBar"</span>,
+    make  = <span class="keyword">function</span>()
+      <span class="keyword">return</span> <span class="function-name">Confirm</span> {
+        prompt  = <span class="string">"Pick an action:"</span>,
+        buttons = {
+          { label = <span class="string">"Abort"</span>,      id = Confirm.ids.abort,    cancel = <span class="keyword">true</span> },
+          { label = <span class="string">"Retry"</span>,      id = <span class="string">"retry"</span> },
+          { label = <span class="string">"Ignore"</span>,     id = <span class="string">"ignore"</span> },
+          { label = <span class="string">"Report Bug"</span>, id = <span class="string">"report"</span> },
+        },
+        button_min_width = <span class="number">14</span>,
+        cancellable      = <span class="keyword">true</span>,
+        redraw = <span class="keyword">function</span>()
+          <span class="comment">-- On resize, redraw the screen behind the dialog so the button bar always draws on a clean background.
+</span>          screen:<span class="function-name">calculate_layout</span>()
+          screen:<span class="function-name">render</span>()
+        <span class="keyword">end</span>,
+        border = {
+          format = t.draw.box_fmt.rounded,
+          title  = <span class="string">"Wide ButtonBar"</span>,
+        },
+      }
+    <span class="keyword">end</span>,
+  },
+
+  <span class="comment">-- 2. Word-wrapped prompt: the long message is broken at word boundaries
+</span>  <span class="comment">--    to fill the dialog width naturally.
+</span>  {
+    label = <span class="string">"Word-Wrapped Prompt"</span>,
+    make  = <span class="keyword">function</span>()
+      <span class="keyword">return</span> <span class="function-name">Confirm</span> {
+        prompt = {
+          <span class="string">"This is a longer prompt that demonstrates automatic word-wrapping. "</span> ..
+          <span class="string">"The text is broken at word boundaries to fit the dialog width, so even "</span> ..
+          <span class="string">"a paragraph-length message stays readable inside the box. "</span> ..
+          <span class="string">"Consider this before proceeding with the operation."</span>,
+          <span class="string">""</span>,
+          <span class="string">"It also supports multiple lines:"</span>,
+          <span class="string">"• and \u{1F680} Rockets \u{1F4A5} are supported too!"</span>,
+          <span class="string">"• And if the dialog is wide enough, this line will stay on one line. Otherwise, it will wrap like the others."</span>,
+        },
+        buttons = {
+          { label = <span class="string">"Confirm"</span>, id = <span class="string">"confirm"</span> },
+          { label = <span class="string">"Cancel"</span>,  id = Confirm.ids.cancel, cancel = <span class="keyword">true</span> },
+        },
+        attr = { fg = <span class="string">"white"</span>, bg = <span class="string">"blue"</span> },
+        button_attr = { fg = <span class="string">"yellow"</span> },
+        selected_attr = { fg = <span class="string">"yellow"</span>, brightness = <span class="string">"bright"</span>, reverse = <span class="keyword">true</span> },
+        cancellable = <span class="keyword">true</span>,
+        redraw = <span class="keyword">function</span>()
+          <span class="comment">-- On resize, redraw the screen behind the dialog so the button bar always draws on a clean background.
+</span>          screen:<span class="function-name">calculate_layout</span>()
+          screen:<span class="function-name">render</span>()
+        <span class="keyword">end</span>,
+        border = {
+          format = t.draw.box_fmt.rounded,
+          title  = <span class="string">"Word-Wrapped Prompt"</span>,
+          attr = { fg = <span class="string">"white"</span>, bg = <span class="string">"blue"</span> },
+        },
+      }
+    <span class="keyword">end</span>,
+  },
+
+}
+
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
+  screen:<span class="function-name">calculate_layout</span>()
+  screen:<span class="function-name">render</span>()
+
+  <span class="keyword">local</span> idx = <span class="number">1</span>
+
+  <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+    screen:<span class="function-name">check_resize</span>(<span class="keyword">true</span>)
+
+    <span class="keyword">local</span> entry = dialogs[idx]
+    <span class="keyword">local</span> id, err = entry.<span class="function-name">make</span>():<span class="function-name">run</span>()
+
+    <span class="keyword">if</span> id == Confirm.ids.cancel <span class="keyword">or</span> id == Confirm.ids.abort <span class="keyword">then</span>
+      log:<span class="function-name">add_line</span>(<span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"[%s]  cancelled (%s)"</span>, entry.label, <span class="global">tostring</span>(err)))
+      log:<span class="function-name">set_position</span>(<span class="global">math</span>.huge)
+      screen:<span class="function-name">render</span>()
+      <span class="keyword">break</span>
+    <span class="keyword">end</span>
+
+    log:<span class="function-name">add_line</span>(<span class="global">string</span>.<span class="function-name">format</span>(<span class="string">"[%s]  selected '%s'"</span>, entry.label, <span class="global">tostring</span>(id)))
+    log:<span class="function-name">set_position</span>(<span class="global">math</span>.huge)
+    screen:<span class="function-name">render</span>()
+
+    idx = idx % #dialogs + <span class="number">1</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+t.<span class="function-name">initwrap</span>(main, {
+  displaybackup  = <span class="keyword">true</span>,
+  filehandle     = <span class="global">io</span>.stdout,
+  disable_sigint = <span class="keyword">true</span>,   <span class="comment">-- route Ctrl+C through the input system so dialogs can catch it
+</span>})()
+
+<span class="global">print</span>(<span class="string">"done!"</span>)</pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

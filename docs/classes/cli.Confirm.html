@@ -53,6 +53,8 @@
   <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.ButtonBar.html">ui.panel.ButtonBar</a></li>
+  <li><a href="../classes/ui.panel.Confirm.html">ui.panel.Confirm</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
   <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
@@ -103,6 +105,7 @@
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
@@ -128,8 +131,8 @@
  The user navigates with arrow keys or typing, and confirms with Enter. Optionally the widget
  can be cancelled with <code>&lt;esc&gt;</code> or <code>&lt;ctrl+c&gt;</code>.</p>
 
-<p> Each response entry is a table <code>{ label = string, value = any, cancel = bool? }</code>.
- When <code>value</code> is omitted it defaults to <code>label</code>. Marking an entry with <code>cancel = true</code>
+<p> Each response entry is a table <code>{ label = string, id = any, cancel = bool? }</code>.
+ When <code>id</code> is omitted it defaults to <code>label</code>. Marking an entry with <code>cancel = true</code>
  means pressing Escape selects that entry instead of returning <code>nil, &quot;cancelled&quot;</code>.</p>
 
 <p> NOTE: you MUST call <a href="../modules/terminal.html#initialize">terminal.initialize</a> before calling this widget's <code>:run()</code> method.</p>
@@ -161,8 +164,8 @@
 <span class="keyword">local</span> widget = <span class="function-name">Confirm</span>{
   prompt = <span class="string">"Choose an option:"</span>,
   responses = {
-    { label = <span class="string">"Option 1"</span>, value = <span class="string">"opt1"</span> },
-    { label = <span class="string">"Option 2"</span>, value = <span class="string">"opt2"</span>, cancel = <span class="keyword">true</span> },
+    { label = <span class="string">"Option 1"</span>, id = <span class="string">"opt1"</span> },
+    { label = <span class="string">"Option 2"</span>, id = <span class="string">"opt2"</span>, cancel = <span class="keyword">true</span> },
   },
   default = <span class="string">"opt2"</span>,
 }
@@ -233,14 +236,14 @@
         <li><span class="parameter">responses</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.6">table</a></span>
          List of response entry tables. Each entry must have
- a <code>label</code> (string) and may have a <code>value</code> (any; defaults to <code>label</code>) and
+ a <code>label</code> (string) and may have an <code>id</code> (any; defaults to <code>label</code>) and
  <code>cancel</code> (bool; marks the entry selected when Escape is pressed).
  Defaults to <code>Confirm.sets.ok</code>.
          (<em>optional</em>)
         </li>
         <li><span class="parameter">default</span>
             <span class="types"><span class="type">any</span></span>
-         The <code>value</code> of the response to pre-select. Defaults to the value of the first entry.
+         The <code>id</code> of the response to pre-select. Defaults to the id of the first entry.
          (<em>optional</em>)
         </li>
         <li><span class="parameter">cancellable</span>
@@ -279,7 +282,7 @@
     <strong>cli.confirm.ids</strong>
     </dt>
     <dd>
-    Response ID constants.  Plain strings used as <code>value</code> fields in the preset <a href="../classes/cli.Confirm.html#cli.confirm.sets">sets</a>.
+    Response ID constants.  Plain strings used as <code>id</code> fields in the preset <a href="../classes/cli.Confirm.html#cli.confirm.sets">sets</a>.
  Useful for comparing the return value of <code>run()</code> without hardcoding strings.
 
 
@@ -324,7 +327,7 @@
     <strong>cli.confirm.sets</strong>
     </dt>
     <dd>
-    Preset response sets.  Each is an array, where the values are has tables; <code>{label, value, cancel?}</code>.
+    Preset response sets.  Each is an array, where the values are has tables; <code>{label, id, cancel?}</code>.
  These are ready to pass as <code>opts.responses</code>, as the most common confirmations.
 
 
@@ -411,7 +414,7 @@
     <ol>
 
            <span class="types"><span class="type">any</span></span>
-        The <code>value</code> of the selected response entry (defaults to its <code>label</code> when unset).
+        The <code>id</code> of the selected response entry (defaults to its <code>label</code> when unset).
     </ol>
      <h3>Or</h3>
     <ol>

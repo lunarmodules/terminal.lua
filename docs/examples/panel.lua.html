@@ -46,6 +46,7 @@
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
   <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><strong>panel.lua</strong></li>
+  <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
@@ -92,6 +93,8 @@
   <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
   <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
   <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.ButtonBar.html">ui.panel.ButtonBar</a></li>
+  <li><a href="../classes/ui.panel.Confirm.html">ui.panel.Confirm</a></li>
   <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
   <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
   <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
@@ -292,18 +295,18 @@
   terminal.cursor.position.<span class="function-name">set</span>(<span class="number">1</span>, <span class="number">1</span>)
 
   <span class="comment">-- create custom formats to connect the panel borders visually
-</span>  <span class="keyword">local</span> fmt_top_left = terminal.draw.box_fmt.<span class="function-name">copy</span>(terminal.draw.box_fmt.single)
+</span>  <span class="keyword">local</span> fmt_top_left = terminal.draw.box_fmt.single:<span class="function-name">copy</span>()
   fmt_top_left.tr = <span class="string">"┬"</span> <span class="comment">-- connect to the right panel top left corner
 </span>  fmt_top_left.b = <span class="string">""</span>   <span class="comment">-- do not draw the bottom bar (use the lower panels top bar)
 </span>  fmt_top_left.bl = fmt_top_left.l  <span class="comment">-- no edge, continue vertical line
 </span>  fmt_top_left.br = fmt_top_left.l  <span class="comment">-- no edge, continue vertical line
 </span>
-  <span class="keyword">local</span> fmt_bottom_left = terminal.draw.box_fmt.<span class="function-name">copy</span>(terminal.draw.box_fmt.single)
+  <span class="keyword">local</span> fmt_bottom_left = terminal.draw.box_fmt.single:<span class="function-name">copy</span>()
   fmt_bottom_left.tl = <span class="string">"├"</span>  <span class="comment">-- connect to the top panel bottom left corner
 </span>  fmt_bottom_left.tr = <span class="string">"┤"</span>  <span class="comment">-- connect to the top panel bottom right corner
 </span>  fmt_bottom_left.br = <span class="string">"┴"</span>  <span class="comment">-- connect to the right panel bottom left corner
 </span>
-  <span class="keyword">local</span> fmt_right = terminal.draw.box_fmt.<span class="function-name">copy</span>(terminal.draw.box_fmt.single)
+  <span class="keyword">local</span> fmt_right = terminal.draw.box_fmt.single:<span class="function-name">copy</span>()
   fmt_right.l = <span class="string">""</span>    <span class="comment">-- do not draw the left border (use the left panels right border)
 </span>  fmt_right.tl = fmt_right.t <span class="comment">-- no edge, continue horizontal line
 </span>  fmt_right.bl = fmt_right.b <span class="comment">-- no edge, continue horizontal line
