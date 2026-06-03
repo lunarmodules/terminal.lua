@@ -98,6 +98,7 @@ end
 -- @treturn Prompt A new Prompt instance.
 -- @name cli.Prompt
 function Prompt:init(opts)
+  opts = opts or {}
   local value = opts.value or ""
   if getmetatable(value) ~= EditLine then
     -- it is not an EditLine object, so create one
@@ -253,10 +254,9 @@ end
 
 --- Starts the prompt input loop.
 -- Calling on the instance is a short-cut to calling this method.
--- @treturn string|nil
---   The final input value entered by the user, or nil if the input was cancelled.
--- @treturn string
---   The error string if cancelled; "cancelled".
+-- @treturn[1] string The final input value entered by the user
+-- @treturn[2] nil if the input was cancelled.
+-- @treturn[2] string The error string if cancelled (`"cancelled"`).
 function Prompt:run()
 
   self:draw()

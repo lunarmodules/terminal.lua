@@ -62,7 +62,7 @@ local angle   = "└  "
 -- @tparam table opts.choices List of choices. Each entry is a table with:
 --   `label` (string, required), `key` (any type, optional, defaults to label),
 --   `value` (boolean, optional, initial checked state, defaults to false).
--- @tparam[opt=1] number opts.default Default cursor position (1-based index into choices).
+-- @tparam[opt=1] number opts.default Default choice index (1-based).
 -- @tparam[opt="Select options:"] string opts.prompt Prompt message to display.
 -- @tparam[opt=false] boolean opts.cancellable Whether the widget can be cancelled (by pressing `<esc>` or `<ctrl+c>`).
 -- @tparam[opt=false] boolean opts.clear Whether to clear the widget from screen after completion.
@@ -302,8 +302,8 @@ end
 
 
 
---- Set the current cursor position.
--- @tparam number idx The index to set as the current cursor position (1-based).
+--- Set the current selection index.
+-- @tparam number idx The index to set as the current selection (1-based).
 function MultiSelect:set_selection(idx)
   assert(type(idx) == "number", "selection index must be a number")
   assert(idx >= 1 and idx <= #self.choices, "selection index out of range")
@@ -313,10 +313,9 @@ end
 
 
 --- Executes the widget.
--- If necessary it initializes the terminal first.
--- It also handles the cleanup of the terminal state after the widget is closed.
--- @treturn table|nil Hash table `{ [key] = bool }` for each choice, or nil if cancelled.
--- @treturn string|nil nil on success, `"cancelled"` if cancelled.
+-- @treturn[1] table Hash table `{ [key] = bool }` for each choice
+-- @treturn[2] nil If cancelled.
+-- @treturn[2] string Error string `"cancelled"` if cancelled.
 function MultiSelect:run()
   -- Reserve space for rendering
   t.output.write(("\n"):rep(#self.choices + 1))

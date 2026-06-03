@@ -68,7 +68,7 @@ local angle   = "└  "
 -- @tparam[opt=false] boolean opts.cancellable Whether the menu can be cancelled (by pressing `<esc>` or `<ctrl+c>`).
 -- @tparam[opt=false] boolean opts.clear Whether to clear the widget from screen after completion.
 -- @tparam[opt=1.0] number opts.typeahead_delay Seconds of inactivity after which the typeahead search buffer resets.
--- @treturn Prompt A new Select instance.
+-- @treturn Select A new Select instance.
 -- @name cli.Select
 function Select:init(opts)
   assert(type(opts) == "table", "options must be a table")
@@ -270,7 +270,7 @@ end
 
 
 --- Set the current selection index.
--- @tparam number idx The index to set as the current selection.
+-- @tparam number idx The index to set as the current selection (1-based).
 function Select:set_selection(idx)
   assert(type(idx) == "number", "selection index must be a number")
   assert(idx >= 1 and idx <= #self.choices, "selection index out of range")
@@ -280,10 +280,10 @@ end
 
 
 --- Executes the widget.
--- If necessary it initializes the terminal first.
--- It also handles the cleanup of the terminal state after the menu is closed.
--- @treturn number|nil The index of the selected choice (1-based) or nil if cancelled.
--- @treturn string|err The selected choice or `"cancelled"` if cancelled.
+-- @treturn[1] number The index of the selected choice (1-based)
+-- @treturn[1] string The selected choice
+-- @treturn[2] nil If cancelled
+-- @treturn[2] string Error string `"cancelled"` if cancelled.
 function Select:run()
   -- Reserve space for rendering
   t.output.write(("\n"):rep(#self.choices + 1))

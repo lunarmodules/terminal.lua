@@ -214,11 +214,10 @@ end
 
 
 --- Executes the widget.
--- Initializes the terminal if necessary, and handles cleanup after the widget closes.
 -- On completion, replaces the interactive widget with a one-line summary unless `clear` was set.
 -- @treturn[1] any The `id` of the selected response entry (defaults to its `label` when unset).
--- @treturn[2] nil On error.
--- @treturn[2] string `"cancelled"` if cancelled and no response has `cancel = true`.
+-- @treturn[2] nil On success.
+-- @treturn[2] string Error string `"cancelled"` if cancelled and no response has `cancel = true`.
 function Confirm:run()
   local idx, err = self._select:run()
 
