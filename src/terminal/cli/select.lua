@@ -36,9 +36,6 @@ local Select = utils.class()
 
 
 
--- TODO: consistency on all widgets; open diamond while active, closed diamond when done, and the cursor yellow
--- once inactive still highlight the choices/input
-
 
 
 -- Key bindings
@@ -108,7 +105,7 @@ function Select:template()
   local res = Sequence(
     function() return t.cursor.position.up_seq():rep(self:height()) end,
     function() return t.text.push_seq({ fg = "green" }) end,
-    diamond,
+    function() return self.completed and filled_diamond or diamond end,
     t.text.pop_seq,
     self.prompt,
     t.clear.eol_seq,
@@ -120,9 +117,10 @@ function Select:template()
       i == #self.choices and angle or pipe,
       function() return i == self.selected and dot or circle end,
       function()
+        local active = (not self.completed) and (i == self.selected)
         return t.text.push_seq({
-          fg = (i == self.selected) and "yellow" or "white",
-          brightness = (i == self.selected) and "normal" or "dim"
+          fg = active and "yellow" or "white",
+          brightness = active and "normal" or "dim"
         })
       end,
       option,
@@ -209,6 +207,8 @@ function Select:handleInput()
     elseif keyName == keys.enter then
       self._search:clear()
       res1 = self.selected
+      self.completed = true
+      t.output.write(self.__template)
       break
     end
   end
@@ -285,6 +285,8 @@ end
 -- @treturn[2] nil If cancelled
 -- @treturn[2] string Error string `"cancelled"` if cancelled.
 function Select:run()
+  self.completed = false  -- reset completed state in case of multiple runs
+
   -- Reserve space for rendering
   t.output.write(("\n"):rep(#self.choices + 1))
   t.cursor.visible.push(false)
