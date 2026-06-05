@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>terminal docs</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>terminal.lua</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Initialization___shutdown">Initialization & shutdown </a></li>
+<li><a href="#Functions_vs_strings">Functions vs strings </a></li>
+<li><a href="#Stacks">Stacks </a></li>
+<li><a href="#Async___non_blocking_input">Async / non-blocking input </a></li>
+<li><a href="#Querying">Querying </a></li>
+</ul>
+
+
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/01-introduction.md.html">1. Terminal</a></li>
+  <li><strong>2. Terminal layer</strong></li>
+  <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
+  <li><a href="../topics/04-cli_widgets.md.html">4. CLI widgets</a></li>
+  <li><a href="../topics/05-fullscreen_ui.md.html">5. Full-screen UI</a></li>
+  <li><a href="../topics/06-canvas.md.html">6. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
+  <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
+  <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/spec.helpers.html">spec.helpers</a></li>
+  <li><a href="../modules/terminal.html">terminal</a></li>
+  <li><a href="../modules/terminal.clear.html">terminal.clear</a></li>
+  <li><a href="../modules/terminal.cursor.html">terminal.cursor</a></li>
+  <li><a href="../modules/terminal.cursor.position.html">terminal.cursor.position</a></li>
+  <li><a href="../modules/terminal.cursor.shape.html">terminal.cursor.shape</a></li>
+  <li><a href="../modules/terminal.cursor.visible.html">terminal.cursor.visible</a></li>
+  <li><a href="../modules/terminal.draw.html">terminal.draw</a></li>
+  <li><a href="../modules/terminal.draw.line.html">terminal.draw.line</a></li>
+  <li><a href="../modules/terminal.input.html">terminal.input</a></li>
+  <li><a href="../modules/terminal.input.keymap.html">terminal.input.keymap</a></li>
+  <li><a href="../modules/terminal.output.html">terminal.output</a></li>
+  <li><a href="../modules/terminal.progress.html">terminal.progress</a></li>
+  <li><a href="../modules/terminal.scroll.html">terminal.scroll</a></li>
+  <li><a href="../modules/terminal.text.html">terminal.text</a></li>
+  <li><a href="../modules/terminal.text.color.html">terminal.text.color</a></li>
+  <li><a href="../modules/terminal.text.width.html">terminal.text.width</a></li>
+  <li><a href="../modules/terminal.utils.html">terminal.utils</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Canvas.html">Canvas</a></li>
+  <li><a href="../classes/EditLine.html">EditLine</a></li>
+  <li><a href="../classes/Sequence.html">Sequence</a></li>
+  <li><a href="../classes/canvas.TimeSeriesGraph.html">canvas.TimeSeriesGraph</a></li>
+  <li><a href="../classes/canvas.Viewport.html">canvas.Viewport</a></li>
+  <li><a href="../classes/cli.Confirm.html">cli.Confirm</a></li>
+  <li><a href="../classes/cli.MultiSelect.html">cli.MultiSelect</a></li>
+  <li><a href="../classes/cli.Prompt.html">cli.Prompt</a></li>
+  <li><a href="../classes/cli.Select.html">cli.Select</a></li>
+  <li><a href="../classes/progress.Bar.html">progress.Bar</a></li>
+  <li><a href="../classes/ui.Panel.html">ui.Panel</a></li>
+  <li><a href="../classes/ui.panel.Bar.html">ui.panel.Bar</a></li>
+  <li><a href="../classes/ui.panel.ButtonBar.html">ui.panel.ButtonBar</a></li>
+  <li><a href="../classes/ui.panel.Confirm.html">ui.panel.Confirm</a></li>
+  <li><a href="../classes/ui.panel.KeyBar.html">ui.panel.KeyBar</a></li>
+  <li><a href="../classes/ui.panel.Screen.html">ui.panel.Screen</a></li>
+  <li><a href="../classes/ui.panel.Set.html">ui.panel.Set</a></li>
+  <li><a href="../classes/ui.panel.TabStrip.html">ui.panel.TabStrip</a></li>
+  <li><a href="../classes/ui.panel.Text.html">ui.panel.Text</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="../examples/async.lua.html">async.lua</a></li>
+  <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
+  <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/cli.lua.html">cli.lua</a></li>
+  <li><a href="../examples/colors.lua.html">colors.lua</a></li>
+  <li><a href="../examples/cow.lua.html">cow.lua</a></li>
+  <li><a href="../examples/graph.lua.html">graph.lua</a></li>
+  <li><a href="../examples/headers.lua.html">headers.lua</a></li>
+  <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
+  <li><a href="../examples/panel.lua.html">panel.lua</a></li>
+  <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
+  <li><a href="../examples/progress.lua.html">progress.lua</a></li>
+  <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
+  <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
+  <li><a href="../examples/screen.lua.html">screen.lua</a></li>
+  <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
+  <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
+  <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
+  <li><a href="../examples/text_panel.lua.html">text_panel.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+
+<h1>2. Terminal layer</h1>
+
+<p>The terminal layer covers everything needed to drive a terminal reliably across platforms. It sits on top of <a href="https://github.com/lunarmodules/luasystem">LuaSystem</a> and provides initialization, ANSI sequence helpers, state management via stacks, non-blocking input, and terminal querying.</p>
+
+<p><a name="Initialization___shutdown"></a></p>
+<h2>Initialization &amp; shutdown</h2>
+
+<p>Before use the terminal must be initialized with <a href="../modules/terminal.html#initialize">terminal.initialize</a>, and cleaned up afterwards with <a href="../modules/terminal.html#shutdown">terminal.shutdown</a>. The most convenient way to do both is <a href="../modules/terminal.html#initwrap">terminal.initwrap</a>, which wraps a function call and handles setup and teardown automatically.</p>
+
+<p>Platform differences between Windows and *nixes are handled here.</p>
+
+<p><a name="Functions_vs_strings"></a></p>
+<h2>Functions vs strings</h2>
+
+<p>Every low-level function that controls the terminal also has a <code>_seq</code> counterpart that returns the escape sequence as a string instead of writing it directly. For example:</p>
+
+<ul>
+    <li><a href="../modules/terminal.clear.html#eol">terminal.clear.eol</a> / <a href="../modules/terminal.clear.html#eol_seq">terminal.clear.eol_seq</a></li>
+    <li><a href="../modules/terminal.cursor.shape.html#set">terminal.cursor.shape.set</a> / <a href="../modules/terminal.cursor.shape.html#set_seq">terminal.cursor.shape.set_seq</a></li>
+</ul>
+
+<p>These two calls are equivalent:</p>
+
+
+<pre>
+<span class="keyword">local</span> t = <span class="global">require</span> <span class="string">"terminal"</span>
+
+<span class="comment">-- directly write
+</span>t.cursor.shape.<span class="function-name">set</span>(<span class="string">"block_blink"</span>)
+
+<span class="comment">-- manually write
+</span>t.output.<span class="function-name">write</span>(t.cursor.shape.<span class="function-name">set_seq</span>(<span class="string">"block_blink"</span>))
+</pre>
+
+<p>For simple cases the direct function is fine. When drawing complex items, batching multiple sequences into a single write reduces flicker and improves performance:</p>
+
+
+<pre>
+t.<span class="function-name">write</span>(
+  t.cursor.position.<span class="function-name">column_seq</span>(<span class="number">1</span>),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">up_seq</span>(<span class="number">2</span>)
+)
+</pre>
+
+<p>Sequences can also be stored in a variable for reuse:</p>
+
+
+<pre>
+<span class="keyword">local</span> three_line_box = <span class="global">table</span>.<span class="function-name">concat</span> {
+  t.cursor.position.<span class="function-name">column_seq</span>(<span class="number">1</span>),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">down_seq</span>(),
+  <span class="string">"|"</span>,
+  t.clear.<span class="function-name">eol_seq</span>(),
+  t.cursor.position.<span class="function-name">up_seq</span>(<span class="number">2</span>)
+}
+
+t.<span class="function-name">write</span>(three_line_box)
+</pre>
+
+<p>A more advanced version of this pattern is the <a href="../classes/Sequence.html#">Sequence</a> class.</p>
+
+<p><strong>Important</strong>: stack-based functions are not suited for inclusion in stored strings, because they capture state at the time the string is <em>created</em>, not at the time it is <em>used</em>. The <a href="../classes/Sequence.html#">Sequence</a> class supports lambda functions to handle this use case.</p>
+
+<p><a name="Stacks"></a></p>
+<h2>Stacks</h2>
+
+<p>Terminal state is mostly non-queryable (cursor position is the only exception). When a piece of code changes the foreground color it cannot reliably restore the previous one without knowing what it was. Stacks solve this.</p>
+
+<p>Each piece of state has its own stack with three operations:</p>
+
+<ul>
+    <li><code>push(values...)</code> — push new value(s) onto the stack and apply them.</li>
+    <li><code>pop(n)</code> — pop <code>n</code> items and re-apply the new top.</li>
+    <li><code>apply()</code> — re-apply the current top (undoes any intermediate changes).</li>
+</ul>
+
+<p>Available stacks:</p>
+
+<ul>
+    <li><strong>cursor shape</strong> — shape and blink behaviour of the cursor. See stack-based functions in <a href="../modules/terminal.cursor.shape.html#">terminal.cursor.shape</a>.</li>
+    <li><strong>cursor visibility</strong> — whether the cursor is shown. See stack-based functions in <a href="../modules/terminal.cursor.visible.html#">terminal.cursor.visible</a>.</li>
+    <li><strong>cursor position</strong> — the only queryable state; <a href="../modules/terminal.cursor.position.html#push">terminal.cursor.position.push</a> saves the current position and moves to the new one, <code>pop(n)</code> restores the last popped position. See stack-based functions in <a href="../modules/terminal.cursor.position.html#">terminal.cursor.position</a>.</li>
+    <li><strong>scroll region</strong> — the rows that scroll. See stack-based functions in <a href="../modules/terminal.scroll.html#">terminal.scroll</a>.</li>
+    <li><strong>text attributes and color</strong> — colors plus attributes like <code>reverse</code> and <code>blink</code>. See stack-based functions in <a href="../modules/terminal.text.color.html#">terminal.text.color</a>.</li>
+</ul>
+
+<p><a name="Async___non_blocking_input"></a></p>
+<h2>Async / non-blocking input</h2>
+
+<p>The terminal library is designed for async use. Keyboard input is always non-blocking, so it works in both a blocking loop and a coroutine-based yielding loop.</p>
+
+<p>Output written to the terminal is synchronous; the library assumes it will not block (or only very briefly).</p>
+
+<p>The non-blocking behaviour is configured via the <code>sleep</code> and <code>bsleep</code> options passed to <a href="../modules/terminal.html#initialize">terminal.initialize</a>.</p>
+
+<p><a name="Querying"></a></p>
+<h2>Querying</h2>
+
+<p>Querying the terminal (e.g. reading cursor position) works by writing a command code and then reading the response from stdin. The complication is that the response is appended to whatever was already in the input buffer, so any non-response bytes must be buffered on the Lua side for later consumption.</p>
+
+<p>This is handled by <a href="../modules/terminal.input.html#">terminal.input</a>, specifically <a href="../modules/terminal.input.html#preread">terminal.input.preread</a> and <a href="../modules/terminal.input.html#read_query_answer">terminal.input.read_query_answer</a>.</p>
+
+<p><strong>Note</strong>: queries are slow by nature — see the performance note in the <a href="../modules/terminal.input.html#">terminal.input</a> module documentation for details and guidance on how to avoid accumulating query latency when redrawing a screen.</p>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

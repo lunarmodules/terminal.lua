@@ -84,10 +84,12 @@
 </ul>
 <h2>Topics</h2>
 <ul class="">
-  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/01-introduction.md.html">1. Terminal</a></li>
+  <li><a href="../topics/02-terminal.md.html">2. Terminal layer</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
-  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/04-cli_widgets.md.html">4. CLI widgets</a></li>
+  <li><a href="../topics/05-fullscreen_ui.md.html">5. Full-screen UI</a></li>
+  <li><a href="../topics/06-canvas.md.html">6. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -97,21 +99,18 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/cli.lua.html">cli.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
-  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
-  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
-  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -125,6 +124,32 @@
 <h1>Module <code>terminal.cursor.position</code></h1>
 <p>Terminal cursor position module.</p>
 <p> Provides utilities for cursor positioning in terminals.</p>
+
+<p> <strong>Stack vs backup/restore — performance and safety</strong></p>
+
+<p> The stack functions (<a href="../modules/terminal.cursor.position.html#push">push</a>/<a href="../modules/terminal.cursor.position.html#pop">pop</a>) query the terminal on every <a href="../modules/terminal.cursor.position.html#push">push</a> call: they call
+ <code>get()</code> to read the current position, which requires a round-trip through stdin and
+ incurs at least one sleep step (typically 15–100 ms — see <a href="../modules/terminal.input.html#">terminal.input</a> for the
+ full explanation). In tight rendering loops or when redrawing a whole screen, these
+ costs accumulate quickly.</p>
+
+<p> A faster alternative is <a href="../modules/terminal.cursor.position.html#backup">backup</a> / <a href="../modules/terminal.cursor.position.html#restore">restore</a>. These emit a single ANSI sequence each
+ and let the terminal itself remember the position, with no round-trip:</p>
+
+
+<pre>
+terminal.cursor.position.<span class="function-name">backup</span>()   <span class="comment">-- save current position in terminal memory
+</span><span class="comment">-- ... draw something ...
+</span>terminal.cursor.position.<span class="function-name">restore</span>()  <span class="comment">-- return to saved position</span>
+</pre>
+
+<p> <strong>Important caveat</strong>: the terminal provides only <em>one</em> backup slot. If two code paths
+ both use <a href="../modules/terminal.cursor.position.html#backup">backup</a>/<a href="../modules/terminal.cursor.position.html#restore">restore</a> concurrently — for example in a coroutine-based loop where
+ a yield can occur between a <a href="../modules/terminal.cursor.position.html#backup">backup</a> call and its matching <a href="../modules/terminal.cursor.position.html#restore">restore</a> — they will
+ overwrite each other's saved position and produce incorrect cursor placement. Use
+ <a href="../modules/terminal.cursor.position.html#backup">backup</a>/<a href="../modules/terminal.cursor.position.html#restore">restore</a> only in sections of code that run to completion without yielding
+ (i.e. without any operation that may call the sleep function, such as reading keyboard
+ input).</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>

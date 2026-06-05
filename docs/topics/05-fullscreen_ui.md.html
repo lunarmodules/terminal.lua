@@ -31,14 +31,25 @@
   <li><a href="../index.html">Index</a></li>
 </ul>
 
+<h2>Contents</h2>
+<ul>
+<li><a href="#Screen______ui_panel_Screen_">Screen — `ui.panel.Screen` </a></li>
+<li><a href="#Header_panel______ui_panel_Bar_">Header panel — `ui.panel.Bar` </a></li>
+<li><a href="#Footer_and_key_shortcut_panels______ui_panel_Bar____ui_panel_KeyBar_">Footer and key-shortcut panels — `ui.panel.Bar`, `ui.panel.KeyBar` </a></li>
+<li><a href="#Dialogs______ui_panel_Confirm_">Dialogs — `ui.panel.Confirm` </a></li>
+<li><a href="#Text_layout_panel______ui_panel_Text_">Text layout panel — `ui.panel.Text` </a></li>
+<li><a href="#Tab_strip_panel______ui_panel_TabStrip_">Tab-strip panel — `ui.panel.TabStrip` </a></li>
+</ul>
 
 
 <h2>Topics</h2>
 <ul class="">
-  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><strong>2. Terminal handling</strong></li>
+  <li><a href="../topics/01-introduction.md.html">1. Terminal</a></li>
+  <li><a href="../topics/02-terminal.md.html">2. Terminal layer</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
-  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/04-cli_widgets.md.html">4. CLI widgets</a></li>
+  <li><strong>5. Full-screen UI</strong></li>
+  <li><a href="../topics/06-canvas.md.html">6. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -91,21 +102,18 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/cli.lua.html">cli.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
-  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
-  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
-  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -117,46 +125,57 @@
 <div id="content">
 
 
-<h1>2. Terminal handling</h1>
+<h1>5. Full-screen UI</h1>
 
-<p>Terminals are hard to interact with. Sending commands is easy, but querying status
-is all but impossible. This means that the state set (e.g. what is currently displayed at pos x,y, or the foreground color currently set) is
-global, and non-queryable. In an async application, the global state becomes even
-harder to manage.</p>
+<p>The full-screen UI system is built around a flexible panel framework. Panels are rectangular regions of the terminal that manage their own rendering and layout. The framework handles automatic sizing and positioning so individual panels don't need to track terminal dimensions manually.</p>
 
-<h1>2.1 Asynchroneous code</h1>
+<p><img src="media/t_ui.png" alt="Terminal UI"/></p>
 
-<p>The terminal library is designed as async capable. This means that it can be used
-in a coroutine based environment, in a non-blocking way.</p>
+<p><a name="Screen______ui_panel_Screen_"></a></p>
+<h2>Screen — <a href="../classes/ui.panel.Screen.html#">ui.panel.Screen</a></h2>
 
-<p>Input can be read in a non-blocking way. Output written to the terminal is synchroneous.
-The library assumes it will not block, or only very briefly.</p>
+<p><a href="../classes/ui.panel.Screen.html#">ui.panel.Screen</a> is the root container for a full-screen UI. It manages terminal resize events and reflows the layout accordingly. All other panels are attached to and rendered through a Screen.</p>
 
-<p>Controlling the non-blocking input is done via the options passed to the
-<a href="../modules/terminal.html#initialize">terminal.initialize</a> function. Specifically the <code>sleep</code> and <code>bsleep</code> options.</p>
+<p>See the <a href="../classes/ui.panel.Screen.html#">ui.panel.Screen</a> class reference for the full API.</p>
 
+<p><a name="Header_panel______ui_panel_Bar_"></a></p>
+<h2>Header panel — <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a></h2>
 
-<h1>2.2 Querying</h1>
+<p><code>ui.panel.bar</code> renders a single fixed-height row, typically used as a title bar at the top of the screen. It supports colored backgrounds and formatted text.</p>
 
-<p>Querying the terminal is done by writing a command code, and then reading the response
-from the input buffer. However the requested data is appended to the STDIN buffer if it wasn't empty
-to begin with. This means that when reading, any data that is not the response needs
-to be buffered Lua side to be consumed later.</p>
+<p>See the <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a> class reference for the full API.</p>
 
-<p>This is handled by the <a href="../modules/terminal.input.html#">terminal.input</a> module. Specifically the <a href="../modules/terminal.input.html#preread">terminal.input.preread</a> and
-<a href="../modules/terminal.input.html#read_query_answer">terminal.input.read_query_answer</a> functions.</p>
+<p><a name="Footer_and_key_shortcut_panels______ui_panel_Bar____ui_panel_KeyBar_"></a></p>
+<h2>Footer and key-shortcut panels — <a href="../classes/ui.panel.Bar.html#">ui.panel.Bar</a>, <a href="../classes/ui.panel.KeyBar.html#">ui.panel.KeyBar</a></h2>
 
+<p>Footer panels work the same way as header panels and are typically placed at the bottom of the screen. <a href="../classes/ui.panel.KeyBar.html#">ui.panel.KeyBar</a> is a specialization that renders a row of labelled keyboard shortcuts.</p>
 
-<h1>2.4 Character width</h1>
+<p>See the <a href="../classes/ui.panel.KeyBar.html#">ui.panel.KeyBar</a> class reference for the full API.</p>
 
-<p>To properly control the UI in a terminal, it is important to know how text is displayed on the terminal.
-The primary thing to know is the display width of characters.</p>
+<p><a name="Dialogs______ui_panel_Confirm_"></a></p>
+<h2>Dialogs — <a href="../classes/ui.panel.Confirm.html#">ui.panel.Confirm</a></h2>
 
-<p>The <a href="../modules/terminal.text.width.html#">terminal.text.width</a> module provides functionality to test and report the width of characters
-and strings. The <a href="../modules/terminal.html#size">terminal.size</a> function can be used to find the terminal size (in rows and columns),
-to see if the text to display fits the screen or will roll-over/scroll.</p>
+<p><a href="../classes/ui.panel.Confirm.html#">ui.panel.Confirm</a> displays confirmation prompts. Prompt text can be multi-line with automatic word-wrapping.</p>
 
-<p>The <a href="../classes/EditLine.html#">EditLine</a> class has advanced ways of handling width.</p>
+<p>See the <a href="../classes/ui.panel.Confirm.html#">ui.panel.Confirm</a> class reference for the full API.</p>
+
+<p><img src="media/t_ui_dialog.png" alt="Tab Strip"/></p>
+
+<p><a name="Text_layout_panel______ui_panel_Text_"></a></p>
+<h2>Text layout panel — <a href="../classes/ui.panel.Text.html#">ui.panel.Text</a></h2>
+
+<p><a href="../classes/ui.panel.Text.html#">ui.panel.Text</a> displays scrollable, word-wrapped text content. It supports selectors for navigating and highlighting lines or regions within the panel.</p>
+
+<p>See the <a href="../classes/ui.panel.Text.html#">ui.panel.Text</a> class reference for the full API.</p>
+
+<p><a name="Tab_strip_panel______ui_panel_TabStrip_"></a></p>
+<h2>Tab-strip panel — <a href="../classes/ui.panel.TabStrip.html#">ui.panel.TabStrip</a></h2>
+
+<p><a href="../classes/ui.panel.TabStrip.html#">ui.panel.TabStrip</a> renders a horizontal row of tabs. Selecting a tab can drive which content panel is shown, providing a familiar tabbed-interface pattern.</p>
+
+<p>See the <a href="../classes/ui.panel.TabStrip.html#">ui.panel.TabStrip</a> class reference for the full API.</p>
+
+<p><img src="media/t_ui_tab.png" alt="Tab Strip"/></p>
 
 
 </div> <!-- id="content" -->
