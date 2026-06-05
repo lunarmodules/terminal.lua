@@ -38,21 +38,18 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><strong>cli.lua</strong></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
-  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
-  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
-  <li><strong>select.lua</strong></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -103,10 +100,12 @@
 </ul>
 <h2>Topics</h2>
 <ul class="">
-  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/01-introduction.md.html">1. Terminal</a></li>
+  <li><a href="../topics/02-terminal.md.html">2. Terminal layer</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
-  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/04-cli_widgets.md.html">4. CLI widgets</a></li>
+  <li><a href="../topics/05-fullscreen_ui.md.html">5. Full-screen UI</a></li>
+  <li><a href="../topics/06-canvas.md.html">6. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -116,37 +115,33 @@
 
 <div id="content">
 
-    <h2>select.lua</h2>
+    <h2>cli.lua</h2>
 <pre>
-<span class="comment">--- Example demonstrating the cli.Select and cli.Prompt widgets together.
+<span class="comment">--- Example demonstrating all four cli.* widgets in a single flow.
 </span><span class="comment">--
-</span><span class="comment">-- This example builds a small interactive setup wizard that uses Select
-</span><span class="comment">-- for menu choices and Prompt for text input, showing how to combine
-</span><span class="comment">-- CLI widgets in a sequential flow with text attributes for feedback.
+</span><span class="comment">-- A small "project setup wizard" that collects settings step by step using
+</span><span class="comment">-- Select, MultiSelect, Prompt, and Confirm. Any step can be cancelled with
+</span><span class="comment">-- Esc or Ctrl-C; cancelling anywhere aborts the whole wizard.
 </span>
 <span class="keyword">local</span> t = <span class="global">require</span>(<span class="string">"terminal"</span>)
-<span class="keyword">local</span> Select = <span class="global">require</span>(<span class="string">"terminal.cli.select"</span>)
-<span class="keyword">local</span> Prompt = <span class="global">require</span>(<span class="string">"terminal.cli.prompt"</span>)
+<span class="keyword">local</span> Select      = <span class="global">require</span>(<span class="string">"terminal.cli.select"</span>)
+<span class="keyword">local</span> MultiSelect = <span class="global">require</span>(<span class="string">"terminal.cli.multiselect"</span>)
+<span class="keyword">local</span> Prompt      = <span class="global">require</span>(<span class="string">"terminal.cli.prompt"</span>)
+<span class="keyword">local</span> Confirm     = <span class="global">require</span>(<span class="string">"terminal.cli.confirm"</span>)
 
 
 <span class="keyword">local</span> <span class="keyword">function</span> <span class="function-name">main</span>()
-  <span class="comment">-- greeting
-</span>  t.text.<span class="function-name">push</span> { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"high"</span> }
-  t.output.<span class="global">print</span>(<span class="string">"Welcome to the project setup wizard!"</span>)
+  t.text.<span class="function-name">push</span> { fg = <span class="string">"cyan"</span>, brightness = <span class="string">"high"</span> }
+  t.output.<span class="global">print</span>(<span class="string">"Project Setup Wizard"</span>)
   t.text.<span class="function-name">pop</span>()
   t.output.<span class="global">print</span>()
 
-  <span class="comment">-- step 1: select a language
+  <span class="comment">-- step 1: select a language (cli.Select)
 </span>  <span class="keyword">local</span> idx, lang = <span class="function-name">Select</span> {
     prompt = <span class="string">"Pick a language:"</span>,
-    choices = {
-      <span class="string">"Lua"</span>,
-      <span class="string">"Python"</span>,
-      <span class="string">"JavaScript"</span>,
-      <span class="string">"Go"</span>,
-    },
+    choices = { <span class="string">"Lua"</span>, <span class="string">"Python"</span>, <span class="string">"JavaScript"</span>, <span class="string">"Go"</span> },
     cancellable = <span class="keyword">true</span>,
-    clear = <span class="keyword">true</span>,
+    clear = <span class="keyword">false</span>,
   }()
 
   <span class="keyword">if</span> <span class="keyword">not</span> idx <span class="keyword">then</span>
@@ -154,25 +149,28 @@
     <span class="keyword">return</span>
   <span class="keyword">end</span>
 
-  <span class="comment">-- step 2: select a license
-</span>  <span class="keyword">local</span> _, license = <span class="function-name">Select</span> {
-    prompt = <span class="string">"Choose a license:"</span>,
-    choices = {
-      <span class="string">"MIT"</span>,
-      <span class="string">"Apache-2.0"</span>,
-      <span class="string">"GPL-3.0"</span>,
-      <span class="string">"BSD-2-Clause"</span>,
-    },
+  <span class="comment">-- step 2: enable optional features (cli.MultiSelect)
+</span>  <span class="keyword">local</span> features = {
+    { label = <span class="string">"Unit tests"</span>,     key = <span class="string">"tests"</span>,     value = <span class="keyword">true</span>  },
+    { label = <span class="string">"CI workflow"</span>,    key = <span class="string">"ci"</span>,        value = <span class="keyword">true</span>  },
+    { label = <span class="string">"Docker support"</span>, key = <span class="string">"docker"</span>,    value = <span class="keyword">false</span> },
+    { label = <span class="string">"Documentation"</span>,  key = <span class="string">"docs"</span>,      value = <span class="keyword">false</span> },
+    { label = <span class="string">"Changelog"</span>,      key = <span class="string">"changelog"</span>, value = <span class="keyword">false</span> },
+  }
+
+  <span class="keyword">local</span> selected_features = <span class="function-name">MultiSelect</span> {
+    prompt = <span class="string">"Enable features:"</span>,
+    choices = features,
     cancellable = <span class="keyword">true</span>,
-    clear = <span class="keyword">true</span>,
+    clear = <span class="keyword">false</span>,
   }()
 
-  <span class="keyword">if</span> <span class="keyword">not</span> license <span class="keyword">then</span>
+  <span class="keyword">if</span> <span class="keyword">not</span> selected_features <span class="keyword">then</span>
     t.output.<span class="global">print</span>(<span class="string">"Setup cancelled."</span>)
     <span class="keyword">return</span>
   <span class="keyword">end</span>
 
-  <span class="comment">-- step 3: text input for project name
+  <span class="comment">-- step 3: enter a project name (cli.Prompt)
 </span>  t.output.<span class="global">print</span>()
   <span class="keyword">local</span> name = <span class="function-name">Prompt</span> {
     prompt = <span class="string">"Project name: "</span>,
@@ -186,10 +184,25 @@
     <span class="keyword">return</span>
   <span class="keyword">end</span>
 
+  <span class="comment">-- step 4: confirm before creating (cli.Confirm)
+</span>  <span class="comment">-- This uses predefined response-sets and predefined answers.
+</span>  t.output.<span class="global">print</span>()
+  <span class="keyword">local</span> answer = <span class="function-name">Confirm</span> {
+    prompt = <span class="string">"Create the project?"</span>,
+    responses = Confirm.sets.yes_no,
+    default = Confirm.ids.yes,
+    cancellable = <span class="keyword">true</span>,
+  }()
+
+  <span class="keyword">if</span> answer ~= Confirm.ids.yes <span class="keyword">then</span>
+    t.output.<span class="global">print</span>(<span class="string">"Aborted."</span>)
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+
   <span class="comment">-- summary
 </span>  t.output.<span class="global">print</span>()
   t.text.<span class="function-name">push</span> { fg = <span class="string">"green"</span>, brightness = <span class="string">"high"</span> }
-  t.output.<span class="global">print</span>(<span class="string">"Setup complete!"</span>)
+  t.output.<span class="global">print</span>(<span class="string">"Project created!"</span>)
   t.text.<span class="function-name">pop</span>()
 
   t.text.<span class="function-name">push</span> { brightness = <span class="string">"dim"</span> }
@@ -198,22 +211,26 @@
   t.output.<span class="global">print</span>(lang)
 
   t.text.<span class="function-name">push</span> { brightness = <span class="string">"dim"</span> }
-  t.output.<span class="function-name">write</span>(<span class="string">"  License:  "</span>)
-  t.text.<span class="function-name">pop</span>()
-  t.output.<span class="global">print</span>(license)
-
-  t.text.<span class="function-name">push</span> { brightness = <span class="string">"dim"</span> }
   t.output.<span class="function-name">write</span>(<span class="string">"  Name:     "</span>)
   t.text.<span class="function-name">pop</span>()
   t.output.<span class="global">print</span>(name)
+
+  t.text.<span class="function-name">push</span> { brightness = <span class="string">"dim"</span> }
+  t.output.<span class="global">print</span>(<span class="string">"  Features:"</span>)
+  t.text.<span class="function-name">pop</span>()
+  <span class="keyword">for</span> key, enabled <span class="keyword">in</span> <span class="global">pairs</span>(selected_features) <span class="keyword">do</span>
+    <span class="keyword">if</span> enabled <span class="keyword">then</span>
+      t.output.<span class="global">print</span>(<span class="string">"    + "</span> .. key)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
 
   t.output.<span class="global">print</span>()
 <span class="keyword">end</span>
 
 
 t.<span class="function-name">initwrap</span>(main, {
-  disable_sigint = <span class="keyword">true</span>, <span class="comment">-- allow ctrl-c as cancellation in widgets
-</span>})()</pre>
+  disable_sigint = <span class="keyword">true</span>,
+})()</pre>
 
 
 </div> <!-- id="content" -->

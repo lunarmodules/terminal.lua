@@ -33,18 +33,20 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#4_1_Canvas">4.1 Canvas </a></li>
-<li><a href="#4_2_canvas_Viewport">4.2 canvas.Viewport </a></li>
-<li><a href="#4_3_canvas_TimeSeriesGraph">4.3 canvas.TimeSeriesGraph </a></li>
+<li><a href="#Canvas">Canvas </a></li>
+<li><a href="#canvas_Viewport">canvas.Viewport </a></li>
+<li><a href="#canvas_TimeSeriesGraph">canvas.TimeSeriesGraph </a></li>
 </ul>
 
 
 <h2>Topics</h2>
 <ul class="">
-  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/01-introduction.md.html">1. Terminal</a></li>
+  <li><a href="../topics/02-terminal.md.html">2. Terminal layer</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
-  <li><strong>4. Canvas (braille pixel graphics)</strong></li>
+  <li><a href="../topics/04-cli_widgets.md.html">4. CLI widgets</a></li>
+  <li><a href="../topics/05-fullscreen_ui.md.html">5. Full-screen UI</a></li>
+  <li><strong>6. Canvas (braille pixel graphics)</strong></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -97,21 +99,18 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/cli.lua.html">cli.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
-  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
-  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
-  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -123,12 +122,9 @@
 <div id="content">
 
 
-<h1>4. Canvas (braille pixel graphics)</h1>
+<h1>6. Canvas (braille pixel graphics)</h1>
 
-<p>The <code>terminal.canvas</code> module family provides a pixel-level drawing surface built on Unicode
-Braille characters. Each terminal cell holds one braille character (U+2800–U+28FF), which
-encodes a 2×4 dot grid — so a canvas that is <strong>W columns × H rows</strong> in terminal space exposes
-<strong>2W × 4H pixels</strong>.</p>
+<p>The <code>terminal.canvas</code> module family provides a pixel-level drawing surface built on Unicode Braille characters. Each terminal cell holds one braille character (U+2800–U+28FF), which encodes a 2×4 dot grid — so a canvas that is <strong>W columns × H rows</strong> in terminal space exposes <strong>2W × 4H pixels</strong>.</p>
 
 <p>Three classes build on each other:</p>
 
@@ -138,26 +134,19 @@ encodes a 2×4 dot grid — so a canvas that is <strong>W columns × H rows</str
     <li><a href="../classes/canvas.TimeSeriesGraph.html#">canvas.TimeSeriesGraph</a> — a ready-made scrolling data graph drawn on a canvas.</li>
 </ul>
 
-<p><a name="4_1_Canvas"></a></p>
-<h2>4.1 Canvas</h2>
+<p><a name="Canvas"></a></p>
+<h2>Canvas</h2>
 
-<p>A <a href="../classes/Canvas.html#">Canvas</a> owns a grid of braille cells. Pixel coordinates are <strong>0-based</strong>, origin at the
-top-left, x increasing right, y increasing down. Drawing outside the bounds is silently
-ignored.</p>
+<p>A <a href="../classes/Canvas.html#">Canvas</a> owns a grid of braille cells. Pixel coordinates are <strong>0-based</strong>, origin at the top-left, x increasing right, y increasing down. Drawing outside the bounds is silently ignored.</p>
 
-<p>The canvas can be rendered with <code>render()</code>. Without options, cursor movement sequences are
-included so the cursor returns to the top-left of the block after rendering — suitable for
-use inside a TUI layout. Pass <code>print = true</code> to get plain newline-separated output instead.</p>
+<p>The canvas can be rendered with <code>render()</code>. Without options, cursor movement sequences are included so the cursor returns to the top-left of the block after rendering — suitable for use inside a TUI layout. Pass <code>print = true</code> to get plain newline-separated output instead.</p>
 
-<p>See the <a href="../classes/Canvas.html#">Canvas</a> class reference for all drawing primitives (<code>line</code>, <code>ellipse</code>, <code>circle</code>,
-<code>arc</code>, <code>polygon</code>) and canvas management methods (<code>clear</code>, <code>resize</code>, <code>scroll</code>, <code>roll</code>).</p>
+<p>See the <a href="../classes/Canvas.html#">Canvas</a> class reference for all drawing primitives (<code>line</code>, <code>ellipse</code>, <code>circle</code>, <code>arc</code>, <code>polygon</code>) and canvas management methods (<code>clear</code>, <code>resize</code>, <code>scroll</code>, <code>roll</code>).</p>
 
-<p><a name="4_2_canvas_Viewport"></a></p>
-<h2>4.2 canvas.Viewport</h2>
+<p><a name="canvas_Viewport"></a></p>
+<h2>canvas.Viewport</h2>
 
-<p>Drawing directly in physical pixels is inconvenient when the canvas size changes (e.g. on
-terminal resize). <a href="../classes/canvas.Viewport.html#">canvas.Viewport</a> solves this by providing a <strong>fixed virtual coordinate
-space</strong> that it maps to the underlying canvas via a linear transform.</p>
+<p>Drawing directly in physical pixels is inconvenient when the canvas size changes (e.g. on terminal resize). <a href="../classes/canvas.Viewport.html#">canvas.Viewport</a> solves this by providing a <strong>fixed virtual coordinate space</strong> that it maps to the underlying canvas via a linear transform.</p>
 
 <p>Three scale modes control what happens when the virtual and physical aspect ratios differ:</p>
 
@@ -167,25 +156,24 @@ space</strong> that it maps to the underlying canvas via a linear transform.</p>
     <li><code>fill</code> — uniform scale; fills the canvas, clipping content outside the bounds.</li>
 </ul>
 
-<p>The <code>anchor</code> option (<code>center</code> or <code>top_left</code>) positions the virtual space within any blank
-bands that appear in <code>fit</code> mode.</p>
+<p>The <code>anchor</code> option (<code>center</code> or <code>top_left</code>) positions the virtual space within any blank bands that appear in <code>fit</code> mode.</p>
 
-<p>On terminal resize, call <code>set_canvas</code> with a new canvas and re-issue all drawing calls.
-<a href="../classes/canvas.Viewport.html#">canvas.Viewport</a> exposes the same drawing primitives as <a href="../classes/Canvas.html#">Canvas</a>, using virtual coordinates.</p>
+<p>On terminal resize, call <code>set_canvas</code> with a new canvas and re-issue all drawing calls. <a href="../classes/canvas.Viewport.html#">canvas.Viewport</a> exposes the same drawing primitives as <a href="../classes/Canvas.html#">Canvas</a>, using virtual coordinates.</p>
 
 <p>See <code>examples/canvas.lua</code> for a working demo.</p>
 
-<p><a name="4_3_canvas_TimeSeriesGraph"></a></p>
-<h2>4.3 canvas.TimeSeriesGraph</h2>
+<p><img src="media/t_canvas_logo.png" alt="Canvas"/></p>
 
-<p><a href="../classes/canvas.TimeSeriesGraph.html#">canvas.TimeSeriesGraph</a> renders a scrolling data plot. It manages a sliding sample window,
-Y-axis bounds, tick marks, and labels. Push values with <code>push()</code>, then either draw onto an
-existing canvas with <code>draw(canvas)</code> or let it create one internally via <code>render({ cols, rows })</code>.</p>
+<p><a name="canvas_TimeSeriesGraph"></a></p>
+<h2>canvas.TimeSeriesGraph</h2>
 
-<p>When <code>min</code>/<code>max</code> are omitted, the range expands dynamically, snapping to the nearest "nice"
-number (1/2/5 × 10ⁿ).</p>
+<p><a href="../classes/canvas.TimeSeriesGraph.html#">canvas.TimeSeriesGraph</a> renders a scrolling data plot. It manages a sliding sample window, Y-axis bounds, tick marks, and labels. Push values with <code>push()</code>, then either draw onto an existing canvas with <code>draw(canvas)</code> or let it create one internally via <code>render({ cols, rows })</code>.</p>
+
+<p>When <code>min</code>/<code>max</code> are omitted, the range expands dynamically, snapping to the nearest "nice" number (1/2/5 × 10ⁿ).</p>
 
 <p>See <code>examples/graph.lua</code> for a working demo.</p>
+
+<p><img src="media/t_canvas_timeseries.png" alt="Graph"/></p>
 
 
 </div> <!-- id="content" -->

@@ -31,14 +31,21 @@
   <li><a href="../index.html">Index</a></li>
 </ul>
 
+<h2>Contents</h2>
+<ul>
+<li><a href="#Character_display_width">Character display width </a></li>
+<li><a href="#Displaying_strings">Displaying strings </a></li>
+</ul>
 
 
 <h2>Topics</h2>
 <ul class="">
-  <li><a href="../topics/01-introduction.md.html">1. Introduction</a></li>
-  <li><a href="../topics/02-terminal_handling.md.html">2. Terminal handling</a></li>
+  <li><a href="../topics/01-introduction.md.html">1. Terminal</a></li>
+  <li><a href="../topics/02-terminal.md.html">2. Terminal layer</a></li>
   <li><strong>3. Text handling</strong></li>
-  <li><a href="../topics/04-canvas.md.html">4. Canvas (braille pixel graphics)</a></li>
+  <li><a href="../topics/04-cli_widgets.md.html">4. CLI widgets</a></li>
+  <li><a href="../topics/05-fullscreen_ui.md.html">5. Full-screen UI</a></li>
+  <li><a href="../topics/06-canvas.md.html">6. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
   <li><a href="../topics/CONTRIBUTING.md.html">CONTRIBUTING</a></li>
   <li><a href="../topics/LICENSE.md.html">MIT License</a></li>
@@ -91,21 +98,18 @@
   <li><a href="../examples/async.lua.html">async.lua</a></li>
   <li><a href="../examples/canvas.lua.html">canvas.lua</a></li>
   <li><a href="../examples/car_race.lua.html">car_race.lua</a></li>
+  <li><a href="../examples/cli.lua.html">cli.lua</a></li>
   <li><a href="../examples/colors.lua.html">colors.lua</a></li>
-  <li><a href="../examples/confirm.lua.html">confirm.lua</a></li>
   <li><a href="../examples/cow.lua.html">cow.lua</a></li>
   <li><a href="../examples/graph.lua.html">graph.lua</a></li>
   <li><a href="../examples/headers.lua.html">headers.lua</a></li>
   <li><a href="../examples/keymap.lua.html">keymap.lua</a></li>
-  <li><a href="../examples/multiselect.lua.html">multiselect.lua</a></li>
   <li><a href="../examples/panel.lua.html">panel.lua</a></li>
   <li><a href="../examples/panel_confirm.lua.html">panel_confirm.lua</a></li>
   <li><a href="../examples/progress.lua.html">progress.lua</a></li>
   <li><a href="../examples/progressbar.lua.html">progressbar.lua</a></li>
   <li><a href="../examples/prompt-copas.lua.html">prompt-copas.lua</a></li>
-  <li><a href="../examples/prompt.lua.html">prompt.lua</a></li>
   <li><a href="../examples/screen.lua.html">screen.lua</a></li>
-  <li><a href="../examples/select.lua.html">select.lua</a></li>
   <li><a href="../examples/sequence.lua.html">sequence.lua</a></li>
   <li><a href="../examples/tabstrip.lua.html">tabstrip.lua</a></li>
   <li><a href="../examples/testscreen.lua.html">testscreen.lua</a></li>
@@ -119,38 +123,31 @@
 
 <h1>3. Text handling</h1>
 
-<p>Text handling in a terminal has several challenges. With Lua even more since the Lua strings are essentially
-byte arrays, any encoding must be manually handled. This library standardizes on UTF8 (during terminal
-initialization it will set UTF8 as the encoding on Windows to create cross-platform consistency).</p>
+<p>Text handling in a terminal has several challenges. With Lua even more so, since Lua strings are byte arrays and any encoding must be handled manually. This library standardizes on UTF-8 (during terminal initialization it sets UTF-8 as the encoding on Windows to create cross-platform consistency).</p>
 
-<p>Besides the encoding there is also the display width of characters. Especially non-western languages and
-special characters like emojis are often displayed as 2 columns wide. For some characters there isn't even a
-defined display width.</p>
+<p>Besides encoding there is also the display width of characters. Non-western languages and special characters like emojis are often displayed as 2 columns wide. For some characters there is no defined display width at all.</p>
 
-<p>To handle these problems the library has several convenience functions and classes to do the hard work for you.</p>
+<p>To handle these problems the library provides several convenience functions and classes.</p>
 
-<p><strong>Important</strong>: for writing to the terminal, the module <a href="../modules/terminal.output.html#">terminal.output</a> must be used! Not the standard Lua
-functions. If needed the Lua functions can be patched with the ones provided in <a href="../modules/terminal.output.html#">terminal.output</a>.</p>
+<p><strong>Important</strong>: for writing to the terminal, use the <a href="../modules/terminal.output.html#">terminal.output</a> module — not the standard Lua <a href="https://www.lua.org/manual/5.4/manual.html#6.8">io</a> functions. If needed, the Lua functions can be patched with those provided in <a href="../modules/terminal.output.html#">terminal.output</a>.</p>
 
-<h1>3.1 Character display width</h1>
+<p><a name="Character_display_width"></a></p>
+<h2>Character display width</h2>
 
-<p>Since not all characters have a predefined width (east-asian languages with ambiguous widths), so even if using
-LuaSystems functions to determine character display width there are still unknowns. The only way to know how they
-render (single or double columns) is to actually test display width.</p>
+<p>Not all characters have a predefined width (east-Asian characters can have ambiguous widths). Even using LuaSystem's width functions, unknowns remain. The only reliable way to know how a character renders — single or double column — is to test it in the actual terminal.</p>
 
-<p>For this purpose there are several utility functions in <a href="../modules/terminal.text.width.html#">terminal.text.width</a>.</p>
+<p>Utility functions for this are in <a href="../modules/terminal.text.width.html#">terminal.text.width</a>.</p>
 
-<h1>3.2 Displaying strings</h1>
+<p><a name="Displaying_strings"></a></p>
+<h2>Displaying strings</h2>
 
-<p>In terminal displays the proper alignment of characters is a must to be able to provide a good looking UI. Hence
-some utility functions/classes are provided to help with that.</p>
+<p>Proper character alignment is essential for a good-looking terminal UI. The following tools help:</p>
 
 <ul>
-    <li>the <a href="../classes/EditLine.html#">EditLine</a> class. A cursor based editor for strings. This class will also keep track of positions, both in
-    UTF8 characters as well as in display-columns. For display purposes check out the <a href="../classes/EditLine.html#editline:format">EditLine.format</a> method.</li>
-    <li>the <a href="../modules/terminal.utils.html#utf8sub">terminal.utils.utf8sub</a> and <a href="../modules/terminal.utils.html#utf8sub_col">terminal.utils.utf8sub_col</a> functions. Both behave like the standard
-    <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string.sub</a> function, but the former operates on UTF8 characters (also for Lua 5.1, 5.2, and LuaJIT), and the
-    latter operates on display columns.</li>
+    <li><a href="../classes/EditLine.html#">EditLine</a> — a cursor-based string editor that tracks position in both UTF-8 characters and display columns. See <a href="../classes/EditLine.html#editline:format">EditLine.format</a> for display-oriented output.</li>
+    <li><a href="../modules/terminal.utils.html#utf8sub">terminal.utils.utf8sub</a> — like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string.sub</a> but operates on UTF-8 characters.</li>
+    <li><a href="../modules/terminal.utils.html#utf8sub_col">terminal.utils.utf8sub_col</a> — like <a href="https://www.lua.org/manual/5.4/manual.html#pdf-string.sub">string.sub</a> but operates on display columns.</li>
+    <li><a href="../modules/terminal.html#size">terminal.size</a> — returns the terminal dimensions (rows and columns), useful for checking whether text will fit or overflow.</li>
 </ul>
 
 

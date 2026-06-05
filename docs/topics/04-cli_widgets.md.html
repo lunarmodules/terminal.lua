@@ -33,19 +33,20 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Goal">Goal </a></li>
-<li><a href="#Why_">Why? </a></li>
-<li><a href="#Why_now_">Why now? </a></li>
-<li><a href="#Structure">Structure </a></li>
+<li><a href="#Radio_buttons______cli_Select_">Radio buttons — `cli.Select` </a></li>
+<li><a href="#Checkboxes______cli_MultiSelect_">Checkboxes — `cli.MultiSelect` </a></li>
+<li><a href="#Line_editor______cli_Prompt_">Line editor — `cli.Prompt` </a></li>
+<li><a href="#Confirm_dialog______cli_Confirm_">Confirm dialog — `cli.Confirm` </a></li>
+<li><a href="#Progress______terminal_progress____progress_Bar_">Progress — `terminal.progress`, `progress.Bar` </a></li>
 </ul>
 
 
 <h2>Topics</h2>
 <ul class="">
-  <li><strong>1. Terminal</strong></li>
+  <li><a href="../topics/01-introduction.md.html">1. Terminal</a></li>
   <li><a href="../topics/02-terminal.md.html">2. Terminal layer</a></li>
   <li><a href="../topics/03-text_handling.md.html">3. Text handling</a></li>
-  <li><a href="../topics/04-cli_widgets.md.html">4. CLI widgets</a></li>
+  <li><strong>4. CLI widgets</strong></li>
   <li><a href="../topics/05-fullscreen_ui.md.html">5. Full-screen UI</a></li>
   <li><a href="../topics/06-canvas.md.html">6. Canvas (braille pixel graphics)</a></li>
   <li><a href="../topics/CHANGELOG.md.html">CHANGELOG</a></li>
@@ -123,96 +124,46 @@
 <div id="content">
 
 
-<h1>1. Terminal</h1>
+<h1>4. CLI widgets</h1>
 
-<p>A cross-platform terminal UI library for Lua.</p>
+<p>CLI widgets are interactive components for command-line applications. They run inline in the terminal — no full-screen takeover needed — and handle keyboard input, rendering, and state internally. All widgets support non-blocking operation and can be integrated into a coroutine-based event loop.</p>
 
-<p><img src="media/t_ui.png" alt="Terminal UI"/></p>
+<p><img src="media/t_cli.png" alt="CLI widgets"/></p>
 
-<p><img src="media/t_canvas_logo.png" alt="Canvas"/></p>
+<p><a name="Radio_buttons______cli_Select_"></a></p>
+<h2>Radio buttons — <a href="../classes/cli.Select.html#">cli.Select</a></h2>
 
-<p><a name="Goal"></a></p>
-<h2>Goal</h2>
+<p><a href="../classes/cli.Select.html#">cli.Select</a> presents a list of options and lets the user pick exactly one. Navigation is done with arrow keys; Enter confirms the selection. The widget renders and returns the chosen value.</p>
 
-<p>Make it easier to build functional cross-platform applications in Lua. With a focus on beginners, so that even someone just starting with Lua can build something useful. Since many beginners — often new to programming altogether — are on Windows, Windows support was essential, and hence the cross-platform focus.</p>
+<p>See the <a href="../classes/cli.Select.html#">cli.Select</a> class reference for the full API.</p>
 
-<p><a name="Why_"></a></p>
-<h2>Why?</h2>
+<p><a name="Checkboxes______cli_MultiSelect_"></a></p>
+<h2>Checkboxes — <a href="../classes/cli.MultiSelect.html#">cli.MultiSelect</a></h2>
 
-<h3>Portability</h3>
+<p><a href="../classes/cli.MultiSelect.html#">cli.MultiSelect</a> presents a list of options where any number of items can be toggled. Space toggles the focused item; Enter confirms the selection and returns the set of chosen values.</p>
 
-<ul>
-    <li>Cross-platform; supports *nixes, BSDs, and Windows</li>
-    <li>No external libraries needed. It only requires <a href="https://github.com/lunarmodules/luasystem">LuaSystem</a> which in turn only uses OS-provided APIs. No external libraries like curses, ncurses, or SDL are required, making it much easier to get started, especially for Windows users. A working <a href="https://luarocks.org">LuaRocks</a> installation is enough.</li>
-</ul>
+<p>See the <a href="../classes/cli.MultiSelect.html#">cli.MultiSelect</a> class reference for the full API.</p>
 
-<h3>Mechanisms over policies</h3>
+<p><a name="Line_editor______cli_Prompt_"></a></p>
+<h2>Line editor — <a href="../classes/cli.Prompt.html#">cli.Prompt</a></h2>
 
-<p>This is often cited in the Lua community as one of Lua's strengths, and this library adheres to that:</p>
+<p><a href="../classes/cli.Prompt.html#">cli.Prompt</a> reads a line of input from the user with full editing support (cursor movement, delete, backspace). Because input is non-blocking, background tasks can run while the user types.</p>
 
-<ul>
-    <li>All keyboard input is non-blocking, so it can be used in a blocking loop as well as in a yielding/coroutine-oriented loop.</li>
-    <li>It doesn't 'steal' the main loop. It can be hooked up to a loop or into an event system, but it doesn't force that upon the user (nor does it bring its own event system or main loop implementation).</li>
-    <li>Full UTF-8 support (also on Windows). It supports emojis, single/double/ambiguous-width characters, etc.</li>
-</ul>
+<p>See the <a href="../classes/cli.Prompt.html#">cli.Prompt</a> class reference for the full API.</p>
 
-<p><a name="Why_now_"></a></p>
-<h2>Why now?</h2>
+<p><a name="Confirm_dialog______cli_Confirm_"></a></p>
+<h2>Confirm dialog — <a href="../classes/cli.Confirm.html#">cli.Confirm</a></h2>
 
-<p>In 2019 the Windows Terminal application was first introduced in Windows 10 (not to be mistaken for <code>cmd.exe</code>). It natively supports the terminal sequences common on other platforms. That was the enabler for a cross-platform library, though it still turned out to be far harder than initially expected.
-By the time the first version of this library was released in 2026, Windows 10 had become obsolete and all Windows 11 users had access to the Terminal application. Its use is widespread enough to give us a common ground.</p>
+<p><a href="../classes/cli.Confirm.html#">cli.Confirm</a> displays a configurable confirmation prompt such as OK/Cancel or Abort/Retry/Ignore. The user selects an option with arrow keys or a hotkey shortcut.</p>
 
-<p><a name="Structure"></a></p>
-<h2>Structure</h2>
+<p>See the <a href="../classes/cli.Confirm.html#">cli.Confirm</a> class reference for the full API.</p>
 
-<p>A working cross-platform terminal library spans from very low-level OS calls all the way to high-level functionality like windows and dialog boxes. This library implements this in 2 distinct layers:</p>
+<p><a name="Progress______terminal_progress____progress_Bar_"></a></p>
+<h2>Progress — <a href="../modules/terminal.progress.html#">terminal.progress</a>, <a href="../classes/progress.Bar.html#">progress.Bar</a></h2>
 
-<ol>
-    <li><a href="https://github.com/lunarmodules/luasystem">LuaSystem</a> (an external dependency) implements all the low-level OS calls needed to interact with the terminal setup. This includes terminal initialization, stream configuration, non-blocking input and keyboard handling, canonical mode, etc.</li>
-    <li>On top of this sit the generic functions for terminal/ANSI sequences for things like colors, cursor positioning, scroll regions, etc. These are provided by the terminal library.</li>
-</ol>
+<p><a href="../modules/terminal.progress.html#">terminal.progress</a> provides a spinner for indeterminate tasks. <a href="../classes/progress.Bar.html#">progress.Bar</a> renders a progress bar for tasks with a known completion percentage.</p>
 
-<p>These 2 layers enable cross-platform terminal interactions. For details see the <a href="02-terminal.md.html">Terminal</a> topic.</p>
-
-<p>Now on top of those, there are 2 sub-systems:</p>
-
-<h3>CLI widgets</h3>
-
-<p>Interactive widgets for command-line applications. See the <a href="04-cli_widgets.md.html">CLI widgets</a> topic.</p>
-
-<ul>
-    <li>Radio buttons (select 1)</li>
-    <li>Check boxes (select multiple)</li>
-    <li>Non-blocking line editor (capable of running background tasks)</li>
-    <li>Confirmation widget for OK/Cancel, Abort/Retry/Ignore, etc.</li>
-    <li>Progress spinners and bars</li>
-</ul>
-
-<h3>Full-screen UI</h3>
-
-<p>Based on a flexible panel system with automatic layouts. See the <a href="05-fullscreen_ui.md.html">Full-screen UI</a> topic.</p>
-
-<ul>
-    <li>Screen objects (to manage resizes)</li>
-    <li>Header panel (for a title bar)</li>
-    <li>Footer panel and key-shortcut panels (typically used at the bottom of a screen)</li>
-    <li>Text layout panel, supporting scrolling, word-wrapping, and selectors</li>
-    <li>Tab-strip panel</li>
-</ul>
-
-<p>The 2 sub-systems are complemented by several utilities usable by both:</p>
-
-<h3>Canvas</h3>
-
-<p>A drawing canvas supporting points, lines, arcs, ellipses, and polygons; includes a time-series graph. See the <a href="06-canvas.md.html">Canvas</a> topic.</p>
-
-<h3>Sequences</h3>
-
-<p>A class that makes it easy to create reusable 'drawings' on terminal screens by storing complex sequences of text, colors, cursor positioning, etc. in a single object. Supports lambda functions for dynamic content.</p>
-
-<h3>String editor</h3>
-
-<p>An advanced string class for modifying strings by UTF-8 character or by display column. See the <a href="03-text_handling.md.html">Text handling</a> topic.</p>
+<p>See the <a href="../modules/terminal.progress.html#">terminal.progress</a> and <a href="../classes/progress.Bar.html#">progress.Bar</a> class references for the full API.</p>
 
 
 </div> <!-- id="content" -->
