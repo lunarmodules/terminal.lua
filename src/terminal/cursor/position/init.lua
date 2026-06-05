@@ -1,5 +1,28 @@
 --- Terminal cursor position module.
 -- Provides utilities for cursor positioning in terminals.
+--
+-- **Stack vs backup/restore — performance and safety**
+--
+-- The stack functions (`push`/`pop`) query the terminal on every `push` call: they call
+-- `get()` to read the current position, which requires a round-trip through stdin and
+-- incurs at least one sleep step (typically 15–100 ms — see `terminal.input` for the
+-- full explanation). In tight rendering loops or when redrawing a whole screen, these
+-- costs accumulate quickly.
+--
+-- A faster alternative is `backup` / `restore`. These emit a single ANSI sequence each
+-- and let the terminal itself remember the position, with no round-trip:
+--
+--     terminal.cursor.position.backup()   -- save current position in terminal memory
+--     -- ... draw something ...
+--     terminal.cursor.position.restore()  -- return to saved position
+--
+-- **Important caveat**: the terminal provides only *one* backup slot. If two code paths
+-- both use `backup`/`restore` concurrently — for example in a coroutine-based loop where
+-- a yield can occur between a `backup` call and its matching `restore` — they will
+-- overwrite each other's saved position and produce incorrect cursor placement. Use
+-- `backup`/`restore` only in sections of code that run to completion without yielding
+-- (i.e. without any operation that may call the sleep function, such as reading keyboard
+-- input).
 -- @module terminal.cursor.position
 
 local M = {}

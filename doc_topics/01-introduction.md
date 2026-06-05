@@ -1,114 +1,76 @@
-# 1. Introduction
+# 1. Terminal
 
-Yet another terminal library, why? Because it adds a couple of things not found with other libraries:
+A cross-platform terminal UI library for Lua.
 
-- Also works on Windows (since it builds on top of `luasystem`)
-- Works async with coroutines for keyboard input
-- Has [stacks](#14-stacks) to track settings so it becomes possible to revert to previous settings, even if a piece of code has no knowledge about those settings.
-- Remains Lua only, to not fall back to a full curses type implementation (except for the LuaSystem dependency)
+![Terminal UI](media/t_ui.png)
 
-## 1.1 Basic design
+![Canvas](media/t_canvas_logo.png)
 
-There are a few major concepts implemented in this library:
+## Goal
 
-**the core terminal stuff**
+Make it easier to build functional cross-platform applications in Lua. With a focus on beginners, so that even someone just starting with Lua can build something useful. Since many beginners — often new to programming altogether — are on Windows, Windows support was essential, and hence the cross-platform focus.
 
-configuring the terminal and abstractions over ANSI codes;
+## Why?
 
-  - [initialization & shutdown](#12-initialization--shutdown)
-  - [functions vs strings](#13-functions-vs-strings)
-  - [stacks](#14-stacks)
+### Portability
 
-**Higher level components**
+- Cross-platform; supports *nixes, BSDs, and Windows
+- No external libraries needed. It only requires [LuaSystem](https://github.com/lunarmodules/luasystem) which in turn only uses OS-provided APIs. No external libraries like curses, ncurses, or SDL are required, making it much easier to get started, especially for Windows users. A working [LuaRocks](https://luarocks.org) installation is enough.
 
-  - CLI widgets, see the `CLI` classes like `cli.Select` and `cli.Prompt`.
-  - Fullscreen UIs, see the `UI` classes like `ui.panel.Screen` and `ui.panel.Bar`.
-  - Pixel graphics, see the `Canvas` classes: `Canvas`, `canvas.Viewport`, and `canvas.TimeSeriesGraph`.
+### Mechanisms over policies
 
+This is often cited in the Lua community as one of Lua's strengths, and this library adheres to that:
 
-## 1.2 initialization & shutdown
+- All keyboard input is non-blocking, so it can be used in a blocking loop as well as in a yielding/coroutine-oriented loop.
+- It doesn't 'steal' the main loop. It can be hooked up to a loop or into an event system, but it doesn't force that upon the user (nor does it bring its own event system or main loop implementation).
+- Full UTF-8 support (also on Windows). It supports emojis, single/double/ambiguous-width characters, etc.
 
-Before use the terminal should be initialized (`terminal.initialize`) and finally it should be cleaned up (`terminal.shutdown`).
-The most convenient (and preferred) way to do this would be by using the `terminal.initwrap` function.
+## Why now?
 
-The platform specifics (Windows vs Nix'es) are handled here.
+In 2019 the Windows Terminal application was first introduced in Windows 10 (not to be mistaken for `cmd.exe`). It natively supports the terminal sequences common on other platforms. That was the enabler for a cross-platform library, though it still turned out to be far harder than initially expected.
+By the time the first version of this library was released in 2026, Windows 10 had become obsolete and all Windows 11 users had access to the Terminal application. Its use is widespread enough to give us a common ground.
 
-## 1.3 functions vs strings
+## Structure
 
-The low-level functions to control the terminal in this library also have a string-counterpart. That would be the same function, but with an extra "_seq" appended to its name. For example;
+A working cross-platform terminal library spans from very low-level OS calls all the way to high-level functionality like windows and dialog boxes. This library implements this in 2 distinct layers:
 
-- `terminal.clear.eol` and `terminal.clear.eol_seq`
-- `terminal.cursor.shape.set` and `terminal.cursor.shape.set_seq`
+1. [LuaSystem](https://github.com/lunarmodules/luasystem) (an external dependency) implements all the low-level OS calls needed to interact with the terminal setup. This includes terminal initialization, stream configuration, non-blocking input and keyboard handling, canonical mode, etc.
+2. On top of this sit the generic functions for terminal/ANSI sequences for things like colors, cursor positioning, scroll regions, etc. These are provided by the terminal library.
 
-The difference being that the former will write the sequence to the output stream. Where the latter returns the sequence as a string, and leaves writing to the user.
+These 2 layers enable cross-platform terminal interactions. For details see the [Terminal](02-terminal.md.html) topic.
 
-Hence these 2 examples are identical in functionality:
+Now on top of those, there are 2 sub-systems:
 
-    local t = require "terminal"
+### CLI widgets
 
-    -- directly write
-    t.cursor.shape.set("block_blink")
+Interactive widgets for command-line applications. See the [CLI widgets](04-cli_widgets.md.html) topic.
 
-    -- manually write
-    t.output.write(t.cursor.shape.set_seq("block_blink"))
+- Radio buttons (select 1)
+- Check boxes (select multiple)
+- Non-blocking line editor (capable of running background tasks)
+- Confirmation widget for OK/Cancel, Abort/Retry/Ignore, etc.
+- Progress spinners and bars
 
-In simple cases the regular function will do. However when drawing more complex items on a terminal screen, combining multiple write actions into a single one, can reduce flicker and improve performance.
+### Full-screen UI
 
-Here's an example that draws a vertical bar (3 rows high), and clears the lines:
+Based on a flexible panel system with automatic layouts. See the [Full-screen UI](05-fullscreen_ui.md.html) topic.
 
-    t.write(
-      t.cursor.position.column_seq(1),
-      "|",
-      t.clear.eol_seq(),
-      t.cursor.position.down_seq(),
-      "|",
-      t.clear.eol_seq(),
-      t.cursor.position.down_seq(),
-      "|",
-      t.clear.eol_seq(),
-      t.cursor.position.up_seq(2)
-    )
+- Screen objects (to manage resizes)
+- Header panel (for a title bar)
+- Footer panel and key-shortcut panels (typically used at the bottom of a screen)
+- Text layout panel, supporting scrolling, word-wrapping, and selectors
+- Tab-strip panel
 
-And as such it also allows for creating reusable sequences by storing it into a local variable:
+The 2 sub-systems are complemented by several utilities usable by both:
 
-    local three_line_box = table.concat {
-      t.cursor.position.column_seq(1),
-      "|",
-      t.clear.eol_seq(),
-      t.cursor.position.down_seq(),
-      "|",
-      t.clear.eol_seq(),
-      t.cursor.position.down_seq(),
-      "|",
-      t.clear.eol_seq(),
-      t.cursor.position.up_seq(2)
-    }
+### Canvas
 
-    t.write(three_line_box)
+A drawing canvas supporting points, lines, arcs, ellipses, and polygons; includes a time-series graph. See the [Canvas](06-canvas.md.html) topic.
 
-A more advanced version of this is the `Sequence` class.
+### Sequences
 
-**Important**: the stack based functions are not suited for including in reusable strings, because of their dynamic nature. They would restore the state to the state from before the string was *created*, not to the state from before the stored value is actually *used*.
+A class that makes it easy to create reusable 'drawings' on terminal screens by storing complex sequences of text, colors, cursor positioning, etc. in a single object. Supports lambda functions for dynamic content.
 
-## 1.4 stacks
+### String editor
 
-Terminal state is hard to query (the exception being the cursor position). This means that if something is changed in the state of the terminal (eg. foreground or background color) one cannot easily revert it to the previous state. This is what the stacks attempt to resolve.
-
-For each piece of state there is a separate stack to control it. Leading to the following stacks:
-
-- **cursor shape**: controls the shape of the cursor and whether it blinks or not.
-- **cursor visibility**: controls the visibility of the cursor, which has a separate state in the terminal, and hence has its own stack.
-- **cursor position**: controls the position of the cursor. This one is slightly different from the other ones, since this is the only queryable state in the terminal.
-- **scroll region**: controls the rows for the scrollable region.
-- **text attributes and color**: this controls colors and attributes like `reverse`, `blink`, etc.
-
-Each stack has the following operations:
-
-- `push(values...)`: takes value(s) for the specific stack, pushes it onto the stack, and applies it.
-- `pop(n)`: pops `n` items of the stack, and applies the top of the stack again.
-- `apply()`: applies the item at the top of the stack (eg. undoes any intermediate changes).
-
-The cursor position stack operates slightly different:
-
-- `push(new_row, new_col)`: pushes the current cursor position onto the stack, and moves the cursor to the new position.
-- `pop(n)`: pops `n` items of the stack, and applies the last item popped.
+An advanced string class for modifying strings by UTF-8 character or by display column. See the [Text handling](03-text_handling.md.html) topic.

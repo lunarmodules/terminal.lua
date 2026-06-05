@@ -77,6 +77,7 @@ lint: dev
 doc: clean_doc dev
 	mkdir -p ./docs
 	ldoc . --date=""
+	cp -r ./doc_topics/media ./docs/topics/media
 
 
 .PHONY: docs

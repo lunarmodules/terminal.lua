@@ -4,7 +4,7 @@
 -- confirm their choices by pressing &lt;Enter&gt; or cancel their choices by pressing &lt;Esc&gt;
 -- (when cancellable is enabled).
 --
--- Features: Prompt, UTF8 support, async input, (to be added: secrets, scrolling and wrapping)
+-- Features: Prompt, UTF-8 support, async input, (to be added: secrets, scrolling and wrapping)
 --
 -- NOTE: you MUST call `terminal.initialize` before calling this widget's `:run()` method.
 --
