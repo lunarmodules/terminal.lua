@@ -7,6 +7,28 @@
 --     terminal.initialize()
 --
 --     local char, typ, sequence = terminal.input.readansi(1)
+--
+-- **Performance note on terminal queries**
+--
+-- Querying the terminal (e.g. reading cursor position) works by writing an ANSI request
+-- sequence to stdout and then reading the response from stdin. Because the terminal will
+-- not have processed the request by the time the next read starts, the first read attempt
+-- finds nothing and invokes the provided sleep function while waiting for the response.
+--
+-- At the OS level, sleep calls are coarse: even when a very short sleep is requested,
+-- the actual pause is typically between 15 and 100 ms depending on the platform and
+-- scheduler resolution.
+--
+-- A single query is imperceptible to the user. However, when redrawing an entire screen
+-- where multiple components each issue a query (e.g. to restore colors or the cursor
+-- position), the sleeps accumulate. A screen with several querying components can
+-- easily introduce hundreds of milliseconds of latency, making the redraw visibly slow.
+--
+-- To avoid this, minimise the number of queries per frame. Prefer the stack-based state
+-- management (`terminal.text.color`, `terminal.cursor.shape`, etc.) which tracks state
+-- in Lua and never needs to query the terminal. Note that `terminal.cursor.position` is
+-- an exception: its stack calls `get()` on every push, which issues a query. See the
+-- `terminal.cursor.position` module documentation for a faster alternative.
 -- @module terminal.input
 
 local sys = require "system"

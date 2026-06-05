@@ -1,6 +1,6 @@
---- UTF8 based EditLine class.
+--- UTF-8 based EditLine class.
 --
--- This class handles a UTF8 string with editing, formatting (word-wrap), cursor tracking, and width tracking.
+-- This class handles a UTF-8 string with editing, formatting (word-wrap), cursor tracking, and width tracking.
 --
 -- *Example:*
 --
