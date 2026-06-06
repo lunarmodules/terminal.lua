@@ -111,6 +111,7 @@ function TextPanel:init(opts)
   opts.content = function(self)
     self:_draw_text()
   end
+  opts.clear_content = false -- we always write full-content, so no need to clear and cause flicker
 
   -- Call parent constructor
   Panel.init(self, opts)
@@ -177,6 +178,15 @@ function TextPanel:_draw_text()
       seq[n] = terminal.text.pop_seq()
       n = n + 1
     end
+  end
+
+  -- Fill rows below content with blank lines to avoid needing a pre-clear
+  local empty_line = string.rep(" ", self.inner_width)
+  for i = end_line - start_line + 1, self.inner_height - 1 do
+    seq[n] = terminal.cursor.position.set_seq(self.inner_row + i, self.inner_col)
+    n = n + 1
+    seq[n] = empty_line
+    n = n + 1
   end
 
   -- Pop text attributes if they were pushed
