@@ -77,7 +77,7 @@ Available stacks:
 - **cursor visibility** — whether the cursor is shown. See stack-based functions in `terminal.cursor.visible`.
 - **cursor position** — the only queryable state; `terminal.cursor.position.push` saves the current position and moves to the new one, `pop(n)` restores the last popped position. See stack-based functions in `terminal.cursor.position`.
 - **scroll region** — the rows that scroll. See stack-based functions in `terminal.scroll`.
-- **text attributes and color** — colors plus attributes like `reverse` and `blink`. See stack-based functions in `terminal.text.color`.
+- **text attributes and color** — colors plus attributes like `reverse` and `blink`. See stack-based functions in `terminal.text`.
 
 ## Async / non-blocking input
 

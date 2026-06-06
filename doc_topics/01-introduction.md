@@ -60,6 +60,7 @@ Based on a flexible panel system with automatic layouts. See the [Full-screen UI
 - Footer panel and key-shortcut panels (typically used at the bottom of a screen)
 - Text layout panel, supporting scrolling, word-wrapping, and selectors
 - Tab-strip panel
+- Confirmation dialogs
 
 The 2 sub-systems are complemented by several utilities usable by both:
 
