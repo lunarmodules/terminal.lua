@@ -5,10 +5,17 @@ describe("terminal.ui.panel.tab_strip", function()
 
   local TabStrip
   local terminal
+  local original_write
 
   setup(function()
     terminal = helpers.load()
     TabStrip = require("terminal.ui.panel.tab_strip")
+    original_write = terminal.output.write
+  end)
+
+
+  before_each(function()
+    terminal.output.write = original_write
   end)
 
 
@@ -236,6 +243,23 @@ describe("terminal.ui.panel.tab_strip", function()
       }
       assert.is_not_nil(tab_strip.select_cb)
       assert.is_function(tab_strip.select_cb)
+    end)
+
+
+    it("defaults auto_render to false", function()
+      local tab_strip = TabStrip {
+        items = { { label = "Tab 1" } },
+      }
+      assert.is_false(tab_strip.auto_render)
+    end)
+
+
+    it("stores auto_render as true when set", function()
+      local tab_strip = TabStrip {
+        items = { { label = "Tab 1" } },
+        auto_render = true,
+      }
+      assert.is_true(tab_strip.auto_render)
     end)
 
   end)
@@ -680,6 +704,86 @@ describe("terminal.ui.panel.tab_strip", function()
       assert.are.equal("tab1", callback_id)
     end)
 
+
+    it("select re-renders when auto_render is true and selection changed", function()
+      local tab_strip = TabStrip {
+        items = {
+          { id = "tab1", label = "Tab 1" },
+          { id = "tab2", label = "Tab 2" }
+        },
+        selected = "tab1",
+        auto_render = true,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:select("tab2")
+      assert.is_true(#helpers.get_output() > 0)
+    end)
+
+
+    it("select does not re-render when auto_render is true but selection unchanged", function()
+      local tab_strip = TabStrip {
+        items = {
+          { id = "tab1", label = "Tab 1" },
+          { id = "tab2", label = "Tab 2" }
+        },
+        selected = "tab1",
+        auto_render = true,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:select("tab1")
+      assert.are.equal("", helpers.get_output())
+    end)
+
+
+    it("select_next re-renders when auto_render is true and selection changed", function()
+      local tab_strip = TabStrip {
+        items = {
+          { id = "tab1", label = "Tab 1" },
+          { id = "tab2", label = "Tab 2" }
+        },
+        selected = "tab1",
+        auto_render = true,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:select_next()
+      assert.is_true(#helpers.get_output() > 0)
+    end)
+
+
+    it("select_prev re-renders when auto_render is true and selection changed", function()
+      local tab_strip = TabStrip {
+        items = {
+          { id = "tab1", label = "Tab 1" },
+          { id = "tab2", label = "Tab 2" }
+        },
+        selected = "tab2",
+        auto_render = true,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:select_prev()
+      assert.is_true(#helpers.get_output() > 0)
+    end)
+
+
+    it("does not re-render when auto_render is false", function()
+      local tab_strip = TabStrip {
+        items = {
+          { id = "tab1", label = "Tab 1" },
+          { id = "tab2", label = "Tab 2" }
+        },
+        selected = "tab1",
+        auto_render = false,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:select("tab2")
+      assert.are.equal("", helpers.get_output())
+    end)
+
   end)
 
 
@@ -865,6 +969,45 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:remove_item("tab2")
       assert.is_true(callback_called)
       assert.are.equal("tab1", callback_id)
+    end)
+
+
+    it("set_items re-renders when auto_render is true", function()
+      local tab_strip = TabStrip {
+        items = { { id = "tab1", label = "Tab 1" } },
+        auto_render = true,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:set_items({ { id = "tab2", label = "Tab 2" } })
+      assert.is_true(#helpers.get_output() > 0)
+    end)
+
+
+    it("add_item re-renders when auto_render is true", function()
+      local tab_strip = TabStrip {
+        items = { { id = "tab1", label = "Tab 1" } },
+        auto_render = true,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:add_item({ id = "tab2", label = "Tab 2" })
+      assert.is_true(#helpers.get_output() > 0)
+    end)
+
+
+    it("remove_item re-renders when auto_render is true", function()
+      local tab_strip = TabStrip {
+        items = {
+          { id = "tab1", label = "Tab 1" },
+          { id = "tab2", label = "Tab 2" }
+        },
+        auto_render = true,
+      }
+      tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
+      tab_strip:remove_item("tab2")
+      assert.is_true(#helpers.get_output() > 0)
     end)
 
   end)
