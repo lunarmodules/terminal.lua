@@ -97,11 +97,14 @@ end
 
 --- Returns the width of a character in columns.
 -- Calculates character width, using the configured ambiguous width for ambiguous characters.
+-- An empty string returns 0.
 -- @tparam string|number char the character (string or codepoint) to check
 -- @treturn number the width of the first character in columns
 function M.utf8cwidth(char)
-  -- TODO: for "", return 0 instead of erroring (invalid codepoint), where is this used in the codebase????
   if type(char) == "string" then
+    if char == "" then
+      return 0
+    end
     char = utf8.codepoint(char)
   elseif type(char) ~= "number" then
     error("expected string or number, got " .. type(char), 2)
