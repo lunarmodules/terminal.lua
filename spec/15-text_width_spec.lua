@@ -23,6 +23,12 @@ describe("terminal.text.width", function()
   end)
 
 
+  it("empty string width returns 0", function()
+    assert.are.equal(0, text.width.utf8cwidth(""))
+    assert.are.equal(0, text.width.utf8swidth(""))
+  end)
+
+
   it("ambiguous-width defaults to 1", function()
     local circle = utf8.char(0x25CB)
     assert.are.equal(1, text.width.utf8cwidth(circle))
