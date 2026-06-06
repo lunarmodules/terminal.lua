@@ -429,6 +429,7 @@ local TabStrip = utils.class(Panel)
 -- @tparam[opt] table opts.attr Text attributes for the entire strip.
 -- @tparam[opt] table opts.selected_attr Text attributes for the selected tab.
 -- @tparam[opt] function opts.select_cb Callback function called when selection changes: `TabStrip:select_cb(id)`.
+-- @tparam[opt=false] boolean opts.auto_render Whether to automatically re-render when content changes.
 -- @treturn TabStrip A new TabStrip instance.
 -- @usage
 --   local TabStrip = require("terminal.ui.panel.tab_strip")
@@ -453,6 +454,7 @@ function TabStrip:init(opts)
   local attr = opts.attr
   local selected_attr = opts.selected_attr
   local select_cb = opts.select_cb or function() end
+  local auto_render = not not opts.auto_render
 
   -- Set fixed height of 1 line
   opts.min_height = MIN_HEIGHT
@@ -474,6 +476,7 @@ function TabStrip:init(opts)
   opts.attr = nil
   opts.selected_attr = nil
   opts.select_cb = nil
+  opts.auto_render = nil
 
   -- Call parent constructor
   Panel.init(self, opts)
@@ -497,6 +500,7 @@ function TabStrip:init(opts)
   self.attr = attr
   self.selected_attr = selected_attr
   self.select_cb = select_cb
+  self.auto_render = auto_render
   self.selected = selection(items, selected) -- sets default if selected is invalid
 
   -- Viewport management state
@@ -549,6 +553,9 @@ function TabStrip:select(tab_id)
 
   self.selected = tab_id
   self:select_cb(tab_id)
+  if self.auto_render then
+    self:render()
+  end
 
   return true
 end
@@ -578,6 +585,9 @@ function TabStrip:select_next()
   if self.selected ~= next_id then
     self.selected = next_id
     self:select_cb(next_id)
+    if self.auto_render then
+      self:render()
+    end
   end
 
   return self:get_selected()
@@ -608,6 +618,9 @@ function TabStrip:select_prev()
   if self.selected ~= prev_id then
     self.selected = prev_id
     self:select_cb(prev_id)
+    if self.auto_render then
+      self:render()
+    end
   end
 
   return self.selected
@@ -655,6 +668,9 @@ function TabStrip:set_items(items)
     -- selection changed, so call callback
     self:select_cb(self.selected)
   end
+  if self.auto_render then
+    self:render()
+  end
 end
 
 
@@ -692,6 +708,9 @@ function TabStrip:add_item(item, before_id)
   end
 
   clear_cache(self)
+  if self.auto_render then
+    self:render()
+  end
   return true
 end
 
@@ -715,7 +734,10 @@ function TabStrip:remove_item(id)
   clear_cache(self)
 
   if not was_selected then
-    return true  -- No change to selection, so we're done
+    if self.auto_render then
+      self:render()
+    end
+    return true
   end
 
   -- selected tab was removed, need to update selection
@@ -733,6 +755,9 @@ function TabStrip:remove_item(id)
   end
 
   self:select_cb(self.selected)
+  if self.auto_render then
+    self:render()
+  end
 
   return true
 end
