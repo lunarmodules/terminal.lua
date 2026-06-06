@@ -463,6 +463,8 @@ function TabStrip:init(opts)
     draw_tabs(self)
   end
 
+  opts.clear_content = false  -- we write a full line of content, so no need to clear first
+
   -- Remove TabStrip-specific options from opts to avoid conflicts with Panel
   opts.items = nil
   opts.selected = nil
@@ -475,7 +477,6 @@ function TabStrip:init(opts)
 
   -- Call parent constructor
   Panel.init(self, opts)
-  self.clear_content = default_config.clear_content -- TODO: is this option useful here?
 
   -- Derive selected_attr from attr if not provided
   if not selected_attr and attr then
