@@ -89,7 +89,7 @@ local dialogs = {
           "Consider this before proceeding with the operation.",
           "",
           "It also supports multiple lines:",
-          "• and \u{1F680} Rockets \u{1F4A5} are supported too!",
+          "• and 🚀 Rockets 💥 are supported too!",
           "• And if the dialog is wide enough, this line will stay on one line. Otherwise, it will wrap like the others.",
         },
         buttons = {
