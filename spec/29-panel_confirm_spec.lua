@@ -204,7 +204,7 @@ describe("terminal.ui.panel.confirm", function()
         buttons = Confirm.sets.yes_no,
       }
       dlg:calculate_layout()
-      dlg._bar:select_next() -- TODO: replace with a call on the dlg object when implemented, instead of into nested objects
+      dlg._bar:select_next()
       assert.are.equal(Confirm.ids.no, dlg:get_selection())
     end)
 
