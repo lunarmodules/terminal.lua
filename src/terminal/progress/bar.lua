@@ -35,11 +35,6 @@ Bar.modes = utils.make_lookup("bar mode", {
 })
 
 
--- TODO: add a "rolling" mode as an option where the bar fills up to a point, then jumps back
--- to empty and starts again, for use as a spinner (e.g. for unknown-duration tasks).
--- This would mean not clamping to max, and allowing value to wrap around to min after exceeding max.
--- We'd also not show the % complete in this format.
-
 --- Create a new Bar instance.
 -- Do not call this method directly, call on the class instead.
 -- @tparam table opts Configuration options
