@@ -205,6 +205,7 @@ function ButtonBar:init(opts)
 
   -- calculate minimum panel width based on the items and options (inner; border overhead added by Panel)
   opts.min_width = (width.utf8swidth(prefix .. postfix) + padding + button_min_width) * #items - padding
+  opts.clear_content = false -- we always write full-content, so no need to clear and cause flicker
 
   opts.items = nil
   opts.selected = nil
