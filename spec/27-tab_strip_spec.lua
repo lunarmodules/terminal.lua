@@ -5,11 +5,15 @@ describe("terminal.ui.panel.tab_strip", function()
 
   local TabStrip
   local terminal
+  local utils
+  local text
   local original_write
 
   setup(function()
     terminal = helpers.load()
     TabStrip = require("terminal.ui.panel.tab_strip")
+    utils = require("terminal.utils")
+    text = require("terminal.text")
     original_write = terminal.output.write
   end)
 
@@ -74,6 +78,18 @@ describe("terminal.ui.panel.tab_strip", function()
         TabStrip {
           items = { { label = "Tab 1" } },
           children = { {} }
+        }
+      end)
+    end)
+
+
+    it("validates option types and raises clear errors", function()
+      assert.has_error(function()
+        TabStrip {
+          items = {
+            { id = "tab1", label = "Tab1" }
+          },
+          padding = "invalid"  -- Should be number
         }
       end)
     end)
@@ -341,10 +357,6 @@ describe("terminal.ui.panel.tab_strip", function()
   describe("basic rendering", function()
 
     it("displays all tabs on a single line", function()
-      local write_calls = {}
-      terminal.output.write = function(...)
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { label = "Tab 1" },
@@ -353,61 +365,31 @@ describe("terminal.ui.panel.tab_strip", function()
         }
       }
       tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
       tab_strip:render()
-      -- Should have written output
-      assert.is_true(#write_calls > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab 1] [Tab 2] [Tab 3]" .. string.rep(" ", 57), out)
     end)
 
 
     it("applies prefix and postfix around each tab label", function()
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            -- Handle Sequence objects
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { label = "Tab 1" },
           { label = "Tab 2" }
         },
-        prefix = "[",
-        postfix = "]"
+        prefix = "<",
+        postfix = ">"
       }
       tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
       tab_strip:render()
-      -- Check that prefix and postfix are in the output
-      assert.matches("%[Tab 1%]", written_content)
-      assert.matches("%[Tab 2%]", written_content)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("<Tab 1> <Tab 2>" .. string.rep(" ", 65), out)
     end)
 
 
     it("applies selected_attr to selected tab", function()
-      local write_calls = {}
-      terminal.output.write = function(...)
-        table.insert(write_calls, {...})
-      end
-      local text = require("terminal.text")
-      local original_push = text.push
-      text.push = function(attr)
-        return original_push(attr)
-      end
       local tab_strip = TabStrip {
         items = {
           { id = "tab1", label = "Tab 1" },
@@ -417,19 +399,16 @@ describe("terminal.ui.panel.tab_strip", function()
         selected_attr = { reverse = true }
       }
       tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
       tab_strip:render()
-      -- Restore original
-      text.push = original_push
-      -- Should have applied attributes
-      assert.is_true(#write_calls > 0)
+      local out = helpers.get_output()
+      local push_rev = text.push_seq({ reverse = true })
+      local pop = text.pop_seq()
+      assert.is_not_nil(out:find("[Tab 1] " .. push_rev .. "[Tab 2]" .. pop, 1, true))
     end)
 
 
     it("applies global attr to entire visible area", function()
-      local write_calls = {}
-      terminal.output.write = function(...)
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { label = "Tab 1" }
@@ -437,42 +416,27 @@ describe("terminal.ui.panel.tab_strip", function()
         attr = { fg = "white", bg = "black" }
       }
       tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
       tab_strip:render()
-      -- Should have written output with attributes
-      assert.is_true(#write_calls > 0)
+      local out = helpers.get_output()
+      local push_attr = text.push_seq({ fg = "white", bg = "black" })
+      local push_sel = text.push_seq({ fg = "white", bg = "black", reverse = true })
+      text.pop_seq()
+      local pop_attr = text.pop_seq()
+      assert.is_not_nil(out:find(push_attr .. push_sel .. "[Tab 1]", 1, true))
+      assert.is_not_nil(out:find(pop_attr .. "\27[u", 1, true))
     end)
 
 
     it("renders spaces when items are empty", function()
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            -- Handle Sequence objects
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {}
       }
       tab_strip:calculate_layout(1, 1, 1, 80)
+      helpers.clear_output()
       tab_strip:render()
-      -- Should render spaces across width
-      assert.is_true(#write_calls > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal(string.rep(" ", 80), out)
     end)
 
   end)
@@ -717,7 +681,8 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       helpers.clear_output()
       tab_strip:select("tab2")
-      assert.is_true(#helpers.get_output() > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab 1] [Tab 2]" .. string.rep(" ", 65), out)
     end)
 
 
@@ -749,7 +714,8 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       helpers.clear_output()
       tab_strip:select_next()
-      assert.is_true(#helpers.get_output() > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab 1] [Tab 2]" .. string.rep(" ", 65), out)
     end)
 
 
@@ -765,7 +731,8 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       helpers.clear_output()
       tab_strip:select_prev()
-      assert.is_true(#helpers.get_output() > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab 1] [Tab 2]" .. string.rep(" ", 65), out)
     end)
 
 
@@ -980,7 +947,8 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       helpers.clear_output()
       tab_strip:set_items({ { id = "tab2", label = "Tab 2" } })
-      assert.is_true(#helpers.get_output() > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab 2]" .. string.rep(" ", 73), out)
     end)
 
 
@@ -992,7 +960,8 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       helpers.clear_output()
       tab_strip:add_item({ id = "tab2", label = "Tab 2" })
-      assert.is_true(#helpers.get_output() > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab 1] [Tab 2]" .. string.rep(" ", 65), out)
     end)
 
 
@@ -1007,7 +976,8 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:calculate_layout(1, 1, 1, 80)
       helpers.clear_output()
       tab_strip:remove_item("tab2")
-      assert.is_true(#helpers.get_output() > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab 1]" .. string.rep(" ", 73), out)
     end)
 
   end)
@@ -1093,12 +1063,6 @@ describe("terminal.ui.panel.tab_strip", function()
 
 
     it("does not render when hidden", function()
-      local write_calls = 0
-      local original_write = terminal.output.write
-      terminal.output.write = function()
-        write_calls = write_calls + 1
-        return original_write()
-      end
       local tab_strip = TabStrip {
         items = {
           { id = "tab1", label = "Tab 1" }
@@ -1106,11 +1070,9 @@ describe("terminal.ui.panel.tab_strip", function()
       }
       tab_strip:calculate_layout(1, 1, 1, 80)
       tab_strip._visible = false
+      helpers.clear_output()
       tab_strip:render()
-      -- Restore
-      terminal.output.write = original_write
-      -- Should not have written anything (render should return early)
-      assert.are.equal(0, write_calls)
+      assert.are.equal("", helpers.get_output())
     end)
 
 
@@ -1215,27 +1177,6 @@ describe("terminal.ui.panel.tab_strip", function()
 
 
     it("slices content at display width boundaries", function()
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { id = "tab1", label = "Tab1" },
@@ -1244,34 +1185,14 @@ describe("terminal.ui.panel.tab_strip", function()
         }
       }
       tab_strip:calculate_layout(1, 1, 1, 10)  -- Very small width
+      helpers.clear_output()
       tab_strip:render()
-      -- Should have written some content
-      assert.is_true(#write_calls > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[Tab1] [T…", out)
     end)
 
 
     it("displays left overflow indicator when content exists to left", function()
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { id = "tab1", label = "Very Long Tab 1" },
@@ -1281,35 +1202,13 @@ describe("terminal.ui.panel.tab_strip", function()
         selected = "tab3"  -- Selected tab is on the right
       }
       tab_strip:calculate_layout(1, 1, 1, 20)  -- Small width
+      helpers.clear_output()
       tab_strip:render()
-      -- Should contain ellipsis (default from truncate_ellipsis)
-      -- The ellipsis character is "…" (U+2026)
-      assert.matches("…", written_content)
+      assert.matches("^…", utils.strip_ansi(helpers.get_output()))
     end)
 
 
     it("displays right overflow indicator when content exists to right", function()
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { id = "tab1", label = "Very Long Tab 1" },
@@ -1319,34 +1218,13 @@ describe("terminal.ui.panel.tab_strip", function()
         selected = "tab1"  -- Selected tab is on the left
       }
       tab_strip:calculate_layout(1, 1, 1, 20)  -- Small width
+      helpers.clear_output()
       tab_strip:render()
-      -- Should contain ellipsis
-      assert.matches("…", written_content)
+      assert.matches("…$", utils.strip_ansi(helpers.get_output()))
     end)
 
 
     it("does not display overflow indicators when all tabs fit", function()
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { id = "tab1", label = "Tab1" },
@@ -1354,12 +1232,9 @@ describe("terminal.ui.panel.tab_strip", function()
         }
       }
       tab_strip:calculate_layout(1, 1, 1, 80)  -- Large width
+      helpers.clear_output()
       tab_strip:render()
-      -- Should not contain ellipsis (all tabs fit)
-      -- Note: We check that ellipsis is not in the middle of tab content
-      -- The ellipsis would only appear if there's overflow
-      local has_overflow_ellipsis = written_content:match("….*%[") or written_content:match("%].*…")
-      assert.is_nil(has_overflow_ellipsis)
+      assert.not_matches("…", utils.strip_ansi(helpers.get_output()))
     end)
 
 
@@ -1373,28 +1248,6 @@ describe("terminal.ui.panel.tab_strip", function()
       --
       -- The fix: Recalculate has_right_overflow after adjusting effective_width to ensure
       -- consistency between overflow indicator decision and visible_end calculation.
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
-
       -- Create a borderline case where the adjusted effective_width changes the overflow decision
       -- available_width = 20, total_content = 22, viewport_offset = 0, ellipsis = 1
       -- Initial: effective_width = 20 - 2 = 18
@@ -1426,17 +1279,19 @@ describe("terminal.ui.panel.tab_strip", function()
       -- visible_end: 0 + 19 = 19
       -- The bug: has_right_overflow was calculated with width 18, not 19
       tab_strip:calculate_layout(1, 1, 1, 20)
+      helpers.clear_output()
       tab_strip:render()
+      local output = helpers.get_output()
 
       -- The key assertion: has_right_overflow should be consistent with visible_end
       -- If visible_end uses effective_width=19, then has_right_overflow should also
       -- be calculated with effective_width=19 (or recalculated after adjustment)
       --
       -- Verify right overflow indicator is present
-      assert.matches("…", written_content, "Should have right overflow indicator")
+      assert.matches("…", output, "Should have right overflow indicator")
 
       -- Verify no left overflow indicator
-      local left_ellipsis = written_content:match("^…")
+      local left_ellipsis = output:match("^…")
       assert.is_nil(left_ellipsis, "Should not have left overflow indicator when viewport is at start")
 
       -- The actual bug: The code calculates has_right_overflow with one effective_width,
@@ -1463,27 +1318,6 @@ describe("terminal.ui.panel.tab_strip", function()
 
 
     it("handles UTF-8 and double-width characters in viewport slicing", function()
-      local write_calls = {}
-      local written_content = ""
-      terminal.output.write = function(...)
-        local args = {...}
-        for _, arg in ipairs(args) do
-          if type(arg) == "string" then
-            written_content = written_content .. arg
-          elseif type(arg) == "function" then
-            local result = arg()
-            if type(result) == "string" then
-              written_content = written_content .. result
-            end
-          else
-            local str = tostring(arg)
-            if str then
-              written_content = written_content .. str
-            end
-          end
-        end
-        table.insert(write_calls, {...})
-      end
       local tab_strip = TabStrip {
         items = {
           { id = "tab1", label = "中文" },  -- Double-width characters
@@ -1491,9 +1325,10 @@ describe("terminal.ui.panel.tab_strip", function()
         }
       }
       tab_strip:calculate_layout(1, 1, 1, 10)  -- Small width
+      helpers.clear_output()
       tab_strip:render()
-      -- Should render without errors
-      assert.is_true(#write_calls > 0)
+      local out = utils.strip_ansi(helpers.get_output())
+      assert.are.equal("[中文] [T…", out)
     end)
 
   end)
@@ -1623,32 +1458,6 @@ describe("terminal.ui.panel.tab_strip", function()
       tab_strip:render()
       -- Should not error
       assert.is_not_nil(tab_strip)
-    end)
-
-
-    it("handles all tabs fit case", function()
-      local tab_strip = TabStrip {
-        items = {
-          { id = "tab1", label = "Tab1" },
-          { id = "tab2", label = "Tab2" }
-        }
-      }
-      tab_strip:calculate_layout(1, 1, 1, 80)
-      tab_strip:render()
-      -- Should not show overflow indicators
-      assert.is_not_nil(tab_strip)
-    end)
-
-
-    it("validates option types and raises clear errors", function()
-      assert.has_error(function()
-        TabStrip {
-          items = {
-            { id = "tab1", label = "Tab1" }
-          },
-          padding = "invalid"  -- Should be number
-        }
-      end)
     end)
 
   end)
