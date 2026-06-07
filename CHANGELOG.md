@@ -4,6 +4,8 @@
 
 This library is versioned based on Semantic Versioning ([SemVer](https://semver.org/)).
 
+*__Note__: while the version is in the `0.x.x` range, the API is unstable. When using this library it should be pinned to an exact version to prevent unexpected breaking.*
+
 #### Version scoping
 
 The scope of what is covered by the version number excludes:
@@ -30,11 +32,6 @@ The scope of what is covered by the version number excludes:
 
 ## Version history
 
-### Version X.Y.Z, unreleased
-
-- a fix
-- a change
-
-### Version 0.1.0, released 01-Jan-2022
+### Version 0.1.0, released 07-Jun-2026
 
 - initial release
