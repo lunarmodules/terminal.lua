@@ -1,0 +1,78 @@
+local package_name = "terminal"
+local package_version = "0.1.0"
+local rockspec_revision = "1"
+local github_account_name = "Tieske"
+local github_repo_name = "terminal.lua"
+
+
+package = package_name
+version = package_version.."-"..rockspec_revision
+
+source = {
+  url = "git+https://github.com/"..github_account_name.."/"..github_repo_name..".git",
+  branch = (package_version == "scm") and "main" or nil,
+  tag = (package_version ~= "scm") and package_version or nil,
+}
+
+description = {
+  summary = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
+  detailed = [[
+    Cross platform terminal library for Lua (Windows/Unix/Mac)
+  ]],
+  license = "MIT",
+  homepage = "https://github.com/"..github_account_name.."/"..github_repo_name,
+}
+
+dependencies = {
+  "lua >= 5.1, < 5.6",
+  "luasystem >= 0.7.0",
+  "utf8 >= 1.3.0",
+}
+
+build = {
+  type = "builtin",
+
+  modules = {
+    ["terminal.init"] = "src/terminal/init.lua",
+    ["terminal.progress.init"] = "src/terminal/progress/init.lua",
+    ["terminal.progress.bar"] = "src/terminal/progress/bar.lua",
+    ["terminal.sequence"] = "src/terminal/sequence.lua",
+    ["terminal.output"] = "src/terminal/output.lua",
+    ["terminal.clear"] = "src/terminal/clear.lua",
+    ["terminal.editline"] = "src/terminal/editline.lua",
+    ["terminal.utils"] = "src/terminal/utils.lua",
+    ["terminal.input.init"] = "src/terminal/input/init.lua",
+    ["terminal.input.keymap"] = "src/terminal/input/keymap.lua",
+    ["terminal.scroll.init"] = "src/terminal/scroll/init.lua",
+    ["terminal.cursor.init"] = "src/terminal/cursor/init.lua",
+    ["terminal.cursor.visible.init"] = "src/terminal/cursor/visible/init.lua",
+    ["terminal.cursor.shape.init"] = "src/terminal/cursor/shape/init.lua",
+    ["terminal.cursor.position.init"] = "src/terminal/cursor/position/init.lua",
+    ["terminal.draw.init"] = "src/terminal/draw/init.lua",
+    ["terminal.draw.line"] = "src/terminal/draw/line.lua",
+    ["terminal.text.init"] = "src/terminal/text/init.lua",
+    ["terminal.text.color"] = "src/terminal/text/color.lua",
+    ["terminal.text.width"] = "src/terminal/text/width.lua",
+    ["terminal.cli.confirm"] = "src/terminal/cli/confirm.lua",
+    ["terminal.cli.select"] = "src/terminal/cli/select.lua",
+    ["terminal.cli.multiselect"] = "src/terminal/cli/multiselect.lua",
+    ["terminal.cli.prompt"] = "src/terminal/cli/prompt.lua",
+    ["terminal.ui.panel.init"] = "src/terminal/ui/panel/init.lua",
+    ["terminal.ui.panel.screen"] = "src/terminal/ui/panel/screen.lua",
+    ["terminal.ui.panel.bar"] = "src/terminal/ui/panel/bar.lua",
+    ["terminal.ui.panel.text"] = "src/terminal/ui/panel/text.lua",
+    ["terminal.ui.panel.set"] = "src/terminal/ui/panel/set.lua",
+    ["terminal.ui.panel.tab_strip"] = "src/terminal/ui/panel/tab_strip.lua",
+    ["terminal.ui.panel.key_bar"] = "src/terminal/ui/panel/key_bar.lua",
+    ["terminal.ui.panel.confirm"] = "src/terminal/ui/panel/confirm.lua",
+    ["terminal.ui.panel.button_bar"] = "src/terminal/ui/panel/button_bar.lua",
+    ["terminal.canvas"] = "src/terminal/canvas/init.lua",
+    ["terminal.canvas.viewport"] = "src/terminal/canvas/viewport.lua",
+    ["terminal.canvas.timeseriesgraph"] = "src/terminal/canvas/timeseriesgraph.lua",
+  },
+
+  copy_directories = {
+    -- can be accessed by `luarocks terminal doc` from the commandline
+    "docs",
+  },
+}

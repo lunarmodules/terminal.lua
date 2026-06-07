@@ -9,13 +9,13 @@
 --
 -- For generic instruction please read the [introduction](../topics/01-introduction.md.html).
 --
--- @copyright Copyright (c) 2024-2025 Thijs Schreijer
+-- @copyright Copyright (c) 2024-2026 Thijs Schreijer
 -- @author Thijs Schreijer
 -- @license MIT, see `LICENSE.md`.
 
 local M = {
-  _VERSION = "0.0.1",
-  _COPYRIGHT = "Copyright (c) 2024-2025 Thijs Schreijer",
+  _VERSION = "0.1.0",
+  _COPYRIGHT = "Copyright (c) 2024-2026 Thijs Schreijer",
   _DESCRIPTION = "Cross platform terminal library for Lua (Windows/Unix/Mac)",
 }
 
