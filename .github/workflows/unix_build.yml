@@ -27,13 +27,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        # commit hash for version 7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
-      - uses: luarocks/gh-actions-lua@master
+      - uses: luarocks/gh-actions-lua@6fff34a54b160acea12880a638eab0960507c1f5
+        # commit hash for unrelease commit past version v11; Lua 5.5 and Node fixes
         with:
           luaVersion: ${{ matrix.luaVersion }}
 
-      - uses: luarocks/gh-actions-luarocks@master
+      - uses: luarocks/gh-actions-luarocks@86ccbcad8c77b22e94c96a2a08632192e2bcd62b
+        # commit hash for unrelease commit past version v6; Node fixes
         with:
           luaRocksVersion: "3.13.0"
 
