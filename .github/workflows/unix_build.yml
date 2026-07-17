@@ -30,12 +30,12 @@ jobs:
         # commit hash for version 7.0.0
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
-      - uses: luarocks/gh-actions-lua@6fff34a54b160acea12880a638eab0960507c1f5
+      - uses: luarocks/gh-actions-lua@fc6f8de246f8c01f6e1a56a1b851143e23370ff3
         # commit hash for unrelease commit past version v11; Lua 5.5 and Node fixes
         with:
           luaVersion: ${{ matrix.luaVersion }}
 
-      - uses: luarocks/gh-actions-luarocks@86ccbcad8c77b22e94c96a2a08632192e2bcd62b
+      - uses: luarocks/gh-actions-luarocks@95d2308a0aff36ad31ebadca493ed14853399842
         # commit hash for unrelease commit past version v6; Node fixes
         with:
           luaRocksVersion: "3.13.0"
