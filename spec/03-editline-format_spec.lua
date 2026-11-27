@@ -1125,6 +1125,38 @@ describe("EditLine:", function()
     end)
 
 
+    describe("mask characters", function()
+
+      it("masks input characters", function()
+        line = EditLine{ value = "12345678", mask = "*" }:goto_end()
+        assert.are.same({
+          '********|',
+        }, testwrap({
+          width = 10,
+          first_width = 10,
+          wordwrap = false,
+          pad = false,
+          pad_last = false,
+        }))
+      end)
+
+      it("hard-wraps masked characters", function()
+        line = EditLine{ value = "12345678", mask = "*" }:goto_end()
+        assert.are.same({
+          '******|',
+          '**|',
+        }, testwrap({
+          width = 6,
+          first_width = 6,
+          wordwrap = false,
+          pad = false,
+          pad_last = false,
+        }))
+      end)
+
+    end)
+
+
     describe("exact width handling", function()
 
       it("handles line that exactly matches width with wordwrap", function()
