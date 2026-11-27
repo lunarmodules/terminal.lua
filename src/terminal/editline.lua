@@ -59,6 +59,7 @@ end
 -- Do not call this method directly, call on the class instead, see the example.
 -- @tparam[opt={}] table|string opts Options for the edit line, or a string value to initialize.
 -- @tparam[opt=""] string opts.value Initial value for the edit line.
+-- @tparam[opt] string opts.mask Mask character to render instead of the actual input (e.g. for passwords).
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
 -- @tparam[opt] number opts.position Initial cursor position (defaults to the end).
 -- @treturn EditLine A new EditLine instance.
@@ -75,6 +76,11 @@ function EditLine:init(opts)
   end
   if not opts.value then
     opts.value = ""
+  end
+
+  if opts.mask then
+    assert(utf8.len(opts.mask) == 1, "mask must be a single character")
+    self.mask = opts.mask
   end
 
   self.chars = {}   -- array of utf8 characters (strings)
@@ -133,7 +139,7 @@ end
 -- @return self (for chaining)
 function EditLine:insert_cp(cp)
   local ch = utf8.char(cp)
-  local w = width.utf8cwidth(cp)
+  local w = width.utf8cwidth(self.mask and self.mask or cp)
 
   table.insert(self.chars, self.cursor_idx, ch)
   table.insert(self.widths, self.cursor_idx, (w == 2) and DOUBLE_WIDTH or SINGLE_WIDTH)
@@ -435,6 +441,9 @@ function EditLine:sub_char(i, j)
     return EditLine("")
   end
 
+  if self.mask then
+    return EditLine(self.mask:rep(j - i + 1))
+  end
   return EditLine(table.concat(self.chars, "", i, j))
 end
 

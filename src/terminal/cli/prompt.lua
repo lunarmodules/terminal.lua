@@ -90,6 +90,7 @@ end
 -- @tparam[opt=""] string|EditLine opts.value The initial value of the prompt (truncated if too long).
 -- @tparam[opt] number opts.position The initial cursor position (in char) of the input (default at the end).
 -- @tparam[opt=80] number opts.max_length The maximum length of the input.
+-- @tparam[opt] string opts.mask Mask character to render instead of the actual input (e.g. for passwords).
 -- @tparam[opt] string opts.word_delimiters Word delimiters for word operations.
 -- @tparam[opt] table opts.text_attr Text attributes for the prompt (input value only).
 -- @tparam[opt=false] boolean opts.wordwrap Whether to wordwrap the input value.
@@ -104,6 +105,7 @@ function Prompt:init(opts)
     -- it is not an EditLine object, so create one
     value = EditLine({
       value = value,
+      mask = opts.mask,
       word_delimiters = opts.word_delimiters,
       position = opts.position,
     })
